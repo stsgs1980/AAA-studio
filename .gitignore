@@ -25,6 +25,9 @@ Thumbs.db
 *.swp
 *.swo
 
+# Embedded repos
+StsDev-Wiki/
+
 # Prisma
 prisma/*.db
 prisma/*.db-journal
