@@ -1,5 +1,5 @@
 export {
-  KpiStrip,
+  LiveKpiStrip,
   StatusDistribution,
   TopPerformers,
   NetworkChart,

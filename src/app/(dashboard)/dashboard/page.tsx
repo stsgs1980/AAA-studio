@@ -1,7 +1,7 @@
-'use client'
+'use client';
 
 import {
-  KpiStrip,
+  LiveKpiStrip,
   StatusDistribution,
   TopPerformers,
   NetworkChart,
@@ -9,12 +9,12 @@ import {
   ActivityTimeline,
   ConnectionHeatmap,
   FormulaGrid,
-} from '@/features/dashboard'
+} from '@/features/dashboard';
 
 export default function DashboardPage() {
   return (
     <div className="p-4 md:p-6 space-y-6">
-      <KpiStrip />
+      <LiveKpiStrip />
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
         <div className="lg:col-span-3">
@@ -37,5 +37,5 @@ export default function DashboardPage() {
         <FormulaGrid />
       </div>
     </div>
-  )
+  );
 }

@@ -1,7 +1,7 @@
 export { AnimatedCounter } from './animated-counter'
 export { MiniSparkline } from './mini-sparkline'
 export { KpiCard } from './kpi-card'
-export { KpiStrip } from './kpi-strip'
+export { KpiStrip, LiveKpiStrip } from './kpi-strip'
 export { StatusDistribution } from './status-distribution'
 export { TopPerformers } from './top-performers'
 export { NetworkChart } from './network-chart'
