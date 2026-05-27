@@ -19,8 +19,8 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
-    "@neondatabase/serverless": "^1.0.0",
-    "@prisma/adapter-neon": "^6.8.2",
+    "@neondatabase/serverless": "0",
+    "@prisma/adapter-neon": "6",
     "@prisma/client": "^6.8.2",
     "@radix-ui/react-slot": "^1.1.2",
     "@tailwindcss/postcss": "^4.3.0",
