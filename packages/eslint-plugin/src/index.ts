@@ -41,7 +41,7 @@ export const maxLinesRule: Rule.RuleModule = {
     return {
       Program(node) {
         const sourceCode = context.sourceCode || context.getSourceCode();
-        const lines = sourceCode.getLines(node);
+        const lines = sourceCode.lines;
         let lineCount = lines.length;
 
         if (skipBlankLines) {
@@ -138,6 +138,7 @@ export const noCrossLayerRule: Rule.RuleModule = {
     return {
       ImportDeclaration(node) {
         const source = node.source.value;
+        if (typeof source !== 'string') return;
 
         // Block: components importing from api routes
         const filePath = context.getFilename();

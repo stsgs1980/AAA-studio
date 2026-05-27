@@ -34,3 +34,14 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* React Flow overrides */
+.react-flow__attribution {
+  display: none !important;
+}
+.react-flow__handle {
+  transition: transform 0.15s ease;
+}
+.react-flow__handle:hover {
+  transform: scale(1.4);
+}

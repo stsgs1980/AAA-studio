@@ -87,7 +87,7 @@ function scoreActionability(prompt: string): number {
   if (actionVerbs.test(prompt)) score += 2;
   if (/(\bstep\s*\d|first|then|next|finally)/i.test(prompt)) score += 1;
   if (/(\boutcome\b|\bresult\b|\bdeliverable\b)/i.test(prompt)) score += 1;
-  if (/(\bformat\b|\bstructure\b|\bas\b+\w+\s+\blist\b)/i.test(prompt)) score += 2;
+  if (/(\bformat\b|\bstructure\b|\bas\s+\w+\s+\ba?\s*list\b)/i.test(prompt)) score += 2;
   return Math.min(10, Math.max(0, score));
 }
 
