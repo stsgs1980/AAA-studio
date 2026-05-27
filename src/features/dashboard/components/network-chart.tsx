@@ -1,116 +1,147 @@
 'use client'
 
-import { useState, useEffect, useId } from 'react'
-import { NETWORK_DATA } from '../data/constants'
+import { useState, useEffect } from 'react'
 
-const W = 700
-const H = 200
-const PAD_L = 36
-const PAD_R = 16
-const PAD_T = 16
-const PAD_B = 28
+// Hard-coded chart data matching wireframe SVG coordinates
+const API_POINTS = [60,130, 130,190, 200,175, 270,155, 340,120, 410,100, 480,80, 550,65, 620,90, 690,110, 760,85, 830,70, 860,75]
+const WS_POINTS = [60,218, 130,210, 200,200, 270,185, 340,165, 410,148, 480,135, 550,120, 620,145, 690,158, 760,140, 830,128, 860,132]
+
+const X_LABELS = [
+  { x: 60, label: '00:00' },
+  { x: 200, label: '04:00' },
+  { x: 340, label: '08:00' },
+  { x: 480, label: '12:00' },
+  { x: 620, label: '16:00' },
+  { x: 760, label: '20:00' },
+  { x: 860, label: '24:00' },
+]
+
+const Y_LABELS = [
+  { y: 30, label: '200' },
+  { y: 82, label: '150' },
+  { y: 134, label: '100' },
+  { y: 186, label: '50' },
+  { y: 238, label: '0' },
+]
+
+const GRID_LINES = [
+  { y: 26, stroke: '#1a1a22' },
+  { y: 78, stroke: '#1a1a22' },
+  { y: 130, stroke: '#1a1a22' },
+  { y: 182, stroke: '#1a1a22' },
+  { y: 234, stroke: '#27272a' },
+]
+
+function pairsToPoints(pairs: number[]): string {
+  return pairs.reduce((acc, _, i, arr) => {
+    if (i % 2 === 0 && i + 1 < arr.length) acc.push(`${arr[i]},${arr[i + 1]}`)
+    return acc
+  }, [] as string[]).join(' ')
+}
+
+function pairsToArea(pairs: number[]): string {
+  const points = pairsToPoints(pairs)
+  const lastX = pairs[pairs.length - 2]
+  const firstX = pairs[0]
+  return `M${firstX},234 L${points} L${lastX},234 Z`
+}
 
 export function NetworkChart() {
   const [animated, setAnimated] = useState(false)
-  const gradId = useId()
 
   useEffect(() => {
-    const timer = setTimeout(() => setAnimated(true), 200)
-    return () => clearTimeout(timer)
+    const t = setTimeout(() => setAnimated(true), 300)
+    return () => clearTimeout(t)
   }, [])
 
-  const data = [...NETWORK_DATA]
-  const max = Math.max(...data)
-  const plotW = W - PAD_L - PAD_R
-  const plotH = H - PAD_T - PAD_B
-
-  const points = data.map((v, i) => ({
-    x: PAD_L + (i / (data.length - 1)) * plotW,
-    y: PAD_T + plotH - (v / max) * plotH,
-  }))
-
-  const linePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y}`).join(' ')
-  const areaPath = `${linePath} L${points[points.length - 1].x},${PAD_T + plotH} L${PAD_L},${PAD_T + plotH} Z`
-
-  const yTicks = [0, 25, 50, 75, 100]
-  const gridLines = yTicks.map((t) => ({
-    y: PAD_T + plotH - (t / max) * plotH,
-    label: t.toString(),
-  }))
-
-  const sorted = [...data].sort((a, b) => b - a)
-  const peaks = sorted.slice(0, 3)
-  const peakIndices = peaks.map(
-    (v) => data.findIndex((d) => d === v)
-  )
-
-  const avg = (data.reduce((s, v) => s + v, 0) / data.length).toFixed(1)
-  const current = data[data.length - 1]
-  const peak = data[peakIndices[0]]
+  const apiPointsStr = pairsToPoints(API_POINTS)
+  const wsPointsStr = pairsToPoints(WS_POINTS)
+  const apiArea = pairsToArea(API_POINTS)
+  const wsArea = pairsToArea(WS_POINTS)
 
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
-      <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">
-        Network Activity (24h)
-      </h3>
-      <div className="overflow-x-auto">
-        <svg
-          viewBox={`0 0 ${W} ${H}`}
-          className="w-full h-auto"
-          style={{
-            opacity: animated ? 1 : 0,
-            transition: 'opacity 0.6s ease-out',
-          }}
-        >
+    <div className="rounded-[10px] p-5 transition-colors duration-200"
+      style={{ background: '#0A0A0F', border: '1px solid #27272a' }}>
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#a1a1aa' }}>
+          Network Activity
+        </h3>
+        <span className="text-xs" style={{ color: '#52525b' }}>Last 24 hours</span>
+      </div>
+
+      {/* Legend */}
+      <div className="flex gap-6 mb-3">
+        <div className="flex items-center gap-1.5 text-xs" style={{ color: '#a1a1aa' }}>
+          <span className="w-2.5 h-[3px] rounded-sm" style={{ background: '#06B6D4' }} />
+          API Calls
+        </div>
+        <div className="flex items-center gap-1.5 text-xs" style={{ color: '#a1a1aa' }}>
+          <span className="w-2.5 h-[3px] rounded-sm" style={{ background: '#22D3EE' }} />
+          WS Events
+        </div>
+      </div>
+
+      {/* Chart */}
+      <div className="w-full overflow-x-auto">
+        <svg viewBox="0 0 900 260" width="100%" preserveAspectRatio="xMidYMid meet"
+          className="min-w-[600px]" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
           <defs>
-            <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="rgb(6 182 212)" stopOpacity="0.25" />
-              <stop offset="100%" stopColor="rgb(6 182 212)" stopOpacity="0" />
+            <linearGradient id="gradApi" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#06B6D4" stopOpacity="0.25" />
+              <stop offset="100%" stopColor="#06B6D4" stopOpacity="0" />
+            </linearGradient>
+            <linearGradient id="gradWs" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#22D3EE" stopOpacity="0.15" />
+              <stop offset="100%" stopColor="#22D3EE" stopOpacity="0" />
             </linearGradient>
           </defs>
-          {gridLines.map((g) => (
-            <g key={g.y}>
-              <line x1={PAD_L} y1={g.y} x2={W - PAD_R} y2={g.y} className="stroke-muted/30" strokeWidth="1" />
-              <text x={PAD_L - 8} y={g.y + 4} textAnchor="end" className="fill-muted-foreground text-[10px]">
-                {g.label}
-              </text>
-            </g>
+
+          {/* Y-axis labels */}
+          {Y_LABELS.map((yl) => (
+            <text key={yl.y} x="30" y={yl.y} fill="#52525b" fontSize="10" textAnchor="end">
+              {yl.label}
+            </text>
           ))}
-          {[0, 6, 12, 18, 23].map((h) => {
-            const x = PAD_L + (h / 23) * plotW
-            return (
-              <text key={h} x={x} y={H - 4} textAnchor="middle" className="fill-muted-foreground text-[10px]">
-                {h.toString().padStart(2, '0')}:00
-              </text>
-            )
-          })}
-          <path d={areaPath} fill={`url(#${gradId})`} />
-          <path d={linePath} fill="none" stroke="rgb(6 182 212)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-          {peakIndices.map((idx) => {
-            const p = points[idx]
-            return (
-              <g key={idx}>
-                <circle cx={p.x} cy={p.y} r="6" fill="rgb(6 182 212)" opacity="0.2">
-                  <animate attributeName="r" values="4;8;4" dur="2s" repeatCount="indefinite" />
-                  <animate attributeName="opacity" values="0.3;0.05;0.3" dur="2s" repeatCount="indefinite" />
-                </circle>
-                <circle cx={p.x} cy={p.y} r="3" fill="rgb(6 182 212)" />
-              </g>
-            )
-          })}
+
+          {/* Grid lines */}
+          {GRID_LINES.map((gl) => (
+            <line key={gl.y} x1="40" y1={gl.y} x2="880" y2={gl.y} stroke={gl.stroke} strokeWidth="1" />
+          ))}
+
+          {/* X-axis labels */}
+          {X_LABELS.map((xl) => (
+            <text key={xl.x} x={xl.x} y="254" fill="#52525b" fontSize="10" textAnchor="middle">
+              {xl.label}
+            </text>
+          ))}
+
+          {/* API area + line */}
+          <path d={apiArea} fill="url(#gradApi)"
+            style={{ opacity: animated ? 1 : 0, transition: 'opacity 0.8s ease' }} />
+          <polyline points={apiPointsStr} fill="none" stroke="#06B6D4" strokeWidth="2"
+            strokeLinecap="round" strokeLinejoin="round"
+            style={{
+              strokeDasharray: animated ? 'none' : '2000',
+              strokeDashoffset: animated ? '0' : '2000',
+              transition: 'stroke-dashoffset 1.5s ease',
+            }} />
+
+          {/* WS area + line */}
+          <path d={wsArea} fill="url(#gradWs)"
+            style={{ opacity: animated ? 1 : 0, transition: 'opacity 0.8s ease 0.3s' }} />
+          <polyline points={wsPointsStr} fill="none" stroke="#22D3EE" strokeWidth="1.5"
+            strokeLinecap="round" strokeLinejoin="round" strokeDasharray="4 3"
+            style={{
+              strokeDasharray: '4 3',
+              opacity: animated ? 1 : 0,
+              transition: 'opacity 0.8s ease 0.3s',
+            }} />
+
+          {/* Data dots */}
+          <circle cx="480" cy="80" r="3" fill="#06B6D4" opacity="0.7" />
+          <circle cx="830" cy="70" r="3" fill="#06B6D4" opacity="0.7" />
         </svg>
-      </div>
-      <div className="flex gap-4 mt-3">
-        {[
-          { label: 'Peak', value: peak },
-          { label: 'Average', value: avg },
-          { label: 'Current', value: current },
-        ].map((b) => (
-          <div key={b.label} className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground">{b.label}</span>
-            <span className="text-sm font-semibold text-foreground">{b.value}</span>
-          </div>
-        ))}
       </div>
     </div>
   )

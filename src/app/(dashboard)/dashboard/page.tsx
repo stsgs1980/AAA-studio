@@ -8,16 +8,21 @@ import {
   SystemHealth,
   ActivityTimeline,
   ConnectionHeatmap,
+  FormulaGrid,
 } from '@/features/dashboard'
 
 export default function DashboardPage() {
   return (
-    <div className="p-4 md:p-6 space-y-4">
+    <div className="p-4 md:p-6 space-y-6">
       <KpiStrip />
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-        <StatusDistribution />
-        <TopPerformers />
+        <div className="lg:col-span-3">
+          <StatusDistribution />
+        </div>
+        <div className="lg:col-span-2">
+          <TopPerformers />
+        </div>
       </div>
 
       <NetworkChart />
@@ -27,7 +32,10 @@ export default function DashboardPage() {
         <ActivityTimeline />
       </div>
 
-      <ConnectionHeatmap />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <ConnectionHeatmap />
+        <FormulaGrid />
+      </div>
     </div>
   )
 }

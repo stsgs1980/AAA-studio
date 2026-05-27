@@ -1,55 +1,129 @@
-export const KPI_DATA = [
-  { label: "Active Agents", value: "21", suffix: "/26", change: "+3", changeType: "positive" as const, sparkData: [14, 16, 15, 18, 17, 19, 21] },
-  { label: "Tasks Completed", value: "1,847", suffix: "", change: "+12.5%", changeType: "positive" as const, sparkData: [120, 150, 130, 180, 170, 200, 220] },
-  { label: "Success Rate", value: "97.3", suffix: "%", change: "+0.8%", changeType: "positive" as const, sparkData: [95, 96, 95.5, 96.5, 97, 96.8, 97.3] },
-  { label: "Avg Response", value: "1.2", suffix: "s", change: "-0.3s", changeType: "positive" as const, sparkData: [2.1, 1.9, 1.8, 1.7, 1.5, 1.3, 1.2] },
-] as const
+import type {
+  KpiData,
+  StatusSegment,
+  Performer,
+  TimelineEvent,
+  HealthMetric,
+  FormulaRow,
+} from '../types'
 
-export const STATUS_DISTRIBUTION = [
-  { label: "Active", count: 21, color: "rgb(34 197 94)" },
-  { label: "Idle", count: 3, color: "rgb(234 179 8)" },
-  { label: "Paused", count: 1, color: "rgb(249 115 22)" },
-  { label: "Standby", count: 1, color: "rgb(100 116 139)" },
-] as const
-
-export const TOP_PERFORMERS = [
-  { name: "Alpha-7", group: "STR", score: 98, tasks: 342, color: "rgb(6 182 212)" },
-  { name: "Nova-12", group: "PLN", score: 95, tasks: 289, color: "rgb(6 182 212)" },
-  { name: "Echo-3", group: "RES", score: 92, tasks: 256, color: "rgb(6 182 212)" },
-  { name: "Flux-19", group: "COD", score: 88, tasks: 198, color: "rgb(6 182 212)" },
-  { name: "Drift-8", group: "REV", score: 85, tasks: 176, color: "rgb(6 182 212)" },
-] as const
-
-export const NETWORK_DATA = [
-  12, 18, 15, 8, 5, 3, 2, 4, 15, 28, 42, 55,
-  62, 58, 48, 52, 65, 72, 68, 55, 42, 35, 25, 18,
-] as const
-
-export const HEALTH_METRICS = [
-  { label: "CPU Usage", value: 34, maxValue: 100, unit: "%", status: "healthy" as const },
-  { label: "Memory", value: 62, maxValue: 100, unit: "%", status: "healthy" as const },
-  { label: "Database", value: 28, maxValue: 100, unit: "%", status: "healthy" as const },
-  { label: "Network I/O", value: 45, maxValue: 100, unit: "%", status: "healthy" as const },
-] as const
-
-export const ACTIVITY_EVENTS = [
-  { time: "2m ago", agent: "Alpha-7", group: "STR", description: "Completed batch processing pipeline", color: "rgb(6 182 212)" },
-  { time: "5m ago", agent: "Nova-12", group: "PLN", description: "Generated strategic plan for Q3 targets", color: "rgb(6 182 212)" },
-  { time: "8m ago", agent: "Echo-3", group: "RES", description: "Resolved 3 research queries in parallel", color: "rgb(6 182 212)" },
-  { time: "12m ago", agent: "Flux-19", group: "COD", description: "Deployed hotfix to auth service module", color: "rgb(6 182 212)" },
-  { time: "18m ago", agent: "Drift-8", group: "REV", description: "Quality audit passed with 99.2% score", color: "rgb(6 182 212)" },
-  { time: "25m ago", agent: "Matrix-1", group: "SPC", description: "Orchestrated cross-team sync workflow", color: "rgb(6 182 212)" },
-] as const
-
-export const HEATMAP_DATA: number[][] = [
-  [0, 5, 3, 2, 1, 0, 0, 0],
-  [5, 0, 7, 4, 3, 2, 1, 0],
-  [3, 7, 0, 6, 5, 3, 2, 1],
-  [2, 4, 6, 0, 8, 4, 3, 2],
-  [1, 3, 5, 8, 0, 6, 4, 3],
-  [0, 2, 3, 4, 6, 0, 7, 5],
-  [0, 1, 2, 3, 4, 7, 0, 6],
-  [0, 0, 1, 2, 3, 5, 6, 0],
+export const KPI_DATA: KpiData[] = [
+  {
+    label: 'Active Agents',
+    value: '21',
+    suffix: '/26',
+    sparkData: [14, 16, 15, 18, 17, 19, 21, 20, 18, 19, 21],
+  },
+  {
+    label: 'Tasks Running',
+    value: '8',
+    trend: { value: '+3', direction: 'up' },
+    trendSub: 'vs last hour',
+  },
+  {
+    label: 'Avg Response',
+    value: '1.2',
+    suffix: 's',
+    mono: true,
+    trend: { value: '-0.3s', direction: 'down' },
+    trendSub: 'improving',
+  },
+  {
+    label: 'System Uptime',
+    value: '99.7',
+    suffix: '%',
+    badge: 'Healthy',
+  },
 ]
 
-export const GROUP_LABELS = ["STR", "PLN", "RES", "COD", "REV", "TST", "DEP", "SPC"] as const
+export const STATUS_DISTRIBUTION: StatusSegment[] = [
+  { label: 'Active', count: 21, color: '#06B6D4' },
+  { label: 'Idle', count: 3, color: '#eab308' },
+  { label: 'Paused', count: 1, color: '#f97316' },
+  { label: 'Standby', count: 1, color: '#52525b' },
+]
+
+export const TOP_PERFORMERS: Performer[] = [
+  { name: 'Architect', group: 'Strategy', score: 94, tasks: 12, dotColor: '#67E8F9' },
+  { name: 'Inspector', group: 'Control', score: 91, tasks: 10, dotColor: '#06B6D4' },
+  { name: 'Coordinator', group: 'Tactics', score: 88, tasks: 9, dotColor: '#22D3EE' },
+  { name: 'Coder', group: 'Execution', score: 85, tasks: 11, dotColor: '#0891B2' },
+  { name: 'Archivist', group: 'Memory', score: 82, tasks: 7, dotColor: '#0E7490' },
+]
+
+export const TIMELINE_EVENTS: TimelineEvent[] = [
+  {
+    time: '14:32',
+    agents: ['Coordinator', 'Coder'],
+    summary: 'delegated task to',
+    details:
+      'Coordinator used ReAct formula to analyze task complexity, then delegated code generation to Coder agent in the Execution group. Task #1847 started.',
+  },
+  {
+    time: '14:28',
+    agents: ['Inspector'],
+    summary: 'completed validation cycle',
+    details:
+      'Inspector completed a full validation cycle on the latest deployment artifacts. All 14 checks passed. No anomalies detected in the Control group pipeline.',
+  },
+  {
+    time: '14:25',
+    agents: ['Architect'],
+    summary: 'revised strategy plan',
+    details:
+      'Architect revised the multi-agent strategy plan, adjusting resource allocation for the Execution group and adding a new CoT-based reasoning pathway for the Tactics group.',
+  },
+  {
+    time: '14:20',
+    agents: ['Guard'],
+    summary: 'blocked unauthorized access',
+    details:
+      'Guard agent blocked an unauthorized access attempt from an external source targeting the Communication group. Source IP has been logged and flagged for review.',
+  },
+  {
+    time: '14:15',
+    agents: ['Observer'],
+    summary: 'detected anomaly in Execution group',
+    details:
+      'Observer detected an anomaly in the Execution group: Executor-B response time increased 40% above baseline. Diagnostician has been notified for investigation.',
+  },
+]
+
+export const HEALTH_METRICS: HealthMetric[] = [
+  { label: 'CPU Usage', value: '34%', percent: 34, status: 'ok', hasBar: true },
+  { label: 'Memory', value: '2.1 / 8 GB', percent: 26.25, status: 'ok', hasBar: true },
+  { label: 'Database', value: '45ms avg', status: 'ok' },
+  { label: 'WebSocket', value: 'Connected', status: 'ok', isConnected: true },
+  { label: 'Last Error', value: '2h ago', status: 'warning', isTime: true },
+]
+
+export const FORMULA_DATA: FormulaRow[] = [
+  { name: 'CoT', agents: '3 agents', category: 'Foundational' },
+  { name: 'ReAct', agents: '4 agents', category: 'Planning' },
+  { name: 'SelfConsistency', agents: '2 agents', category: 'Verification' },
+  { name: 'MoA', agents: '1 agent', category: 'Advanced' },
+  { name: 'ToT', agents: '2 agents', category: 'Foundational' },
+]
+
+export const HEATMAP_GROUPS = [
+  'STR', 'TAC', 'CTR', 'EXE', 'MEM', 'MON', 'COM', 'LRN',
+] as const
+
+export const HEATMAP_GROUP_FULL = [
+  'Strategy', 'Tactics', 'Control', 'Execution', 'Memory', 'Monitoring', 'Communication', 'Learning',
+] as const
+
+export const HEATMAP_GROUP_COLORS = [
+  '#67E8F9', '#22D3EE', '#06B6D4', '#0891B2', '#0E7490', '#155E75', '#164E63', '#1E3A5F',
+] as const
+
+export const HEATMAP_DENSITY: number[][] = [
+  [-1, 9, 5, 4, 3, 4, 5, 6],
+  [9, -1, 6, 7, 3, 3, 6, 4],
+  [5, 6, -1, 9, 4, 5, 4, 3],
+  [4, 7, 9, -1, 5, 6, 5, 4],
+  [3, 3, 4, 5, -1, 4, 3, 5],
+  [4, 3, 5, 6, 4, -1, 4, 3],
+  [5, 6, 4, 5, 3, 4, -1, 4],
+  [6, 4, 3, 4, 5, 3, 4, -1],
+]

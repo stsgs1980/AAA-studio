@@ -1,66 +1,64 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { TOP_PERFORMERS } from '../data/constants'
 
 export function TopPerformers() {
-  const [barWidths, setBarWidths] = useState<number[]>(Array(5).fill(0))
+  const [barWidths, setBarWidths] = useState<number[]>(TOP_PERFORMERS.map(() => 0))
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setBarWidths(TOP_PERFORMERS.map((p) => p.score))
-    }, 200)
-    return () => clearTimeout(timer)
+    const timers = TOP_PERFORMERS.map((_, i) =>
+      setTimeout(() => {
+        setBarWidths((prev) => {
+          const next = [...prev]
+          next[i] = TOP_PERFORMERS[i].score
+          return next
+        })
+      }, 100 + i * 80)
+    )
+    return () => timers.forEach(clearTimeout)
   }, [])
 
   return (
-    <div className="rounded-lg border border-border bg-card p-4 lg:col-span-2">
-      <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">
-        Top Performers
-      </h3>
-      <div className="space-y-3">
-        {TOP_PERFORMERS.map((agent, idx) => (
-          <div key={agent.name} className="flex items-center gap-3">
-            <span
-              className={`text-sm font-bold w-5 text-center flex-shrink-0 ${
-                idx === 0
-                  ? 'text-yellow-500'
-                  : idx === 1
-                    ? 'text-slate-300'
-                    : idx === 2
-                      ? 'text-orange-400'
-                      : 'text-muted-foreground'
-              }`}
-            >
-              {idx + 1}
+    <div className="rounded-[10px] p-5 transition-colors duration-200"
+      style={{ background: '#0A0A0F', border: '1px solid #27272a' }}>
+      <h3 className="text-xs font-semibold uppercase tracking-wider mb-4"
+        style={{ color: '#a1a1aa' }}>Top Performers</h3>
+
+      <div className="flex flex-col">
+        {TOP_PERFORMERS.map((agent, i) => (
+          <div key={agent.name}
+            className="grid grid-cols-[24px_1fr_auto] items-center gap-3 py-2.5 transition-colors duration-150 hover:bg-[rgba(6,182,212,0.03)]"
+            style={{ borderBottom: i < TOP_PERFORMERS.length - 1 ? '1px solid #1a1a22' : 'none' }}>
+            {/* Rank */}
+            <span className="text-xs font-bold text-center" style={{ color: '#52525b' }}>
+              {i + 1}
             </span>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center justify-between mb-1">
-                <div className="flex items-center gap-2 min-w-0">
-                  <span className="text-sm font-medium text-foreground truncate">
-                    {agent.name}
-                  </span>
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground font-medium flex-shrink-0">
-                    {agent.group}
-                  </span>
+
+            {/* Info */}
+            <div className="flex items-center gap-2.5 min-w-0">
+              <span className="w-2 h-2 rounded-full shrink-0" style={{ background: agent.dotColor }} />
+              <div className="min-w-0">
+                <div className="text-sm font-semibold truncate" style={{ color: '#fafafa' }}>
+                  {agent.name}
                 </div>
-                <span className="text-sm font-semibold text-cyan-500 flex-shrink-0 ml-2">
-                  {agent.score}
-                </span>
-              </div>
-              <div className="h-1.5 rounded-full bg-muted overflow-hidden">
-                <div
-                  className="h-full rounded-full bg-cyan-500"
-                  style={{
-                    width: `${barWidths[idx]}%`,
-                    transition: 'width 0.8s cubic-bezier(0.4,0,0.2,1)',
-                  }}
-                />
+                <div className="text-[11px]" style={{ color: '#52525b' }}>{agent.group}</div>
               </div>
             </div>
-            <span className="text-xs text-muted-foreground flex-shrink-0 w-10 text-right">
-              {agent.tasks}
-            </span>
+
+            {/* Score area */}
+            <div className="flex items-center gap-3">
+              <div className="w-20 h-1.5 rounded-full overflow-hidden" style={{ background: '#1a1a22' }}>
+                <div className="h-full rounded-full transition-all duration-600 ease-out"
+                  style={{ width: `${barWidths[i]}%`, background: '#06B6D4', transitionDuration: '600ms' }} />
+              </div>
+              <span className="text-[13px] font-semibold min-w-6 text-right" style={{ color: '#06B6D4' }}>
+                {agent.score}
+              </span>
+              <span className="text-[11px] min-w-[50px] text-right" style={{ color: '#52525b' }}>
+                {agent.tasks} tasks
+              </span>
+            </div>
           </div>
         ))}
       </div>

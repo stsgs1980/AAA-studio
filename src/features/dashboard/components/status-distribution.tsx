@@ -1,71 +1,78 @@
 'use client'
 
 import { STATUS_DISTRIBUTION } from '../data/constants'
-
-const RADIUS = 60
-const STROKE = 20
-const CIRCUMFERENCE = 2 * Math.PI * RADIUS
+import { AnimatedCounter } from './animated-counter'
+import { useState } from 'react'
 
 export function StatusDistribution() {
+  const [hovered, setHovered] = useState<string | null>(null)
+
   const total = STATUS_DISTRIBUTION.reduce((s, d) => s + d.count, 0)
-  let offset = 0
+  const radius = 70
+  const stroke = 24
+  const circumference = 2 * Math.PI * radius
+
+  let runningOffset = 0
+  const segments = STATUS_DISTRIBUTION.map((item) => {
+    const segLen = (item.count / total) * circumference
+    const segment = { ...item, segLen, offset: runningOffset, pct: ((item.count / total) * 100).toFixed(1) }
+    runningOffset += segLen
+    return segment
+  })
 
   return (
-    <div className="rounded-lg border border-border bg-card p-4 lg:col-span-3">
-      <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">
-        Agent Status
-      </h3>
-      <div className="flex flex-col sm:flex-row items-center gap-6">
-        <div className="relative flex-shrink-0">
-          <svg width={160} height={160} viewBox="0 0 160 160">
-            {STATUS_DISTRIBUTION.map((seg) => {
-              const pct = seg.count / total
-              const dash = pct * CIRCUMFERENCE
-              const gap = CIRCUMFERENCE - dash
-              const segEl = (
-                <circle
-                  key={seg.label}
-                  cx={80}
-                  cy={80}
-                  r={RADIUS}
-                  fill="none"
-                  stroke={seg.color}
-                  strokeWidth={STROKE}
-                  strokeDasharray={`${dash} ${gap}`}
-                  strokeDashoffset={-offset}
-                  strokeLinecap="butt"
-                  transform="rotate(-90 80 80)"
-                />
-              )
-              offset += dash
-              return segEl
-            })}
+    <div className="rounded-[10px] p-5 transition-colors duration-200"
+      style={{ background: '#0A0A0F', border: '1px solid #27272a' }}>
+      <h3 className="text-xs font-semibold uppercase tracking-wider mb-4"
+        style={{ color: '#a1a1aa' }}>Status Distribution</h3>
+
+      <div className="flex flex-col items-center">
+        {/* Donut */}
+        <div className="relative w-[200px] h-[200px] mx-auto mb-5">
+          <svg viewBox="0 0 200 200" width="200" height="200">
+            <circle cx="100" cy="100" r={radius} fill="none" stroke="#1a1a22" strokeWidth={stroke} />
+            {segments.map((seg, i) => (
+              <circle
+                key={i}
+                cx="100" cy="100" r={radius}
+                fill="none"
+                stroke={seg.color}
+                strokeWidth={stroke}
+                strokeDasharray={`${seg.segLen} ${circumference - seg.segLen}`}
+                strokeDashoffset={-seg.offset}
+                transform="rotate(-90 100 100)"
+                className="cursor-pointer transition-all duration-200"
+                style={{
+                  opacity: hovered && hovered !== seg.label ? 0.3 : 1,
+                  filter: hovered === seg.label ? 'brightness(1.4)' : 'none',
+                }}
+                onMouseEnter={() => setHovered(seg.label)}
+                onMouseLeave={() => setHovered(null)}
+              />
+            ))}
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-2xl font-bold text-foreground">{total}</span>
-            <span className="text-xs text-muted-foreground">Total</span>
+            <span className="text-[28px] font-bold" style={{ color: '#fafafa' }}>
+              <AnimatedCounter target={total} />
+            </span>
+            <span className="text-[11px]" style={{ color: '#52525b' }}>Total</span>
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-x-6 gap-y-2 flex-1 w-full">
-          {STATUS_DISTRIBUTION.map((seg) => {
-            const pct = ((seg.count / total) * 100).toFixed(1)
-            return (
-              <div key={seg.label} className="flex items-center gap-2">
-                <div
-                  className="h-2.5 w-2.5 rounded-full flex-shrink-0"
-                  style={{ backgroundColor: seg.color }}
-                />
-                <div className="flex flex-col">
-                  <span className="text-sm font-medium text-foreground">
-                    {seg.label}
-                  </span>
-                  <span className="text-xs text-muted-foreground">
-                    {seg.count} ({pct}%)
-                  </span>
-                </div>
-              </div>
-            )
-          })}
+
+        {/* Legend */}
+        <div className="grid grid-cols-2 gap-2 w-full" style={{ gap: '8px 24px' }}>
+          {segments.map((seg) => (
+            <div key={seg.label}
+              className="flex items-center gap-2 text-[13px] transition-opacity duration-200"
+              style={{ color: hovered && hovered !== seg.label ? '#52525b' : '#a1a1aa' }}
+              onMouseEnter={() => setHovered(seg.label)}
+              onMouseLeave={() => setHovered(null)}>
+              <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ background: seg.color }} />
+              <span>{seg.label}</span>
+              <span className="ml-auto font-semibold" style={{ color: '#fafafa' }}>{seg.count}</span>
+              <span className="text-[11px] w-9 text-right" style={{ color: '#52525b' }}>{seg.pct}%</span>
+            </div>
+          ))}
         </div>
       </div>
     </div>
