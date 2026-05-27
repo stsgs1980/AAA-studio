@@ -71,3 +71,57 @@ Stage Summary:
 - ESLint compliance: 0 errors across entire src/
 - Anti-monolith compliance: all files ≤150 lines, all components ≤3 useState
 - Commit: 0657161 pushed to origin/main
+---
+Task ID: 6
+Agent: main
+Task: Neon PostgreSQL migration + Vercel deployment
+
+Work Log:
+- Updated .env with Neon connection string (pooler for app, direct for migrations)
+- Updated prisma/schema.prisma provider to postgresql
+- Installed @neondatabase/serverless, @prisma/adapter-neon, ws
+- Added postinstall: prisma generate, vercel-build: prisma db push --skip-generate
+- Deleted stale pnpm-lock.yaml (Vercel uses bun.lock)
+- Fixed @prisma/adapter-neon v7 incompatibility with Prisma v6 — removed adapter, plain PrismaClient works fine via connection string
+- Set DATABASE_URL + DIRECT_URL in Vercel env vars
+- Deployment successful on Vercel
+
+Stage Summary:
+- Neon PostgreSQL connected, tables auto-created on Vercel build
+- Commit: pushed (multiple, culminating in working deploy)
+---
+Task ID: 7
+Agent: main
+Task: Bug audit — fix all bugs across all pages
+
+Work Log:
+- Full audit: 24 bugs found (3 critical, 5 high, 4 medium)
+- Rewrote useAgentStore as proper Zustand store (was broken hook pattern)
+- Fixed skills API routes (CRUD returning wrong shape)
+- Fixed request.clone() crash on document upload
+- Fixed pipeline executions API
+- Added res.ok + try/catch to ALL API calls in pages
+- Added skeleton loading to all pages
+- Fixed AnimatedCounter rAF cleanup on unmount
+- Fixed AgentForm escape key handler
+- Fixed stale closure in agent-executions
+- 17 files changed, +578/-409
+
+Stage Summary:
+- Commit: 1ba196f — all 24 bugs fixed
+- Build: passing, deployment verified
+---
+Task ID: 8
+Agent: main
+Task: Dark theme + remove hardcoded colors
+
+Work Log:
+- Audited all .tsx files for hardcoded hex colors — found only 1: bg-[#22D3EE]
+- Added .dark{} block to globals.css with full HSL dark theme variables (shadcn standard)
+- Replaced bg-[#22D3EE] with bg-cyan-400 (Tailwind semantic token)
+- ThemeProvider (next-themes, attribute=class) already in layout.tsx — dark activates via .dark class
+
+Stage Summary:
+- Commit: 187978b pushed
+- Dark theme now works automatically (defaultTheme="dark")
+- Zero hardcoded hex colors remaining in codebase
