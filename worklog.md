@@ -151,3 +151,27 @@ Stage Summary:
 - 14 files changed, +592/-397
 - Dashboard now 100% live data from Neon PostgreSQL
 - Auto-refreshes every 30 seconds
+---
+Task ID: 10
+Agent: full-stack-developer
+Task: Build Landing Page + Auth System
+
+Work Log:
+- Added brand design tokens to globals.css @theme block (midnight theme colors, brand accent, text hierarchy)
+- Added custom CSS animations: bounce-slow, pulse-dot, circuit-flow, gradient-text, particle-bg
+- Refactored root layout — removed AppSidebar wrapper, kept only ThemeProvider + Toaster + font
+- Created (dashboard)/layout.tsx with AppSidebar + main content area
+- Moved all dashboard pages (agents, audit, editor, etc.) into (dashboard) route group
+- Built 10 auth shared components: auth-input, auth-button, github-button, google-button, otp-input, password-strength, role-selector, auth-divider, auth-footer, logo
+- Built 5 Zod validation schemas: login, signup, forgot-password, new-password, verify
+- Created auth layout (centered, no sidebar) and 5 auth pages: login, signup, verify, forgot-password, reset-password
+- Built 6 landing section components: navbar, hero, features, architecture, stats, cta-section, footer
+- Assembled landing page with scroll-triggered Framer Motion animations
+- Updated home page from redirect to landing page
+
+Stage Summary:
+- Landing page at / with hero, features, architecture, stats, CTA, footer
+- Auth system at /login, /signup, /verify, /forgot-password, /reset-password
+- Design tokens unified (Midnight theme: #0D1117 base, #58A6FF accent)
+- All files ≤150 lines, ESLint clean, TypeScript no errors
+- Responsive design, Framer Motion animations, react-hook-form + Zod validation

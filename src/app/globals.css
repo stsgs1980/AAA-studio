@@ -24,6 +24,22 @@
   --color-sidebar-foreground: hsl(240 5.3% 26.1%);
   --color-sidebar-border: hsl(220 13% 91%);
   --radius: 0.5rem;
+
+  /* Custom brand colors */
+  --color-midnight-base: #0D1117;
+  --color-midnight-card: #161B22;
+  --color-midnight-elevated: #21262D;
+  --color-midnight-border: #30363D;
+  --color-brand-accent: #58A6FF;
+  --color-brand-accent-dim: #1F6FEB;
+  --color-brand-green: #3FB950;
+  --color-brand-amber: #D29922;
+  --color-brand-red: #F85149;
+  --color-brand-purple: #BC8CFF;
+  --color-brand-cyan: #39D2C0;
+  --color-text-primary: #E6EDF3;
+  --color-text-secondary: #8B949E;
+  --color-text-muted: #484F58;
 }
 
 /* Dark theme */
@@ -70,4 +86,49 @@
 }
 .react-flow__handle:hover {
   transform: scale(1.4);
+}
+
+/* Landing page gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, #58A6FF 0%, #39D2C0 50%, #BC8CFF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Particle background for hero */
+.particle-bg {
+  background-image:
+    radial-gradient(circle at 20% 50%, rgba(88,166,255,0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(57,210,192,0.06) 0%, transparent 50%),
+    radial-gradient(circle at 60% 80%, rgba(188,140,255,0.05) 0%, transparent 50%);
+}
+
+/* Scroll indicator bounce */
+@keyframes bounce-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+.animate-bounce-slow {
+  animation: bounce-slow 2s ease-in-out infinite;
+}
+
+/* Pulsing dot */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.animate-pulse-dot {
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+/* Circuit lines for architecture section */
+.circuit-line {
+  background: linear-gradient(90deg, #30363D, #58A6FF, #30363D);
+  background-size: 200% 100%;
+  animation: circuit-flow 3s linear infinite;
+}
+@keyframes circuit-flow {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
 }
