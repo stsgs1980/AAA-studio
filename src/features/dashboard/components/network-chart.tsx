@@ -25,11 +25,11 @@ const Y_LABELS = [
 ]
 
 const GRID_LINES = [
-  { y: 26, stroke: '#1a1a22' },
-  { y: 78, stroke: '#1a1a22' },
-  { y: 130, stroke: '#1a1a22' },
-  { y: 182, stroke: '#1a1a22' },
-  { y: 234, stroke: '#27272a' },
+  { y: 26 },
+  { y: 78 },
+  { y: 130 },
+  { y: 182 },
+  { y: 234 },
 ]
 
 function pairsToPoints(pairs: number[]): string {
@@ -60,24 +60,23 @@ export function NetworkChart() {
   const wsArea = pairsToArea(WS_POINTS)
 
   return (
-    <div className="rounded-[10px] p-5 transition-colors duration-200"
-      style={{ background: '#0A0A0F', border: '1px solid #27272a' }}>
+    <div className="rounded-[10px] bg-card border border-border p-5 transition-colors duration-200">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#a1a1aa' }}>
+        <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           Network Activity
         </h3>
-        <span className="text-xs" style={{ color: '#52525b' }}>Last 24 hours</span>
+        <span className="text-xs text-muted-foreground">Last 24 hours</span>
       </div>
 
       {/* Legend */}
       <div className="flex gap-6 mb-3">
-        <div className="flex items-center gap-1.5 text-xs" style={{ color: '#a1a1aa' }}>
-          <span className="w-2.5 h-[3px] rounded-sm" style={{ background: '#06B6D4' }} />
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+          <span className="w-2.5 h-[3px] rounded-sm bg-cyan-500" />
           API Calls
         </div>
-        <div className="flex items-center gap-1.5 text-xs" style={{ color: '#a1a1aa' }}>
-          <span className="w-2.5 h-[3px] rounded-sm" style={{ background: '#22D3EE' }} />
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+          <span className="w-2.5 h-[3px] rounded-sm bg-[#22D3EE]" />
           WS Events
         </div>
       </div>
@@ -99,19 +98,19 @@ export function NetworkChart() {
 
           {/* Y-axis labels */}
           {Y_LABELS.map((yl) => (
-            <text key={yl.y} x="30" y={yl.y} fill="#52525b" fontSize="10" textAnchor="end">
+            <text key={yl.y} x="30" y={yl.y} fill="var(--muted-foreground)" fontSize="10" textAnchor="end">
               {yl.label}
             </text>
           ))}
 
           {/* Grid lines */}
           {GRID_LINES.map((gl) => (
-            <line key={gl.y} x1="40" y1={gl.y} x2="880" y2={gl.y} stroke={gl.stroke} strokeWidth="1" />
+            <line key={gl.y} x1="40" y1={gl.y} x2="880" y2={gl.y} stroke="var(--border)" strokeWidth="1" />
           ))}
 
           {/* X-axis labels */}
           {X_LABELS.map((xl) => (
-            <text key={xl.x} x={xl.x} y="254" fill="#52525b" fontSize="10" textAnchor="middle">
+            <text key={xl.x} x={xl.x} y="254" fill="var(--muted-foreground)" fontSize="10" textAnchor="middle">
               {xl.label}
             </text>
           ))}
@@ -131,7 +130,7 @@ export function NetworkChart() {
           <path d={wsArea} fill="url(#gradWs)"
             style={{ opacity: animated ? 1 : 0, transition: 'opacity 0.8s ease 0.3s' }} />
           <polyline points={wsPointsStr} fill="none" stroke="#22D3EE" strokeWidth="1.5"
-            strokeLinecap="round" strokeLinejoin="round" strokeDasharray="4 3"
+            strokeLinecap="round" strokeLinejoin="round"
             style={{
               strokeDasharray: '4 3',
               opacity: animated ? 1 : 0,

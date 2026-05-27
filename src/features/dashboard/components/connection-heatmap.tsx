@@ -8,18 +8,16 @@ import {
 } from '../data/constants'
 
 function heatColor(val: number): string {
-  if (val < 0) return '#1a1a22'
+  if (val < 0) return 'var(--muted)'
   const intensity = val / 10
   return `rgba(6, ${Math.round(10 + 172 * intensity)}, ${Math.round(15 + 197 * intensity)}, ${0.15 + intensity * 0.75})`
 }
 
 export function ConnectionHeatmap() {
   return (
-    <div className="rounded-[10px] p-5 transition-colors duration-200"
-      style={{ background: '#0A0A0F', border: '1px solid #27272a' }}>
-      <h3 className="text-xs font-semibold uppercase tracking-wider mb-1"
-        style={{ color: '#a1a1aa' }}>Connection Heatmap</h3>
-      <p className="text-[11px] mb-4" style={{ color: '#52525b' }}>
+    <div className="rounded-[10px] bg-card border border-border p-5 transition-colors duration-200">
+      <h3 className="text-xs font-semibold uppercase tracking-wider mb-1 text-muted-foreground">Connection Heatmap</h3>
+      <p className="text-[11px] mb-4 text-muted-foreground">
         Inter-group connection density (darker = more connections)
       </p>
 
@@ -52,8 +50,8 @@ export function ConnectionHeatmap() {
                 <div key={ci}
                   className="rounded-[3px] min-h-[32px] cursor-default transition-transform duration-150 hover:scale-115 hover:z-2"
                   style={{
-                    background: isDiag ? '#1a1a22' : heatColor(val),
-                    border: isDiag ? '1px solid #27272a' : 'none',
+                    background: isDiag ? 'var(--muted)' : heatColor(val),
+                    border: isDiag ? '1px solid var(--border)' : 'none',
                     boxShadow: 'none',
                   }}
                   title={isDiag

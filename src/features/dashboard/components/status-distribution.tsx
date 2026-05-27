@@ -21,16 +21,14 @@ export function StatusDistribution() {
   })
 
   return (
-    <div className="rounded-[10px] p-5 transition-colors duration-200"
-      style={{ background: '#0A0A0F', border: '1px solid #27272a' }}>
-      <h3 className="text-xs font-semibold uppercase tracking-wider mb-4"
-        style={{ color: '#a1a1aa' }}>Status Distribution</h3>
+    <div className="rounded-[10px] bg-card border border-border p-5 transition-colors duration-200">
+      <h3 className="text-xs font-semibold uppercase tracking-wider mb-4 text-muted-foreground">Status Distribution</h3>
 
       <div className="flex flex-col items-center">
         {/* Donut */}
         <div className="relative w-[200px] h-[200px] mx-auto mb-5">
           <svg viewBox="0 0 200 200" width="200" height="200">
-            <circle cx="100" cy="100" r={radius} fill="none" stroke="#1a1a22" strokeWidth={stroke} />
+            <circle cx="100" cy="100" r={radius} fill="none" stroke="var(--border)" strokeWidth={stroke} />
             {segments.map((seg, i) => (
               <circle
                 key={i}
@@ -52,25 +50,26 @@ export function StatusDistribution() {
             ))}
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-[28px] font-bold" style={{ color: '#fafafa' }}>
+            <span className="text-[28px] font-bold text-foreground">
               <AnimatedCounter target={total} />
             </span>
-            <span className="text-[11px]" style={{ color: '#52525b' }}>Total</span>
+            <span className="text-[11px] text-muted-foreground">Total</span>
           </div>
         </div>
 
         {/* Legend */}
-        <div className="grid grid-cols-2 gap-2 w-full" style={{ gap: '8px 24px' }}>
+        <div className="grid grid-cols-2 w-full" style={{ gap: '8px 24px' }}>
           {segments.map((seg) => (
             <div key={seg.label}
-              className="flex items-center gap-2 text-[13px] transition-opacity duration-200"
-              style={{ color: hovered && hovered !== seg.label ? '#52525b' : '#a1a1aa' }}
+              className={`flex items-center gap-2 text-[13px] transition-opacity duration-200 ${
+                hovered && hovered !== seg.label ? 'text-muted-foreground' : 'text-foreground'
+              }`}
               onMouseEnter={() => setHovered(seg.label)}
               onMouseLeave={() => setHovered(null)}>
               <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ background: seg.color }} />
               <span>{seg.label}</span>
-              <span className="ml-auto font-semibold" style={{ color: '#fafafa' }}>{seg.count}</span>
-              <span className="text-[11px] w-9 text-right" style={{ color: '#52525b' }}>{seg.pct}%</span>
+              <span className="ml-auto font-semibold text-foreground">{seg.count}</span>
+              <span className="text-[11px] w-9 text-right text-muted-foreground">{seg.pct}%</span>
             </div>
           ))}
         </div>
