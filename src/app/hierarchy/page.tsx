@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Network, ChevronRight, ChevronDown, User, Bot } from 'lucide-react';
 import { cn } from '@stsgs/ui';
+import { PageSkeleton } from '@/components/ui';
 
 interface TreeNode {
   id: string;
@@ -52,6 +53,7 @@ function TreeItem({ node, depth = 0 }: { node: TreeNode; depth?: number }) {
 export default function AgentHierarchyPage() {
   const [tree, setTree] = useState<TreeNode[]>([]);
   const [stats, setStats] = useState({ total: 0, roots: 0, maxDepth: 0 });
+  const [loading, setLoading] = useState(true);
 
   const buildTree = useCallback((agents: { id: string; name: string; role: string; status: string; group: string; parentId: string | null }[]) => {
     const map = new Map<string, TreeNode>();
@@ -73,9 +75,10 @@ export default function AgentHierarchyPage() {
 
   useEffect(() => {
     fetch('/api/agents')
-      .then((r) => r.json())
+      .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
       .then((data) => buildTree(data))
-      .catch(console.error);
+      .catch(console.error)
+      .finally(() => setLoading(false));
   }, [buildTree]);
 
   return (
@@ -92,40 +95,47 @@ export default function AgentHierarchyPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="lg:col-span-2 rounded-xl border bg-card shadow-sm p-4">
-          <h2 className="text-sm font-semibold mb-3">Tree View</h2>
-          {tree.length === 0 ? (
-            <p className="text-sm text-muted-foreground py-8 text-center">No agents yet. Create some in the Agents page.</p>
-          ) : (
-            <div className="space-y-0.5">
-              {tree.map((node) => (
-                <TreeItem key={node.id} node={node} />
-              ))}
-            </div>
-          )}
+      {loading ? (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div className="lg:col-span-2 rounded-xl border bg-card shadow-sm p-4"><PageSkeleton rows={5} /></div>
+          <div className="rounded-xl border bg-card shadow-sm p-4"><PageSkeleton rows={4} /></div>
         </div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div className="lg:col-span-2 rounded-xl border bg-card shadow-sm p-4">
+            <h2 className="text-sm font-semibold mb-3">Tree View</h2>
+            {tree.length === 0 ? (
+              <p className="text-sm text-muted-foreground py-8 text-center">No agents yet. Create some in the Agents page.</p>
+            ) : (
+              <div className="space-y-0.5">
+                {tree.map((node) => (
+                  <TreeItem key={node.id} node={node} />
+                ))}
+              </div>
+            )}
+          </div>
 
-        <div className="rounded-xl border bg-card shadow-sm p-4 space-y-3">
-          <h2 className="text-sm font-semibold">Legend</h2>
-          <div className="space-y-2 text-sm">
-            <div className="flex items-center gap-2"><Bot className="h-4 w-4 text-primary" /> Orchestrator</div>
-            <div className="flex items-center gap-2"><User className="h-4 w-4 text-muted-foreground" /> Agent</div>
-          </div>
-          <h2 className="text-sm font-semibold pt-2">Status</h2>
-          <div className="space-y-2 text-sm">
-            <div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-emerald-500" /> Active</div>
-            <div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-amber-500" /> Draft</div>
-            <div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-gray-400" /> Inactive</div>
-          </div>
-          <h2 className="text-sm font-semibold pt-2">Stats</h2>
-          <div className="text-sm text-muted-foreground space-y-1">
-            <p>Total agents: {stats.total}</p>
-            <p>Root agents: {stats.roots}</p>
-            <p>Max depth: {stats.maxDepth}</p>
+          <div className="rounded-xl border bg-card shadow-sm p-4 space-y-3">
+            <h2 className="text-sm font-semibold">Legend</h2>
+            <div className="space-y-2 text-sm">
+              <div className="flex items-center gap-2"><Bot className="h-4 w-4 text-primary" /> Orchestrator</div>
+              <div className="flex items-center gap-2"><User className="h-4 w-4 text-muted-foreground" /> Agent</div>
+            </div>
+            <h2 className="text-sm font-semibold pt-2">Status</h2>
+            <div className="space-y-2 text-sm">
+              <div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-emerald-500" /> Active</div>
+              <div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-amber-500" /> Draft</div>
+              <div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-gray-400" /> Inactive</div>
+            </div>
+            <h2 className="text-sm font-semibold pt-2">Stats</h2>
+            <div className="text-sm text-muted-foreground space-y-1">
+              <p>Total agents: {stats.total}</p>
+              <p>Root agents: {stats.roots}</p>
+              <p>Max depth: {stats.maxDepth}</p>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

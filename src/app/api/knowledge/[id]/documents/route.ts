@@ -24,9 +24,9 @@ export async function POST(request: Request, { params }: Params) {
       }
       content = await file.text();
     } else {
-      const body = await request.clone().json().catch(() => ({}));
-      content = body.content ?? '';
-      fileType = body.fileType ?? 'txt';
+      // Body already consumed by formData — no file case
+      content = '';
+      fileType = 'txt';
     }
 
     if (!content.trim() && !file) {

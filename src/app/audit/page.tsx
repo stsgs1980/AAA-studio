@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { ScrollText, RefreshCw } from 'lucide-react';
 import { cn } from '@stsgs/ui';
+import { PageSkeleton } from '@/components/ui';
 
 interface AuditEntry {
   id: string; action: string; entityType: string; entityId: string;
@@ -24,11 +25,13 @@ export default function AuditLogPage() {
   const [loading, setLoading] = useState(true);
 
   const fetchLogs = useCallback(async () => {
-    setLoading(true);
-    const params = filter ? `?entityType=${filter}` : '';
-    const res = await fetch(`/api/audit${params}`);
-    setLogs(await res.json());
-    setLoading(false);
+    try {
+      setLoading(true);
+      const params = filter ? `?entityType=${filter}` : '';
+      const res = await fetch(`/api/audit${params}`);
+      if (!res.ok) throw new Error();
+      setLogs(await res.json());
+    } catch { setLogs([]); } finally { setLoading(false); }
   }, [filter]);
 
   useEffect(() => { fetchLogs(); }, [fetchLogs]);
@@ -59,7 +62,9 @@ export default function AuditLogPage() {
       </div>
 
       <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
-        {filtered.length === 0 ? (
+        {loading ? (
+          <div className="p-8"><PageSkeleton rows={6} /></div>
+        ) : filtered.length === 0 ? (
           <p className="text-sm text-muted-foreground p-8 text-center">No audit logs found.</p>
         ) : (
           <div className="divide-y max-h-[70vh] overflow-y-auto">

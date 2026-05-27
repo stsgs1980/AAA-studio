@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useAgentStore } from '../hooks/use-agent-store';
 import { ROLE_GROUPS, STATUS_OPTIONS, MODELS } from '../types';
 import type { RoleGroup } from '@stsgs/shared';
@@ -8,6 +9,15 @@ import { X } from 'lucide-react';
 export function AgentForm() {
   const store = useAgentStore();
   const f = store.form;
+
+  useEffect(() => {
+    if (!store.showForm) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') store.setShowForm(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [store.showForm, store.setShowForm]);
 
   if (!store.showForm) return null;
 

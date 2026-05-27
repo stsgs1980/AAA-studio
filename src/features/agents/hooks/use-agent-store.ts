@@ -1,68 +1,99 @@
-'use client';
-
-import { useCallback, useEffect, useState } from 'react';
+import { create } from 'zustand';
 import type { AgentRecord, AgentListResponse } from '../types';
 import type { RoleGroup } from '@stsgs/shared';
 import { DEFAULT_FORM } from '../types';
 
-export function useAgentStore() {
-  const [agents, setAgents] = useState<AgentRecord[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
-  const [filterGroup, setFilterGroup] = useState('');
-  const [filterStatus, setFilterStatus] = useState('');
-  const [editing, setEditing] = useState<AgentRecord | null>(null);
-  const [form, setForm] = useState(DEFAULT_FORM);
-  const [showForm, setShowForm] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState('');
+interface AgentState {
+  agents: AgentRecord[];
+  loading: boolean;
+  search: string;
+  filterGroup: string;
+  filterStatus: string;
+  editing: AgentRecord | null;
+  form: typeof DEFAULT_FORM;
+  showForm: boolean;
+  saving: boolean;
+  error: string;
+}
 
-  const fetchAgents = useCallback(async () => {
+interface AgentActions {
+  setSearch: (v: string) => void;
+  setFilterGroup: (v: string) => void;
+  setFilterStatus: (v: string) => void;
+  openCreate: () => void;
+  openEdit: (agent: AgentRecord) => void;
+  save: () => Promise<void>;
+  remove: (id: string) => Promise<void>;
+  clone: (id: string) => Promise<void>;
+  setShowForm: (v: boolean) => void;
+  setField: <K extends keyof typeof DEFAULT_FORM>(key: K, value: (typeof DEFAULT_FORM)[K]) => void;
+  setError: (v: string) => void;
+  fetchAgents: () => Promise<void>;
+}
+
+async function apiFetch(url: string, options?: RequestInit) {
+  const res = await fetch(url, options);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res;
+}
+
+export const useAgentStore = create<AgentState & AgentActions>((set, get) => ({
+  agents: [],
+  loading: true,
+  search: '',
+  filterGroup: '',
+  filterStatus: '',
+  editing: null,
+  form: { ...DEFAULT_FORM },
+  showForm: false,
+  saving: false,
+  error: '',
+
+  setSearch: (v) => set({ search: v }),
+  setFilterGroup: (v) => set({ filterGroup: v }),
+  setFilterStatus: (v) => set({ filterStatus: v }),
+  setShowForm: (v) => set({ showForm: v }),
+  setError: (v) => set({ error: v }),
+
+  setField: (key, value) => set((s) => ({ form: { ...s.form, [key]: value } })),
+
+  fetchAgents: async () => {
     try {
-      setLoading(true);
+      set({ loading: true, error: '' });
+      const { search, filterGroup, filterStatus } = get();
       const params = new URLSearchParams();
       if (search) params.set('search', search);
       if (filterGroup) params.set('group', filterGroup);
       if (filterStatus) params.set('status', filterStatus);
-      const res = await fetch(`/api/agents?${params}`);
-      if (!res.ok) throw new Error('Fetch failed');
-      const data: AgentListResponse = await res.json();
-      setAgents(data.agents);
+      const data: AgentListResponse = await (await apiFetch(`/api/agents?${params}`)).json();
+      set({ agents: data.agents });
     } catch {
-      setError('Failed to load agents');
+      set({ error: 'Failed to load agents' });
     } finally {
-      setLoading(false);
+      set({ loading: false });
     }
-  }, [search, filterGroup, filterStatus]);
+  },
 
-  useEffect(() => { fetchAgents(); }, [fetchAgents]);
+  openCreate: () => set({ editing: null, form: { ...DEFAULT_FORM }, showForm: true, error: '' }),
 
-  const openCreate = useCallback(() => {
-    setEditing(null);
-    setForm(DEFAULT_FORM);
-    setShowForm(true);
-    setError('');
-  }, []);
-
-  const openEdit = useCallback((agent: AgentRecord) => {
-    setEditing(agent);
-    setForm({
+  openEdit: (agent) => set({
+    editing: agent,
+    form: {
       name: agent.name, role: agent.role, group: agent.group as RoleGroup,
       status: agent.status, model: agent.model,
       temperature: agent.temperature, maxTokens: agent.maxTokens,
       systemPrompt: agent.systemPrompt, tools: agent.tools,
       skills: agent.skills, standards: agent.standards,
       parentId: agent.parentId, description: agent.description,
-    });
-    setShowForm(true);
-    setError('');
-  }, []);
+    },
+    showForm: true, error: '',
+  }),
 
-  const save = useCallback(async () => {
-    if (!form.name.trim()) { setError('Name is required'); return; }
+  save: async () => {
+    const { form, editing } = get();
+    if (!form.name.trim()) { set({ error: 'Name is required' }); return; }
     try {
-      setSaving(true);
-      setError('');
+      set({ saving: true, error: '' });
       const body = {
         ...form,
         tools: JSON.parse(form.tools || '[]'),
@@ -70,48 +101,31 @@ export function useAgentStore() {
         standards: JSON.parse(form.standards || '[]'),
       };
       const url = editing ? `/api/agents/${editing.id}` : '/api/agents';
-      const method = editing ? 'PUT' : 'POST';
-      const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-      if (!res.ok) throw new Error('Save failed');
-      setShowForm(false);
-      fetchAgents();
+      await apiFetch(url, { method: editing ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      set({ showForm: false });
+      get().fetchAgents();
     } catch {
-      setError('Failed to save agent');
+      set({ error: 'Failed to save agent' });
     } finally {
-      setSaving(false);
+      set({ saving: false });
     }
-  }, [editing, form, fetchAgents]);
+  },
 
-  const remove = useCallback(async (id: string) => {
-    if (!confirm('Delete this agent?')) return;
+  remove: async (id) => {
     try {
-      const res = await fetch(`/api/agents/${id}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error();
-      fetchAgents();
+      await apiFetch(`/api/agents/${id}`, { method: 'DELETE' });
+      get().fetchAgents();
     } catch {
-      setError('Failed to delete agent');
+      set({ error: 'Failed to delete agent' });
     }
-  }, [fetchAgents]);
+  },
 
-  const clone = useCallback(async (id: string) => {
+  clone: async (id) => {
     try {
-      const res = await fetch(`/api/agents/${id}/clone`, { method: 'POST' });
-      if (!res.ok) throw new Error();
-      fetchAgents();
+      await apiFetch(`/api/agents/${id}/clone`, { method: 'POST' });
+      get().fetchAgents();
     } catch {
-      setError('Failed to clone agent');
+      set({ error: 'Failed to clone agent' });
     }
-  }, [fetchAgents]);
-
-  const setField = useCallback(<K extends keyof typeof form>(key: K, value: (typeof form)[K]) => {
-    setForm((f) => ({ ...f, [key]: value }));
-  }, []);
-
-  return {
-    agents, loading, search, filterGroup, filterStatus,
-    editing, form, showForm, saving, error,
-    setSearch, setFilterGroup, setFilterStatus,
-    openCreate, openEdit, save, remove, clone,
-    setShowForm, setField, setError,
-  };
-}
+  },
+}));

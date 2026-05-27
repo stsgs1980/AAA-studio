@@ -25,7 +25,8 @@ export function useFlowActions() {
       if (!res.ok) throw new Error('Save failed');
       const data = await res.json();
       if (!flowId) {
-        loadFlow(nodes, edges, data.id, flowName);
+        const { nodes: n, edges: e } = useFlowEditorStore.getState();
+        loadFlow(n, e, data.id, flowName);
       }
       setMessage('Saved');
       setTimeout(() => setMessage(''), 2000);

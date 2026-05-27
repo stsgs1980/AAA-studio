@@ -3,29 +3,41 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Settings, Save, RotateCcw } from 'lucide-react';
 import { cn } from '@stsgs/ui';
+import { PageSkeleton } from '@/components/ui';
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState<Record<string, string>>({});
   const [saved, setSaved] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const fetchSettings = useCallback(async () => {
-    const res = await fetch('/api/settings');
-    setSettings(await res.json());
+    try {
+      setLoading(true);
+      const res = await fetch('/api/settings');
+      if (!res.ok) throw new Error();
+      setSettings(await res.json());
+    } catch { /* silent */ } finally { setLoading(false); }
   }, []);
 
   useEffect(() => { fetchSettings(); }, [fetchSettings]);
 
   const handleSave = useCallback(async () => {
-    await fetch('/api/settings', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(settings) });
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+    try {
+      const res = await fetch('/api/settings', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(settings) });
+      if (!res.ok) throw new Error();
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    } catch { /* silent */ }
   }, [settings]);
 
   const handleReset = useCallback(async () => {
     if (!confirm('Reset all settings to defaults?')) return;
     const defaults: Record<string, string> = { theme: 'dark', language: 'en', llm_model: 'gpt-4', max_tokens: '4096', temperature: '0.7' };
-    await fetch('/api/settings', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(defaults) });
-    setSettings(defaults);
+    try {
+      const res = await fetch('/api/settings', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(defaults) });
+      if (!res.ok) throw new Error();
+      setSettings(defaults);
+    } catch { /* silent */ }
   }, []);
 
   const update = (key: string, value: string) => setSettings((prev) => ({ ...prev, [key]: value }));
@@ -45,6 +57,21 @@ export default function SettingsPage() {
       { key: 'snap_to_grid', label: 'Snap to Grid', type: 'select', options: ['true', 'false'] },
     ]},
   ];
+
+  if (loading) {
+    return (
+      <div className="p-6 space-y-4">
+        <div className="flex items-center gap-3">
+          <Settings className="h-6 w-6 text-muted-foreground" />
+          <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="rounded-xl border bg-card shadow-sm p-4"><PageSkeleton rows={3} /></div>
+          <div className="rounded-xl border bg-card shadow-sm p-4"><PageSkeleton rows={3} /></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 space-y-4">

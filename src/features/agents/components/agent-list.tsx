@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Search, Plus, Filter } from 'lucide-react';
 import { cn } from '@stsgs/ui';
 import { useAgentStore } from '../hooks/use-agent-store';
@@ -10,6 +10,16 @@ import { AgentTable } from './agent-table';
 export function AgentList() {
   const store = useAgentStore();
   const [showFilters, setShowFilters] = useState(false);
+
+  // Auto-fetch on mount and when filters change
+  const fetchAgents = useAgentStore((s) => s.fetchAgents);
+  const search = useAgentStore((s) => s.search);
+  const filterGroup = useAgentStore((s) => s.filterGroup);
+  const filterStatus = useAgentStore((s) => s.filterStatus);
+
+  useEffect(() => {
+    fetchAgents();
+  }, [fetchAgents, search, filterGroup, filterStatus]);
 
   return (
     <div className="space-y-4">
