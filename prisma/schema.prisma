@@ -1,0 +1,232 @@
+// ============================================================================
+// 3A Studio - Prisma Schema (SQLite)
+// ============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// Agent Management
+// ============================================================================
+
+model Agent {
+  id          String   @id @default(cuid())
+  name        String
+  role        String
+  group       String   @default("specialist") // RoleGroup enum
+  status      String   @default("draft")      // active | inactive | draft
+  model       String   @default("gpt-4")
+  temperature Float    @default(0.7)
+  maxTokens   Int      @default(4096)
+  systemPrompt String  @default("")
+  tools       String   @default("[]") // JSON array
+  skills      String   @default("[]") // JSON array
+  standards   String   @default("[]") // JSON array
+  parentId    String?
+  description String   @default("")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  parent      Agent?   @relation("AgentHierarchy", fields: [parentId], references: [id])
+  children    Agent[]  @relation("AgentHierarchy")
+
+  executions  AgentExecution[]
+
+  @@index([group])
+  @@index([status])
+  @@index([parentId])
+}
+
+model AgentExecution {
+  id          String   @id @default(cuid())
+  agentId     String
+  status      String   @default("pending") // pending | running | completed | failed
+  input       String   @default("{}")     // JSON
+  output      String?                  // JSON
+  error       String?
+  duration    Int?                     // ms
+  tokensUsed  Int?                     // total tokens
+  startedAt   DateTime @default(now())
+  completedAt DateTime?
+
+  agent       Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  @@index([agentId])
+  @@index([status])
+}
+
+// ============================================================================
+// Flow Editor
+// ============================================================================
+
+model Flow {
+  id          String       @id @default(cuid())
+  name        String
+  description String       @default("")
+  version     Int          @default(1)
+  status      String       @default("draft") // draft | active | archived
+  nodes       String       @default("[]")    // JSON FlowNode[]
+  edges       String       @default("[]")    // JSON FlowEdge[]
+  metadata    String       @default("{}")    // JSON
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  versions    FlowVersion[]
+  executions  PipelineExecution[]
+
+  @@index([status])
+}
+
+model FlowVersion {
+  id          String   @id @default(cuid())
+  flowId      String
+  version     Int
+  nodes       String   @default("[]")
+  edges       String   @default("[]")
+  description String   @default("")
+  createdAt   DateTime @default(now())
+
+  flow        Flow     @relation(fields: [flowId], references: [id], onDelete: Cascade)
+
+  @@unique([flowId, version])
+  @@index([flowId])
+}
+
+// ============================================================================
+// Pipeline Execution
+// ============================================================================
+
+model PipelineExecution {
+  id          String   @id @default(cuid())
+  flowId      String
+  status      String   @default("pending") // pending | running | completed | failed
+  result      String?  // JSON
+  error       String?
+  startedAt   DateTime @default(now())
+  completedAt DateTime?
+
+  flow        Flow     @relation(fields: [flowId], references: [id], onDelete: Cascade)
+
+  @@index([flowId])
+  @@index([status])
+}
+
+// ============================================================================
+// Prompt Templates
+// ============================================================================
+
+model PromptTemplate {
+  id          String   @id @default(cuid())
+  name        String
+  category    String   @default("general")
+  content     String
+  variables   String   @default("[]") // JSON string[]
+  framework   String?
+  tags        String   @default("[]") // JSON string[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([category])
+}
+
+// ============================================================================
+// Knowledge Base
+// ============================================================================
+
+model KnowledgeCollection {
+  id            String             @id @default(cuid())
+  name          String
+  description   String             @default("")
+  tags          String             @default("[]") // JSON string[]
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+
+  documents     KnowledgeDocument[]
+
+  @@index([name])
+}
+
+model KnowledgeDocument {
+  id            String   @id @default(cuid())
+  collectionId  String
+  title         String
+  content       String
+  fileType      String   @default("txt") // pdf | txt | md | docx
+  tags          String   @default("[]") // JSON string[]
+  createdAt     DateTime @default(now())
+
+  collection    KnowledgeCollection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+
+  @@index([collectionId])
+  @@index([fileType])
+}
+
+// ============================================================================
+// Skills & Standards
+// ============================================================================
+
+model Skill {
+  id            String   @id @default(cuid())
+  name          String
+  category      String   @default("general")
+  description   String   @default("")
+  inputSchema   String   @default("{}") // JSON
+  outputSchema  String   @default("{}") // JSON
+  code          String   @default("")
+  tests         String   @default("")
+  tags          String   @default("[]") // JSON string[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([category])
+}
+
+model Standard {
+  id            String   @id @default(cuid())
+  name          String
+  category      String   @default("general")
+  description   String   @default("")
+  rules         String   @default("[]") // JSON StandardRule[]
+  severity      String   @default("info") // info | warning | error
+  version       String   @default("1.0.0")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([category])
+  @@index([severity])
+}
+
+// ============================================================================
+// Audit Log
+// ============================================================================
+
+model AuditLog {
+  id            String   @id @default(cuid())
+  action        String
+  entityType    String
+  entityId      String
+  userId        String?
+  details       String?  // JSON
+  timestamp     DateTime @default(now())
+
+  @@index([entityType])
+  @@index([entityId])
+  @@index([timestamp])
+}
+
+// ============================================================================
+// System Settings
+// ============================================================================
+
+model Settings {
+  id    String @id @default("system")
+  key   String @unique
+  value String
+  updatedAt DateTime @updatedAt
+}
