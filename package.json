@@ -14,7 +14,7 @@
     "db:studio": "prisma studio",
     "db:seed": "bun run prisma/seed.ts",
     "postinstall": "prisma generate",
-    "vercel-build": "prisma generate && next build",
+    "vercel-build": "npx prisma db push && next build",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
@@ -37,6 +37,7 @@
     "react-hook-form": "^7.55.0",
     "sonner": "^2.0.3",
     "tailwind-merge": "^3.0.2",
+    "ws": "^8.21.0",
     "zod": "^3.25.23",
     "zustand": "^5.0.5"
   },
@@ -47,6 +48,7 @@
     "@types/node": "^22.15.17",
     "@types/react": "^19.1.4",
     "@types/react-dom": "^19.1.5",
+    "@types/ws": "^8.18.1",
     "eslint": "^9.27.0",
     "eslint-config-next": "^16.2.6",
     "postcss": "^8.5.3",
