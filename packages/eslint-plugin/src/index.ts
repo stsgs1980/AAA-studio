@@ -2,10 +2,10 @@
 // eslint-plugin-3a - Custom ESLint rules for 3A Studio
 // ============================================================================
 
-import { maxLinesRule } from "./rules/max-lines";
-import { maxUseStateRule } from "./rules/max-use-state";
-import { noCrossLayerRule } from "./rules/no-cross-layer";
-import { noUnicodeRule } from "./rules/no-unicode-escapes";
+import { maxLinesRule } from "./rules/max-lines.ts";
+import { maxUseStateRule } from "./rules/max-use-state.ts";
+import { noCrossLayerRule } from "./rules/no-cross-layer.ts";
+import { noUnicodeRule } from "./rules/no-unicode-escapes.ts";
 
 export { maxLinesRule, maxUseStateRule, noCrossLayerRule, noUnicodeRule };
 

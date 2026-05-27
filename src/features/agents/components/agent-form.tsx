@@ -1,8 +1,9 @@
 'use client';
 
 import { useAgentStore } from '../hooks/use-agent-store';
-import { X } from 'lucide-react';
+import { ROLE_GROUPS, STATUS_OPTIONS, MODELS } from '../types';
 import type { RoleGroup } from '@stsgs/shared';
+import { X } from 'lucide-react';
 
 export function AgentForm() {
   const store = useAgentStore();
@@ -44,7 +45,7 @@ export function AgentForm() {
             <div>
               <label className={labelClass}>Status</label>
               <select value={f.status} onChange={(e) => store.setField('status', e.target.value as typeof f.status)} className={fieldClass}>
-                {store.STATUS_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
+                {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
           </div>
@@ -58,7 +59,7 @@ export function AgentForm() {
             <div>
               <label className={labelClass}>Group</label>
               <select value={f.group} onChange={(e) => store.setField('group', e.target.value as RoleGroup)} className={fieldClass}>
-                {store.ROLE_GROUPS.map((g) => <option key={g} value={g}>{g}</option>)}
+                {ROLE_GROUPS.map((g) => <option key={g} value={g}>{g}</option>)}
               </select>
             </div>
           </div>
@@ -68,7 +69,7 @@ export function AgentForm() {
             <div>
               <label className={labelClass}>Model</label>
               <select value={f.model} onChange={(e) => store.setField('model', e.target.value)} className={fieldClass}>
-                {store.MODELS.map((m) => <option key={m} value={m}>{m}</option>)}
+                {MODELS.map((m) => <option key={m} value={m}>{m}</option>)}
               </select>
             </div>
             <div>

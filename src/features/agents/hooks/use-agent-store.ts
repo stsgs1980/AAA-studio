@@ -1,55 +1,9 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import type { AgentRecord, AgentListResponse } from '../types';
 import type { RoleGroup } from '@stsgs/shared';
-
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
-
-export interface AgentRecord {
-  id: string;
-  name: string;
-  role: string;
-  group: string;
-  status: 'active' | 'inactive' | 'draft';
-  model: string;
-  temperature: number;
-  maxTokens: number;
-  systemPrompt: string;
-  tools: string;
-  skills: string;
-  standards: string;
-  parentId: string | null;
-  description: string;
-  createdAt: string;
-  updatedAt: string;
-  parent?: { id: string; name: string } | null;
-}
-
-export interface AgentListResponse {
-  agents: AgentRecord[];
-  count: number;
-}
-
-const ROLE_GROUPS: RoleGroup[] = [
-  'orchestrator', 'planner', 'researcher', 'coder',
-  'reviewer', 'tester', 'deployer', 'specialist',
-];
-
-const STATUS_OPTIONS = ['active', 'inactive', 'draft'] as const;
-const MODELS = ['glm-4', 'glm-4-flash', 'gpt-4', 'gpt-4o', 'claude-3.5-sonnet'];
-
-const DEFAULT_FORM = {
-  name: '', role: '', group: 'specialist' as RoleGroup,
-  status: 'draft' as const, model: 'glm-4', temperature: 0.7,
-  maxTokens: 4096, systemPrompt: '', tools: '[]', skills: '[]',
-  standards: '[]', parentId: null as string | null, description: '',
-};
-
-// ---------------------------------------------------------------------------
-// Hook
-// ---------------------------------------------------------------------------
+import { DEFAULT_FORM } from '../types';
 
 export function useAgentStore() {
   const [agents, setAgents] = useState<AgentRecord[]>([]);
@@ -94,7 +48,7 @@ export function useAgentStore() {
     setEditing(agent);
     setForm({
       name: agent.name, role: agent.role, group: agent.group as RoleGroup,
-      status: agent.status as 'draft', model: agent.model,
+      status: agent.status, model: agent.model,
       temperature: agent.temperature, maxTokens: agent.maxTokens,
       systemPrompt: agent.systemPrompt, tools: agent.tools,
       skills: agent.skills, standards: agent.standards,
@@ -109,8 +63,12 @@ export function useAgentStore() {
     try {
       setSaving(true);
       setError('');
-      const body = { ...form, tools: JSON.parse(form.tools || '[]'), skills: JSON.parse(form.skills || '[]'), standards: JSON.parse(form.standards || '[]') };
-
+      const body = {
+        ...form,
+        tools: JSON.parse(form.tools || '[]'),
+        skills: JSON.parse(form.skills || '[]'),
+        standards: JSON.parse(form.standards || '[]'),
+      };
       const url = editing ? `/api/agents/${editing.id}` : '/api/agents';
       const method = editing ? 'PUT' : 'POST';
       const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
@@ -155,6 +113,5 @@ export function useAgentStore() {
     setSearch, setFilterGroup, setFilterStatus,
     openCreate, openEdit, save, remove, clone,
     setShowForm, setField, setError,
-    ROLE_GROUPS, STATUS_OPTIONS, MODELS,
   };
 }

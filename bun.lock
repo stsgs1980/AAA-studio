@@ -45,7 +45,11 @@
       "name": "eslint-plugin-3a",
       "version": "0.1.0",
       "devDependencies": {
+        "eslint": "^9.29.0",
         "typescript": "^5.8.3",
+      },
+      "peerDependencies": {
+        "eslint": ">=9.0.0",
       },
     },
     "packages/prompting": {

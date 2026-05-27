@@ -7,4 +7,5 @@ export {
   ActivityTimeline,
   ConnectionHeatmap,
   FormulaGrid,
+  QuickActions,
 } from './components'

@@ -2,11 +2,16 @@
   "name": "eslint-plugin-3a",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "main": "src/index.ts",
+  "peerDependencies": {
+    "eslint": ">=9.0.0"
+  },
   "scripts": {
     "type-check": "tsc --noEmit"
   },
   "devDependencies": {
+    "eslint": "^9.29.0",
     "typescript": "^5.8.3"
   }
 }
