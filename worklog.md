@@ -125,3 +125,29 @@ Stage Summary:
 - Commit: 187978b pushed
 - Dark theme now works automatically (defaultTheme="dark")
 - Zero hardcoded hex colors remaining in codebase
+---
+Task ID: 9
+Agent: main
+Task: Connect dashboard to live DB data
+
+Work Log:
+- Read all 8 dashboard components + mock constants.ts
+- Expanded /api/dashboard route with full queries: agent groups, top performers, health, timeline, hourly chart, heatmap, skills distribution
+- Split route.ts into route.ts + helpers.ts (anti-monolith compliance, all <=150 lines)
+- Created useDashboardData hook (single fetch, auto-refresh 30s, shared by all components)
+- Rewrote StatusDistribution: real agent group counts from DB
+- Rewrote TopPerformers: top 5 agents by completed execution count
+- Rewrote SystemHealth: active ratio, success rate, pipelines, running/failed tasks
+- Rewrote ActivityTimeline: real recent executions with status dots, duration, tokens
+- Rewrote NetworkChart: 24h hourly execution timeline with completed/failed lines
+- Rewrote ConnectionHeatmap: parent-child connections aggregated by agent group
+- Rewrote FormulaGrid: skills distribution parsed from Agent.skills JSON
+- Deleted data/constants.ts — all mocks removed
+- All components show graceful empty state when DB has no data
+- Build: passing, 0 ESLint errors
+
+Stage Summary:
+- Commit: 75a60c2 pushed
+- 14 files changed, +592/-397
+- Dashboard now 100% live data from Neon PostgreSQL
+- Auto-refreshes every 30 seconds
