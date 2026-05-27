@@ -45,3 +45,34 @@ export interface FormulaRow {
   agents: string
   category: string
 }
+
+// --- API response types ---
+export interface DashboardData {
+  agents: { total: number; active: number; idle: number; draft: number }
+  executions: {
+    total: number; completed: number; failed: number; running: number
+    successRate: number
+  }
+  avgDuration: number | null
+  statusGroups: { label: string; count: number }[]
+  topPerformers: { name: string; group: string; tasks: number; avgDuration: number }[]
+  healthMetrics: HealthMetric[]
+  timeline: {
+    id: string; time: string; agent: string; group: string
+    status: string; duration: number | null; tokensUsed: number | null
+  }[]
+  networkChart: {
+    hourlyLabels: string[]
+    apiCalls: number[]
+    failures: number[]
+    peak: number
+    avg: number
+  }
+  heatmap: {
+    groups: string[]
+    density: number[][]
+    maxDensity: number
+  }
+  formulaRows: FormulaRow[]
+  meta: { skills: number; pipelines: number }
+}

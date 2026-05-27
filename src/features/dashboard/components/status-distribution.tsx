@@ -1,31 +1,68 @@
 'use client'
 
-import { STATUS_DISTRIBUTION } from '../data/constants'
 import { AnimatedCounter } from './animated-counter'
+import { useDashboardData } from '../hooks/use-dashboard-data'
 import { useState } from 'react'
 
+const STATUS_COLORS: Record<string, string> = {
+  active: '#06B6D4',
+  inactive: '#eab308',
+  draft: '#52525b',
+  specialist: '#22D3EE',
+  strategy: '#67E8F9',
+}
+
+function statusColor(label: string): string {
+  const lower = label.toLowerCase()
+  for (const [key, color] of Object.entries(STATUS_COLORS)) {
+    if (lower.includes(key)) return color
+  }
+  return '#94a3b8'
+}
+
 export function StatusDistribution() {
+  const { data } = useDashboardData()
   const [hovered, setHovered] = useState<string | null>(null)
 
-  const total = STATUS_DISTRIBUTION.reduce((s, d) => s + d.count, 0)
+  const groups = data.statusGroups
+  if (groups.length === 0) {
+    return (
+      <div className="rounded-[10px] bg-card border border-border p-5">
+        <h3 className="text-xs font-semibold uppercase tracking-wider mb-4 text-muted-foreground">
+          Status Distribution
+        </h3>
+        <p className="text-sm text-muted-foreground py-8 text-center">No agents yet</p>
+      </div>
+    )
+  }
+
+  const total = groups.reduce((s, g) => s + g.count, 0)
   const radius = 70
   const stroke = 24
   const circumference = 2 * Math.PI * radius
 
   let runningOffset = 0
-  const segments = STATUS_DISTRIBUTION.map((item) => {
+  const segments = groups.map((item) => {
+    const color = statusColor(item.label)
     const segLen = (item.count / total) * circumference
-    const segment = { ...item, segLen, offset: runningOffset, pct: ((item.count / total) * 100).toFixed(1) }
+    const segment = {
+      ...item,
+      color,
+      segLen,
+      offset: runningOffset,
+      pct: ((item.count / total) * 100).toFixed(1),
+    }
     runningOffset += segLen
     return segment
   })
 
   return (
     <div className="rounded-[10px] bg-card border border-border p-5 transition-colors duration-200">
-      <h3 className="text-xs font-semibold uppercase tracking-wider mb-4 text-muted-foreground">Status Distribution</h3>
+      <h3 className="text-xs font-semibold uppercase tracking-wider mb-4 text-muted-foreground">
+        Agent Groups
+      </h3>
 
       <div className="flex flex-col items-center">
-        {/* Donut */}
         <div className="relative w-[200px] h-[200px] mx-auto mb-5">
           <svg viewBox="0 0 200 200" width="200" height="200">
             <circle cx="100" cy="100" r={radius} fill="none" stroke="var(--border)" strokeWidth={stroke} />
@@ -33,9 +70,7 @@ export function StatusDistribution() {
               <circle
                 key={i}
                 cx="100" cy="100" r={radius}
-                fill="none"
-                stroke={seg.color}
-                strokeWidth={stroke}
+                fill="none" stroke={seg.color} strokeWidth={stroke}
                 strokeDasharray={`${seg.segLen} ${circumference - seg.segLen}`}
                 strokeDashoffset={-seg.offset}
                 transform="rotate(-90 100 100)"
@@ -57,7 +92,6 @@ export function StatusDistribution() {
           </div>
         </div>
 
-        {/* Legend */}
         <div className="grid grid-cols-2 w-full" style={{ gap: '8px 24px' }}>
           {segments.map((seg) => (
             <div key={seg.label}

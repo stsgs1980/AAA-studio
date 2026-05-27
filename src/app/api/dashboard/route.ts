@@ -1,36 +1,51 @@
 import { db } from '@/lib/db';
 import { NextResponse } from 'next/server';
+import { fetchCoreCounts, resolvePerformers, fetchHourlyExecutions, fetchHeatmap, fetchSkillDistribution } from './helpers';
 
 export async function GET() {
   try {
-    const [totalAgents, activeAgents, draftAgents, totalExecutions, completedExecutions, failedExecutions, recentExecutions] =
-      await Promise.all([
-        db.agent.count(),
-        db.agent.count({ where: { status: 'active' } }),
-        db.agent.count({ where: { status: 'draft' } }),
-        db.agentExecution.count(),
-        db.agentExecution.count({ where: { status: 'completed' } }),
-        db.agentExecution.count({ where: { status: 'failed' } }),
-        db.agentExecution.findMany({
-          select: { id: true, status: true, duration: true, startedAt: true, agent: { select: { name: true } } },
-          orderBy: { startedAt: 'desc' },
-          take: 10,
-        }),
-      ]);
+    const [core, network, heatmap, formulaRows] = await Promise.all([
+      fetchCoreCounts(),
+      fetchHourlyExecutions(),
+      fetchHeatmap(),
+      fetchSkillDistribution(),
+    ]);
+    const performers = await resolvePerformers(core.agentPerformers);
 
-    const idleAgents = totalAgents - activeAgents - draftAgents;
-    const successRate = totalExecutions > 0
-      ? Math.round((completedExecutions / totalExecutions) * 100)
-      : 0;
-    const avgDuration = completedExecutions > 0
+    const a = core;
+    const successRate = a.totalExecutions > 0
+      ? Math.round((a.completedExecutions / a.totalExecutions) * 100) : 0;
+
+    const avgDuration = a.completedExecutions > 0
       ? await db.agentExecution.aggregate({ where: { status: 'completed', duration: { not: null } }, _avg: { duration: true } })
       : null;
 
+    const healthMetrics = [
+      { label: 'Active Agents', value: `${a.activeAgents}/${a.totalAgents}`, percent: a.totalAgents > 0 ? Math.round((a.activeAgents / a.totalAgents) * 100) : 0, status: a.activeAgents > 0 ? 'ok' : 'warning', hasBar: true },
+      { label: 'Success Rate', value: `${successRate}%`, percent: successRate, status: successRate >= 80 ? 'ok' : 'warning', hasBar: true },
+      { label: 'Pipelines', value: String(a.pipelines), status: 'ok' as const },
+      { label: 'Running Tasks', value: String(a.runningExecutions), status: 'ok' as const },
+      { label: 'Failed Tasks', value: String(a.failedExecutions), status: (a.failedExecutions > 5 ? 'warning' : 'ok') as 'ok' | 'warning' },
+    ];
+
+    const timeline = a.recentExecutions.map((ex) => ({
+      id: ex.id, time: ex.startedAt.toISOString(),
+      agent: ex.agent.name, group: ex.agent.group,
+      status: ex.status, duration: ex.duration, tokensUsed: ex.tokensUsed,
+    }));
+
     return NextResponse.json({
-      agents: { total: totalAgents, active: activeAgents, idle: Math.max(0, idleAgents), draft: draftAgents },
-      executions: { total: totalExecutions, completed: completedExecutions, failed: failedExecutions, successRate },
+      agents: { total: a.totalAgents, active: a.activeAgents, idle: a.inactiveAgents, draft: a.draftAgents },
+      executions: { total: a.totalExecutions, completed: a.completedExecutions, failed: a.failedExecutions, running: a.runningExecutions, successRate },
       avgDuration: avgDuration?._avg?.duration ?? null,
-      recentExecutions,
+      statusGroups: a.agentGroups.map((g) => ({ label: g.group, count: g._count })),
+      topPerformers: performers,
+      healthMetrics,
+      timeline,
+      networkChart: network,
+      heatmap,
+      formulaRows,
+      meta: { skills: a.skills, pipelines: a.pipelines },
     });
   } catch (error) {
     console.error('Failed to fetch dashboard stats:', error);

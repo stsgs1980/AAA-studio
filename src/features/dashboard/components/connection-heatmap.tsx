@@ -1,62 +1,86 @@
 'use client'
 
-import {
-  HEATMAP_DENSITY,
-  HEATMAP_GROUPS,
-  HEATMAP_GROUP_FULL,
-  HEATMAP_GROUP_COLORS,
-} from '../data/constants'
+import { useDashboardData } from '../hooks/use-dashboard-data'
 
-function heatColor(val: number): string {
-  if (val < 0) return 'var(--muted)'
-  const intensity = val / 10
+const GROUP_COLORS = [
+  '#67E8F9', '#22D3EE', '#06B6D4', '#0891B2',
+  '#0E7490', '#155E75', '#164E63', '#1E3A5F',
+]
+
+function heatColor(val: number, maxVal: number): string {
+  if (val === 0) return 'var(--muted)'
+  const intensity = Math.min(val / maxVal, 1)
   return `rgba(6, ${Math.round(10 + 172 * intensity)}, ${Math.round(15 + 197 * intensity)}, ${0.15 + intensity * 0.75})`
 }
 
+function abbreviate(label: string): string {
+  return label.slice(0, 3).toUpperCase()
+}
+
 export function ConnectionHeatmap() {
+  const { data } = useDashboardData()
+  const { groups, density, maxDensity } = data.heatmap
+
+  if (groups.length === 0) {
+    return (
+      <div className="rounded-[10px] bg-card border border-border p-5">
+        <h3 className="text-xs font-semibold uppercase tracking-wider mb-1 text-muted-foreground">
+          Connection Heatmap
+        </h3>
+        <p className="text-[11px] mb-4 text-muted-foreground">
+          Parent-child connections by agent group
+        </p>
+        <p className="text-sm text-muted-foreground py-8 text-center">No connections yet</p>
+      </div>
+    )
+  }
+
+  const size = groups.length
+
   return (
     <div className="rounded-[10px] bg-card border border-border p-5 transition-colors duration-200">
-      <h3 className="text-xs font-semibold uppercase tracking-wider mb-1 text-muted-foreground">Connection Heatmap</h3>
+      <h3 className="text-xs font-semibold uppercase tracking-wider mb-1 text-muted-foreground">
+        Connection Heatmap
+      </h3>
       <p className="text-[11px] mb-4 text-muted-foreground">
-        Inter-group connection density (darker = more connections)
+        Parent-child connections by agent group
       </p>
 
-      <div className="grid gap-[2px] w-full max-w-[380px]"
-        style={{ gridTemplateColumns: '32px repeat(8, 1fr)', gridTemplateRows: '24px repeat(8, 1fr)' }}>
-        {/* Corner */}
+      <div className="grid gap-[2px] w-full max-w-[400px]"
+        style={{
+          gridTemplateColumns: `32px repeat(${size}, 1fr)`,
+          gridTemplateRows: `24px repeat(${size}, 1fr)`,
+        }}>
         <div />
 
-        {/* Column headers */}
-        {HEATMAP_GROUPS.map((g, i) => (
+        {groups.map((g, i) => (
           <div key={g} className="flex items-center justify-center text-[9px] overflow-hidden whitespace-nowrap"
-            style={{ color: HEATMAP_GROUP_COLORS[i] }} title={HEATMAP_GROUP_FULL[i]}>
-            {g}
+            style={{ color: GROUP_COLORS[i % GROUP_COLORS.length] }}
+            title={g}>
+            {abbreviate(g)}
           </div>
         ))}
 
-        {/* Data rows */}
-        {HEATMAP_DENSITY.map((row, ri) => (
+        {density.map((row, ri) => (
           <div key={ri} className="contents">
-            {/* Row label */}
             <div className="flex items-center justify-end pr-1 text-[9px] overflow-hidden whitespace-nowrap"
-              style={{ color: HEATMAP_GROUP_COLORS[ri] }} title={HEATMAP_GROUP_FULL[ri]}>
-              {HEATMAP_GROUPS[ri]}
+              style={{ color: GROUP_COLORS[ri % GROUP_COLORS.length] }}
+              title={groups[ri]}>
+              {abbreviate(groups[ri])}
             </div>
 
-            {/* Cells */}
             {row.map((val, ci) => {
-              const isDiag = val < 0
+              const isDiag = ri === ci
               return (
                 <div key={ci}
                   className="rounded-[3px] min-h-[32px] cursor-default transition-transform duration-150 hover:scale-115 hover:z-2"
                   style={{
-                    background: isDiag ? 'var(--muted)' : heatColor(val),
+                    background: isDiag ? 'var(--muted)' : heatColor(val, maxDensity),
                     border: isDiag ? '1px solid var(--border)' : 'none',
-                    boxShadow: 'none',
                   }}
                   title={isDiag
-                    ? `${HEATMAP_GROUP_FULL[ri]} (self)`
-                    : `${HEATMAP_GROUP_FULL[ri]} ↔ ${HEATMAP_GROUP_FULL[ci]}: ${val}/10`}
+                    ? `${groups[ri]} (self)`
+                    : `${groups[ri]} -> ${groups[ci]}: ${val}`}
                   onMouseEnter={(e) => {
                     if (!isDiag) {
                       ;(e.currentTarget as HTMLElement).style.boxShadow = '0 0 8px rgba(6,182,212,0.3)'
