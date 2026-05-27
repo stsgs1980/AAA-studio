@@ -10,12 +10,17 @@
     "lint": "next lint",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev --name init",
     "db:studio": "prisma studio",
     "db:seed": "bun run prisma/seed.ts",
+    "postinstall": "prisma generate",
+    "vercel-build": "prisma generate && next build",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
+    "@neondatabase/serverless": "^1.0.0",
+    "@prisma/adapter-neon": "^6.8.2",
     "@prisma/client": "^6.8.2",
     "@radix-ui/react-slot": "^1.1.2",
     "@tailwindcss/postcss": "^4.3.0",

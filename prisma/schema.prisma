@@ -1,5 +1,5 @@
 // ============================================================================
-// 3A Studio - Prisma Schema (SQLite)
+// 3A Studio - Prisma Schema (PostgreSQL / Neon)
 // ============================================================================
 
 generator client {
@@ -7,8 +7,9 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL")
 }
 
 // ============================================================================
