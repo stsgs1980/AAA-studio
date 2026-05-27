@@ -76,7 +76,7 @@ export function NetworkChart() {
           API Calls
         </div>
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <span className="w-2.5 h-[3px] rounded-sm bg-[#22D3EE]" />
+          <span className="w-2.5 h-[3px] rounded-sm bg-cyan-400" />
           WS Events
         </div>
       </div>
