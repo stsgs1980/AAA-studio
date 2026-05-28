@@ -1,5 +1,4 @@
 'use client';
-import { useState } from 'react';
 import { Plus } from 'lucide-react';
 import type { ProviderConfig } from '@/lib/llm';
 import { LLM_PROVIDERS } from '@/lib/llm';

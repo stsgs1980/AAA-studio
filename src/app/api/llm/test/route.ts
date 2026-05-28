@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     const providers = await getProviders();
 
     // If providerId specified in body, test that specific provider
-    let targetId = body.providerId as string | undefined;
+    const targetId = body.providerId as string | undefined;
 
     // Otherwise test the active one
     if (!targetId) {
