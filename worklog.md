@@ -512,3 +512,26 @@ Stage Summary:
 - Test Connection per provider saves config then tests
 - 11 files changed, +567/-263
 - Commit: b0d2ce1 pushed to origin/main
+
+---
+Task ID: 2
+Agent: main
+Task: Debug Test Connection failures — 3 root causes found and fixed
+
+Work Log:
+- Diagnosed "Test API Failed" — curl showed ok:false despite Z.ai returning 200
+- Created diagnostic endpoint returning raw Z.ai response for analysis
+- Root cause 1: GLM-5.1 is a reasoning model — max_tokens:10 exhausted on reasoning_content, leaving content:"" and finish_reason:"length"
+- Root cause 2: testConnection checked `!!resp.content` — always false for reasoning models
+- Root cause 3: UI never passed selected model to test endpoint — always tested models[0] (GLM-5.1)
+- Fix 1: max_tokens 10→256, added finish_reason:"length" as valid
+- Fix 2: pass `model: activeModel` in test request body
+- Fix 3: mergeWithBuiltins operator precedence bug (&& vs ||)
+- Fix 4: provider.enabled forced to true on test
+- Also fixed: ESLint errors (page.tsx 157→148 lines, unused imports, prefer-const)
+
+Stage Summary:
+- Test Connection now works correctly with selected model
+- GLM-4.7 test: ~4-5s latency (Moscow→Vercel US→Z.ai China round trip — expected)
+- Commits: c093d0b, abefd6f, c3425fd, e45c64b (diag), 797d723, 3dbbabb
+- All pushed and deployed to production
