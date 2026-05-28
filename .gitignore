@@ -35,3 +35,4 @@ prisma/*.db-wal
 prisma/*.db-shm
 .z-ai-config
 .vercel
+.env.production
