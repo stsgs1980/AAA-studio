@@ -46,7 +46,7 @@ export function useFlowActions() {
       useFlowEditorStore.setState({ isRunning: true });
 
       if (flowId) {
-        // Saved flow → server-side execution via SDK
+        // Saved flow → server-side execution with full usage tracking
         setMessage('Executing on server...');
 
         // Save first to sync nodes/edges
@@ -60,6 +60,7 @@ export function useFlowActions() {
         if (!res.ok) throw new Error(`Execution failed: ${res.status}`);
         const data = await res.json();
 
+        // Map server NodeResult[] to client ExecutionResult[]
         const results: ExecutionResult[] = (data.results ?? []).map((r: Record<string, unknown>) => ({
           nodeId: r.nodeId as string,
           nodeType: r.nodeType as string,
@@ -67,10 +68,18 @@ export function useFlowActions() {
           output: r.output as Record<string, unknown>,
           error: r.error as string | undefined,
           duration: r.duration as number,
+          model: r.model as string | undefined,
+          usage: r.usage as ExecutionResult['usage'] | undefined,
+          cost: r.cost as number | undefined,
         }));
 
         setExecutionResults(results);
-        setMessage(data.success ? `Done (${results.length} nodes)` : `Failed: ${data.error}`);
+
+        // Show usage summary if available
+        const u = data.usage as Record<string, unknown> | undefined;
+        const costStr = u?.totalCost ? ` | $${Number(u.totalCost).toFixed(4)}` : '';
+        const tokenStr = u?.totalTokens ? ` | ${u.totalTokens} tokens` : '';
+        setMessage(data.success ? `Done (${results.length} nodes${tokenStr}${costStr})` : `Failed: ${data.error}`);
       } else {
         // Unsaved flow → client-side execution via /api/llm proxy
         setMessage('Executing locally...');

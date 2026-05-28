@@ -12,6 +12,9 @@ export interface ExecutionResult {
   output?: Record<string, unknown>;
   error?: string;
   duration: number;
+  model?: string;
+  usage?: { promptTokens: number; completionTokens: number; totalTokens: number };
+  cost?: number;
 }
 
 /**
@@ -38,11 +41,14 @@ export async function executeFlow(
 
     try {
       const inputs = gatherInputs(nodeId, edges, context);
-      const output = await executeNode(node, inputs);
+      const { output, model, usage, cost } = await executeNode(node, inputs);
       context.set(nodeId, output);
       const duration = Date.now() - start;
 
-      results.push({ nodeId, nodeType: node.type ?? "unknown", status: "completed", output, duration });
+      results.push({
+        nodeId, nodeType: node.type ?? "unknown",
+        status: "completed", output, duration, model, usage, cost,
+      });
       flowEventBus.emit(FlowEvents.NODE_EXECUTION_COMPLETE, { nodeId, output, duration });
     } catch (error) {
       const duration = Date.now() - start;
@@ -58,27 +64,27 @@ export async function executeFlow(
   return { results, success: true };
 }
 
-/** Route node type to its handler. */
+/** Route node type to its handler. Returns enriched output with model/usage/cost. */
 async function executeNode(
   node: Node,
   inputs: Record<string, unknown>,
-): Promise<Record<string, unknown>> {
+): Promise<{ output: Record<string, unknown>; model?: string; usage?: ExecutionResult['usage']; cost?: number }> {
   const data = node.data as Record<string, unknown>;
 
   switch (node.type) {
-    case "start": return { started: true, timestamp: Date.now() };
-    case "end": return { ...inputs, finished: true, timestamp: Date.now() };
+    case "start": return { output: { started: true, timestamp: Date.now() } };
+    case "end": return { output: { ...inputs, finished: true, timestamp: Date.now() } };
     case "llm": return executeLLM(inputs, data);
     case "agent": return executeAgent(inputs, data);
-    case "prompt": return executePrompt(inputs, data);
-    case "transform": return executeTransform(inputs, data);
-    case "condition": return executeCondition(inputs, data);
-    case "filter": return executeFilter(inputs, data);
-    case "chain": return { ...inputs, stepsCompleted: data.steps ?? 0 };
-    case "input": return { ...(data.schema ?? {}), provided: true };
-    case "output": return { ...inputs, outputCaptured: true };
-    case "error": return { ...inputs, errorHandled: true, strategy: data.errorStrategy ?? "stop" };
-    default: return { ...inputs, type: node.type, processed: true };
+    case "prompt": return { output: executePrompt(inputs, data) };
+    case "transform": return { output: executeTransform(inputs, data) };
+    case "condition": return { output: executeCondition(inputs, data) };
+    case "filter": return { output: executeFilter(inputs, data) };
+    case "chain": return { output: { ...inputs, stepsCompleted: data.steps ?? 0 } };
+    case "input": return { output: { ...(data.schema ?? {}), provided: true } };
+    case "output": return { output: { ...inputs, outputCaptured: true } };
+    case "error": return { output: { ...inputs, errorHandled: true, strategy: data.errorStrategy ?? "stop" } };
+    default: return { output: { ...inputs, type: node.type, processed: true } };
   }
 }
 

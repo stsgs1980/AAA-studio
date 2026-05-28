@@ -2,7 +2,7 @@ import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 import { getActiveProvider } from "@/lib/llm";
 import { topoSort, gatherInputs, type FlowNode, type FlowEdge } from "./flow-utils";
-import { execNode, type ExecOutput } from "./node-exec";
+import { execNode } from "./node-exec";
 
 type Params = { params: Promise<{ id: string }> };
 
