@@ -39,7 +39,10 @@ export async function POST(request: Request) {
     }
 
     const model = body.model as string | undefined;
-    return NextResponse.json(await testConnection(provider, model));
+    const result = await testConnection(provider, model);
+    // Debug: log finishReason
+    console.log(`[LLM test] provider=${targetId} ok=${result.ok} model=${result.model} latency=${result.latencyMs}ms error=${result.error}`);
+    return NextResponse.json(result);
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
     return NextResponse.json({ ok: false, error: msg });

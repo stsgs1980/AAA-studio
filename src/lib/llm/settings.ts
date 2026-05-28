@@ -125,9 +125,9 @@ function mergeWithBuiltins(saved: ProviderConfig[]): ProviderConfig[] {
   // Update model lists for built-in providers (they may have been extended)
   const updated = saved.map(p => {
     const builtin = LLM_PROVIDERS[p.id as LLMProviderId];
-    if (builtin && p.format === 'openai' || p.format === 'anthropic') {
-      // Keep user's apiKey & enabled, but refresh models if it's a built-in
-      return { ...p, models: builtin?.models ?? p.models, baseUrl: p.baseUrl || builtin?.baseUrl };
+    if (builtin && (p.format === 'openai' || p.format === 'anthropic')) {
+      // Keep user's apiKey, enabled, baseUrl — only refresh model list
+      return { ...p, models: builtin.models, baseUrl: p.baseUrl || builtin.baseUrl };
     }
     return p;
   });
