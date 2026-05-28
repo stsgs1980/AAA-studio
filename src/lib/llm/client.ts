@@ -106,10 +106,10 @@ export async function testConnection(
     const resp = await callLLM({
       provider, model: useModel,
       messages: [{ role: 'user', content: 'Hi, respond with just "OK"' }],
-      maxTokens: 10,
+      maxTokens: 256,
     });
-    // If the API returned successfully (no throw), connection is good even if content is empty
-    const ok = resp.finishReason === 'stop' || resp.finishReason === 'end_turn' || !!resp.content;
+    // Connection OK if API returned without error (any finishReason is fine)
+    const ok = !!resp.content || resp.finishReason === 'stop' || resp.finishReason === 'end_turn' || resp.finishReason === 'length';
     return { ok, model: resp.model, latencyMs: Date.now() - start };
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
