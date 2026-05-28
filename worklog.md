@@ -349,3 +349,33 @@ Stage Summary:
 - Search by name + filter by severity
 - Midnight palette consistent with rest of 3A Studio
 - Phase 1 is now COMPLETE: all 8 screens are fully functional
+---
+Task ID: 4
+Agent: main
+Task: Pipelines — real flow execution with node-level drill-down
+
+Work Log:
+- Created feature module src/features/pipelines/ (5 files)
+- types.ts: Flow, Execution, NodeResult, ExecutionResult interfaces
+- hooks/use-pipelines.ts: Single useState hook with all pipeline state
+  - fetchFlows, fetchExecutions, executeFlow (POST /api/flows/:id/execute)
+  - deleteFlow with confirm, selectFlow/selectExec navigation
+- components/execution-list.tsx: Execution list with status icons, duration, node count, error preview, clickable drill-down
+- components/execution-detail.tsx: Node-level results view — per-node type/status/duration/output/error
+- Rewrote pipelines/page.tsx (144→116 lines):
+  - Play button now calls POST /api/flows/:id/execute (was PUT status:active)
+  - Loader2 spinner during execution
+  - Click execution → drill-down into node-level results
+  - Back button returns to execution list
+  - Removed 4 useState → 1 via usePipelines hook (max-use-state compliant)
+- Fixed type errors: STATUS_ICON Record<string, React.ElementType> instead of as const
+- All files ≤150 lines, tsc + next build clean
+
+Stage Summary:
+- Pipelines: SKELETON → REAL EXECUTION
+- Feature module: 5 files (types, hook, 2 components, barrel)
+- Play button triggers real server-side flow execution via z-ai-web-dev-sdk
+- Execution list shows status, duration, node count, errors
+- Drill-down: click execution → see per-node results (type, output, timing, errors)
+- Commit: 3805128 pushed
+- Phase 2 Task 1: COMPLETE

@@ -98,7 +98,7 @@ Zai-agent-toolkit (скомпилированные скиллы для Z.ai san
 
 ## Roadmap
 
-### Phase 1 — MVP (в процессе)
+### Phase 1 — MVP ✅ COMPLETE
 
 - [x] Dashboard с живыми данными
 - [x] Landing + Auth
@@ -106,14 +106,14 @@ Zai-agent-toolkit (скомпилированные скиллы для Z.ai san
 - [x] Prompt Studio v2 (scoring, формулы, фреймворки, compare)
 - [x] Prompt Library (15 шаблонов, favorites, studio integration)
 - [x] Syntax Highlighting (CodeBlock везде)
-- [ ] **Flow Editor → live execution** (executeNode через z-ai-web-dev-sdk)
-- [ ] **Standards Manager → реальные правила** (не "Edit via API")
+- [x] **Flow Editor → live execution** (executeNode через z-ai-web-dev-sdk)
+- [x] **Standards Manager → реальные правила** (CRUD + rules editor)
 
-### Phase 2 — Интеграции
+### Phase 2 — Интеграции (в процессе)
 
 - [ ] Skill Forge → выполнение кода в sandbox
 - [ ] Knowledge Base → vector embeddings + RAG
-- [ ] Pipeline → реальный запуск flow execution
+- [x] **Pipeline → реальный запуск flow execution** (node-level drill-down)
 - [ ] Templates → flow templates (не только prompt)
 
 ### Phase 3 — Мосты (экспорт)
