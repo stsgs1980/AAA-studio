@@ -290,3 +290,36 @@ Stage Summary:
 - Fixed latent bug: formulaRef now uses lowercase formula.id matching @stsgs/prompting
 - Real cross-feature link: Library → Prompt Studio formulas tab is now functional
 - All files under 150 line limit
+
+---
+Task ID: 2
+Agent: main
+Task: Flow Editor live execution via z-ai-web-dev-sdk
+
+Work Log:
+- Installed z-ai-web-dev-sdk@0.0.18
+- Created POST /api/llm — proxy to SDK chat completions
+- Split node-executor.ts (277→120 lines) into orchestrator + node-handlers.ts (138 lines)
+- Implemented real executeNode for 12 node types: LLM, Agent, Prompt, Transform, Condition, Filter, Chain, Start, End, Input, Output, Error
+- LLM/Agent nodes call /api/llm → z-ai-web-dev-sdk → real AI responses
+- Prompt node: {{variable}} substitution from upstream inputs
+- Transform: uppercase/lowercase/trim/json_parse/json_stringify
+- Condition/Filter: safe expression evaluator (==, ===, contains)
+- Created POST /api/flows/[id]/execute — server-side execution via SDK directly
+  - flow-utils.ts (49 lines): topoSort, gatherInputs, extractText
+  - route.ts (121 lines): loads flow from DB, runs execution, creates PipelineExecution
+- Updated use-flow-actions.ts: real runFlow logic
+  - Saved flow → server-side via /api/flows/:id/execute
+  - Unsaved flow → client-side via executeFlow → /api/llm
+- Updated flow-store.ts: added executionResults[], isRunning, setExecutionResults()
+- Replaced ExecutionTab MOCK data with real store-driven results
+  - Shows: node type label, status dot, duration, truncated output preview
+  - Running indicator with pulse animation
+- All files ≤ 150 lines, tsc + next build clean, pushed as b9f4dd9
+
+Stage Summary:
+- Flow Editor now executes REAL LLM calls through z-ai-web-dev-sdk
+- Two execution modes: server-side (saved flows) and client-side (unsaved)
+- PipelineExecution records saved to DB with timing and results
+- ExecutionTab shows live results instead of mock data
+- Phase 1 Flow Editor live execution: COMPLETE
