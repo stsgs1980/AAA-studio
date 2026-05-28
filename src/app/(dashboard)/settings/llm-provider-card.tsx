@@ -80,7 +80,7 @@ export function LLMProviderCard({
       });
       const res = await fetch('/api/llm/test', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ providerId: p.id }),
+        body: JSON.stringify({ providerId: p.id, model: activeModel }),
       });
       const d = await res.json();
       setTestResult(p.id, d.ok
