@@ -5,17 +5,21 @@ import { cn } from "@stsgs/ui";
 import { FORMULAS } from "@stsgs/prompting";
 import { usePromptStudioStore } from "@/features/prompt-studio/store/prompt-studio-store";
 import { FormulaCard } from "./formula-card";
+import { FormulaListItem } from "./formula-list-item";
 
 const CATEGORIES = ["all", "structure", "chain", "constraint"] as const;
 
 export function TabFormulas() {
   const [filter, setFilter] = useState<string>("all");
+  const viewMode = usePromptStudioStore((s) => s.viewMode);
   const insertFormula = usePromptStudioStore((s) => s.insertFormula);
 
   const filtered =
     filter === "all"
       ? FORMULAS
       : FORMULAS.filter((f) => f.category === filter);
+
+  const isGrid = viewMode === "grid";
 
   return (
     <div className="space-y-4">
@@ -40,16 +44,28 @@ export function TabFormulas() {
         </span>
       </div>
 
-      {/* Formula grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        {filtered.map((f) => (
-          <FormulaCard
-            key={f.id}
-            formula={f}
-            onSelect={insertFormula}
-          />
-        ))}
-      </div>
+      {/* Formula grid or list */}
+      {isGrid ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {filtered.map((f) => (
+            <FormulaCard
+              key={f.id}
+              formula={f}
+              onSelect={insertFormula}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="flex flex-col gap-2">
+          {filtered.map((f) => (
+            <FormulaListItem
+              key={f.id}
+              formula={f}
+              onSelect={insertFormula}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

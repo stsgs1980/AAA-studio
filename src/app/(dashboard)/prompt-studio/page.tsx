@@ -1,7 +1,10 @@
 "use client";
 
 import { cn } from "@stsgs/ui";
-import { Sparkles, PenLine, Braces, LayoutGrid, GitCompareArrows } from "lucide-react";
+import {
+  Sparkles, PenLine, Braces, LayoutGrid, GitCompareArrows,
+  Rows3, Grid2x2,
+} from "lucide-react";
 import { usePromptStudioStore } from "@/features/prompt-studio/store/prompt-studio-store";
 import type { StudioTab } from "@/features/prompt-studio/store/prompt-studio-store";
 import { TabWrite } from "@/features/prompt-studio/components/tab-write";
@@ -23,9 +26,14 @@ const TAB_COMPONENTS: Record<StudioTab, React.ComponentType> = {
   compare: TabCompare,
 };
 
+/** Tabs that show grid/list toggle */
+const GRID_TABS = new Set<StudioTab>(["formulas", "frameworks"]);
+
 export default function PromptStudioPage() {
   const activeTab = usePromptStudioStore((s) => s.activeTab);
   const setActiveTab = usePromptStudioStore((s) => s.setActiveTab);
+  const viewMode = usePromptStudioStore((s) => s.viewMode);
+  const setViewMode = usePromptStudioStore((s) => s.setViewMode);
 
   const ActiveComponent = TAB_COMPONENTS[activeTab];
 
@@ -37,6 +45,34 @@ export default function PromptStudioPage() {
         <h1 className="text-2xl font-bold tracking-tight text-text-primary">
           Prompt Studio
         </h1>
+        {GRID_TABS.has(activeTab) && (
+          <div className="ml-auto flex items-center gap-1 bg-midnight-elevated rounded-lg p-0.5">
+            <button
+              onClick={() => setViewMode("grid")}
+              className={cn(
+                "p-1.5 rounded-md transition-colors",
+                viewMode === "grid"
+                  ? "bg-brand-accent text-white"
+                  : "text-text-muted hover:text-text-secondary",
+              )}
+              title="Grid view"
+            >
+              <Grid2x2 className="h-4 w-4" />
+            </button>
+            <button
+              onClick={() => setViewMode("list")}
+              className={cn(
+                "p-1.5 rounded-md transition-colors",
+                viewMode === "list"
+                  ? "bg-brand-accent text-white"
+                  : "text-text-muted hover:text-text-secondary",
+              )}
+              title="List view"
+            >
+              <Rows3 className="h-4 w-4" />
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Tab bar */}
