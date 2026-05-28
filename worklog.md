@@ -481,3 +481,34 @@ Stage Summary:
 - Document generated successfully with cover, TOC, 4 sections, tables
 - Key architectural decision: LLMProvider interface → provider registry → per-node routing
 - Phased approach ensures backward compatibility with existing mock fallback
+---
+Task ID: 1
+Agent: main
+Task: Multi-provider LLM config — add custom provider support to Settings
+
+Work Log:
+- Read full codebase: types.ts, client.ts, settings.ts, llm-provider-card.tsx, page.tsx, all API routes
+- Added ProviderConfig type to types.ts: id, name, baseUrl, apiKey, models[], enabled, format
+- Added LLMProviderFormat type ('openai' | 'anthropic') for custom provider API format selection
+- Changed LLMSettings to track activeProviderId + activeModel (not single provider fields)
+- Added builtinToConfig() and blankCustomProvider() helpers
+- Rewrote settings.ts: getProviders() reads JSON from DB, saveProviders() persists, getActiveProvider() resolves
+- Rewrote client.ts: callLLM now takes { provider: ProviderConfig, model, messages } instead of individual fields
+- Rewrote /api/llm/test: accepts providerId in POST body, tests specific provider
+- Rewrote /api/llm: uses getActiveProvider() for automatic provider resolution
+- Rewrote /api/flows/[id]/execute: uses getActiveProvider() + new callLLM signature
+- Split llm-provider-card.tsx (330→134 lines) into 3 files:
+  - llm-provider-card.tsx (134): main card with provider list + test logic
+  - provider-row.tsx (143): expandable per-provider config (toggle, endpoint, key, format, models)
+  - add-provider-menu.tsx (44): dropdown to add built-in or custom providers
+- Updated settings page.tsx: loads providers JSON from DB, passes to LLMProviderCard
+- 0 TypeScript errors, all files <= 150 lines
+
+Stage Summary:
+- Any LLM provider can now be added: built-in (Z.ai, OpenAI, Anthropic, OpenRouter) or custom (any OpenAI-compatible or Anthropic endpoint)
+- Per-provider config: Enabled toggle, Endpoint URL, API Key, API Format, Model list
+- "Add Provider" dropdown with built-in options + "Custom Provider..." entry
+- Model tags: click to set active, add/remove custom models
+- Test Connection per provider saves config then tests
+- 11 files changed, +567/-263
+- Commit: b0d2ce1 pushed to origin/main
