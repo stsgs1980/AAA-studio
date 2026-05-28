@@ -39,6 +39,7 @@
     "sonner": "^2.0.3",
     "tailwind-merge": "^3.0.2",
     "ws": "^8.21.0",
+    "z-ai-web-dev-sdk": "^0.0.18",
     "zod": "^3.25.23",
     "zustand": "^5.0.5"
   },

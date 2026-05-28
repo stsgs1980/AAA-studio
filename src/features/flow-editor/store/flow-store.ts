@@ -9,6 +9,7 @@ import {
   type EdgeChange,
   type Connection,
 } from '@xyflow/react';
+import type { ExecutionResult } from '../lib/node-executor';
 
 const MAX_HISTORY = 50;
 
@@ -20,6 +21,8 @@ interface FlowEditorState {
   flowName: string; isDirty: boolean;
   history: Snapshot[]; historyIndex: number;
   canUndo: boolean; canRedo: boolean;
+  executionResults: ExecutionResult[];
+  isRunning: boolean;
 }
 
 interface FlowEditorActions {
@@ -34,6 +37,7 @@ interface FlowEditorActions {
   clearCanvas: () => void;
   undo: () => void;
   redo: () => void;
+  setExecutionResults: (results: ExecutionResult[]) => void;
   _pushHistory: () => void;
 }
 
@@ -48,6 +52,7 @@ export const useFlowEditorStore = create<FlowEditorState & FlowEditorActions>((s
     flowName: 'Untitled Flow', isDirty: false,
     history: [{ ...EMPTY }], historyIndex: 0,
     canUndo: false, canRedo: false,
+    executionResults: [], isRunning: false,
 
     _pushHistory: () => {
       const { history, historyIndex } = get();
@@ -91,7 +96,10 @@ export const useFlowEditorStore = create<FlowEditorState & FlowEditorActions>((s
       nodes: [], edges: [], selectedNodeId: null, flowId: null,
       flowName: 'Untitled Flow', isDirty: false,
       history: [{ ...EMPTY }], historyIndex: 0, canUndo: false, canRedo: false,
+      executionResults: [], isRunning: false,
     }),
+
+    setExecutionResults: (results) => set({ executionResults: results, isRunning: false }),
 
     undo: () => {
       const { historyIndex: hi, history: h } = get();
