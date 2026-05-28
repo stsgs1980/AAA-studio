@@ -25,9 +25,10 @@ export function FormulaGrid() {
         Skills Distribution
       </h3>
 
-      <div className="w-full overflow-x-auto">
+      <div className="max-h-[360px] overflow-y-auto"
+        style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(128,128,128,0.2) transparent' }}>
         <table className="w-full border-collapse">
-          <thead>
+          <thead className="sticky top-0 bg-card z-10">
             <tr>
               <th className="text-[11px] font-semibold text-left py-2 px-3 uppercase tracking-wide text-muted-foreground border-b border-border">
                 Skill

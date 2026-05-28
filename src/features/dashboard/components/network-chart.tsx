@@ -65,11 +65,11 @@ export function NetworkChart() {
 
       <div className="flex gap-6 mb-3">
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <span className="w-2.5 h-[3px] rounded-sm bg-cyan-500" />
-          Completed
+          <span className="w-2.5 h-[3px] rounded-sm bg-emerald-500" />
+          Total Executions
         </div>
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <span className="w-2.5 h-[3px] rounded-sm bg-cyan-400" />
+          <span className="w-2.5 h-[3px] rounded-sm bg-red-500" />
           Failures
         </div>
       </div>
@@ -79,12 +79,12 @@ export function NetworkChart() {
           className="min-w-[600px]" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
           <defs>
             <linearGradient id="gradApi" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#06B6D4" stopOpacity="0.25" />
-              <stop offset="100%" stopColor="#06B6D4" stopOpacity="0" />
+              <stop offset="0%" stopColor="#10B981" stopOpacity="0.25" />
+              <stop offset="100%" stopColor="#10B981" stopOpacity="0" />
             </linearGradient>
             <linearGradient id="gradFail" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#22D3EE" stopOpacity="0.15" />
-              <stop offset="100%" stopColor="#22D3EE" stopOpacity="0" />
+              <stop offset="0%" stopColor="#EF4444" stopOpacity="0.15" />
+              <stop offset="100%" stopColor="#EF4444" stopOpacity="0" />
             </linearGradient>
           </defs>
 
@@ -111,7 +111,7 @@ export function NetworkChart() {
                 d={`M${toX(0)},${toY(0)} L${apiPoints} L${toX(apiCalls.length - 1)},${toY(0)} Z`}
                 fill="url(#gradApi)"
                 style={{ opacity: animated ? 1 : 0, transition: 'opacity 0.8s ease' }} />
-              <polyline points={apiPoints} fill="none" stroke="#06B6D4" strokeWidth="2"
+              <polyline points={apiPoints} fill="none" stroke="#10B981" strokeWidth="2"
                 strokeLinecap="round" strokeLinejoin="round"
                 style={{
                   strokeDasharray: animated ? 'none' : '2000',
@@ -127,7 +127,7 @@ export function NetworkChart() {
                 d={`M${toX(0)},${toY(0)} L${failPoints} L${toX(failures.length - 1)},${toY(0)} Z`}
                 fill="url(#gradFail)"
                 style={{ opacity: animated ? 1 : 0, transition: 'opacity 0.8s ease 0.3s' }} />
-              <polyline points={failPoints} fill="none" stroke="#22D3EE" strokeWidth="1.5"
+              <polyline points={failPoints} fill="none" stroke="#EF4444" strokeWidth="1.5"
                 strokeLinecap="round" strokeLinejoin="round"
                 strokeDasharray="4 3"
                 style={{
