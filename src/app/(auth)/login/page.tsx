@@ -16,6 +16,19 @@ import { GitHubButton } from "@/features/auth/components/github-button";
 import { GoogleButton } from "@/features/auth/components/google-button";
 import { Logo } from "@/features/auth/components/logo";
 
+async function apiLogin(username: string, password: string) {
+  const res = await fetch('/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password }),
+  });
+  if (!res.ok) {
+    const d = await res.json().catch(() => ({}));
+    throw new Error(d.error || 'Login failed');
+  }
+  return res.json();
+}
+
 export default function LoginPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
@@ -26,12 +39,22 @@ export default function LoginPage() {
   } = useForm<LoginFormData>({ resolver: zodResolver(loginSchema) });
 
   async function onSubmit(data: LoginFormData) {
-    await new Promise((r) => setTimeout(r, 800));
-    if (data.email === "admin" && data.password === "admin") {
-      toast.success("Signed in as admin");
-      router.push("/dashboard");
-    } else {
-      toast.error("Invalid credentials. Use admin / admin");
+    try {
+      await apiLogin(data.email, data.password);
+      toast.success('Signed in successfully');
+      router.push('/dashboard');
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Invalid credentials');
+    }
+  }
+
+  async function quickLogin() {
+    try {
+      await apiLogin('admin', 'admin');
+      toast.success('Signed in as admin');
+      router.push('/dashboard');
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Login failed');
     }
   }
 
@@ -88,10 +111,7 @@ export default function LoginPage() {
       </p>
       <button
         type="button"
-        onClick={() => {
-          toast.success("Signed in as admin");
-          router.push("/dashboard");
-        }}
+        onClick={quickLogin}
         className="w-full rounded-lg border border-midnight-border bg-midnight-elevated py-2 text-sm text-text-secondary transition-colors hover:border-brand-accent hover:text-text-primary"
       >
         Quick Login as Admin

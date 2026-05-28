@@ -1,9 +1,8 @@
-// ============================================================================
 // 3A Studio — LLM Settings helper
 // Stores provider list as JSON in Settings table + active selection.
-// ============================================================================
 
 import { db } from '@/lib/db';
+import { decrypt, encrypt } from '@/lib/crypto';
 import type { LLMSettings, ProviderConfig, LLMProviderId } from './types';
 import { DEFAULT_LLM_SETTINGS, LLM_PROVIDERS, builtinToConfig } from './types';
 
@@ -30,23 +29,31 @@ async function upsertSetting(key: string, value: string) {
 
 // ---- Provider configs (JSON array) ----
 
-/** Get all provider configs from DB */
+/** Get all provider configs from DB (apiKeys decrypted) */
 export async function getProviders(): Promise<ProviderConfig[]> {
   try {
     const row = await db.settings.findUnique({ where: { key: PROVIDERS_KEY } });
     if (!row?.value) return defaultProviders();
     const parsed = JSON.parse(row.value) as ProviderConfig[];
     if (!Array.isArray(parsed)) return defaultProviders();
-    // Merge with built-in providers that aren't yet in the list
-    return mergeWithBuiltins(parsed);
+    // Decrypt apiKeys that were encrypted in DB
+    const decrypted = parsed.map(p => ({
+      ...p,
+      apiKey: p.apiKey ? decrypt(p.apiKey) : '',
+    }));
+    return mergeWithBuiltins(decrypted);
   } catch {
     return defaultProviders();
   }
 }
 
-/** Save all provider configs to DB */
+/** Save all provider configs to DB (apiKeys encrypted) */
 export async function saveProviders(providers: ProviderConfig[]): Promise<void> {
-  await upsertSetting(PROVIDERS_KEY, JSON.stringify(providers));
+  const encrypted = providers.map(p => ({
+    ...p,
+    apiKey: p.apiKey ? encrypt(p.apiKey) : '',
+  }));
+  await upsertSetting(PROVIDERS_KEY, JSON.stringify(encrypted));
 }
 
 /** Get the currently active provider config + its selected model */
@@ -122,11 +129,9 @@ function defaultProviders(): ProviderConfig[] {
 function mergeWithBuiltins(saved: ProviderConfig[]): ProviderConfig[] {
   const savedIds = new Set(saved.map(p => p.id));
   const builtins = defaultProviders().filter(p => !savedIds.has(p.id));
-  // Update model lists for built-in providers (they may have been extended)
   const updated = saved.map(p => {
     const builtin = LLM_PROVIDERS[p.id as LLMProviderId];
     if (builtin && (p.format === 'openai' || p.format === 'anthropic')) {
-      // Keep user's apiKey, enabled, baseUrl — only refresh model list
       return { ...p, models: builtin.models, baseUrl: p.baseUrl || builtin.baseUrl };
     }
     return p;
