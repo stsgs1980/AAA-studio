@@ -131,6 +131,27 @@ Zai-agent-toolkit (скомпилированные скиллы для Z.ai san
 - [ ] API rate limiting
 - [ ] Monitoring/logging
 
+#### ⚠️ Security Hardening (критично перед публичным запуском)
+
+> **FIXME**: Перед открытием доступа публичным пользователям необходимо реализовать:
+>
+> 1. **Authentication** — заменить demo admin/admin на реальную авторизацию
+>    (NextAuth.js / Clerk / Auth.js). Middleware для защиты `/api/settings`, `/api/llm/*`.
+>
+> 2. **API Key Encryption** — сейчас ключ хранится в plain text в БД (Settings таблица).
+>    Нужно шифровать перед сохранением (AES-256-GCM через crypto.subtle)
+>    и расшифровывать только в server-side `/api/llm` перед отправкой к провайдеру.
+>
+> 3. **Key Masking в UI** — LLM Provider Card показывает полный ключ в DevTools
+>    (ответ GET /api/settings). Вернуть с клиента только последние 4 символа
+>    (`sk-****abcd`), полный ключ — только при POST (сохранение).
+>
+> 4. **Rate Limiting** — ограничить вызовы `/api/llm` чтобы предотвратить
+>    разорение через чужой ключ при компрометации сессии.
+>
+> Файлы: `src/lib/llm/settings.ts`, `src/app/api/settings/route.ts`,
+> `src/components/settings/llm-provider-card.tsx`, `src/middleware.ts`
+
 ---
 
 ## Проблемы которые надо решить
