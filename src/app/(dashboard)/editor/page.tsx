@@ -1,5 +1,14 @@
+import { Suspense } from 'react';
 import { FlowEditor } from '@/features/flow-editor';
 
-export default function EditorPage() {
+function EditorInner() {
   return <FlowEditor />;
+}
+
+export default function EditorPage() {
+  return (
+    <Suspense>
+      <EditorInner />
+    </Suspense>
+  );
 }

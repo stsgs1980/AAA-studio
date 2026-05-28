@@ -6,6 +6,7 @@ import { FlowCanvas } from './components/flow-canvas';
 import { Toolbar } from './components/toolbar';
 import { NodeConfigPanel } from './components/node-config-panel';
 import { useFlowEditorStore } from './store/flow-store';
+import { useLoadFlow } from './hooks/use-load-flow';
 
 /**
  * Main Flow Editor composition.
@@ -13,6 +14,7 @@ import { useFlowEditorStore } from './store/flow-store';
  */
 export function FlowEditor() {
   const selectedNodeId = useFlowEditorStore((s) => s.selectedNodeId);
+  useLoadFlow();
 
   return (
     <ReactFlowProvider>
