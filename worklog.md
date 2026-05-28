@@ -584,3 +584,27 @@ Stage Summary:
 - 10 files changed, +327/-21
 - Build: successful, middleware 34.5 kB
 - Production deployed and verified
+
+---
+Task ID: 1
+Agent: main
+Task: Per-node model selection + Usage tracking in Flow Editor
+
+Work Log:
+- Explored full codebase: server-side execution already has per-node model + usage tracking
+- ConfigTab: added Provider dropdown per AI node (select from all enabled providers, not just active)
+- ConfigTab: model dropdown now shows models from selected provider (resets model on provider change)
+- Extracted node-utils.ts: buildInputText + safeEvalCondition (anti-monolith split)
+- node-handlers.ts: passes model override to /api/llm, extracts usage from response (snake_case + camelCase)
+- node-executor.ts: ExecutionResult now includes model, usage, cost fields
+- use-flow-actions.ts: maps model/usage/cost from server response, shows tokens+cost in toolbar message
+- ExecutionTab: per-node model badge, token count (in/out), cost display + aggregate summary bar
+- node-exec.ts (server): resolves per-node provider from DB via getProviders() when node.data.providerId is set
+- All files <= 150 lines, 0 TypeScript errors, next build clean
+
+Stage Summary:
+- Commit: 72fd092 pushed to origin/main
+- 8 files changed, +330/-211
+- Per-node provider + model selection: fully functional on both client and server paths
+- Usage tracking: tokens (in/out), estimated cost per node + aggregate summary
+- Vercel CLI token expired — deployed via GitHub auto-deploy
