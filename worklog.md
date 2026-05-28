@@ -535,3 +535,52 @@ Stage Summary:
 - GLM-4.7 test: ~4-5s latency (Moscow→Vercel US→Z.ai China round trip — expected)
 - Commits: c093d0b, abefd6f, c3425fd, e45c64b (diag), 797d723, 3dbbabb
 - All pushed and deployed to production
+---
+Task ID: 1
+Agent: main
+Task: Auth middleware + API key encryption
+
+Work Log:
+- Created src/lib/auth.ts: JWT session auth using jose (server-side) + Web Crypto API (middleware)
+  - signSession() creates HS256 JWT with 7-day expiry
+  - verifySession() verifies JWT via jose (server routes)
+  - SESSION_COOKIE constant: '3a-session'
+- Created src/lib/crypto.ts: AES-256-GCM encryption for API keys
+  - encrypt(plaintext) → base64(iv + authTag + ciphertext)
+  - decrypt(ciphertext) → plaintext with backward compat fallback
+  - Uses ENCRYPTION_KEY env var (64-char hex, 32 bytes)
+- Created src/middleware.ts: Edge-compatible auth middleware
+  - verifyJWT() using Web Crypto API (no jose dependency in Edge)
+  - Protects all /api/* and /(dashboard)/* routes
+  - Public: /, /login, /signup, /forgot-password, /reset-password, /verify, /api/auth/*, /api/health
+  - Returns 401 for API routes, 307 redirect for dashboard routes
+- Created src/app/api/auth/login/route.ts: POST login endpoint
+  - Validates username/password against ADMIN_USERNAME/ADMIN_PASSWORD env vars
+  - Sets HTTP-only, Secure, SameSite=lax cookie with 7-day expiry
+- Created src/app/api/auth/logout/route.ts: POST logout endpoint, clears cookie
+- Updated src/app/(auth)/login/page.tsx: real login via POST /api/auth/login
+  - Both form submit and "Quick Login" button call apiLogin()
+- Updated src/app/api/settings/route.ts: encrypt/decrypt llm_providers key
+  - GET: decrypts apiKey fields before returning to frontend
+  - PUT: encrypts apiKey fields before storing in DB
+- Updated src/lib/llm/settings.ts: encrypt/decrypt at DB level
+  - getProviders(): decrypts each apiKey after parsing JSON
+  - saveProviders(): encrypts each apiKey before JSON.stringify
+- Added 4 Vercel env vars: AUTH_SECRET, ENCRYPTION_KEY, ADMIN_USERNAME, ADMIN_PASSWORD
+- Added jose@6.2.3 dependency
+- All files <= 150 lines, 0 ESLint errors
+- Production verified:
+  - /api/settings without cookie → 401
+  - /dashboard without cookie → 307 redirect to /login
+  - /login, /, /api/health → 200 (public)
+  - POST /api/auth/login → 200 + JWT cookie
+  - GET /api/settings with cookie → 200 (decrypted apiKeys)
+  - Save + read round-trip: encrypt on save, decrypt on read
+
+Stage Summary:
+- Commit: f171311 pushed to origin/main
+- Auth middleware: ALL API routes and dashboard pages now require authentication
+- API key encryption: AES-256-GCM, transparent encrypt/decrypt, backward compatible
+- 10 files changed, +327/-21
+- Build: successful, middleware 34.5 kB
+- Production deployed and verified
