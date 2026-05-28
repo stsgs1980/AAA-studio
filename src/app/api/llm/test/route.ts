@@ -1,51 +1,54 @@
 // ============================================================================
-// POST /api/llm/test — Test LLM connection for a specific provider
-// Reads providers from DB, tests the requested one.
+// GET /api/llm/test — Diagnostic: returns raw Z.ai response
 // ============================================================================
 
 import { NextResponse } from 'next/server';
-import { getProviders, getActiveProvider } from '@/lib/llm';
-import { testConnection } from '@/lib/llm';
+import { getProviders } from '@/lib/llm';
 
 export async function POST(request: Request) {
   try {
     const body = await request.json().catch(() => ({}));
     const providers = await getProviders();
+    const provider = providers.find(p => p.id === (body.providerId ?? 'zai'));
+    if (!provider) return NextResponse.json({ error: 'Provider not found' });
+    if (!provider.apiKey) return NextResponse.json({ error: 'No API key' });
 
-    // If providerId specified in body, test that specific provider
-    const targetId = body.providerId as string | undefined;
+    const model = body.model || provider.models[0]?.id || 'glm-4.7';
+    const start = Date.now();
 
-    // Otherwise test the active one
-    if (!targetId) {
-      const active = await getActiveProvider();
-      if (!active) {
-        return NextResponse.json({ ok: false, error: 'No active provider configured.' });
-      }
-      return NextResponse.json(
-        await testConnection(active.provider, active.model),
-      );
-    }
+    // Direct fetch to see raw response
+    const res = await fetch(`${provider.baseUrl}/chat/completions`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${provider.apiKey}` },
+      body: JSON.stringify({
+        model,
+        messages: [{ role: 'user', content: 'Hi, respond with just "OK"' }],
+        max_tokens: 10, stream: false,
+      }),
+    });
 
-    // Find provider by id
-    const provider = providers.find(p => p.id === targetId);
-    if (!provider) {
-      return NextResponse.json({ ok: false, error: `Provider "${targetId}" not found.` });
-    }
-    if (!provider.apiKey) {
-      return NextResponse.json({ ok: false, error: 'API key not set for this provider.' });
-    }
-    if (!provider.baseUrl) {
-      return NextResponse.json({ ok: false, error: 'Endpoint URL not set for this provider.' });
-    }
+    const latency = Date.now() - start;
+    const rawBody = await res.text();
+    let parsed = null;
+    try { parsed = JSON.parse(rawBody); } catch { /* */ }
 
-    const model = body.model as string | undefined;
-    const result = await testConnection(provider, model);
-    // Debug: log finishReason
-    console.log(`[LLM test] provider=${targetId} ok=${result.ok} model=${result.model} latency=${result.latencyMs}ms error=${result.error}`);
-    return NextResponse.json(result);
+    const content = parsed?.choices?.[0]?.message?.content;
+    const finishReason = parsed?.choices?.[0]?.finish_reason;
+
+    return NextResponse.json({
+      status: res.status,
+      latency,
+      content,
+      finishReason,
+      ok: finishReason === 'stop' || !!content,
+      rawKeys: parsed ? Object.keys(parsed) : [],
+      choicesKeys: parsed?.choices?.[0] ? Object.keys(parsed.choices[0]) : [],
+      messageKeys: parsed?.choices?.[0]?.message ? Object.keys(parsed.choices[0].message) : [],
+      rawBody: rawBody.slice(0, 500),
+    });
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
-    return NextResponse.json({ ok: false, error: msg });
+    return NextResponse.json({ error: msg });
   }
 }
 
