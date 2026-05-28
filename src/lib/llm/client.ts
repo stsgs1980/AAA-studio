@@ -31,7 +31,7 @@ async function callOpenAI(p: CallParams): Promise<LLMResponse> {
   const data = await res.json();
   return {
     id: data.id ?? `call-${Date.now()}`,
-    content: data.choices?.[0]?.message?.content ?? '',
+    content: data.choices?.[0]?.message?.content ?? null,
     model: data.model ?? model,
     finishReason: data.choices?.[0]?.finish_reason ?? 'stop',
     usage: data.usage ? {
@@ -108,7 +108,9 @@ export async function testConnection(
       messages: [{ role: 'user', content: 'Hi, respond with just "OK"' }],
       maxTokens: 10,
     });
-    return { ok: !!resp.content, model: resp.model, latencyMs: Date.now() - start };
+    // If the API returned successfully (no throw), connection is good even if content is empty
+    const ok = resp.finishReason === 'stop' || resp.finishReason === 'end_turn' || !!resp.content;
+    return { ok, model: resp.model, latencyMs: Date.now() - start };
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     return { ok: false, model: useModel, latencyMs: Date.now() - start, error: msg };

@@ -73,7 +73,7 @@ export function LLMProviderCard({
         method: 'PUT', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           llm_providers: JSON.stringify(providers.map(pr =>
-            pr.id === p.id ? { ...pr, apiKey: p.apiKey, baseUrl: p.baseUrl } : pr,
+            pr.id === p.id ? { ...pr, apiKey: p.apiKey, baseUrl: p.baseUrl, enabled: true } : pr,
           )),
           llm_active_provider: p.id,
         }),
