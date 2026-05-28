@@ -8,13 +8,16 @@ import os from 'os';
  * Locally: uses existing /etc/.z-ai-config or project root file.
  */
 export async function ensureZAIConfig(): Promise<void> {
+  // On Vercel /tmp is the only writable dir; locally use cwd.
+  const tmpPath = '/tmp/.z-ai-config';
   const paths = [
+    tmpPath,
     path.join(process.cwd(), '.z-ai-config'),
     path.join(os.homedir(), '.z-ai-config'),
     '/etc/.z-ai-config',
   ];
 
-  // Check if config already exists
+  // Check if config already exists at any known path
   for (const p of paths) {
     try {
       const raw = await fs.readFile(p, 'utf-8');
@@ -23,15 +26,23 @@ export async function ensureZAIConfig(): Promise<void> {
     } catch { /* continue */ }
   }
 
-  // Try to create from env vars
+  // Build config from env vars
   const base = process.env.ZAI_BASE_URL;
   const key = process.env.ZAI_API_KEY;
   const chatId = process.env.ZAI_CHAT_ID ?? '';
   const userId = process.env.ZAI_USER_ID ?? '';
   const token = process.env.ZAI_TOKEN ?? '';
 
-  if (base && key) {
-    const config = JSON.stringify({ baseUrl: base, apiKey: key, chatId, userId, token });
-    await fs.writeFile(path.join(process.cwd(), '.z-ai-config'), config);
+  if (!base || !key) return;
+
+  const config = JSON.stringify({ baseUrl: base, apiKey: key, chatId, userId, token });
+
+  // Write to the first writable location (always /tmp first for serverless)
+  const writeTargets = process.env.VERCEL ? [tmpPath] : [path.join(process.cwd(), '.z-ai-config'), tmpPath];
+  for (const target of writeTargets) {
+    try {
+      await fs.writeFile(target, config);
+      return;
+    } catch { /* try next */ }
   }
 }
