@@ -6,11 +6,14 @@ import { ScorePanel } from "./score-panel";
 import { IntentBadge } from "./intent-badge";
 import { FormulaPicker } from "./formula-picker";
 import { FORMULAS } from "@stsgs/prompting";
+import { Trash2, Copy, Check } from "lucide-react";
+import { useState } from "react";
 
 export function TabWrite() {
   const editorText = usePromptStudioStore((s) => s.editorText);
   const setEditorText = usePromptStudioStore((s) => s.setEditorText);
   const insertFormula = usePromptStudioStore((s) => s.insertFormula);
+  const [copied, setCopied] = useState(false);
 
   const { score, intent } = usePromptEngine(editorText);
 
@@ -18,17 +21,53 @@ export function TabWrite() {
   const lineCount = editorText ? editorText.split("\n").length : 0;
   const variables = [...new Set(editorText.match(/\{(\w+)\}/g) ?? [])];
 
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(editorText);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleClear = () => {
+    if (editorText && confirm("Clear the editor?")) {
+      setEditorText("");
+    }
+  };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 h-full">
       {/* Editor panel (3/5) */}
       <div className="lg:col-span-3 flex flex-col gap-3 min-h-0">
-        {/* Intent badge + formula picker */}
+        {/* Intent badge + formula picker + actions */}
         <div className="flex items-center gap-2 flex-wrap">
           <IntentBadge intent={intent} />
           <FormulaPicker
             formulas={FORMULAS}
             onSelect={(f) => insertFormula(f.template)}
           />
+          <div className="ml-auto flex items-center gap-1.5">
+            {editorText && (
+              <>
+                <button
+                  onClick={handleCopy}
+                  className="flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-medium bg-midnight-elevated text-text-secondary hover:text-text-primary transition-colors"
+                >
+                  {copied ? (
+                    <Check className="h-3 w-3 text-brand-green" />
+                  ) : (
+                    <Copy className="h-3 w-3" />
+                  )}
+                  {copied ? "Copied" : "Copy"}
+                </button>
+                <button
+                  onClick={handleClear}
+                  className="flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-medium bg-midnight-elevated text-text-secondary hover:text-brand-red transition-colors"
+                >
+                  <Trash2 className="h-3 w-3" />
+                  Clear
+                </button>
+              </>
+            )}
+          </div>
         </div>
 
         {/* Textarea */}

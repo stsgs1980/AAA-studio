@@ -1,0 +1,149 @@
+"use client";
+
+import { useState } from "react";
+import { cn } from "@stsgs/ui";
+import {
+  Copy, Check, Star, Send, ChevronUp, BookOpen,
+} from "lucide-react";
+import { CodeBlock } from "@/components/code-block";
+import { usePromptLibraryStore } from "../store/prompt-library-store";
+import type { LibraryPrompt } from "../data/prompt-categories";
+import { PROMPT_CATEGORIES } from "../data/prompt-categories";
+
+interface PromptCardProps {
+  prompt: LibraryPrompt;
+}
+
+export function PromptCard({ prompt: p }: PromptCardProps) {
+  const [expanded, setExpanded] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [sent, setSent] = useState(false);
+
+  const toggleFav = usePromptLibraryStore((s) => s.toggleFavorite);
+  const isFav = usePromptLibraryStore((s) => s.favorites.has(p.id));
+  const sendToStudio = usePromptLibraryStore((s) => s.sendToStudio);
+  const copyToClip = usePromptLibraryStore((s) => s.copyToClipboard);
+
+  const cat = PROMPT_CATEGORIES.find((c) => c.id === p.category);
+  const catColor = cat?.color ?? "text-text-muted bg-midnight-elevated";
+
+  const handleCopy = async () => {
+    await copyToClip(p.prompt);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleSend = () => {
+    sendToStudio(p.prompt);
+    setSent(true);
+    setTimeout(() => setSent(false), 2000);
+  };
+
+  return (
+    <div className="rounded-xl border border-midnight-border bg-midnight-card overflow-hidden hover:border-brand-accent/30 transition-colors">
+      {/* Header */}
+      <div className="p-4 flex flex-col gap-3">
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            <h3 className="text-sm font-semibold text-text-primary">
+              {p.title}
+            </h3>
+            <span className={cn("text-[10px] px-2 py-0.5 rounded-full font-medium", catColor)}>
+              {cat?.label ?? p.category}
+            </span>
+            {p.formulaRef && (
+              <span className="text-[10px] px-2 py-0.5 rounded-full font-medium text-brand-purple bg-brand-purple/15">
+                {p.formulaRef}
+              </span>
+            )}
+          </div>
+          <button
+            onClick={() => toggleFav(p.id)}
+            className="shrink-0 p-1 rounded hover:bg-midnight-elevated transition-colors"
+          >
+            <Star
+              className={cn("h-4 w-4", isFav
+                ? "fill-brand-amber text-brand-amber"
+                : "text-text-muted")}
+            />
+          </button>
+        </div>
+
+        <p className="text-xs text-text-secondary leading-relaxed">
+          {p.description}
+        </p>
+
+        {/* Tags */}
+        <div className="flex items-center gap-1.5 flex-wrap">
+          {p.tags.map((t) => (
+            <span
+              key={t}
+              className="text-[10px] px-1.5 py-0.5 rounded bg-midnight-elevated text-text-muted"
+            >
+              {t}
+            </span>
+          ))}
+        </div>
+
+        {/* Prompt preview (compact, first 3 lines) */}
+        <div className="flex items-center justify-between">
+          <span className="text-[10px] text-text-muted">
+            {p.prompt.split("\n").length} lines
+          </span>
+          <button
+            onClick={() => setExpanded(!expanded)}
+            className="flex items-center gap-1 text-[10px] text-brand-accent hover:text-brand-accent/80 transition-colors"
+          >
+            {expanded ? (
+              <>
+                <ChevronUp className="h-3 w-3" /> Hide
+              </>
+            ) : (
+              <>
+                <BookOpen className="h-3 w-3" /> Preview
+              </>
+            )}
+          </button>
+        </div>
+
+        {expanded && (
+          <CodeBlock
+            code={p.prompt}
+            language="markdown"
+            compact
+            maxLines={12}
+          />
+        )}
+      </div>
+
+      {/* Action buttons */}
+      <div className="flex items-center gap-2 px-4 py-2.5 border-t border-midnight-border bg-midnight-base/50">
+        <button
+          onClick={handleCopy}
+          className={cn(
+            "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors",
+            copied
+              ? "bg-brand-green/15 text-brand-green"
+              : "bg-midnight-elevated text-text-secondary hover:text-text-primary",
+          )}
+        >
+          {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+          {copied ? "Copied" : "Copy"}
+        </button>
+
+        <button
+          onClick={handleSend}
+          className={cn(
+            "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ml-auto",
+            sent
+              ? "bg-brand-accent/15 text-brand-accent"
+              : "bg-brand-accent text-white hover:bg-brand-accent/90",
+          )}
+        >
+          <Send className="h-3.5 w-3.5" />
+          {sent ? "Sent to Studio" : "Use in Studio"}
+        </button>
+      </div>
+    </div>
+  );
+}
