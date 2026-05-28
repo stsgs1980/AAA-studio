@@ -14,7 +14,7 @@
     "db:studio": "prisma studio",
     "db:seed": "bun run prisma/seed.ts",
     "postinstall": "prisma generate",
-    "vercel-build": "npx prisma db push && next build",
+    "vercel-build": "next build",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
