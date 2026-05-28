@@ -196,3 +196,32 @@ Stage Summary:
 - Real search filtering by title + keywords
 - All files <=150 lines, lint clean (0 errors, 0 warnings)
 - Files created: 22 new, 2 modified (dashboard layout, app-sidebar)
+
+---
+Task ID: 12
+Agent: full-stack-developer
+Task: Rewrite Prompt Studio v2 with @stsgs/prompting integration
+
+Work Log:
+- Rewrote Zustand store with new tab state (write/formulas/frameworks/compare), insertFormula helper
+- Updated types.ts with getScoreRingColor, removed old SidebarTab/EditorMode types
+- Built score-bar component (33 lines) with animated framer-motion bar
+- Updated intent-badge with proper styling using getIntentColor
+- Rewrote score-panel with overall score circle (80px) + getScoreRingColor + 6 dimension ScoreBars
+- Built formula-card with category badge, template preview, "Use Template" button
+- Built framework-card with collapsible form, dynamic section fields, generate button
+- Built compare-results with winner banner + 3 criteria dual-bar comparison
+- Created TabWrite: split editor (60%) + score panel (40%), intent badge, variable chips, formula picker
+- Created TabFormulas: category filter (all/structure/chain/constraint), 3-col grid of FormulaCards
+- Created TabFrameworks: 2-col grid of expandable FrameworkCards
+- Created TabCompare: dual textarea editors + compare button + CompareResults
+- Rewrote page.tsx as tab container with 4 tabs (Write, Formulas, Frameworks, Compare)
+- Updated barrel export with all new components and types
+
+Stage Summary:
+- Prompt Studio v2 with 4 tabs: Write (live scoring + intent + formula picker), Formulas (10 cards, category filter), Frameworks (4 expandable builders), Compare (A/B with criteria results)
+- All @stsgs/prompting modules integrated: scorePrompt, detectIntent, FORMULAS, FRAMEWORKS, comparePrompts
+- Live scoring with 300ms debounce via usePromptEngine hook
+- All files <=150 lines (largest: compare-results at 92, framework-card at 112)
+- Lint clean (0 errors, 0 warnings)
+- Files created/modified: 10 new components, 1 rewritten page, 1 updated store, 1 updated types, 1 updated barrel
