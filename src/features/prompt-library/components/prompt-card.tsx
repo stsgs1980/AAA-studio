@@ -33,11 +33,11 @@ export function PromptCard({ prompt: p }: PromptCardProps) {
   const flash = (setter: (v: boolean) => void) => { setter(true); setTimeout(() => setter(false), 2000); };
 
   const handleCopy = async () => { await copyToClip(p.prompt); flash(setCopied); };
-  const handleSend = () => { sendToStudio(p.prompt); flash(setSent); };
+  const handleSend = () => { sendToStudio(p.prompt); flash(setSent); router.push("/prompt-studio"); };
   const handleFormulaClick = () => {
     if (!p.formulaRef) return;
     navigateToFormula(p.formulaRef);
-    router.push("/studio");
+    router.push("/prompt-studio");
   };
 
   return (
