@@ -267,3 +267,26 @@ Stage Summary:
 - 12 files changed, +547/-8
 - Prompt Library: /templates with 15 prompts, 6 categories, search, favorites, studio integration
 - WORKFLOW.md created with full project vision, status, and roadmap
+
+---
+Task ID: 1
+Agent: main
+Task: Fix formulaRef case mismatch + clickable formula badges in Prompt Library
+
+Work Log:
+- Audited all 15 prompts: 13 have formulaRef, 2 without (cr-ux-writing, da-sql-generator)
+- Fixed formulaRef uppercase→lowercase in 6 data files: system, code, creative, analysis, data, security
+- All 10 formulaRef values now match @stsgs/prompting formula.id exactly
+- Added `formulaId: string | null`, `setFormulaId()`, `navigateToFormula()` to prompt-library-store
+- `navigateToFormula()` calls `usePromptStudioStore.getState().setActiveTab("formulas")` + sets formulaId
+- Converted formulaRef badge from static `<span>` to clickable `<button>` in PromptCard and PromptListItem
+- Badge click: navigateToFormula(id) → router.push("/studio")
+- Display still shows UPPERCASE via `.toUpperCase()` for readability
+- Extracted shared `flash()` helper to reduce handler duplication
+- PromptCard refactored from 161→119 lines, PromptListItem 135→131 lines
+- tsc + next build clean, pushed as ded2ee3
+
+Stage Summary:
+- Fixed latent bug: formulaRef now uses lowercase formula.id matching @stsgs/prompting
+- Real cross-feature link: Library → Prompt Studio formulas tab is now functional
+- All files under 150 line limit
