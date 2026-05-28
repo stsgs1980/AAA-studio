@@ -20,8 +20,8 @@ export async function PUT(request: Request) {
     for (const [key, value] of entries) {
       try {
         await db.$executeRawUnsafe(
-          `INSERT INTO "Settings" (id, key, value)
-           VALUES ($1, $2, $3)
+          `INSERT INTO "Settings" (id, key, value, "updatedAt")
+           VALUES ($1, $2, $3, NOW())
            ON CONFLICT (key) DO UPDATE SET value = $3, "updatedAt" = NOW()`,
           `cfg-${key}`, key, value,
         );

@@ -50,8 +50,8 @@ export async function saveLLMSettings(partial: Partial<LLMSettings>): Promise<vo
       if (!dbKey) return null;
       const value = typeof val === 'number' ? String(val) : String(val);
       return db.$executeRawUnsafe(
-        `INSERT INTO "Settings" (id, key, value)
-         VALUES ($1, $2, $3)
+        `INSERT INTO "Settings" (id, key, value, "updatedAt")
+         VALUES ($1, $2, $3, NOW())
          ON CONFLICT (key) DO UPDATE SET value = $3, "updatedAt" = NOW()`,
         `cfg-${dbKey}`, dbKey, value,
       );
