@@ -1,8 +1,4 @@
-// ============================================================================
-// 3A Studio — LLM Provider Client
-// Handles HTTP calls to different LLM providers.
-// All providers use OpenAI-compatible format except Anthropic.
-// ============================================================================
+// 3A Studio — LLM Provider Client. HTTP calls to LLM providers (OpenAI-compatible format, Anthropic variant).
 
 import type { LLMMessage, LLMResponse, LLMProviderId } from './types';
 import { LLM_PROVIDERS } from './types';
@@ -18,17 +14,12 @@ interface ProviderCallParams {
 }
 
 // ---- OpenAI-compatible providers (Z.ai, OpenAI, OpenRouter) ----
-
 async function callOpenAICompatible(params: ProviderCallParams): Promise<LLMResponse> {
   const { providerId, apiKey, model, messages, temperature, maxTokens } = params;
   const baseUrl = params.baseUrl ?? LLM_PROVIDERS[providerId].baseUrl;
-
   const res = await fetch(`${baseUrl}/chat/completions`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}`,
-    },
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
     body: JSON.stringify({
       model,
       messages: messages.map(m => ({ role: m.role, content: m.content })),
@@ -37,12 +28,10 @@ async function callOpenAICompatible(params: ProviderCallParams): Promise<LLMResp
       stream: false,
     }),
   });
-
   if (!res.ok) {
     const body = await res.text().catch(() => '');
     throw new Error(`${providerId} API ${res.status}: ${body.slice(0, 200)}`);
   }
-
   const data = await res.json();
   return {
     id: data.id ?? `call-${Date.now()}`,
@@ -58,14 +47,11 @@ async function callOpenAICompatible(params: ProviderCallParams): Promise<LLMResp
 }
 
 // ---- Anthropic (different format) ----
-
 async function callAnthropic(params: ProviderCallParams): Promise<LLMResponse> {
   const { apiKey, model, messages, temperature, maxTokens } = params;
   const baseUrl = params.baseUrl ?? LLM_PROVIDERS.anthropic.baseUrl;
-
   const systemMsg = messages.find(m => m.role === 'system')?.content ?? '';
   const chatMsgs = messages.filter(m => m.role !== 'system');
-
   const res = await fetch(`${baseUrl}/messages`, {
     method: 'POST',
     headers: {
@@ -81,18 +67,13 @@ async function callAnthropic(params: ProviderCallParams): Promise<LLMResponse> {
       temperature: temperature ?? 0.7,
     }),
   });
-
   if (!res.ok) {
     const body = await res.text().catch(() => '');
     throw new Error(`Anthropic API ${res.status}: ${body.slice(0, 200)}`);
   }
-
   const data = await res.json();
-  const textBlock = data.content?.find(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (b: any) => b.type === 'text'
-  );
-
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const textBlock = data.content?.find((b: any) => b.type === 'text');
   return {
     id: data.id ?? `claude-${Date.now()}`,
     content: textBlock?.text ?? '',
@@ -107,44 +88,30 @@ async function callAnthropic(params: ProviderCallParams): Promise<LLMResponse> {
 }
 
 // ---- Router ----
-
 export async function callLLM(params: ProviderCallParams): Promise<LLMResponse> {
   const { providerId } = params;
-
   if (!params.apiKey) {
     throw new Error('API key is not configured. Go to Settings → LLM Provider to set it up.');
   }
-
   switch (providerId) {
-    case 'anthropic':
-      return callAnthropic(params);
-    case 'openai':
-    case 'openrouter':
-      return callOpenAICompatible(params);
-    case 'zai':
-      return callOpenAICompatible(params);
-    default:
-      throw new Error(`Unknown provider: ${providerId}`);
+    case 'anthropic': return callAnthropic(params);
+    case 'openai': case 'openrouter': case 'zai': return callOpenAICompatible(params);
+    default: throw new Error(`Unknown provider: ${providerId}`);
   }
 }
 
 // ---- Test connection ----
-
 export async function testConnection(
   providerId: LLMProviderId,
   apiKey: string,
 ): Promise<{ ok: boolean; model: string; latencyMs: number; error?: string }> {
   const provider = LLM_PROVIDERS[providerId];
   const model = provider.models[0]?.id;
-
   if (!model) return { ok: false, model: '', latencyMs: 0, error: 'No models available' };
-
   const start = Date.now();
   try {
     const resp = await callLLM({
-      providerId,
-      apiKey,
-      model,
+      providerId, apiKey, model,
       messages: [{ role: 'user', content: 'Hi, respond with just "OK"' }],
       maxTokens: 10,
     });
