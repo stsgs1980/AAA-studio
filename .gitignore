@@ -11,7 +11,7 @@ dev.log
 
 # Sandbox system dirs (not part of repo)
 .zscripts/
-skills/
+/skills/
 upload/
 download/
 
