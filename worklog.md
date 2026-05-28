@@ -225,3 +225,45 @@ Stage Summary:
 - All files <=150 lines (largest: compare-results at 92, framework-card at 112)
 - Lint clean (0 errors, 0 warnings)
 - Files created/modified: 10 new components, 1 rewritten page, 1 updated store, 1 updated types, 1 updated barrel
+---
+Task ID: 13
+Agent: main
+Task: Add shiki syntax highlighting to CodeBlock across all app pages
+
+Work Log:
+- Created shared CodeBlock component at src/components/code-block/ (3 files: code-block.tsx, code-block-header.tsx, use-code-highlight.ts)
+- use-code-highlight.ts: Shiki WASM cache (module-level Highlighter singleton) to avoid re-loading
+- code-block-header.tsx: language badge + copy button with Check/Check animation
+- code-block.tsx: full variant (header + scrollable code) + compact variant (inline, no chrome)
+- Supports 9 languages: json, bash, typescript, javascript, yaml, text, markdown, python, css
+- Updated wiki-code-block.tsx to thin re-export of shared CodeBlock
+- Updated formula-card.tsx: markdown highlighting for formula template previews
+- Updated skills-page/page.tsx: JSON highlighting for inputSchema/outputSchema
+- Updated audit/page.tsx: JSON/text highlighting for log details
+- Updated agent-form.tsx: font-mono + markdown preview for system prompt textarea
+
+Stage Summary:
+- Commit: c4b0040 pushed
+- 9 files changed, +213/-92
+- All files <=150 lines, lint clean
+---
+Task ID: 14
+Agent: main
+Task: Build Prompt Library with 15 curated templates
+
+Work Log:
+- Created prompt-library feature: data/, components/, store/
+- Created prompt-categories.ts: 6 categories (system, code, creative, analysis, data, security) with color pairs
+- Created 15 production-ready prompts across 6 category files (system/code/creative/analysis/data/security-prompts.ts)
+- Each prompt follows @stsgs/prompting formulas (RTF, STONE, CARE, RISE, CO-STAR, CHAIN, etc.)
+- Created prompt-library-store.ts: Zustand + localStorage for favorites persistence
+- Created prompt-card.tsx: copy, favorite star, "Use in Studio" button, expandable preview with CodeBlock
+- Replaced /templates "Coming Soon" with full gallery: search, category filters, favorites filter
+- Added Copy + Clear buttons to Prompt Studio editor (tab-write.tsx)
+- Created WORKFLOW.md: strategic architecture overview + roadmap + current status
+
+Stage Summary:
+- Commit: 707c3af pushed
+- 12 files changed, +547/-8
+- Prompt Library: /templates with 15 prompts, 6 categories, search, favorites, studio integration
+- WORKFLOW.md created with full project vision, status, and roadmap
