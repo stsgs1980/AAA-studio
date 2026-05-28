@@ -18,11 +18,12 @@ export async function PUT(request: Request) {
     const body = await request.json();
     const entries = Object.entries(body) as [string, string][];
     await Promise.all(entries.map(([key, value]) =>
-      db.$executeRaw`
-        INSERT INTO "Settings" (id, key, value)
-        VALUES (${`cfg-${key}`}, ${key}, ${value})
-        ON CONFLICT (key) DO UPDATE SET value = ${value}, "updatedAt" = NOW()
-      `
+      db.$executeRawUnsafe(
+        `INSERT INTO "Settings" (id, key, value)
+         VALUES ($1, $2, $3)
+         ON CONFLICT (key) DO UPDATE SET value = $3, "updatedAt" = NOW()`,
+        `cfg-${key}`, key, value,
+      )
     ));
     return NextResponse.json({ success: true, updated: entries.length });
   } catch (error) {
