@@ -111,7 +111,7 @@ export function NetworkChart() {
                 d={`M${toX(0)},${toY(0)} L${apiPoints} L${toX(apiCalls.length - 1)},${toY(0)} Z`}
                 fill="url(#gradApi)"
                 style={{ opacity: animated ? 1 : 0, transition: 'opacity 0.8s ease' }} />
-              <polyline points={apiPoints} fill="none" stroke="#10B981" strokeWidth="2"
+              <polyline points={apiPoints} fill="none" stroke="#10B981" strokeWidth="3"
                 strokeLinecap="round" strokeLinejoin="round"
                 style={{
                   strokeDasharray: animated ? 'none' : '2000',
@@ -127,9 +127,9 @@ export function NetworkChart() {
                 d={`M${toX(0)},${toY(0)} L${failPoints} L${toX(failures.length - 1)},${toY(0)} Z`}
                 fill="url(#gradFail)"
                 style={{ opacity: animated ? 1 : 0, transition: 'opacity 0.8s ease 0.3s' }} />
-              <polyline points={failPoints} fill="none" stroke="#EF4444" strokeWidth="1.5"
+              <polyline points={failPoints} fill="none" stroke="#EF4444" strokeWidth="2"
                 strokeLinecap="round" strokeLinejoin="round"
-                strokeDasharray="4 3"
+                strokeDasharray="6 4"
                 style={{
                   opacity: animated ? 1 : 0,
                   transition: 'opacity 0.8s ease 0.3s',
