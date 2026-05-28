@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 import { createZAI } from "@/lib/zai-config";
+import { callLLMWithFallback } from "@/lib/llm-mock";
 import { topoSort, gatherInputs, extractText, type FlowNode, type FlowEdge } from "./flow-utils";
 
 type Params = { params: Promise<{ id: string }> };
@@ -14,7 +15,7 @@ interface NodeResult {
 
 /**
  * POST /api/flows/[id]/execute
- * Execute a saved flow with real LLM calls, save PipelineExecution.
+ * Execute a saved flow with LLM calls (or mock fallback), save PipelineExecution.
  */
 export async function POST(request: Request, { params }: Params) {
   const { id } = await params;
@@ -57,7 +58,12 @@ async function runFlow(
   const sorted = topoSort(nodes, edges);
   const ctx = new Map<string, Record<string, unknown>>();
   const results: NodeResult[] = [];
-  const zai = await createZAI();
+
+  // Try to init ZAI — if config missing, LLM nodes will use mock
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let zai: any = null;
+  try { zai = await createZAI(); }
+  catch (err) { console.warn("[execute] ZAI init failed, LLM nodes will use mock:", err); }
 
   for (const nodeId of sorted) {
     const node = nodes.find((n) => n.id === nodeId);
@@ -88,18 +94,13 @@ async function execNode(
     case "end": return { ...inputs, finished: true };
     case "llm": {
       const sys = typeof d.systemPrompt === "string" ? d.systemPrompt : "You are a helpful assistant.";
-      const comp = await zai.chat.completions.create({
-        messages: [{ role: "system", content: sys }, { role: "user", content: extractText(inputs) }],
-        temperature: d.temperature as number ?? 0.7,
-      });
-      return { ...inputs, model: d.model ?? "default", response: comp.choices?.[0]?.message?.content ?? "" };
+      const { response, mock } = await callLLMWithFallback(zai, sys, extractText(inputs), d.temperature as number | undefined);
+      return { ...inputs, model: d.model ?? "default", response, mock };
     }
     case "agent": {
       const role = typeof d.role === "string" ? d.role : "assistant";
-      const comp = await zai.chat.completions.create({
-        messages: [{ role: "system", content: `You are ${role}.` }, { role: "user", content: extractText(inputs) }],
-      });
-      return { ...inputs, agentResponse: comp.choices?.[0]?.message?.content ?? "" };
+      const { response, mock } = await callLLMWithFallback(zai, `You are ${role}.`, extractText(inputs));
+      return { ...inputs, agentResponse: response, mock };
     }
     case "prompt": {
       let tmpl = typeof d.template === "string" ? d.template : "";
