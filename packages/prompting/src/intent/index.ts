@@ -17,133 +17,113 @@ export interface IntentResult {
   signals: string[];
 }
 
+const WEIGHTS: Record<PromptIntent, number> = {
+  code: 1.5,
+  instruction: 1.3,
+  analysis: 1.2,
+  creative: 1.2,
+  question: 1.0,
+  correction: 1.4,
+  conversation: 0.5,
+};
+
+interface IntentDef {
+  intent: PromptIntent;
+  patterns: { re: RegExp; signal: string }[];
+}
+
+const INTENTS: IntentDef[] = [
+  {
+    intent: "code",
+    patterns: [
+      { re: /```/, signal: "code-block" },
+      { re: /\b(function|class|interface|type|const|let|var|import|export)\b/, signal: "code-keyword" },
+      { re: /\b(bug|error|fix|debug|refactor|deploy)\b/, signal: "code-action" },
+      { re: /\b(component|module|api|endpoint|route|handler)\b/, signal: "code-structure" },
+      { re: /\b(python|javascript|typescript|rust|java|go)\b/, signal: "language" },
+    ],
+  },
+  {
+    intent: "correction",
+    patterns: [
+      { re: /\b(fix|correct|repair|amend|revise)\b/, signal: "fix-verb" },
+      { re: /\b(wrong|incorrect|broken|bug|mistake|error)\b/, signal: "error-noun" },
+      { re: /\b(instead of|rather|should be|supposed to)\b/, signal: "correction-phrase" },
+    ],
+  },
+  {
+    intent: "instruction",
+    patterns: [
+      { re: /\b(create|build|write|make|generate|produce|set up|configure)\b/, signal: "create-verb" },
+      { re: /\b(implement|develop|design|architect|integrate)\b/, signal: "dev-verb" },
+      { re: /\b(do not|don't|never|avoid|always|must|ensure)\b/, signal: "constraint" },
+      { re: /\b(verify|check|validate|test)\b/, signal: "verify-verb" },
+    ],
+  },
+  {
+    intent: "analysis",
+    patterns: [
+      { re: /\b(analyze|analysis|evaluate|assess|audit|review)\b/, signal: "analysis-verb" },
+      { re: /\b(pros?\s+and\s+cons|advantages?|disadvantages?|trade-offs)\b/, signal: "comparison" },
+      { re: /\b(statistics|data|metrics|performance|benchmark)\b/, signal: "data-term" },
+      { re: /\b(recommendation|conclusion|summary|findings|report)\b/, signal: "output-type" },
+    ],
+  },
+  {
+    intent: "creative",
+    patterns: [
+      { re: /\b(write|compose|draft|craft|create)\b/, signal: "creative-verb" },
+      { re: /\b(story|poem|article|blog|essay|script|song|novel)\b/, signal: "format" },
+      { re: /\b(creative|imagine|invent|brainstorm|ideate)\b/, signal: "creative-word" },
+      { re: /\b(ideas?|suggestions?|alternatives?|options?|variations?)\b/, signal: "exploration" },
+    ],
+  },
+  {
+    intent: "question",
+    patterns: [
+      { re: /\?/, signal: "question-mark" },
+      { re: /\b(what|why|how|when|where|who|which)\b/, signal: "wh-word" },
+      { re: /\b(can you|could you|would you|is it|does it|tell me)\b/, signal: "polite-request" },
+      { re: /\b(explain|describe|clarify|elaborate)\b/, signal: "explain-verb" },
+    ],
+  },
+];
+
 /** Detect the intent of a prompt */
 export function detectIntent(prompt: string): IntentResult {
   const lower = prompt.toLowerCase().trim();
-  const results: { intent: PromptIntent; score: number; signals: string[] }[] = [];
+  const wordCount = lower.split(/\s+/).length;
 
-  // Question
-  const questionScore = scoreQuestion(lower);
-  if (questionScore > 0) {
-    results.push({
-      intent: "question",
-      score: questionScore,
-      signals: extractSignals(lower, questionPatterns),
-    });
+  // Very short input → conversation fallback
+  if (wordCount < 3) {
+    return { intent: "conversation", confidence: 0.2, signals: ["too-short"] };
   }
 
-  // Instruction
-  const instructionScore = scoreInstruction(lower);
-  if (instructionScore > 0) {
-    results.push({
-      intent: "instruction",
-      score: instructionScore,
-      signals: extractSignals(lower, instructionPatterns),
-    });
+  let bestIntent: PromptIntent = "conversation";
+  let bestScore = 0;
+  let bestSignals: string[] = ["no-strong-signal"];
+
+  for (const def of INTENTS) {
+    let score = 0;
+    const signals: string[] = [];
+    for (const { re, signal } of def.patterns) {
+      if (re.test(lower)) {
+        score += 1;
+        signals.push(signal);
+      }
+    }
+    const weighted = score * (WEIGHTS[def.intent] ?? 1);
+    if (weighted > bestScore) {
+      bestScore = weighted;
+      bestIntent = def.intent;
+      bestSignals = signals;
+    }
   }
 
-  // Code
-  const codeScore = scoreCode(prompt);
-  if (codeScore > 0) {
-    results.push({
-      intent: "code",
-      score: codeScore,
-      signals: extractSignals(lower, codePatterns),
-    });
-  }
+  // Confidence: map weighted score to 0-1 range
+  // 0 signals = 0.2, 1 = 0.4, 2 = 0.6, 3+ = 0.8, 4+ with weight = 0.95
+  const rawConf = Math.min(0.95, 0.2 + bestScore * 0.15);
+  const confidence = Math.round(rawConf * 100) / 100;
 
-  // Creative
-  const creativeScore = scoreCreative(lower);
-  if (creativeScore > 0) {
-    results.push({
-      intent: "creative",
-      score: creativeScore,
-      signals: extractSignals(lower, creativePatterns),
-    });
-  }
-
-  // Analysis
-  const analysisScore = scoreAnalysis(lower);
-  if (analysisScore > 0) {
-    results.push({
-      intent: "analysis",
-      score: analysisScore,
-      signals: extractSignals(lower, analysisPatterns),
-    });
-  }
-
-  // Sort by score
-  results.sort((a, b) => b.score - a.score);
-
-  if (results.length === 0) {
-    return { intent: "conversation", confidence: 0.3, signals: ["no strong signal"] };
-  }
-
-  const best = results[0];
-  const totalScore = results.reduce((sum, r) => sum + r.score, 0);
-  const confidence = Math.min(0.95, best.score / totalScore);
-
-  return { intent: best.intent, confidence, signals: best.signals };
-}
-
-const questionPatterns = [
-  /\?/,
-  /\b(what|why|how|when|where|who|which)\b/,
-  /\b(can you|could you|would you|is it|does it)\b/,
-  /\b(explain|describe|tell me|clarify)\b/,
-];
-
-const instructionPatterns = [
-  /\b(create|build|write|make|generate|produce)\b/,
-  /\b(implement|develop|design|configure)\b/,
-  /\b(do not|don't|never|avoid|always|must)\b/,
-  /\b(ensure|verify|check|validate)\b/,
-];
-
-const codePatterns = [
-  /```/,
-  /\b(function|class|interface|type|const|let|var|import|export)\b/,
-  /\b(bug|error|fix|debug|refactor)\b/,
-  /\b(component|module|api|endpoint|route)\b/,
-];
-
-const creativePatterns = [
-  /\b(write|compose|draft|craft|create)\b/,
-  /\b(story|poem|article|blog|essay|script)\b/,
-  /\b(creative|imagine|invent|brainstorm)\b/,
-  /\b(ideas|suggestions|alternatives|options)\b/,
-];
-
-const analysisPatterns = [
-  /\b(analyze|analysis|evaluate|assess|compare)\b/,
-  /\b(pros and cons|advantages|disadvantages|trade-offs)\b/,
-  /\b(statistics|data|metrics|performance|benchmark)\b/,
-  /\b(recommendation|conclusion|summary|findings)\b/,
-];
-
-function scoreQuestion(lower: string): number {
-  return questionPatterns.reduce((score, pattern) => score + (pattern.test(lower) ? 1 : 0), 0);
-}
-
-function scoreInstruction(lower: string): number {
-  return instructionPatterns.reduce((score, pattern) => score + (pattern.test(lower) ? 1 : 0), 0);
-}
-
-function scoreCode(prompt: string): number {
-  const lower = prompt.toLowerCase();
-  const codePatternScore = codePatterns.reduce((s, p) => s + (p.test(lower) ? 1 : 0), 0);
-  const codeBlockScore = (prompt.match(/```/g) || []).length > 0 ? 3 : 0;
-  return codePatternScore + codeBlockScore;
-}
-
-function scoreCreative(lower: string): number {
-  return creativePatterns.reduce((score, pattern) => score + (pattern.test(lower) ? 1 : 0), 0);
-}
-
-function scoreAnalysis(lower: string): number {
-  return analysisPatterns.reduce((score, pattern) => score + (pattern.test(lower) ? 1 : 0), 0);
-}
-
-function extractSignals(text: string, patterns: RegExp[]): string[] {
-  return patterns.filter((p) => p.test(text)).map((_, i) => `pattern-${i + 1}`);
+  return { intent: bestIntent, confidence, signals: bestSignals };
 }
