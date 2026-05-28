@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 import ZAI from "z-ai-web-dev-sdk";
+import { ensureZAIConfig } from "@/lib/zai-config";
 import { topoSort, gatherInputs, extractText, type FlowNode, type FlowEdge } from "./flow-utils";
 
 type Params = { params: Promise<{ id: string }> };
@@ -57,6 +58,7 @@ async function runFlow(
   const sorted = topoSort(nodes, edges);
   const ctx = new Map<string, Record<string, unknown>>();
   const results: NodeResult[] = [];
+  await ensureZAIConfig();
   const zai = await ZAI.create();
 
   for (const nodeId of sorted) {
