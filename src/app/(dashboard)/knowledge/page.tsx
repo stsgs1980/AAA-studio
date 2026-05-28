@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { BookOpen } from 'lucide-react';
 import { PageSkeleton } from '@/components/ui';
-import { CollectionForm, CollectionList, DocumentList } from '@/features/knowledge/components';
+import { CollectionForm, CollectionList, DocumentList, SearchBar } from '@/features/knowledge/components';
 import type { KnowledgeCollection, KnowledgeDocument } from '@/features/knowledge/types';
 
 export default function KnowledgeBasePage() {
@@ -87,6 +87,8 @@ export default function KnowledgeBasePage() {
         </div>
         <CollectionForm onCreate={handleCreate} />
       </div>
+
+      <SearchBar collectionId={selectedId} />
 
       {loading ? (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 min-h-[60vh]">
