@@ -13,6 +13,7 @@ const SETTINGS_MAP: Record<string, keyof LLMSettings> = {
   llm_provider: 'providerId',
   llm_api_key: 'apiKey',
   llm_model: 'model',
+  llm_base_url: 'baseUrl',
   llm_temperature: 'temperature',
   llm_max_tokens: 'maxTokens',
 };
@@ -38,7 +39,12 @@ export async function getLLMSettings(): Promise<LLMSettings> {
     }
   }
 
-  return { ...DEFAULT_LLM_SETTINGS, ...map };
+  const merged = { ...DEFAULT_LLM_SETTINGS, ...map };
+  // Resolve baseUrl: use user override or provider default
+  if (!merged.baseUrl) {
+    merged.baseUrl = LLM_PROVIDERS[merged.providerId]?.baseUrl ?? '';
+  }
+  return merged;
 }
 
 /** Save LLM settings to DB (partial update) */

@@ -43,6 +43,7 @@ export interface LLMSettings {
   providerId: LLMProviderId;
   apiKey: string;
   model: string;
+  baseUrl: string;
   temperature: number;
   maxTokens: number;
 }
@@ -51,6 +52,7 @@ export const DEFAULT_LLM_SETTINGS: LLMSettings = {
   providerId: 'zai',
   apiKey: '',
   model: 'glm-4.7-flashx',
+  baseUrl: '',
   temperature: 0.7,
   maxTokens: 4096,
 };

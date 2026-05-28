@@ -17,7 +17,9 @@ async function runTest() {
       });
     }
 
-    const result = await testConnection(settings.providerId, settings.apiKey);
+    const result = await testConnection(
+      settings.providerId, settings.apiKey, settings.baseUrl, settings.model,
+    );
 
     return NextResponse.json(result);
   } catch (error) {

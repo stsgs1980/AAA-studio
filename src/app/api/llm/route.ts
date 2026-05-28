@@ -33,6 +33,7 @@ export async function POST(request: Request) {
     const response = await callLLM({
       providerId: settings.providerId,
       apiKey: settings.apiKey,
+      baseUrl: settings.baseUrl,
       model: model || settings.model,
       messages,
       temperature: temperature ?? settings.temperature,
