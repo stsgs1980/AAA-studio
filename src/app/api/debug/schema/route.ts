@@ -1,26 +1,22 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 
-export async function GET() {
+export async function POST() {
+  const p = new PrismaClient();
   try {
-    const p = new PrismaClient();
-    const cols = await p.$queryRawUnsafe<{ column_name: string; data_type: string; column_default: string | null }[]>(
-      `SELECT column_name, data_type, column_default
-       FROM information_schema.columns
-       WHERE table_name = 'Settings' ORDER BY ordinal_position`
+    // Test 1: Simple INSERT with explicit id
+    await p.$executeRawUnsafe(
+      `INSERT INTO "Settings" (id, key, value) VALUES ('cfg-test', 'test', 'hello')`
     );
+    // Test 2: Read it back
     const rows = await p.$queryRawUnsafe<{ id: string; key: string; value: string }[]>(
       `SELECT * FROM "Settings"`
     );
-    const constraints = await p.$queryRawUnsafe<{ constraint_name: string; column_name: string }[]>(
-      `SELECT tc.constraint_name, kcu.column_name
-       FROM information_schema.table_constraints tc
-       JOIN information_schema.key_column_usage kcu ON tc.constraint_name = kcu.constraint_name
-       WHERE tc.table_name = 'Settings'`
-    );
     await p.$disconnect();
-    return NextResponse.json({ columns: cols, rows, constraints });
+    return NextResponse.json({ ok: true, rows });
   } catch (e) {
-    return NextResponse.json({ error: String(e) }, { status: 500 });
+    const msg = e instanceof Error ? e.message : String(e);
+    await p.$disconnect();
+    return NextResponse.json({ ok: false, error: msg }, { status: 500 });
   }
 }
