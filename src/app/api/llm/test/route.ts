@@ -1,31 +1,49 @@
 // ============================================================================
-// POST /api/llm/test — Test LLM connection
-// Uses provider + key from DB Settings to verify the API works.
+// POST /api/llm/test — Test LLM connection for a specific provider
+// Reads providers from DB, tests the requested one.
 // ============================================================================
 
 import { NextResponse } from 'next/server';
-import { getLLMSettings, isLLMConfigured, testConnection } from '@/lib/llm';
+import { getProviders, getActiveProvider } from '@/lib/llm';
+import { testConnection } from '@/lib/llm';
 
-async function runTest() {
+export async function POST(request: Request) {
   try {
-    const settings = await getLLMSettings();
+    const body = await request.json().catch(() => ({}));
+    const providers = await getProviders();
 
-    if (!isLLMConfigured(settings)) {
-      return NextResponse.json({
-        ok: false,
-        error: 'LLM not configured. Go to Settings → LLM Provider.',
-      });
+    // If providerId specified in body, test that specific provider
+    let targetId = body.providerId as string | undefined;
+
+    // Otherwise test the active one
+    if (!targetId) {
+      const active = await getActiveProvider();
+      if (!active) {
+        return NextResponse.json({ ok: false, error: 'No active provider configured.' });
+      }
+      return NextResponse.json(
+        await testConnection(active.provider, active.model),
+      );
     }
 
-    const result = await testConnection(
-      settings.providerId, settings.apiKey, settings.baseUrl, settings.model,
-    );
+    // Find provider by id
+    const provider = providers.find(p => p.id === targetId);
+    if (!provider) {
+      return NextResponse.json({ ok: false, error: `Provider "${targetId}" not found.` });
+    }
+    if (!provider.apiKey) {
+      return NextResponse.json({ ok: false, error: 'API key not set for this provider.' });
+    }
+    if (!provider.baseUrl) {
+      return NextResponse.json({ ok: false, error: 'Endpoint URL not set for this provider.' });
+    }
 
-    return NextResponse.json(result);
+    const model = body.model as string | undefined;
+    return NextResponse.json(await testConnection(provider, model));
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
     return NextResponse.json({ ok: false, error: msg });
   }
 }
 
-export { runTest as POST, runTest as GET };
+export { POST as GET };

@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
-import { callLLM, getLLMSettings, isLLMConfigured } from "@/lib/llm";
+import { callLLM, getActiveProvider } from "@/lib/llm";
 import { topoSort, gatherInputs, extractText, type FlowNode, type FlowEdge } from "./flow-utils";
 
 type Params = { params: Promise<{ id: string }> };
@@ -12,10 +12,6 @@ interface NodeResult {
   error?: string; duration: number;
 }
 
-/**
- * POST /api/flows/[id]/execute
- * Execute a saved flow using the configured LLM provider.
- */
 export async function POST(request: Request, { params }: Params) {
   const { id } = await params;
 
@@ -27,8 +23,8 @@ export async function POST(request: Request, { params }: Params) {
     const edges: FlowEdge[] = JSON.parse(flow.edges);
     if (!nodes.length) return NextResponse.json({ error: "Flow has no nodes" }, { status: 400 });
 
-    const llmSettings = await getLLMSettings();
-    if (!isLLMConfigured(llmSettings)) {
+    const active = await getActiveProvider();
+    if (!active) {
       return NextResponse.json(
         { error: 'LLM not configured', message: 'Go to Settings → LLM Provider to add your API key.' },
         { status: 422 },
@@ -39,7 +35,7 @@ export async function POST(request: Request, { params }: Params) {
       data: { flowId: id, status: "running", startedAt: new Date() },
     });
 
-    const result = await runFlow(nodes, edges, llmSettings);
+    const result = await runFlow(nodes, edges, active);
 
     await db.pipelineExecution.update({
       where: { id: execution.id },
@@ -62,7 +58,7 @@ export async function POST(request: Request, { params }: Params) {
 async function runFlow(
   nodes: FlowNode[],
   edges: FlowEdge[],
-  settings: { providerId: string; apiKey: string; model: string; temperature: number; maxTokens: number },
+  active: { provider: import('@/lib/llm').ProviderConfig; model: string; settings: import('@/lib/llm').LLMSettings },
 ): Promise<{ success: boolean; results: NodeResult[]; error?: string }> {
   const sorted = topoSort(nodes, edges);
   const ctx = new Map<string, Record<string, unknown>>();
@@ -74,7 +70,7 @@ async function runFlow(
     const start = Date.now();
     try {
       const inputs = gatherInputs(nodeId, edges, ctx);
-      const output = await execNode(node, inputs, settings);
+      const output = await execNode(node, inputs, active);
       ctx.set(nodeId, output);
       results.push({ nodeId, nodeType: node.type, status: "completed", output, duration: Date.now() - start });
     } catch (err) {
@@ -89,7 +85,7 @@ async function runFlow(
 async function execNode(
   node: FlowNode,
   inputs: Record<string, unknown>,
-  settings: { providerId: string; apiKey: string; model: string; temperature: number; maxTokens: number },
+  active: { provider: import('@/lib/llm').ProviderConfig; model: string; settings: import('@/lib/llm').LLMSettings },
 ): Promise<Record<string, unknown>> {
   const d = node.data;
   switch (node.type) {
@@ -98,30 +94,28 @@ async function execNode(
     case "llm": {
       const sys = typeof d.systemPrompt === "string" ? d.systemPrompt : "You are a helpful assistant.";
       const resp = await callLLM({
-        providerId: settings.providerId as 'zai' | 'openai' | 'anthropic' | 'openrouter',
-        apiKey: settings.apiKey,
-        model: (d.model as string) || settings.model,
+        provider: active.provider,
+        model: (d.model as string) || active.model,
         messages: [
           { role: "system", content: sys },
           { role: "user", content: extractText(inputs) },
         ],
-        temperature: (d.temperature as number) ?? settings.temperature,
-        maxTokens: settings.maxTokens,
+        temperature: (d.temperature as number) ?? active.settings.temperature,
+        maxTokens: active.settings.maxTokens,
       });
       return { ...inputs, model: resp.model, response: resp.content };
     }
     case "agent": {
       const role = typeof d.role === "string" ? d.role : "assistant";
       const resp = await callLLM({
-        providerId: settings.providerId as 'zai' | 'openai' | 'anthropic' | 'openrouter',
-        apiKey: settings.apiKey,
-        model: settings.model,
+        provider: active.provider,
+        model: active.model,
         messages: [
           { role: "system", content: `You are ${role}.` },
           { role: "user", content: extractText(inputs) },
         ],
-        temperature: settings.temperature,
-        maxTokens: settings.maxTokens,
+        temperature: active.settings.temperature,
+        maxTokens: active.settings.maxTokens,
       });
       return { ...inputs, agentResponse: resp.content };
     }

@@ -30,6 +30,18 @@ export interface LLMResponse {
 }
 
 export type LLMProviderId = 'zai' | 'openai' | 'anthropic' | 'openrouter';
+export type LLMProviderFormat = 'openai' | 'anthropic';
+
+/** Stored per-provider config — supports built-in + custom providers */
+export interface ProviderConfig {
+  id: string;            // unique key, e.g. 'zai', 'openai', 'my-groq'
+  name: string;          // display name
+  baseUrl: string;       // API endpoint
+  apiKey: string;
+  models: LLMModel[];
+  enabled: boolean;
+  format: LLMProviderFormat;  // API format
+}
 
 export interface LLMModel {
   id: string;
@@ -39,25 +51,22 @@ export interface LLMModel {
   contextWindow?: number;
 }
 
+/** Active LLM selection — which provider + model is currently in use */
 export interface LLMSettings {
-  providerId: LLMProviderId;
-  apiKey: string;
-  model: string;
-  baseUrl: string;
+  activeProviderId: string;  // which provider config to use
+  activeModel: string;
   temperature: number;
   maxTokens: number;
 }
 
 export const DEFAULT_LLM_SETTINGS: LLMSettings = {
-  providerId: 'zai',
-  apiKey: '',
-  model: 'glm-4.7-flashx',
-  baseUrl: '',
+  activeProviderId: 'zai',
+  activeModel: 'glm-4.7-flashx',
   temperature: 0.7,
   maxTokens: 4096,
 };
 
-export const LLM_PROVIDERS: Record<LLMProviderId, {
+export const LLM_PROVIDERS: Record<string, {
   id: LLMProviderId;
   name: string;
   baseUrl: string;
@@ -109,3 +118,24 @@ export const LLM_PROVIDERS: Record<LLMProviderId, {
     ],
   },
 };
+
+/** Convert a built-in provider into a ProviderConfig (empty apiKey, enabled=false) */
+export function builtinToConfig(id: LLMProviderId): ProviderConfig {
+  const p = LLM_PROVIDERS[id];
+  if (!p) throw new Error(`Unknown built-in provider: ${id}`);
+  return {
+    id: p.id, name: p.name, baseUrl: p.baseUrl,
+    apiKey: '', models: p.models, enabled: id === 'zai',
+    format: id === 'anthropic' ? 'anthropic' : 'openai',
+  };
+}
+
+/** Create a blank custom provider config */
+export function blankCustomProvider(name?: string): ProviderConfig {
+  return {
+    id: name ? `custom-${name.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}` : `custom-${Date.now()}`,
+    name: name ?? 'New Provider',
+    baseUrl: '', apiKey: '', models: [], enabled: true,
+    format: 'openai',
+  };
+}
