@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import ZAI from "z-ai-web-dev-sdk";
-import { ensureZAIConfig } from "@/lib/zai-config";
+import { createZAI } from "@/lib/zai-config";
 
 /**
  * POST /api/llm
@@ -16,8 +15,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "messages required" }, { status: 400 });
     }
 
-    await ensureZAIConfig();
-    const zai = await ZAI.create();
+    const zai = await createZAI();
     const completion = await zai.chat.completions.create({
       messages,
       temperature: temperature ?? 0.7,
