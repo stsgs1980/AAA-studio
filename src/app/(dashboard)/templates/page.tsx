@@ -1,19 +1,20 @@
 "use client";
 
 import { useMemo } from "react";
-import { Layers, Search, Star, X } from "lucide-react";
+import { Layers, Grid2x2, Rows3 } from "lucide-react";
 import { cn } from "@stsgs/ui";
 import { usePromptLibraryStore } from "@/features/prompt-library/store/prompt-library-store";
 import { PromptCard } from "@/features/prompt-library/components/prompt-card";
-import { PROMPT_CATEGORIES } from "@/features/prompt-library/data/prompt-categories";
+import { PromptListItem } from "@/features/prompt-library/components/prompt-list-item";
+import { LibraryFilters } from "@/features/prompt-library/components/library-filters";
 import { PROMPT_LIBRARY } from "@/features/prompt-library/data/prompt-library";
 
 export default function TemplateGalleryPage() {
   const search = usePromptLibraryStore((s) => s.search);
-  const setSearch = usePromptLibraryStore((s) => s.setSearch);
   const categoryFilter = usePromptLibraryStore((s) => s.categoryFilter);
-  const setCategoryFilter = usePromptLibraryStore((s) => s.setCategoryFilter);
   const favorites = usePromptLibraryStore((s) => s.favorites);
+  const viewMode = usePromptLibraryStore((s) => s.viewMode);
+  const setViewMode = usePromptLibraryStore((s) => s.setViewMode);
 
   const filtered = useMemo(() => {
     let list = PROMPT_LIBRARY;
@@ -46,82 +47,54 @@ export default function TemplateGalleryPage() {
         <span className="text-xs text-text-muted bg-midnight-elevated px-2 py-0.5 rounded-full">
           {filtered.length} prompts
         </span>
-      </div>
-
-      {/* Search + Filters */}
-      <div className="flex items-center gap-3 flex-wrap">
-        {/* Search input */}
-        <div className="relative flex-1 min-w-[200px] max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted" />
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search prompts..."
-            className="w-full h-9 pl-9 pr-3 rounded-lg border border-midnight-border bg-midnight-base text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/20"
-          />
-          {search && (
-            <button
-              onClick={() => setSearch("")}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-midnight-elevated"
-            >
-              <X className="h-3.5 w-3.5 text-text-muted" />
-            </button>
-          )}
-        </div>
-
-        {/* Category pills */}
-        <div className="flex items-center gap-1.5 flex-wrap">
+        <div className="ml-auto flex items-center gap-1 bg-midnight-elevated rounded-lg p-0.5">
           <button
-            onClick={() => setCategoryFilter("")}
+            onClick={() => setViewMode("grid")}
             className={cn(
-              "px-3 py-1.5 rounded-lg text-xs font-medium transition-colors",
-              !categoryFilter
+              "p-1.5 rounded-md transition-colors",
+              viewMode === "grid"
                 ? "bg-brand-accent text-white"
-                : "bg-midnight-elevated text-text-secondary hover:text-text-primary",
+                : "text-text-muted hover:text-text-secondary",
             )}
+            title="Grid view"
           >
-            All
+            <Grid2x2 className="h-4 w-4" />
           </button>
           <button
-            onClick={() => setCategoryFilter("favorites")}
+            onClick={() => setViewMode("list")}
             className={cn(
-              "flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors",
-              categoryFilter === "favorites"
-                ? "bg-brand-amber text-white"
-                : "bg-midnight-elevated text-text-secondary hover:text-text-primary",
+              "p-1.5 rounded-md transition-colors",
+              viewMode === "list"
+                ? "bg-brand-accent text-white"
+                : "text-text-muted hover:text-text-secondary",
             )}
+            title="List view"
           >
-            <Star className="h-3 w-3" />
-            Favorites
+            <Rows3 className="h-4 w-4" />
           </button>
-          {PROMPT_CATEGORIES.map((c) => (
-            <button
-              key={c.id}
-              onClick={() => setCategoryFilter(c.id)}
-              className={cn(
-                "px-3 py-1.5 rounded-lg text-xs font-medium transition-colors",
-                categoryFilter === c.id
-                  ? "bg-brand-accent text-white"
-                  : "bg-midnight-elevated text-text-secondary hover:text-text-primary",
-              )}
-            >
-              {c.label}
-            </button>
-          ))}
         </div>
       </div>
 
-      {/* Grid */}
+      {/* Filters */}
+      <LibraryFilters />
+
+      {/* Content */}
       {filtered.length === 0 ? (
         <div className="rounded-xl border bg-card p-12 shadow-sm flex flex-col items-center gap-2">
           <p className="text-muted-foreground text-sm">
             {search ? "No prompts match your search." : "No favorites yet."}
           </p>
         </div>
-      ) : (
+      ) : viewMode === "grid" ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
           {filtered.map((p) => (
             <PromptCard key={p.id} prompt={p} />
+          ))}
+        </div>
+      ) : (
+        <div className="flex flex-col gap-2">
+          {filtered.map((p) => (
+            <PromptListItem key={p.id} prompt={p} />
           ))}
         </div>
       )}

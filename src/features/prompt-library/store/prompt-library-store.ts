@@ -20,13 +20,17 @@ function saveFavorites(favs: Set<string>) {
   } catch { /* quota exceeded */ }
 }
 
+export type ViewMode = "grid" | "list";
+
 interface PromptLibraryStore {
   favorites: Set<string>;
   search: string;
   categoryFilter: string;
+  viewMode: ViewMode;
 
   setSearch: (q: string) => void;
   setCategoryFilter: (c: string) => void;
+  setViewMode: (m: ViewMode) => void;
   toggleFavorite: (id: string) => void;
   isFavorite: (id: string) => boolean;
   sendToStudio: (prompt: string) => void;
@@ -37,9 +41,11 @@ export const usePromptLibraryStore = create<PromptLibraryStore>((set, get) => ({
   favorites: loadFavorites(),
   search: "",
   categoryFilter: "",
+  viewMode: "grid" as ViewMode,
 
   setSearch: (q) => set({ search: q }),
   setCategoryFilter: (c) => set({ categoryFilter: c }),
+  setViewMode: (m) => set({ viewMode: m }),
 
   toggleFavorite: (id) =>
     set((s) => {
