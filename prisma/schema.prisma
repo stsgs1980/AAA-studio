@@ -226,7 +226,8 @@ model AuditLog {
 // ============================================================================
 
 model Settings {
-  key   String @id
+  id    String @id @default("system")
+  key   String @unique
   value String
   updatedAt DateTime @updatedAt
 }

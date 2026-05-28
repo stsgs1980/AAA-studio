@@ -49,11 +49,11 @@ export async function saveLLMSettings(partial: Partial<LLMSettings>): Promise<vo
       const dbKey = Object.entries(SETTINGS_MAP).find(([, v]) => v === key)?.[0];
       if (!dbKey) return null;
       const value = typeof val === 'number' ? String(val) : String(val);
-      return db.settings.upsert({
-        where: { key: dbKey },
-        update: { value },
-        create: { key: dbKey, value },
-      });
+      return db.$executeRaw`
+        INSERT INTO "Settings" (id, key, value)
+        VALUES (${`cfg-${dbKey}`}, ${dbKey}, ${value})
+        ON CONFLICT (key) DO UPDATE SET value = ${value}, "updatedAt" = NOW()
+      `;
     })
     .filter(Boolean);
 
