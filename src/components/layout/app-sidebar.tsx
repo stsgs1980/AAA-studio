@@ -17,9 +17,11 @@ import {
   Settings,
   PanelLeftClose,
   PanelLeft,
+  FileText,
 } from "lucide-react";
 import { cn } from "@stsgs/ui";
 import { useState } from "react";
+import { useWikiStore } from "@/features/wiki/store/wiki-store";
 
 const navItems = [
   { title: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -99,6 +101,21 @@ export function AppSidebar() {
           })}
         </ul>
       </nav>
+
+      {/* Wiki Shortcut */}
+      <div className="border-t px-2 py-2">
+        <button
+          onClick={() => useWikiStore.getState().open()}
+          className={cn(
+            "flex w-full items-center gap-3 rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors",
+            collapsed && "justify-center"
+          )}
+          title="Wiki (Ctrl+K)"
+        >
+          <FileText className="h-4 w-4 shrink-0" />
+          {!collapsed && <span>Wiki</span>}
+        </button>
+      </div>
 
       {/* Footer */}
       {!collapsed && (

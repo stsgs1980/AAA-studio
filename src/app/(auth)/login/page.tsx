@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,6 +17,7 @@ import { GoogleButton } from "@/features/auth/components/google-button";
 import { Logo } from "@/features/auth/components/logo";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const {
     register,
@@ -23,9 +25,14 @@ export default function LoginPage() {
     formState: { errors, isSubmitting },
   } = useForm<LoginFormData>({ resolver: zodResolver(loginSchema) });
 
-  async function onSubmit(_data: LoginFormData) {
-    await new Promise((r) => setTimeout(r, 1000));
-    toast.success("Signed in successfully");
+  async function onSubmit(data: LoginFormData) {
+    await new Promise((r) => setTimeout(r, 800));
+    if (data.email === "admin" && data.password === "admin") {
+      toast.success("Signed in as admin");
+      router.push("/dashboard");
+    } else {
+      toast.error("Invalid credentials. Use admin / admin");
+    }
   }
 
   return (
@@ -47,7 +54,7 @@ export default function LoginPage() {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <AuthInput
           icon={<Mail className="h-4 w-4" />}
-          placeholder="Email address"
+          placeholder="Username or email"
           error={errors.email?.message}
           {...register("email")}
         />
@@ -76,6 +83,19 @@ export default function LoginPage() {
           Sign In
         </AuthButton>
       </form>
+      <p className="text-center text-xs text-text-muted">
+        Demo: admin / admin
+      </p>
+      <button
+        type="button"
+        onClick={() => {
+          toast.success("Signed in as admin");
+          router.push("/dashboard");
+        }}
+        className="w-full rounded-lg border border-midnight-border bg-midnight-elevated py-2 text-sm text-text-secondary transition-colors hover:border-brand-accent hover:text-text-primary"
+      >
+        Quick Login as Admin
+      </button>
       <AuthFooter mode="login" />
     </div>
   );

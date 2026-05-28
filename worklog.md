@@ -175,3 +175,24 @@ Stage Summary:
 - Design tokens unified (Midnight theme: #0D1117 base, #58A6FF accent)
 - All files ≤150 lines, ESLint clean, TypeScript no errors
 - Responsive design, Framer Motion animations, react-hook-form + Zod validation
+---
+Task ID: 11
+Agent: full-stack-developer
+Task: Build Hybrid Wiki documentation system
+
+Work Log:
+- Created wiki Zustand store (open/close/page/search state)
+- Built wiki nav data with 5 categories and 14 pages
+- Created 14 wiki page components with real documentation content
+- Built shared components: drawer, nav, content, search, callout, code-block
+- Created page registry with lazy-loaded page components
+- Created full /wiki/[slug] page with sidebar navigation
+- Updated dashboard layout with WikiDrawer + Ctrl+K shortcut
+- Added Wiki button to AppSidebar (FileText icon, separated from main nav)
+
+Stage Summary:
+- Hybrid Wiki: drawer (420px, Ctrl+K) + full /wiki page with URL routing
+- 14 documentation pages across 5 categories (Getting Started, Agent Architecture, Prompt Engineering, Workflow Design, Export & Integration)
+- Real search filtering by title + keywords
+- All files <=150 lines, lint clean (0 errors, 0 warnings)
+- Files created: 22 new, 2 modified (dashboard layout, app-sidebar)
