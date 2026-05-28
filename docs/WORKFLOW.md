@@ -56,3 +56,19 @@ Every session MUST:
 | bun.lock over pnpm-lock.yaml | bun updates bun.lock automatically, pnpm-lock was stale | Task 6 |
 | HSL CSS variables | shadcn standard, ThemeProvider uses class attribute | Task 8 |
 | Flexible FRONTEND_STANDARD | User directive — standard may be raw/harmful, discuss before following | Task 8 |
+| Universal LLM Provider | Internal API unreachable from Vercel. User provides own API key for any provider. | Task 13 |
+| Settings-based LLM config | Provider + key stored in DB Settings table, read by /api/llm at runtime. | Task 13 |
+
+## Technical Debt
+
+### 🔴 Security: API Key Protection (before public release)
+- [ ] **Auth** — NextAuth/Clerk to gate /api/settings and Settings page
+- [ ] **Encrypt key in DB** — AES encrypt on write, decrypt only server-side for LLM call
+- [ ] **Mask key in UI** — show `sk-...xxxx` (last 4 chars), never return full key to browser
+- [ ] **Rate-limit /api/llm** — prevent abuse on public deployment
+
+### 🟡 Improvements
+- [ ] **Streaming** — SSE for LLM responses (currently request-response only)
+- [ ] **Per-node model** — let each flow node override the default model
+- [ ] **Usage tracking** — log token usage per execution in PipelineExecution
+- [ ] **Provider health** — auto-detect failing provider and notify user
