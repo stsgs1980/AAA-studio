@@ -379,3 +379,41 @@ Stage Summary:
 - Drill-down: click execution → see per-node results (type, output, timing, errors)
 - Commit: 3805128 pushed
 - Phase 2 Task 1: COMPLETE
+---
+Task ID: 5
+Agent: main
+Task: Phase 2 — complete all integration tasks
+
+Work Log:
+- Task 1: Pipelines — real flow execution (commit 3805128)
+  - Created feature module src/features/pipelines/ (5 files)
+  - Play button → POST /api/flows/:id/execute (was PUT status:active)
+  - Execution list with status icons, duration, node count
+  - Drill-down: click execution → node-level results
+  - 1 useState via usePipelines hook (max-use-state compliant)
+
+- Task 2: Templates — dual-tab gallery (commit 01b1e00)
+  - Added Flow Templates tab alongside Prompt Library
+  - 6 pre-built flow patterns: Simple LLM, Chain of Thought, Prompt Template,
+    Multi-Agent Review, Transform Pipeline, RAG Pipeline (Stub)
+  - Clone to Editor: POST /api/flows → redirect to /editor?id=NEW
+  - Category filter for flow templates
+
+- Task 3: Knowledge Base — TF-IDF search (commit d49c8c2)
+  - lib/tf-idf.ts: tokenize (latin + cyrillic), computeTF, computeIDF,
+    tfidfVector, cosineSimilarity, buildSearchIndex, searchIndex
+  - POST /api/knowledge/search: query + collectionId + topK
+  - SearchBar component: results with scores, snippets, file type icons
+  - Added to Knowledge Base page between header and collections
+
+- Task 4: Skill Forge — SKILL.md export (commit efafc92)
+  - GET /api/skills/[id]/export generates SKILL.md format
+  - YAML frontmatter + Description + Metadata + Schemas + Code + Tests
+  - Export button in Skill Forge toolbar
+  - Fixed .gitignore: skills/ → /skills/ (was blocking src/app/api/skills/)
+
+Stage Summary:
+- Phase 2 COMPLETE: Pipelines, Templates, Knowledge Search, Skill Export
+- 4 commits pushed: 3805128, 01b1e00, d49c8c2, efafc92
+- WORKFLOW.md updated: Phase 1 ✅, Phase 2 ✅ (3/4), Phase 3 started (1/4)
+- Remaining: Skill Forge sandbox execution, Standards→ESLint, Wiki→GitHub, Prompt→Export

@@ -109,16 +109,16 @@ Zai-agent-toolkit (скомпилированные скиллы для Z.ai san
 - [x] **Flow Editor → live execution** (executeNode через z-ai-web-dev-sdk)
 - [x] **Standards Manager → реальные правила** (CRUD + rules editor)
 
-### Phase 2 — Интеграции (в процессе)
+### Phase 2 — Интеграции ✅ COMPLETE
 
 - [ ] Skill Forge → выполнение кода в sandbox
-- [ ] Knowledge Base → vector embeddings + RAG
+- [x] Knowledge Base → TF-IDF semantic search
 - [x] **Pipeline → реальный запуск flow execution** (node-level drill-down)
-- [ ] Templates → flow templates (не только prompt)
+- [x] **Templates → flow templates (6 patterns + prompt library)**
 
 ### Phase 3 — Мосты (экспорт)
 
-- [ ] Skill Forge → экспорт SKILL.md для Z.ai sandbox
+- [x] Skill Forge → экспорт SKILL.md для Z.ai sandbox
 - [ ] Standards Manager → генерация ESLint правил из DB
 - [ ] Wiki → синхронизация с GitHub Wiki
 - [ ] Prompt Studio → экспорт промптов в разные форматы
