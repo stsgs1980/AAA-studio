@@ -6,7 +6,7 @@
 import { NextResponse } from 'next/server';
 import { getLLMSettings, isLLMConfigured, testConnection } from '@/lib/llm';
 
-export async function POST() {
+async function runTest() {
   try {
     const settings = await getLLMSettings();
 
@@ -25,3 +25,5 @@ export async function POST() {
     return NextResponse.json({ ok: false, error: msg });
   }
 }
+
+export { runTest as POST, runTest as GET };
