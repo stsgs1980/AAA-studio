@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { Wrench, Plus, Trash2, Code2, TestTube2 } from 'lucide-react';
+import { Wrench, Plus, Trash2, Code2, TestTube2, Download } from 'lucide-react';
 import { cn } from '@stsgs/ui';
 import { PageSkeleton } from '@/components/ui';
 import { CodeBlock } from '@/components/code-block';
@@ -106,6 +106,7 @@ export default function SkillForgePage() {
                     </button>
                   ))}
                   <button onClick={handleSaveCode} className="px-2 py-1 rounded bg-primary text-primary-foreground text-xs font-medium ml-2 hover:bg-primary/90">Save</button>
+                  <a href={`/api/skills/${selected.id}/export`} download className="px-2 py-1 rounded border text-xs font-medium ml-1 hover:bg-accent transition-colors inline-flex items-center gap-1"><Download className="h-3 w-3" />Export</a>
                 </div>
               )}
             </div>
