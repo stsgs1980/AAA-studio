@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { cn } from "@stsgs/ui";
 import {
   Copy, Check, Star, Send, BookOpen,
@@ -18,25 +19,25 @@ export function PromptListItem({ prompt: p }: PromptListItemProps) {
   const [expanded, setExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
   const [sent, setSent] = useState(false);
+  const router = useRouter();
 
   const toggleFav = usePromptLibraryStore((s) => s.toggleFavorite);
   const isFav = usePromptLibraryStore((s) => s.favorites.has(p.id));
   const sendToStudio = usePromptLibraryStore((s) => s.sendToStudio);
   const copyToClip = usePromptLibraryStore((s) => s.copyToClipboard);
+  const navigateToFormula = usePromptLibraryStore((s) => s.navigateToFormula);
 
   const cat = PROMPT_CATEGORIES.find((c) => c.id === p.category);
   const catColor = cat?.color ?? "text-text-muted bg-midnight-elevated";
 
-  const handleCopy = async () => {
-    await copyToClip(p.prompt);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+  const flash = (setter: (v: boolean) => void) => { setter(true); setTimeout(() => setter(false), 2000); };
 
-  const handleSend = () => {
-    sendToStudio(p.prompt);
-    setSent(true);
-    setTimeout(() => setSent(false), 2000);
+  const handleCopy = async () => { await copyToClip(p.prompt); flash(setCopied); };
+  const handleSend = () => { sendToStudio(p.prompt); flash(setSent); };
+  const handleFormulaClick = () => {
+    if (!p.formulaRef) return;
+    navigateToFormula(p.formulaRef);
+    router.push("/studio");
   };
 
   return (
@@ -52,9 +53,12 @@ export function PromptListItem({ prompt: p }: PromptListItemProps) {
             {cat?.label ?? p.category}
           </span>
           {p.formulaRef && (
-            <span className="text-[10px] px-2 py-0.5 rounded-full font-medium text-brand-purple bg-brand-purple/15">
-              {p.formulaRef}
-            </span>
+            <button
+              onClick={handleFormulaClick}
+              className="text-[10px] px-2 py-0.5 rounded-full font-medium text-brand-purple bg-brand-purple/15 hover:bg-brand-purple/25 transition-colors cursor-pointer"
+            >
+              {p.formulaRef.toUpperCase()}
+            </button>
           )}
           <p className="text-xs text-text-muted truncate max-w-sm">
             {p.description}

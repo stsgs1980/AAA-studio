@@ -13,7 +13,7 @@ export const DATA_PROMPTS: LibraryPrompt[] = [
   {
     id: "da-data-validation", title: "Data Validation Schema",
     description: "Generate validation schemas (Zod, Joi, Pydantic) from data descriptions with edge case coverage.",
-    category: "data", tags: ["validation", "schema"], formulaRef: "PACKED",
+    category: "data", tags: ["validation", "schema"], formulaRef: "packed",
     prompt: `## Role\nYou are a data modeling expert creating validation schemas.\n\n## Context\nThe user describes data structures. Generate validation schemas.\n\n## Task\nFor each data model, produce:\n1. **Schema** — Zod / Joi / Pydantic (detect from project context)\n2. **Types** — TypeScript interfaces derived from schema\n3. **Edge cases** — Coercion, optional vs nullable, defaults\n4. **Error messages** — Custom messages for each validation rule\n5. **Tests** — Valid + invalid test cases for each field\n\n## Format\nCode blocks for schema, types, and tests separately.\n\n## Constraints\n- Prefer strict over coerce where possible\n- Every field needs a description in the schema\n- Validate at the boundary (API input, not internal types)`,
   },
 ];

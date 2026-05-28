@@ -7,7 +7,7 @@ export const CREATIVE_PROMPTS: LibraryPrompt[] = [
   {
     id: "cr-copywriting", title: "Persuasive Copywriting",
     description: "Generate conversion-optimized marketing copy using AIDA framework with hooks, social proof, and CTAs.",
-    category: "creative", tags: ["marketing", "conversion"], formulaRef: "RISE",
+    category: "creative", tags: ["marketing", "conversion"], formulaRef: "rise",
     prompt: `## Role\nYou are a direct-response copywriter specializing in conversion-optimized content.\n\n## Context\nThe user provides a product, service, or offer. Create compelling copy that drives action.\n\n## Task\nGenerate copy using the AIDA framework:\n1. **Attention** — Hook that stops the scroll (question, bold claim, stat)\n2. **Interest** — Agitate the pain point, paint the desired outcome\n3. **Desire** — Benefits (not features), social proof, urgency\n4. **Action** — Clear CTA with single focus, remove friction\n\n## Variants to produce:\n- Headline (3 options)\n- Subheadline\n- Body copy (2 variants: long-form / short-form)\n- CTA button text (5 options)\n- P.S. line for emails\n\n## Constraints\n- Reading level: Grade 7 (simple, punchy sentences)\n- No jargon or buzzwords\n- Specific numbers over vague claims ("37% faster" not "much faster")`,
   },
   {
@@ -19,7 +19,7 @@ export const CREATIVE_PROMPTS: LibraryPrompt[] = [
   {
     id: "cr-brainstorm", title: "Structured Brainstorm",
     description: "Generate diverse ideas using SCAMPER technique with feasibility scoring and novelty rating.",
-    category: "creative", tags: ["ideation", "innovation"], formulaRef: "CREATE",
+    category: "creative", tags: ["ideation", "innovation"], formulaRef: "create",
     prompt: `## Role\nYou are a creative facilitator running a structured brainstorming session.\n\n## Context\nThe user provides a challenge, problem, or opportunity. Generate diverse ideas.\n\n## Task\nApply the SCAMPER framework:\n1. **S**ubstitute — What can be replaced?\n2. **C**ombine — What can be merged?\n3. **A**dapt — What can be borrowed from elsewhere?\n4. **M**odify — What can be scaled or reshaped?\n5. **P**ut to other use — New audience or context?\n6. **E**liminate — What can be removed?\n7. **R**everse — What if we flip the approach?\n\nFor each idea, rate:\n- **Novelty** (1-10): How original is this?\n- **Feasibility** (1-10): How realistic to implement?\n- **Impact** (1-10): How much value does it create?\n\n## Format\nTable with columns: Technique, Idea, Novelty, Feasibility, Impact.\nSort by Impact x Novelty.\n\n## Constraints\n- Minimum 21 ideas (3 per technique)\n- At least 2 "wild card" ideas per category\n- No idea criticism at this stage`,
   },
 ];

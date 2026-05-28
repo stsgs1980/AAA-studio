@@ -27,13 +27,16 @@ interface PromptLibraryStore {
   search: string;
   categoryFilter: string;
   viewMode: ViewMode;
+  formulaId: string | null;
 
   setSearch: (q: string) => void;
   setCategoryFilter: (c: string) => void;
   setViewMode: (m: ViewMode) => void;
+  setFormulaId: (id: string | null) => void;
   toggleFavorite: (id: string) => void;
   isFavorite: (id: string) => boolean;
   sendToStudio: (prompt: string) => void;
+  navigateToFormula: (formulaId: string) => void;
   copyToClipboard: (prompt: string) => Promise<void>;
 }
 
@@ -58,8 +61,17 @@ export const usePromptLibraryStore = create<PromptLibraryStore>((set, get) => ({
 
   isFavorite: (id) => get().favorites.has(id),
 
+  formulaId: null,
+
+  setFormulaId: (id) => set({ formulaId: id }),
+
   sendToStudio: (prompt) => {
     usePromptStudioStore.getState().loadToEditor(prompt);
+  },
+
+  navigateToFormula: (formulaId) => {
+    usePromptStudioStore.getState().setActiveTab("formulas");
+    set({ formulaId });
   },
 
   copyToClipboard: async (prompt) => {
