@@ -2,7 +2,10 @@
  * Individual node execution handlers.
  * Each handler takes upstream inputs + node data, returns output.
  */
-import type { LLMMessage } from "./llm-provider";
+interface LLMMessage {
+  role: 'system' | 'user' | 'assistant';
+  content: string;
+}
 
 /** Call /api/llm proxy for real LLM response. */
 export async function executeLLM(

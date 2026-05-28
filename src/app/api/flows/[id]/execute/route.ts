@@ -1,7 +1,6 @@
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
-import { createZAI } from "@/lib/zai-config";
-import { callLLMWithFallback } from "@/lib/llm-mock";
+import { callLLM, getLLMSettings, isLLMConfigured } from "@/lib/llm";
 import { topoSort, gatherInputs, extractText, type FlowNode, type FlowEdge } from "./flow-utils";
 
 type Params = { params: Promise<{ id: string }> };
@@ -15,7 +14,7 @@ interface NodeResult {
 
 /**
  * POST /api/flows/[id]/execute
- * Execute a saved flow with LLM calls (or mock fallback), save PipelineExecution.
+ * Execute a saved flow using the configured LLM provider.
  */
 export async function POST(request: Request, { params }: Params) {
   const { id } = await params;
@@ -28,11 +27,19 @@ export async function POST(request: Request, { params }: Params) {
     const edges: FlowEdge[] = JSON.parse(flow.edges);
     if (!nodes.length) return NextResponse.json({ error: "Flow has no nodes" }, { status: 400 });
 
+    const llmSettings = await getLLMSettings();
+    if (!isLLMConfigured(llmSettings)) {
+      return NextResponse.json(
+        { error: 'LLM not configured', message: 'Go to Settings → LLM Provider to add your API key.' },
+        { status: 422 },
+      );
+    }
+
     const execution = await db.pipelineExecution.create({
       data: { flowId: id, status: "running", startedAt: new Date() },
     });
 
-    const result = await runFlow(nodes, edges);
+    const result = await runFlow(nodes, edges, llmSettings);
 
     await db.pipelineExecution.update({
       where: { id: execution.id },
@@ -53,17 +60,13 @@ export async function POST(request: Request, { params }: Params) {
 }
 
 async function runFlow(
-  nodes: FlowNode[], edges: FlowEdge[],
+  nodes: FlowNode[],
+  edges: FlowEdge[],
+  settings: { providerId: string; apiKey: string; model: string; temperature: number; maxTokens: number },
 ): Promise<{ success: boolean; results: NodeResult[]; error?: string }> {
   const sorted = topoSort(nodes, edges);
   const ctx = new Map<string, Record<string, unknown>>();
   const results: NodeResult[] = [];
-
-  // Try to init ZAI — if config missing, LLM nodes will use mock
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let zai: any = null;
-  try { zai = await createZAI(); }
-  catch (err) { console.warn("[execute] ZAI init failed, LLM nodes will use mock:", err); }
 
   for (const nodeId of sorted) {
     const node = nodes.find((n) => n.id === nodeId);
@@ -71,7 +74,7 @@ async function runFlow(
     const start = Date.now();
     try {
       const inputs = gatherInputs(nodeId, edges, ctx);
-      const output = await execNode(node, inputs, zai);
+      const output = await execNode(node, inputs, settings);
       ctx.set(nodeId, output);
       results.push({ nodeId, nodeType: node.type, status: "completed", output, duration: Date.now() - start });
     } catch (err) {
@@ -84,9 +87,9 @@ async function runFlow(
 }
 
 async function execNode(
-  node: FlowNode, inputs: Record<string, unknown>,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  zai: any,
+  node: FlowNode,
+  inputs: Record<string, unknown>,
+  settings: { providerId: string; apiKey: string; model: string; temperature: number; maxTokens: number },
 ): Promise<Record<string, unknown>> {
   const d = node.data;
   switch (node.type) {
@@ -94,13 +97,33 @@ async function execNode(
     case "end": return { ...inputs, finished: true };
     case "llm": {
       const sys = typeof d.systemPrompt === "string" ? d.systemPrompt : "You are a helpful assistant.";
-      const { response, mock } = await callLLMWithFallback(zai, sys, extractText(inputs), d.temperature as number | undefined);
-      return { ...inputs, model: d.model ?? "default", response, mock };
+      const resp = await callLLM({
+        providerId: settings.providerId as 'zai' | 'openai' | 'anthropic' | 'openrouter',
+        apiKey: settings.apiKey,
+        model: (d.model as string) || settings.model,
+        messages: [
+          { role: "system", content: sys },
+          { role: "user", content: extractText(inputs) },
+        ],
+        temperature: (d.temperature as number) ?? settings.temperature,
+        maxTokens: settings.maxTokens,
+      });
+      return { ...inputs, model: resp.model, response: resp.content };
     }
     case "agent": {
       const role = typeof d.role === "string" ? d.role : "assistant";
-      const { response, mock } = await callLLMWithFallback(zai, `You are ${role}.`, extractText(inputs));
-      return { ...inputs, agentResponse: response, mock };
+      const resp = await callLLM({
+        providerId: settings.providerId as 'zai' | 'openai' | 'anthropic' | 'openrouter',
+        apiKey: settings.apiKey,
+        model: settings.model,
+        messages: [
+          { role: "system", content: `You are ${role}.` },
+          { role: "user", content: extractText(inputs) },
+        ],
+        temperature: settings.temperature,
+        maxTokens: settings.maxTokens,
+      });
+      return { ...inputs, agentResponse: resp.content };
     }
     case "prompt": {
       let tmpl = typeof d.template === "string" ? d.template : "";
