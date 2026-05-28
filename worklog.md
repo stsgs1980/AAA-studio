@@ -461,3 +461,23 @@ Stage Summary:
 - Real LLM: only works inside Z.ai sandbox infrastructure
 - Key files: src/lib/zai-config.ts, src/lib/llm-mock.ts, src/app/api/flows/[id]/execute/route.ts, src/app/api/llm/route.ts
 - 3 commits pushed, all deployed successfully
+
+---
+Task ID: 2
+Agent: main
+Task: Create LLM Integration Architecture documentation + answer UX questions
+
+Work Log:
+- Explained Prompt Studio: it's a prompt editor/analyzer, NOT a chat. No "Send" button. Uses heuristic scoring via @stsgs/prompting.
+- Discussed guided tour concept: general onboarding + per-tab contextual help (Joyride/Shepherd.js)
+- Created DOCX document: /home/z/my-project/download/3A-Studio-LLM-Architecture.docx
+  - Section 1: Current implementation (z-ai-web-dev-sdk, config mechanism, network limitation, mock fallback)
+  - Section 2: Universal LLM Provider architecture (provider interface, per-node model selection, cost tracking)
+  - Section 3: 4-phase implementation roadmap (OpenAI → Anthropic+Google → Per-node → Cost dashboard)
+  - Section 4: Proposed file structure
+- Postcheck: 0 errors, 6/9 passed, TOC fixed
+
+Stage Summary:
+- Document generated successfully with cover, TOC, 4 sections, tables
+- Key architectural decision: LLMProvider interface → provider registry → per-node routing
+- Phased approach ensures backward compatibility with existing mock fallback
