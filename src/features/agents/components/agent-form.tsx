@@ -5,6 +5,7 @@ import { useAgentStore } from '../hooks/use-agent-store';
 import { ROLE_GROUPS, STATUS_OPTIONS, MODELS } from '../types';
 import type { RoleGroup } from '@stsgs/shared';
 import { X } from 'lucide-react';
+import { CodeBlock } from '@/components/code-block';
 
 export function AgentForm() {
   const store = useAgentStore();
@@ -97,7 +98,13 @@ export function AgentForm() {
           {/* System Prompt */}
           <div>
             <label className={labelClass}>System Prompt</label>
-            <textarea value={f.systemPrompt} onChange={(e) => store.setField('systemPrompt', e.target.value)} rows={4} className={fieldClass + ' resize-y'} placeholder="Enter system prompt..." />
+            <textarea value={f.systemPrompt} onChange={(e) => store.setField('systemPrompt', e.target.value)} rows={4} className={fieldClass + ' resize-y font-mono'} placeholder="Enter system prompt..." />
+            {f.systemPrompt && (
+              <div className="mt-2">
+                <span className="text-[10px] text-muted-foreground">Preview</span>
+                <CodeBlock code={f.systemPrompt} language="markdown" compact maxLines={6} className="mt-0.5" />
+              </div>
+            )}
           </div>
 
           {/* Description */}

@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { ScrollText, RefreshCw } from 'lucide-react';
 import { cn } from '@stsgs/ui';
 import { PageSkeleton } from '@/components/ui';
+import { CodeBlock } from '@/components/code-block';
 
 interface AuditEntry {
   id: string; action: string; entityType: string; entityId: string;
@@ -79,7 +80,15 @@ export default function AuditLogPage() {
                     {log.entityId && <span className="text-xs text-muted-foreground font-mono">{log.entityId.slice(0, 8)}</span>}
                   </div>
                   {log.details && (
-                    <pre className="text-xs text-muted-foreground mt-1 overflow-x-auto whitespace-pre-wrap max-h-20">{typeof log.details === 'string' ? log.details.slice(0, 200) : JSON.stringify(log.details).slice(0, 200)}</pre>
+                    <CodeBlock
+                      code={typeof log.details === 'string'
+                        ? log.details.slice(0, 500)
+                        : JSON.stringify(log.details, null, 2).slice(0, 500)}
+                      language={typeof log.details === 'string' ? 'text' : 'json'}
+                      compact
+                      maxLines={8}
+                      className="mt-1"
+                    />
                   )}
                 </div>
                 <span className="text-xs text-muted-foreground shrink-0 tabular-nums">{new Date(log.timestamp).toLocaleString()}</span>

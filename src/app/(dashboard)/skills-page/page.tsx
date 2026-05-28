@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { Wrench, Plus, Trash2, Code2, TestTube2 } from 'lucide-react';
 import { cn } from '@stsgs/ui';
 import { PageSkeleton } from '@/components/ui';
+import { CodeBlock } from '@/components/code-block';
 
 interface Skill {
   id: string; name: string; category: string; description: string;
@@ -114,8 +115,8 @@ export default function SkillForgePage() {
                   <div><span className="text-xs text-muted-foreground">Category</span><p className="text-sm">{selected.category}</p></div>
                   <div><span className="text-xs text-muted-foreground">Description</span><p className="text-sm">{selected.description || 'No description'}</p></div>
                   <div><span className="text-xs text-muted-foreground">Tags</span><div className="flex gap-1 mt-1">{selected.tags.map((t) => <span key={t} className="text-[10px] px-2 py-0.5 rounded-full bg-muted">{t}</span>)}</div></div>
-                  <div><span className="text-xs text-muted-foreground">Input Schema</span><pre className="text-xs bg-muted p-2 rounded mt-1 overflow-auto max-h-40 font-mono">{JSON.stringify(selected.inputSchema, null, 2)}</pre></div>
-                  <div><span className="text-xs text-muted-foreground">Output Schema</span><pre className="text-xs bg-muted p-2 rounded mt-1 overflow-auto max-h-40 font-mono">{JSON.stringify(selected.outputSchema, null, 2)}</pre></div>
+                  <div><span className="text-xs text-muted-foreground">Input Schema</span><CodeBlock code={JSON.stringify(selected.inputSchema, null, 2)} language="json" title="inputSchema" maxLines={20} className="mt-1" /></div>
+                  <div><span className="text-xs text-muted-foreground">Output Schema</span><CodeBlock code={JSON.stringify(selected.outputSchema, null, 2)} language="json" title="outputSchema" maxLines={20} className="mt-1" /></div>
                 </div>
               ) : tab === 'code' ? (
                 <textarea value={selected.code} onChange={(e) => setSelected({ ...selected, code: e.target.value })} className="w-full h-full min-h-[300px] p-3 rounded-lg border bg-background text-sm font-mono resize-none focus:outline-none focus:ring-2 focus:ring-primary/30" placeholder="Write skill code here..." />

@@ -2,6 +2,7 @@
 
 import { cn } from "@stsgs/ui";
 import { BookOpen } from "lucide-react";
+import { CodeBlock } from "@/components/code-block";
 import type { Formula } from "@/features/prompt-studio/types";
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -42,10 +43,15 @@ export function FormulaCard({ formula, onSelect }: FormulaCardProps) {
         {formula.description}
       </p>
 
-      {/* Template preview */}
-      <pre className="text-[11px] text-text-muted font-mono bg-midnight-base rounded-lg p-2.5 line-clamp-3 overflow-hidden">
-        {formula.template.slice(0, 120)}{formula.template.length > 120 ? "..." : ""}
-      </pre>
+      {/* Template preview with syntax highlighting */}
+      <CodeBlock
+        code={formula.template.length > 180
+          ? formula.template.slice(0, 180) + "..."
+          : formula.template}
+        language="markdown"
+        compact
+        className="bg-midnight-base"
+      />
 
       {/* Action */}
       <button
