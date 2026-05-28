@@ -6,12 +6,14 @@ import { PageSkeleton } from '@/components/ui';
 import {
   usePipelines, ExecutionList, ExecutionDetail,
 } from '@/features/pipelines';
-import type { Execution, NodeResult } from '@/features/pipelines';
+import type { Execution, NodeResult, UsageSummary } from '@/features/pipelines';
 
-function parseNodeResults(exec: Execution): NodeResult[] {
-  if (!exec.result) return [];
-  try { const d = JSON.parse(exec.result); return d.results ?? []; }
-  catch { return []; }
+function parseExecData(exec: Execution): { results: NodeResult[]; usage?: UsageSummary } {
+  if (!exec.result) return { results: [] };
+  try {
+    const d = JSON.parse(exec.result);
+    return { results: d.results ?? [], usage: d.usage };
+  } catch { return { results: [] }; }
 }
 
 export default function PipelinesPage() {
@@ -21,6 +23,7 @@ export default function PipelinesPage() {
   } = usePipelines();
 
   const activeExec = selectedExec ? executions.find((e) => e.id === selectedExec) : null;
+  const activeData = activeExec ? parseExecData(activeExec) : null;
 
   return (
     <div className="p-6 space-y-4">
@@ -97,7 +100,8 @@ export default function PipelinesPage() {
                 </div>
               ) : activeExec && selectedExec ? (
                 <ExecutionDetail
-                  results={parseNodeResults(activeExec)}
+                  results={activeData?.results ?? []}
+                  usage={activeData?.usage}
                   onBack={() => selectExec(null)}
                 />
               ) : (

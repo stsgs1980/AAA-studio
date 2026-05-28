@@ -20,7 +20,7 @@ const SPEC = 'special' as const;
 export const NODE_REGISTRY: NodeTypeDefinition[] = [
   // AI / LLM (5)
   { type: 'llm', category: AI, label: 'LLM', description: 'Large language model call', icon: 'Brain', colorClass: 'bg-blue-600',
-    defaultData: { model: 'gpt-4', temperature: 0.7, maxTokens: 4096 },
+    defaultData: { model: '', temperature: 0.7, maxTokens: 4096 },
     inputs: [{ id: 'in', label: 'Input', type: 'input' }],
     outputs: [{ id: 'out', label: 'Output', type: 'output' }] },
   { type: 'prompt', category: AI, label: 'Prompt', description: 'Prompt template processor', icon: 'MessageSquare', colorClass: 'bg-blue-600',

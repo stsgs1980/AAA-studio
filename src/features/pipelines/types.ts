@@ -27,11 +27,23 @@ export interface NodeResult {
   output?: Record<string, unknown>;
   error?: string;
   duration: number;
+  model?: string;
+  usage?: { promptTokens: number; completionTokens: number; totalTokens: number };
+  cost?: number;
+}
+
+export interface UsageSummary {
+  totalPromptTokens: number;
+  totalCompletionTokens: number;
+  totalTokens: number;
+  totalCost: number;
+  modelsUsed: string[];
 }
 
 export interface ExecutionResult {
   executionId: string;
   success: boolean;
   results: NodeResult[];
+  usage?: UsageSummary;
   error?: string;
 }

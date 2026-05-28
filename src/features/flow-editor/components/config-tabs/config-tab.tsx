@@ -1,20 +1,38 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { useFlowEditorStore } from '../../store/flow-store';
 import { getNodeDefinition } from '../../nodes/node-registry';
+import type { LLMModel } from '@/lib/llm';
 
 /**
- * Configuration tab — shows editable node fields:
- * name, model, temperature, maxTokens (for AI nodes).
+ * Configuration tab — shows editable node fields.
+ * AI nodes get a model dropdown populated from active provider.
  */
 export function ConfigTab() {
   const { nodes, selectedNodeId, updateNodeData } = useFlowEditorStore();
+  const [models, setModels] = useState<LLMModel[]>([]);
+
+  useEffect(() => {
+    fetch('/api/settings')
+      .then(r => r.json())
+      .then(d => {
+        const activeId = d.llm_active_provider;
+        const providers = d.llm_providers
+          ? JSON.parse(d.llm_providers) : [];
+        const provider = providers.find(
+          (p: { id: string }) => p.id === activeId,
+        );
+        if (provider?.models?.length) setModels(provider.models);
+      })
+      .catch(() => { /* use empty list */ });
+  }, []);
+
   const node = nodes.find((n) => n.id === selectedNodeId);
   if (!node) return null;
 
   const def = getNodeDefinition(node.type ?? '');
   const data = node.data as Record<string, unknown>;
-
   const set = (key: string, value: unknown) => updateNodeData(node.id, { [key]: value });
 
   const isAI =
@@ -23,7 +41,6 @@ export function ConfigTab() {
 
   return (
     <div className="space-y-4 p-1">
-      {/* Basic info */}
       <Group label="Basic">
         <Field label="Name">
           <input
@@ -41,22 +58,29 @@ export function ConfigTab() {
         </Field>
       </Group>
 
-      {/* AI-specific fields */}
       {isAI && (
         <Group label="Model">
           <Field label="Model">
-            <select
-              value={(data.model as string) ?? 'gpt-4'}
-              onChange={(e) => set('model', e.target.value)}
-              className="w-full rounded border border-input bg-background px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary"
-            >
-              <option value="gpt-4">GPT-4</option>
-              <option value="gpt-4o">GPT-4o</option>
-              <option value="gpt-4o-mini">GPT-4o Mini</option>
-              <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
-              <option value="claude-3-opus">Claude 3 Opus</option>
-              <option value="claude-3-sonnet">Claude 3 Sonnet</option>
-            </select>
+            {models.length > 0 ? (
+              <select
+                value={(data.model as string) || ''}
+                onChange={(e) => set('model', e.target.value)}
+                className="w-full rounded border border-input bg-background px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary"
+              >
+                <option value="">Default (from Settings)</option>
+                {models.map((m) => (
+                  <option key={m.id} value={m.id}>{m.name}</option>
+                ))}
+              </select>
+            ) : (
+              <input
+                type="text"
+                placeholder="e.g. gpt-4o"
+                value={(data.model as string) ?? ''}
+                onChange={(e) => set('model', e.target.value)}
+                className="w-full rounded border border-input bg-background px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary"
+              />
+            )}
           </Field>
           <Field label="Temperature">
             <input
