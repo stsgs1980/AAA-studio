@@ -798,3 +798,38 @@ Stage Summary:
 - Build: next build successful, 0 ESLint errors
 - Prisma: switched to sqlite provider for sandbox compatibility
 ---
+---
+Task ID: agent-creator
+Agent: main
+Task: Agent Creator -- 5-step wizard for building AI agents
+
+Work Log:
+- Read all wireframes (12 HTML files) to understand full UI/UX design vision
+- Read WORKFLOW.md, README.md, docs/ROADMAP.md, docs/AGENT_TYPES.md, docs/PROMPTING_MODULE.md
+- Identified gap: no Agent Creator screen despite being in wireframes (NEW badge in pmas-studio-wireframe)
+- Verified prompting engine is fully functional: 6 scorers, 5 templates, 4 builders, 12 roles, 14 techniques
+- Verified agents API + UI CRUD is fully functional
+- Designed 5-step wizard: Type -> Configure -> Prompt -> Tools -> Preview
+- Created feature module src/features/agent-creator/ (8 files):
+  - types.ts (42 lines): CreatorStep, WizardForm, CreatorScore, CREATOR_STEPS, CREATOR_DEFAULTS
+  - hooks/use-creator-store.ts (127 lines): Zustand store with step navigation, applyRole, applyTemplate, recalcScore, save via /api/agents
+  - components/step-agent-type.tsx (83 lines): 5 agent type cards + 12 role cards with auto-fill
+  - components/step-configure.tsx (108 lines): name, description, group, model, temperature slider, max tokens
+  - components/step-prompt.tsx (121 lines): live system prompt editor with 300ms debounce scoring, 6 dimension bars, tips panel
+  - components/step-tools.tsx (83 lines): 10 tool toggles + EntityPicker for skills + EntityPicker for standards
+  - components/step-preview.tsx (112 lines): summary cards, system prompt preview, save button, success state
+  - index.ts: barrel export
+- Created route page: src/app/(dashboard)/agent-creator/page.tsx (111 lines): stepper UI with numbered steps, back/next nav
+- Added "Agent Creator" to sidebar navigation (Cpu icon, between Agents and Hierarchy)
+- Added i18n keys for en/ru (Agent Creator / Sozdatel' agentov)
+- Fixed build errors: RoleGroup type cast, useRef initialization, unused imports
+- Build: successful, 0 errors, route at /agent-creator (5.63 kB)
+
+Stage Summary:
+- Agent Creator: 5-step wizard assembling existing prompting engine into interactive creation flow
+- Uses @stsgs/prompting modules: scorePrompt (live scoring), getSystemPromptTemplates (5 types), buildSystemPrompt (template builder), getAgentRoles (12 roles)
+- Uses existing agents API: POST /api/agents for saving
+- Uses existing EntityPicker for skills/standards selection
+- 8 new files, 3 modified (sidebar, translations)
+- All files <= 150 lines, 0 ESLint errors
+- Commit pending
