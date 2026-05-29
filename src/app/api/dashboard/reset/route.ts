@@ -7,7 +7,7 @@ function requireAdmin(request: NextRequest): boolean {
   if (!token) return false;
   try {
     const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
-    return payload.role === 'admin';
+    return payload.role === 'admin' || payload.role === 'owner';
   } catch {
     return false;
   }

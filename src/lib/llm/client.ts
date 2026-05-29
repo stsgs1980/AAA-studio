@@ -2,6 +2,7 @@
 // In Z.ai sandbox: uses z-ai-web-dev-sdk directly for the 'zai' provider.
 
 import type { LLMMessage, LLMResponse, ProviderConfig } from './types';
+export type { LLMResponse, ProviderConfig } from './types';
 
 interface CallParams {
   provider: ProviderConfig;
@@ -16,7 +17,7 @@ let _zaiSDK: any = null;
 async function getZaiSDK() {
   if (!_zaiSDK) {
     const mod = await import('z-ai-web-dev-sdk');
-    _zaiSDK = await (mod.ZAI || mod.default).create();
+    _zaiSDK = await (mod.default ?? mod).create();
   }
   return _zaiSDK;
 }
