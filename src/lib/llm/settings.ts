@@ -1,7 +1,7 @@
 // 3A Studio — LLM Settings helper
 // Stores provider list as JSON in Settings table + active selection.
 
-import { db } from '@/lib/db';
+import { db, isDbReady } from '@/lib/db';
 import { decrypt, encrypt } from '@/lib/crypto';
 import type { LLMSettings, ProviderConfig, LLMProviderId } from './types';
 import { DEFAULT_LLM_SETTINGS, LLM_PROVIDERS, builtinToConfig } from './types';
@@ -21,6 +21,7 @@ const SETTINGS_MAP: Record<string, keyof LLMSettings> = {
 
 /** Get all provider configs from DB (apiKeys decrypted) */
 export async function getProviders(): Promise<ProviderConfig[]> {
+  if (!isDbReady()) return defaultProviders();
   try {
     const row = await db.settings.findUnique({ where: { key: PROVIDERS_KEY } });
     if (!row?.value) return defaultProviders();
@@ -67,6 +68,10 @@ export async function getActiveProvider(): Promise<{
 
 /** Read active LLM settings from DB, merge with defaults */
 export async function getLLMSettings(): Promise<LLMSettings> {
+  if (!isDbReady()) {
+    console.warn('[LLM Settings] DB not ready, returning defaults');
+    return { ...DEFAULT_LLM_SETTINGS };
+  }
   try {
     const rows = await db.settings.findMany({
       where: { key: { startsWith: 'llm_' } },
@@ -87,7 +92,6 @@ export async function getLLMSettings(): Promise<LLMSettings> {
 
     return { ...DEFAULT_LLM_SETTINGS, ...map };
   } catch (error) {
-    // DB unavailable or misconfigured — return defaults so the app stays functional
     console.error('[LLM Settings] Failed to read settings from DB, using defaults:',
       error instanceof Error ? error.message : error);
     return { ...DEFAULT_LLM_SETTINGS };

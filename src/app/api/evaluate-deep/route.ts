@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getActiveProvider, callLLM } from '@/lib/llm';
+import { isDbReady } from '@/lib/db';
 
 const EVAL_SYSTEM_PROMPT = `You are a rigorous AI agent quality auditor. Analyze the provided content (agent system prompt, configuration, documentation, or codebase) and produce a structured evaluation report.
 
@@ -65,6 +66,14 @@ Action: <what to fix>
 
 export async function POST(request: Request) {
   try {
+    // Early guard: if DB is down, no LLM config can be read
+    if (!isDbReady()) {
+      return NextResponse.json(
+        { error: 'Database is not available. Please ensure DATABASE_URL is configured correctly in .env' },
+        { status: 503 },
+      );
+    }
+
     const { text, context } = await request.json();
     if (!text?.trim()) {
       return NextResponse.json({ error: 'Text is required' }, { status: 400 });
@@ -73,7 +82,7 @@ export async function POST(request: Request) {
     const active = await getActiveProvider();
     if (!active) {
       return NextResponse.json(
-        { error: 'No LLM provider configured. Go to Settings to set up a provider.' },
+        { error: 'No LLM provider configured. Go to Settings → LLM Provider to add and activate a provider.' },
         { status: 400 },
       );
     }
