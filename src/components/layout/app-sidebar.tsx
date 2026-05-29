@@ -2,22 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTheme } from "next-themes";
 import {
-  LayoutDashboard,
-  Workflow,
-  Layers,
-  Bot,
-  Network,
-  GitBranch,
-  Sparkles,
-  BookOpen,
-  Wrench,
-  Shield,
-  ScrollText,
-  Settings,
-  PanelLeftClose,
-  PanelLeft,
-  FileText,
+  LayoutDashboard, Workflow, Layers, Bot, Network,
+  GitBranch, Sparkles, BookOpen, Wrench, Shield,
+  ScrollText, Settings, PanelLeftClose, PanelLeft, FileText,
+  Moon, Sun,
 } from "lucide-react";
 import { cn } from "@stsgs/ui";
 import { useState } from "react";
@@ -41,6 +31,7 @@ const navItems = [
 export function AppSidebar() {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
+  const { theme, setTheme } = useTheme();
 
   return (
     <aside
@@ -66,11 +57,7 @@ export function AppSidebar() {
             collapsed && "mx-auto"
           )}
         >
-          {collapsed ? (
-            <PanelLeft className="h-4 w-4" />
-          ) : (
-            <PanelLeftClose className="h-4 w-4" />
-          )}
+          {collapsed ? <PanelLeft className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
         </button>
       </div>
 
@@ -80,7 +67,6 @@ export function AppSidebar() {
           {navItems.map((item) => {
             const isActive = pathname === item.href;
             const Icon = item.icon;
-
             return (
               <li key={item.href}>
                 <Link
@@ -117,15 +103,22 @@ export function AppSidebar() {
         </button>
       </div>
 
-      {/* Footer */}
-      {!collapsed && (
-        <div className="border-t px-3 py-2">
-          <p className="text-[10px] text-muted-foreground">
+      {/* Footer — Theme toggle */}
+      <div className={cn("border-t px-2 py-2", collapsed && "flex flex-col items-center gap-1")}>
+        <button
+          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          className="flex w-full items-center gap-3 rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+          title={theme === "dark" ? "Switch to light" : "Switch to dark"}
+        >
+          {theme === "dark" ? <Sun className="h-4 w-4 shrink-0" /> : <Moon className="h-4 w-4 shrink-0" />}
+          {!collapsed && <span>{theme === "dark" ? "Light Mode" : "Dark Mode"}</span>}
+        </button>
+        {!collapsed && (
+          <p className="text-[10px] text-muted-foreground px-2">
             Artificial. Agentic. Architecture.
           </p>
-          <p className="text-[10px] text-muted-foreground">v0.1.0-alpha</p>
-        </div>
-      )}
+        )}
+      </div>
     </aside>
   );
 }

@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState, useCallback } from 'react';
+import { useTheme } from 'next-themes';
 import { Settings, Save, RotateCcw } from 'lucide-react';
 import { cn } from '@stsgs/ui';
 import { PageSkeleton } from '@/components/ui';
@@ -19,6 +20,7 @@ function defaults() {
 }
 
 export default function SettingsPage() {
+  const { theme, setTheme } = useTheme();
   const [settings, setSettings] = useState<Record<string, string>>({});
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -91,8 +93,7 @@ export default function SettingsPage() {
         <div className="rounded-xl border bg-card shadow-sm p-4">
           <h2 className="text-sm font-semibold mb-4">Appearance</h2>
           <div className="space-y-4">
-            <F l="Theme"><select value={settings.theme ?? 'dark'} onChange={e => up('theme', e.target.value)} className={cls}>{SEL(['dark', 'light', 'system'])}</select></F>
-            <F l="Language"><select value={settings.language ?? 'en'} onChange={e => up('language', e.target.value)} className={cls}>{SEL(['en', 'ru', 'zh'])}</select></F>
+            <F l="Theme"><select value={theme ?? 'dark'} onChange={e => { setTheme(e.target.value); up('theme', e.target.value); }} className={cls}>{SEL(['dark', 'light', 'system'])}</select></F>
           </div>
         </div>
         <div className="rounded-xl border bg-card shadow-sm p-4">
