@@ -876,3 +876,27 @@ Stage Summary:
 - 3 files changed: db.ts (lazy Proxy), client.ts (SDK for zai), settings.ts (isDbReady guard)
 - DB seeded with LLM provider config
 - Commits: fc6bcac (lazy Prisma), 8ac6736 (SDK + seed + E2E)
+
+---
+Task ID: 1
+Agent: main
+Task: Кросс-тесты всего приложения 3A Studio
+
+Work Log:
+- Проверен db.ts: хардкод fallback URL на месте (file:/home/z/my-project/db/custom.db)
+- Проверены ВСЕ env-зависимости: DATABASE_URL, AUTH_SECRET, ADMIN_USER/PASS — все имеют fallback
+- Проверен единственный импорт PrismaClient — только в db.ts, нигде больше
+- Тест 18 API endpoints (login, logout, health, dashboard, settings, llm, llm/test, audit, standards, skills, agents, flows, knowledge, knowledge/search, prompt-templates, fetch-url, evaluate-deep, seed)
+- Результат: 17/18 = 200, 1 фейл (fetch-url — недоступный httpbin.org, не баг)
+- Тест 18 UI страниц: все 200
+- Найден и исправлен баг: seed/reset проверяли role==='admin', но login ставит role==='owner'
+- Найдены и исправлены 3 TypeScript ошибки: re-export LLMResponse/ProviderConfig, z-ai SDK import fix
+- TypeScript compile: 0 ошибок
+- Deep Analysis после чистого рестарта (rm -rf .next): 3294 chars, 7.3 сек, БЕЗ Prisma ошибки
+- Push: commit 5694b81
+
+Stage Summary:
+- Приложение полностью функционально после чистого рестарта
+- Prisma fallback URL работает — DATABASE_URL не нужен в preview
+- Deep Analysis (evaluate-deep) стабильно работает через z-ai SDK
+- Все 18 UI страниц рендерятся без ошибок
