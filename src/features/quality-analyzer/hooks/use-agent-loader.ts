@@ -88,5 +88,24 @@ export function useAgentLoader() {
     [setAgentId, loadAgent],
   );
 
-  return { agents, repoFiles, fetching, handleFetchUrl, handleRepoFileSelect, handleAgentSelect };
+  const handleLoadAll = useCallback(async () => {
+    if (repoFiles.length === 0) return;
+    setFetching(true);
+    try {
+      const urls = repoFiles.map((f) => f.url).filter((u): u is string => !!u);
+      const res = await fetch("/api/fetch-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: input.sourceUrl, urls }),
+      });
+      const data = await res.json();
+      if (data.type === "content") setText(data.content);
+    } catch (err) {
+      console.error("Failed to load all files:", err);
+    } finally {
+      setFetching(false);
+    }
+  }, [repoFiles, input.sourceUrl, setText]);
+
+  return { agents, repoFiles, fetching, handleFetchUrl, handleRepoFileSelect, handleLoadAll, handleAgentSelect };
 }

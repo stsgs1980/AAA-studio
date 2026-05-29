@@ -17,7 +17,7 @@ export default function QualityAnalyzerPage() {
   const isAnalyzing = useQualityStore((s) => s.isAnalyzing);
   const analyze = useQualityStore((s) => s.analyze);
   const reset = useQualityStore((s) => s.reset);
-  const { agents, repoFiles, fetching, handleFetchUrl, handleRepoFileSelect, handleAgentSelect } = useAgentLoader();
+  const { agents, repoFiles, fetching, handleFetchUrl, handleRepoFileSelect, handleLoadAll, handleAgentSelect } = useAgentLoader();
 
   return (
     <div className="flex h-full flex-col gap-4 p-4">
@@ -53,9 +53,16 @@ export default function QualityAnalyzerPage() {
           {/* Repo file list */}
           {input.mode === "url" && repoFiles.length > 0 && (
             <div className="max-h-[200px] overflow-y-auto rounded-lg border bg-muted/20 p-2">
-              <p className="mb-1 text-xs font-medium text-muted-foreground">
-                {repoFiles.length} files found -- click to load:
-              </p>
+              <div className="mb-1 flex items-center justify-between">
+                <p className="text-xs font-medium text-muted-foreground">
+                  {repoFiles.length} files found -- click to load:
+                </p>
+                <button onClick={handleLoadAll} disabled={fetching}
+                  className="flex items-center gap-1 rounded-md bg-accent px-2 py-0.5 text-xs font-medium hover:bg-accent/80 disabled:opacity-50">
+                  {fetching ? <Loader2 className="h-3 w-3 animate-spin" /> : <FolderGit2 className="h-3 w-3" />}
+                  Load All
+                </button>
+              </div>
               {repoFiles.map((f) => (
                 <button key={f.path} onClick={() => handleRepoFileSelect(f)}
                   className="flex w-full items-center gap-2 rounded-md px-2 py-1 text-xs hover:bg-accent text-left">

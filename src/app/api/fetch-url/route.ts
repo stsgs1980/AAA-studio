@@ -25,10 +25,11 @@ async function githubFile(url: string): Promise<string> {
 
 export async function POST(request: Request) {
   try {
-    const { url } = await request.json();
+    const { url, urls } = await request.json();
     if (!url?.trim()) {
       return NextResponse.json({ error: 'URL is required' }, { status: 400 });
     }
+    const bodyUrls = urls as string[] | undefined;
 
     const trimmed = url.trim().replace(/\/+$/, '');
 
@@ -46,6 +47,19 @@ export async function POST(request: Request) {
           .filter((f) => f.type === 'file')
           .map((f) => ({ name: f.name, path: f.path, url: f.download_url })),
       });
+    }
+
+    // 1b. Load all repo files
+    if (repoMatch && bodyUrls) {
+      const fileUrls = bodyUrls as string[];
+      const parts: string[] = [];
+      for (const fileUrl of fileUrls) {
+        try {
+          const c = await githubFile(fileUrl);
+          if (c) parts.push(`\n=== ${fileUrl} ===\n${c}`);
+        } catch { /* skip failed */ }
+      }
+      return NextResponse.json({ type: 'content', content: parts.join('\n') });
     }
 
     // 2. GitHub raw URL or any other direct file URL
