@@ -100,7 +100,7 @@ export default function QualityAnalyzerPage() {
               {isAnalyzing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Zap className="h-4 w-4" />}
               {isAnalyzing ? "Analyzing..." : "Analyze"}
             </button>
-            <button onClick={deepAnalyze} disabled={!hasText || isDeepAnalyzing}
+            <button onClick={() => { setTab("deep"); deepAnalyze(); }} disabled={!hasText || isDeepAnalyzing}
               className="flex items-center gap-2 rounded-lg border border-primary px-4 py-2.5 text-sm font-medium text-primary disabled:opacity-50 hover:bg-primary/10">
               {isDeepAnalyzing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Brain className="h-4 w-4" />}
               Deep

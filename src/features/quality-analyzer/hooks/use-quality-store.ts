@@ -7,6 +7,11 @@ import {
 } from '../types';
 import { generateSuggestions, checkStandards, evaluateRubric } from '../lib/eval-helpers';
 
+function fallbackResult(text: string): EvaluationResult {
+  const s = scorePrompt(text);
+  return { score: s, suggestions: generateSuggestions(s), standardsCheck: { checked: 0, passed: 0, failed: 0, details: [] }, rubricResult: null, llmAnalysis: null };
+}
+
 interface QualityState {
   input: EvaluationInput;
   result: EvaluationResult | null;
@@ -14,7 +19,6 @@ interface QualityState {
   isDeepAnalyzing: boolean;
   rubricScenario: RubricScenario;
   rubricThreshold: number;
-
   setInputMode: (mode: EvaluationInput['mode']) => void;
   setText: (text: string) => void;
   setSourceUrl: (url: string) => void;
@@ -45,7 +49,6 @@ export const useQualityStore = create<QualityState>((set, get) => ({
 
   loadFile: (content, fileName) =>
     set((s) => ({ input: { ...s.input, mode: 'file', text: content, fileName } })),
-
   loadAgent: (systemPrompt) =>
     set((s) => ({ input: { ...s.input, mode: 'agent', text: systemPrompt } })),
 
@@ -54,32 +57,18 @@ export const useQualityStore = create<QualityState>((set, get) => ({
     const text = input.text.trim();
     if (!text) return;
     set({ isAnalyzing: true });
-
     const score = scorePrompt(text);
     const suggestions = generateSuggestions(score);
-
-    let standardsCheck: StandardsCheckResult = {
-      checked: 0, passed: 0, failed: 0, details: [],
-    };
-
-    fetch('/api/standards')
-      .then((r) => r.json())
-      .then((standards) => {
-        const allItems: StandardsCheckItem[] = [];
-        for (const std of standards) {
-          const items = checkStandards(text, std.rules ?? []);
-          items.forEach((item) => {
-            allItems.push({ ...item, standardId: std.id, standardName: std.name });
-          });
-        }
-        const passed = allItems.filter((i) => i.passed).length;
-        standardsCheck = { checked: allItems.length, passed, failed: allItems.length - passed, details: allItems };
-      })
-      .catch(() => {})
-      .finally(() => {
-        const rubricResult: RubricResult = evaluateRubric(text, rubricScenario, rubricThreshold);
-        set({ result: { score, suggestions, standardsCheck, rubricResult, llmAnalysis: null }, isAnalyzing: false });
-      });
+    let stdCheck: StandardsCheckResult = { checked: 0, passed: 0, failed: 0, details: [] };
+    fetch('/api/standards').then((r) => r.json()).then((standards) => {
+      const items: StandardsCheckItem[] = [];
+      for (const std of standards) checkStandards(text, std.rules ?? []).forEach((i) => items.push({ ...i, standardId: std.id, standardName: std.name }));
+      const passed = items.filter((i) => i.passed).length;
+      stdCheck = { checked: items.length, passed, failed: items.length - passed, details: items };
+    }).catch(() => {}).finally(() => {
+      const rubricResult = evaluateRubric(text, rubricScenario, rubricThreshold);
+      set({ result: { score, suggestions, standardsCheck: stdCheck, rubricResult, llmAnalysis: null }, isAnalyzing: false });
+    });
   },
 
   deepAnalyze: () => {
@@ -87,40 +76,22 @@ export const useQualityStore = create<QualityState>((set, get) => ({
     const text = input.text.trim();
     if (!text) return;
     set({ isDeepAnalyzing: true });
+    const ctx = input.mode === 'url' ? `Source: ${input.sourceUrl}`
+      : input.mode === 'agent' ? `Agent ID: ${input.agentId}`
+      : input.mode === 'file' ? `File: ${input.fileName}` : undefined;
 
-    const context = input.mode === 'url'
-      ? `Source: ${input.sourceUrl}`
-      : input.mode === 'agent'
-        ? `Agent ID: ${input.agentId}`
-        : input.mode === 'file'
-          ? `File: ${input.fileName}`
-          : undefined;
+    const setDeepResult = (llmAnalysis: string) => set((s) => ({
+      result: { ...(s.result ?? fallbackResult(text)), llmAnalysis },
+      isDeepAnalyzing: false,
+    }));
 
     fetch('/api/evaluate-deep', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text, context }),
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, context: ctx }),
     })
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.analysis) {
-          set((s) => ({
-            result: s.result ? { ...s.result, llmAnalysis: data.analysis } : null,
-            isDeepAnalyzing: false,
-          }));
-        } else if (data.error) {
-          set((s) => ({
-            result: s.result ? { ...s.result, llmAnalysis: `Error: ${data.error}` } : null,
-            isDeepAnalyzing: false,
-          }));
-        }
-      })
-      .catch((err) => {
-        set((s) => ({
-          result: s.result ? { ...s.result, llmAnalysis: `Error: ${err.message}` } : null,
-          isDeepAnalyzing: false,
-        }));
-      });
+      .then(async (r) => { if (!r.ok) throw new Error(`Server ${r.status}: ${(await r.text().catch(() => '')).slice(0, 200)}`); return r.json(); })
+      .then((data) => { if (data.analysis) setDeepResult(data.analysis); else if (data.error) setDeepResult(`Error: ${data.error}`); else setDeepResult('Error: Unexpected response from server'); })
+      .catch((err) => setDeepResult(`Error: ${err.message}`));
   },
 
   reset: () => set({ input: { ...EVAL_DEFAULTS }, result: null }),
