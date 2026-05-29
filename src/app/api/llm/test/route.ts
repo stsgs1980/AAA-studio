@@ -4,7 +4,7 @@
 
 import { NextResponse } from 'next/server';
 import { getProviders, getActiveProvider } from '@/lib/llm';
-import { testConnection } from '@/lib/llm/client';
+import { testConnection } from '@/lib/llm/test-connection';
 
 export async function POST(request: Request) {
   try {

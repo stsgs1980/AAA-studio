@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { scorePrompt } from '@stsgs/prompting';
 import {
   EvaluationInput, EvaluationResult, StandardsCheckResult,
-  StandardsCheckItem, RubricScenario, RubricResult,
+  StandardsCheckItem, RubricScenario,
   EVAL_DEFAULTS,
 } from '../types';
 import { generateSuggestions, checkStandards, evaluateRubric } from '../lib/eval-helpers';
