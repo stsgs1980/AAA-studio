@@ -637,3 +637,27 @@ Stage Summary:
 - Language switching: basic i18n (en/ru) with sidebar + settings integration
 - Chevron: now clickable for collapse/expand in provider cards
 - Vercel auto-deploy from GitHub (CLI timed out)
+
+---
+Task ID: 2
+Agent: main
+Task: Standards→Skills→Agents cross-reference architecture + Skill CRUD
+
+Work Log:
+- Updated Prisma schema: added standardIds to Skill model
+- Created Skill CRUD API: POST/GET /api/skills + PUT/DELETE /api/skills/[id]
+- Created Skill feature module: Zustand store + 4 components
+- Rewrote skills-page from monolith to feature module (anti-monolith)
+- Updated SKILL.md export to include linked standards
+- Unified StandardRule type: name + description + pattern + enabled
+- Updated shared Skill type with standardIds
+- Created EntityPicker: reusable multiselect component for Skills/Standards
+- Added Skills + Standards EntityPicker to Agent form
+- Fixed standards store: addRule now includes name field
+
+Stage Summary:
+- Commit: 27b2e0e pushed
+- 18 files changed, +637/-187
+- Cross-reference chain: Standard ←→ Skill ←→ Agent (all via ID)
+- All files ≤150 lines, 0 ESLint errors, build successful
+- Vercel auto-deploy from GitHub (DB migration will run on deploy)
