@@ -32,6 +32,9 @@ function isNoise(path: string, size?: number): boolean {
     'coverage/', '.DS_Store', 'package-lock.json', 'yarn.lock',
     'pnpm-lock.yaml', '.env', '.env.local', 'next-env.d.ts',
     'tsconfig.tsbuildinfo', '.tsbuildinfo',
+    // non-agent content
+    'dashboard-integration/', '.github/', 'hooks/',
+    'dev.log', 'opencode.json', 'templates/e2e/',
   ];
   const lower = path.toLowerCase();
   if (skip.some((s) => lower.includes(s))) return true;
