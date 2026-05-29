@@ -757,3 +757,44 @@ Stage Summary:
 - @stsgs/shared exports 15 new prompting types
 - Backward compatibility maintained for existing Prompt Studio UI
 - Next: Phase 3B -- Standards Seed (17 standards from Zai-agent-toolkit)
+---
+Task ID: 3B
+Agent: main
+Task: Phase 3B -- Standards Seed Script + Import API + UI Button
+
+Work Log:
+- Audited all 19 .md standard files in Zai-agent-toolkit/standards/ to understand header format variations
+- Fixed Prisma schema: changed provider from postgresql to sqlite to match sandbox DATABASE_URL
+- Ran prisma generate + db push to sync SQLite schema
+- Created src/lib/standards/parse-md.ts (119 lines): MD parser library
+  - Extracts: id, name, version, severity, category, description, rules from .md files
+  - Category mapping: 11 STD prefixes (FE, SEC, AGENT, ERR, TEST, GIT, DOC, A11Y, ENV, ARCH, META)
+  - Severity mapping: [C]->error, [W]->warning, [I]->info (handles combined levels like STD-DOC-003)
+  - Rule extraction: ### headings with body text + imperative bullet points
+  - Pattern generation: extracts backtick-quoted terms as regex patterns
+  - Export: parseStandardFile(content, filename) -> StandardDef | null
+- Created scripts/seed-standards.ts (102 lines): bulk seed script
+  - Reads all 19 .md files from Zai-agent-toolkit/standards/
+  - Upserts into Prisma Standard model by STD-XXX-NNN ID (overrides cuid default)
+  - Inline parser (no path alias dependency for standalone tsx execution)
+  - Run: npx tsx scripts/seed-standards.ts
+- Created src/app/api/standards/import/route.ts (72 lines): Import API
+  - POST /api/standards/import accepts FormData with .md file
+  - Validates file type, parses with parseStandardFile, upserts to DB
+  - Returns { created, updated, errors } response
+  - TODO comment for auth (demo mode, no auth)
+- Updated src/app/(dashboard)/standards/page.tsx (115 lines): Import button
+  - Added Upload button with hidden file input (.md only)
+  - Import status toast (auto-dismiss after 4s)
+  - Calls /api/standards/import, refreshes standards list on success
+  - Separate from "New Standard" button (no form toggle)
+- Fixed name parsing bug: lazy regex (.+?) captured single char; changed to greedy (.+) + post-trim
+
+Stage Summary:
+- 4 files created, 2 files modified, 1 schema fix
+- Files: parse-md.ts (119 lines), seed-standards.ts (102 lines), import/route.ts (72 lines), page.tsx (115 lines)
+- All files under 150 line limit
+- Seed result: 19 standards created/updated successfully in SQLite DB
+- Build: next build successful, 0 ESLint errors
+- Prisma: switched to sqlite provider for sandbox compatibility
+---
