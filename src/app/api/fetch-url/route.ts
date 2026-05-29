@@ -33,11 +33,21 @@ export async function POST(request: Request) {
 
     const trimmed = url.trim().replace(/\/+$/, '');
 
-    // 1. GitHub repo URL (with or without .git)
+    // 1. GitHub repo URL -- if urls[] provided, fetch all files
     const repoMatch = trimmed.match(
       /github\.com\/([a-zA-Z0-9_.-]+)\/([a-zA-Z0-9_.-]+?)(\.git)?$/,
     );
     if (repoMatch) {
+      if (bodyUrls && bodyUrls.length > 0) {
+        const parts: string[] = [];
+        for (const fileUrl of bodyUrls) {
+          try {
+            const c = await githubFile(fileUrl);
+            if (c) parts.push(`\n=== ${fileUrl} ===\n${c}`);
+          } catch { /* skip failed */ }
+        }
+        return NextResponse.json({ type: 'content', content: parts.join('\n') });
+      }
       const tree = await githubTree(repoMatch[1], repoMatch[2]);
       return NextResponse.json({
         type: 'repo',
@@ -47,19 +57,6 @@ export async function POST(request: Request) {
           .filter((f) => f.type === 'file')
           .map((f) => ({ name: f.name, path: f.path, url: f.download_url })),
       });
-    }
-
-    // 1b. Load all repo files
-    if (repoMatch && bodyUrls) {
-      const fileUrls = bodyUrls as string[];
-      const parts: string[] = [];
-      for (const fileUrl of fileUrls) {
-        try {
-          const c = await githubFile(fileUrl);
-          if (c) parts.push(`\n=== ${fileUrl} ===\n${c}`);
-        } catch { /* skip failed */ }
-      }
-      return NextResponse.json({ type: 'content', content: parts.join('\n') });
     }
 
     // 2. GitHub raw URL or any other direct file URL
