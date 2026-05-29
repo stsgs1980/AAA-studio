@@ -1,5 +1,5 @@
 // ============================================================================
-// Unified Standard types
+// Unified Standard + Skill types (single source of truth)
 // ============================================================================
 
 /** StandardRule — unified definition with name, description, pattern, enabled */
@@ -26,6 +26,25 @@ export interface Standard {
 
 /** Standard severity levels */
 export type StandardSeverity = Standard["severity"];
+
+/** Standard categories */
+export const STANDARD_CATEGORIES = [
+  "general", "prompt", "agent", "flow", "quality", "security", "architecture",
+] as const;
+
+export type StandardCategory = (typeof STANDARD_CATEGORIES)[number];
+
+/** Severity display options */
+export const SEVERITY_OPTIONS: { value: StandardSeverity; label: string }[] = [
+  { value: "info", label: "Info" },
+  { value: "warning", label: "Warning" },
+  { value: "error", label: "Error" },
+];
+
+/** Generate unique rule ID */
+export function generateRuleId(): string {
+  return `rule-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+}
 
 /** Skill definition — linked to Standards via standardIds */
 export interface Skill {

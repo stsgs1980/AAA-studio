@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@stsgs/ui";
-import { SEVERITY_OPTIONS, CATEGORY_OPTIONS } from "../types";
+import { SEVERITY_OPTIONS, STANDARD_CATEGORIES } from "@stsgs/shared";
 
 const SEV_BG: Record<string, string> = {
   error: "bg-brand-red/15 text-brand-red",
@@ -37,7 +37,7 @@ export function EditStandardForm({
         <div>
           <label className="text-[10px] uppercase tracking-wider text-text-muted font-semibold">Category</label>
           <select value={category} onChange={(e) => onCategoryChange(e.target.value)} className="w-full h-8 px-2 mt-1 rounded-md border border-midnight-border bg-midnight-card text-sm text-text-primary">
-            {CATEGORY_OPTIONS.map((c) => <option key={c} value={c}>{c}</option>)}
+            {STANDARD_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
           </select>
         </div>
       </div>

@@ -1,35 +1,17 @@
-export interface StandardRule {
-  id: string;
-  name: string;
-  description: string;
-  pattern?: string;
-  enabled: boolean;
-}
+// ============================================================================
+// Standards feature types — re-exports from @stsgs/shared
+// Single source of truth: packages/shared/src/types/standard.ts
+// ============================================================================
 
-export interface Standard {
-  id: string;
-  name: string;
-  category: string;
-  description: string;
-  rules: StandardRule[];
-  severity: "error" | "warning" | "info";
-  version: string;
-  createdAt: string;
-  updatedAt?: string;
-}
+export type {
+  Standard,
+  StandardRule,
+  StandardSeverity,
+  StandardCategory,
+} from "@stsgs/shared";
 
-export type StandardSeverity = Standard["severity"];
-
-export const SEVERITY_OPTIONS: { value: StandardSeverity; label: string }[] = [
-  { value: "info", label: "Info" },
-  { value: "warning", label: "Warning" },
-  { value: "error", label: "Error" },
-];
-
-export const CATEGORY_OPTIONS = [
-  "general", "prompt", "agent", "flow", "quality", "security", "architecture",
-] as const;
-
-export function generateRuleId(): string {
-  return `rule-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
-}
+export {
+  SEVERITY_OPTIONS,
+  STANDARD_CATEGORIES,
+  generateRuleId,
+} from "@stsgs/shared";

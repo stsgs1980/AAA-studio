@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, X } from "lucide-react";
-import { SEVERITY_OPTIONS as SEV_OPTS } from "../types";
+import { X } from "lucide-react";
+import { SEVERITY_OPTIONS } from "@stsgs/shared";
 
 interface CreateStandardFormProps {
   onCreate: (name: string, severity: string) => void;
@@ -36,7 +36,7 @@ export function CreateStandardForm({ onCreate, onClose }: CreateStandardFormProp
         onChange={(e) => setSeverity(e.target.value)}
         className="h-9 px-3 rounded-lg border border-midnight-border bg-midnight-base text-sm text-text-primary"
       >
-        {SEV_OPTS.map((o) => (
+        {SEVERITY_OPTIONS.map((o) => (
           <option key={o.value} value={o.value}>{o.label}</option>
         ))}
       </select>

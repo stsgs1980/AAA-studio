@@ -1,22 +1,20 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { Shield, Plus, Search } from "lucide-react";
 import { cn } from "@stsgs/ui";
 import { PageSkeleton } from "@/components/ui";
 import { useStandardsStore } from "@/features/standards/store/standards-store";
-import type { StandardSeverity } from "@/features/standards/types";
-import { SEVERITY_OPTIONS } from "@/features/standards/types";
+import type { StandardSeverity } from "@stsgs/shared";
+import { SEVERITY_OPTIONS } from "@stsgs/shared";
 import { StandardList } from "@/features/standards/components/standard-list";
 import { StandardDetail } from "@/features/standards/components/standard-detail";
 import { CreateStandardForm } from "@/features/standards/components/create-standard-form";
 
 export default function StandardsManagerPage() {
   const loading = useStandardsStore((s) => s.loading);
-  const setStandards = useStandardsStore((s) => s.setStandards);
-  const selectStandard = useStandardsStore((s) => s.selectStandard);
-  const addStandard = useStandardsStore((s) => s.addStandard);
-  const removeStandard = useStandardsStore((s) => s.removeStandard);
+  const fetchStandards = useStandardsStore((s) => s.fetchStandards);
+  const createStandard = useStandardsStore((s) => s.createStandard);
   const search = useStandardsStore((s) => s.search);
   const setSearch = useStandardsStore((s) => s.setSearch);
   const severityFilter = useStandardsStore((s) => s.severityFilter);
@@ -24,45 +22,12 @@ export default function StandardsManagerPage() {
 
   const [showNew, setShowNew] = useState(false);
 
-  const fetchStandards = useCallback(async () => {
-    try {
-      useStandardsStore.getState().setLoading(true);
-      const res = await fetch("/api/standards");
-      if (!res.ok) throw new Error();
-      setStandards(await res.json());
-    } catch { /* silent */ }
-  }, [setStandards]);
-
   useEffect(() => { fetchStandards(); }, [fetchStandards]);
 
-  const handleCreate = useCallback(async (name: string, severity: string) => {
-    try {
-      const res = await fetch("/api/standards", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, severity }),
-      });
-      if (!res.ok) throw new Error();
-      const created = await res.json();
-      addStandard(created);
-      selectStandard(created.id);
-      setShowNew(false);
-    } catch { /* silent */ }
-  }, [addStandard, selectStandard]);
-
-  const handleDelete = useCallback(async (id: string) => {
-    if (!confirm("Delete this standard?")) return;
-    try {
-      const res = await fetch(`/api/standards/${id}`, { method: "DELETE" });
-      if (res.status === 409) {
-        const d = await res.json();
-        alert(d.error + "\n" + d.referencedBy.map((r: { name: string }) => "  - " + r.name).join("\n"));
-        return;
-      }
-      if (!res.ok) throw new Error();
-      removeStandard(id);
-    } catch { /* silent */ }
-  }, [removeStandard]);
+  const handleCreate = (name: string, severity: string) => {
+    createStandard(name, severity);
+    setShowNew(false);
+  };
 
   if (loading) {
     return (
@@ -97,10 +62,7 @@ export default function StandardsManagerPage() {
 
       {/* Create form */}
       {showNew && (
-        <CreateStandardForm
-          onCreate={handleCreate}
-          onClose={() => setShowNew(false)}
-        />
+        <CreateStandardForm onCreate={handleCreate} onClose={() => setShowNew(false)} />
       )}
 
       {/* Filters */}
@@ -134,7 +96,7 @@ export default function StandardsManagerPage() {
 
       {/* Main layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 min-h-[60vh]">
-        <StandardList onDelete={handleDelete} />
+        <StandardList />
         <div className="lg:col-span-2">
           <StandardDetail />
         </div>

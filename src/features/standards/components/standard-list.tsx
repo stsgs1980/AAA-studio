@@ -1,9 +1,9 @@
 "use client";
 
 import { cn } from "@stsgs/ui";
-import { Shield, Trash2, AlertCircle, AlertTriangle, Info } from "lucide-react";
+import { Trash2, AlertCircle, AlertTriangle, Info } from "lucide-react";
 import { useStandardsStore } from "../store/standards-store";
-import type { StandardSeverity } from "../types";
+import type { StandardSeverity } from "@stsgs/shared";
 
 const SEV_ICON: Record<StandardSeverity, React.ElementType> = {
   error: AlertCircle, warning: AlertTriangle, info: Info,
@@ -15,16 +15,13 @@ const SEV_BG: Record<StandardSeverity, string> = {
   error: "bg-brand-red/15", warning: "bg-brand-amber/15", info: "bg-brand-accent/15",
 };
 
-interface StandardListProps {
-  onDelete: (id: string) => void;
-}
-
-export function StandardList({ onDelete }: StandardListProps) {
+export function StandardList() {
   const standards = useStandardsStore((s) => s.standards);
   const selectedId = useStandardsStore((s) => s.selectedId);
   const search = useStandardsStore((s) => s.search);
   const severityFilter = useStandardsStore((s) => s.severityFilter);
   const selectStandard = useStandardsStore((s) => s.selectStandard);
+  const deleteStandard = useStandardsStore((s) => s.deleteStandard);
 
   const filtered = standards.filter((s) => {
     if (severityFilter !== "all" && s.severity !== severityFilter) return false;
@@ -61,7 +58,7 @@ export function StandardList({ onDelete }: StandardListProps) {
                 </span>
               </div>
               <button
-                onClick={(e) => { e.stopPropagation(); onDelete(s.id); }}
+                onClick={(e) => { e.stopPropagation(); deleteStandard(s.id); }}
                 className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-brand-red/15 hover:text-brand-red transition-all"
               >
                 <Trash2 className="h-3.5 w-3.5" />
