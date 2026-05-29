@@ -710,3 +710,24 @@ Stage Summary:
 - 3 documentation files created/updated
 - No code changes this session -- pure research + documentation
 - Next step: prompting module migration (Phase 3A per docs/PROMPTING_MODULE.md)
+
+---
+Task ID: 1
+Agent: main
+Task: Document everything -- README, WORKFLOW, docs (7-item resource map, 10 agent types, prompting plan)
+
+Work Log:
+- Read full project state via Explore agent: README, WORKFLOW, docs/, packages/prompting, packages/shared
+- Moved agent typology research report from /home/z/ to docs/research/agent-typology-full.md
+- Rewrote README.md: added Agent Typology section (10 patterns table), Resource Map (7 items), Documentation links table
+- Updated WORKFLOW.md: replaced old Phase 3 with Phase 3A (prompting) + 3B (standards) + 3C (agent templates) + 3D (bridges), added Phase 4 (deferred agent types) and Phase 5 (advanced types)
+- Fixed broken path in docs/AGENT_TYPES.md (line 361: download/ -> docs/research/)
+- Created docs/ROADMAP.md: 7-item resource map, build order dependency chain, Phase 3A details (5 templates + 4 builders), deferred items table
+- Verified all cross-links between docs are correct
+
+Stage Summary:
+- README.md: updated with agent typology, resource map, documentation index
+- WORKFLOW.md: Phase 3 subdivided into 3A/3B/3C/3D with dependency chain
+- docs/ROADMAP.md: new -- 7-item resource map with build order and "why this order" rationale
+- docs/AGENT_TYPES.md: fixed broken research report link
+- docs/research/agent-typology-full.md: moved from /home/z/

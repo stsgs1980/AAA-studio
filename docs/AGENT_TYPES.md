@@ -358,4 +358,4 @@ Delegation: {how_to_delegate_or_receive_delegated_tasks}
 
 ## Full research report
 
-Saved at: `download/ai_agent_typology_research.md` (~700 lines, 7 frameworks, 10 patterns, 10 system prompt templates, academic references).
+Saved at: [`docs/research/agent-typology-full.md`](research/agent-typology-full.md) (~700 lines, 7 frameworks, 10 patterns, 10 system prompt templates, academic references).

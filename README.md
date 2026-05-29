@@ -7,36 +7,33 @@ IDE for visual multi-agent systems. Build, manage, and monitor AI agent flows wi
 ## Quick Start
 
 ```bash
-# 1. Install dependencies
 bun install
-
-# 2. Copy environment file
 cp .env.example .env
-# Edit .env — fill DATABASE_URL, AUTH_SECRET, ENCRYPTION_KEY (see below)
-
-# 3. Generate Prisma client + push schema
 bun run db:push
-
-# 4. Start development server
 bun run dev
 ```
 
-**Default login**: admin / admin (configurable via `ADMIN_USERNAME` / `ADMIN_PASSWORD` env vars).
+Default login: admin / admin.
 
 ## Architecture
 
-```
-3A Studio replaces 3 repos x 110 skills x manual sync
+3A Studio replaces 3 repos x 110 skills x manual sync with **one database**.
 
+```
+StsDev-Wiki (solutions, ADR)
+        |
+3A Studio (living system)
   Standards Manager = coding standards (was FRONTEND_STANDARD.md)
   Skill Forge       = skill registry (was 110 folders)
   Prompt Studio     = prompt engineering (was prompting_sts/)
   Flow Editor       = visual orchestration (18 node types, ReactFlow)
   Knowledge Base    = document search (was ChromaDB, now PostgreSQL)
   Audit Log         = activity tracking (was session-log)
+        |
+Zai-agent-toolkit (compiled skills export for Z.ai sandbox)
 ```
 
-**Key principle**: one database, everything connected. Changed a standard -- reflected everywhere. Created a skill -- assign to agent -- wire into flow -- run pipeline.
+Changed a standard -- reflected everywhere. Created a skill -- assign to agent -- wire into flow -- run pipeline.
 
 ## Screens (12)
 
@@ -51,13 +48,13 @@ bun run dev
 | Prompt Studio | /prompt-studio | 5 modules: Write (live scoring) + Formulas (10) + Frameworks (4) + Compare + Intent |
 | Knowledge Base | /knowledge | Upload, TF-IDF semantic search |
 | Skill Forge | /skills-page | CRUD, code/tests, StandardsPicker, SKILL.md export |
-| Standards Manager | /standards | CRUD, rules editor, cross-ref validation on delete |
+| Standards Manager | /standards | CRUD, rules editor, cross-ref validation |
 | Audit Log | /audit | JSON-highlighted details, filter by entity |
 | Settings | /settings | Multi-provider LLM, theme/language, key masking |
 
 Additional: Landing page (/), Auth (login/signup/verify/reset), Wiki (14 articles, Ctrl+K drawer).
 
-## Monorepo Packages
+## Monorepo Packages (4)
 
 | Package | Purpose |
 |---------|---------|
@@ -66,9 +63,44 @@ Additional: Landing page (/), Auth (login/signup/verify/reset), Wiki (14 article
 | `@stsgs/shared` | Core types: Agent, Skill, Standard, Flow, Knowledge, Prompt, Audit |
 | `eslint-plugin-3a` | 4 rules: max-lines (150), max-use-state (3), no-cross-layer, no-unicode-escapes |
 
+## Agent Typology (10 Patterns)
+
+Based on cross-framework research (LangChain, CrewAI, AutoGen, Anthropic, OpenAI Agents SDK, Google ADK, Amazon Bedrock). See [docs/AGENT_TYPES.md](docs/AGENT_TYPES.md) for full details.
+
+| # | Pattern | Core Idea | Phase |
+|---|---------|-----------|-------|
+| 1 | **Tool-Calling** | Native function calling, default agent | Phase 3 |
+| 2 | **Router** | Classify input, route to specialist | Phase 3 |
+| 3 | **Specialist** (CrewAI) | Role + Goal + Backstory persona | Phase 3 |
+| 4 | **Orchestrator + Workers** | Break task, delegate, synthesize | Phase 3 |
+| 5 | **Evaluator** | Generate, score, feedback loop | Phase 3 |
+| 6 | ReAct | Thought/Action/Observation loop | Phase 4 |
+| 7 | Plan-and-Execute | Plan once, execute steps, re-plan | Phase 4 |
+| 8 | Autonomous | Open-ended loop with tools, stop conditions | Phase 5 |
+| 9 | Parallel/Voting | Multiple LLM calls, aggregate | Phase 5 |
+| 10 | Prompt Chaining | Sequential LLM calls with gates | Phase 4 |
+
+Phase 3 focuses on types 1-5. These cover the majority of real-world multi-agent scenarios.
+
+## Resource Map (7 Items)
+
+The strategic resource inventory that feeds 3A Studio. See [docs/ROADMAP.md](docs/ROADMAP.md) for dependencies and phases.
+
+| # | Resource | Source | Status |
+|---|----------|--------|--------|
+| 1 | 17 coding standards | Zai-agent-toolkit/standards/ | Pending -- Phase 3A (after prompting) |
+| 2 | 12 agent role templates | Zai-agent-toolkit + new type-based | Pending -- Phase 3A |
+| 3 | 20 techniques + 11 frameworks | prompting-v0.0/ | Pending -- Phase 3A (current task) |
+| 4 | WebSocket service | New build | Later -- Phase 2.5 |
+| 5 | Circuit breaker + retry | prompting-v0.0/ + New | Later -- Phase 2.5 |
+| 6 | 110+ skills seed | Zai-agent-toolkit/skills/ | Later -- Phase 3 |
+| 7 | Anti-monolith CLI scanner | New build | Later -- Phase 4 |
+
+**Build order (dependency chain):** 3 (prompting) -> 1 (standards) -> 2 (agent templates) -> 6 (skills) -> rest
+
 ## Tech Stack
 
-- **Framework**: Next.js 15 (App Router)
+- **Framework**: Next.js 15 (App Router), React 19
 - **Language**: TypeScript 5
 - **Styling**: Tailwind CSS 4 + midnight theme (#0D1117 base, #58A6FF accent)
 - **Database**: Prisma ORM + PostgreSQL (Neon)
@@ -90,7 +122,7 @@ Flow --> FlowVersion
 KnowledgeCollection --> KnowledgeDocument
 ```
 
-All cross-entity references are validated on delete (409 Conflict if referenced).
+All cross-entity references validated on delete (409 Conflict if referenced).
 
 ## Environment Variables
 
@@ -114,15 +146,19 @@ All cross-entity references are validated on delete (409 Conflict if referenced)
 5. Zustand for all shared state
 6. Prisma + Neon -- single source of truth
 
+## Documentation
+
+| Doc | Description |
+|-----|-------------|
+| [WORKFLOW.md](WORKFLOW.md) | Full workflow, architecture diagram, roadmap phases |
+| [docs/AGENT_TYPES.md](docs/AGENT_TYPES.md) | 10 agent patterns with templates, comparative matrix |
+| [docs/ROADMAP.md](docs/ROADMAP.md) | 7-item resource map with build order and dependencies |
+| [docs/PROMPTING_MODULE.md](docs/PROMPTING_MODULE.md) | Prompting module status, gap analysis, migration plan |
+| [docs/research/agent-typology-full.md](docs/research/agent-typology-full.md) | Full 700-line research report (7 frameworks, academic refs) |
+
 ## Deployment
 
 Deployed to Vercel via GitHub auto-deploy (push to `main`).
-
-```
-git push origin main
-# Vercel builds and deploys automatically
-# Database schema pushes via prisma db push on vercel-build
-```
 
 ## License
 

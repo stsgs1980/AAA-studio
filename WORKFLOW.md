@@ -137,20 +137,61 @@ Zai-agent-toolkit (скомпилированные скиллы для Z.ai san
 
 Файлы: `/api/llm/debug/route.ts` → `/api/llm/health/route.ts`, `src/lib/llm/client.ts`
 
-### Phase 3 — Мосты (экспорт)
+### Phase 3 — Prompting + Standards + Agent Templates
 
-- [x] Skill Forge → экспорт SKILL.md для Z.ai sandbox
-- [ ] Standards Manager → генерация ESLint правил из DB (**StandardRule.pattern уже есть**)
-- [ ] Wiki → синхронизация с GitHub Wiki
-- [ ] Prompt Studio → экспорт промптов в разные форматы
+> **Build order**: prompting (item 3) -> standards seed (item 1) -> agent templates (item 2).
+> Зависимость: standards нужны type-based шаблоны из prompting, а agent templates нужны стандарты.
+> Подробности: [docs/ROADMAP.md](docs/ROADMAP.md), [docs/PROMPTING_MODULE.md](docs/PROMPTING_MODULE.md)
 
-### Phase 4 — Production
+#### Phase 3A — Prompting Module (item 3, текущий таск)
+
+Замена/расширение `@stsgs/prompting` на основе исследования типологии агентов.
+Что делаем (не все 20+11 формул, а только нужное):
+
+- [ ] 5 system prompt templates (Tool-Calling, Router, Specialist, Orchestrator, Evaluator)
+- [ ] Tool description builder (Anthropic ACI best practices)
+- [ ] Backstory builder (CrewAI pattern: 3-5 sentences expertise)
+- [ ] Evaluation rubric builder (критерии + scoring для Evaluator)
+- [ ] Collaboration context builder (team roster для Orchestrator+Workers)
+- [ ] Миграция типов из prompting-v0.0 в @stsgs/shared
+- [ ] Расширение frameworks: 4 -> 11
+- [ ] Добавление 14 техник (из 20, остальные на Phase 5)
+
+#### Phase 3B — Standards Seed (item 1)
+
+- [ ] 17 стандартов из Zai-agent-toolkit/standards/ -> StandardRule records в DB
+- [ ] Каждый с pattern для автопроверки
+- [ ] Категории: general, prompt, agent, flow, quality, security, architecture
+
+#### Phase 3C — Agent Templates (item 2)
+
+- [ ] 12 role templates (code-architect, frontend-specialist, etc.)
+- [ ] 7 type-based templates (Tool-Calling, Router, Orchestrator, Evaluator, ReAct, Planner, Executor)
+- [ ] Связка с Skills через standardIds
+
+### Phase 3D — Мосты (экспорт)
+
+- [x] Skill Forge -> экспорт SKILL.md для Z.ai sandbox
+- [ ] Standards Manager -> генерация ESLint правил из DB
+- [ ] Wiki -> синхронизация с GitHub Wiki
+- [ ] Prompt Studio -> экспорт промптов в разные форматы
+
+### Phase 4 — Production + Deferred Agent Types
 
 - [ ] Multi-user auth (не demo admin/admin)
 - [ ] RBAC (roles/permissions)
 - [ ] Versioning для standards + skills
 - [ ] API rate limiting
 - [ ] Monitoring/logging
+- [ ] ReAct agent type (Phase 4)
+- [ ] Plan-and-Execute agent type (Phase 4)
+- [ ] Prompt Chaining agent type (Phase 4)
+
+### Phase 5 — Advanced Agent Types
+
+- [ ] Autonomous agent (open-ended loop, stop conditions)
+- [ ] Parallel/Voting (multi-LLM reliability)
+- [ ] Deferred techniques: Tree-of-Thought, Least-to-Most, Assumption Challenge, Output Masking, Stakeholder Simulation, Analogical Reasoning
 
 #### ⚠️ Security Hardening (критично перед публичным запуском)
 
