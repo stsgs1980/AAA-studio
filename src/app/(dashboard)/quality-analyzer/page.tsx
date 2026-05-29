@@ -1,23 +1,27 @@
 "use client";
 
 import { useState } from "react";
-import { Zap, RotateCcw, Loader2, FileCode, FolderGit2 } from "lucide-react";
+import { Zap, RotateCcw, Loader2, FileCode, FolderGit2, Brain } from "lucide-react";
 import {
-  InputPanel, ScorePanel, StandardsPanel, RubricPanel,
+  InputPanel, ScorePanel, StandardsPanel, RubricPanel, DeepAnalysisPanel,
   useQualityStore,
 } from "@/features/quality-analyzer";
 import { useAgentLoader } from "@/features/quality-analyzer/hooks/use-agent-loader";
 
-type Tab = "scores" | "standards" | "rubric";
-const TABS: Tab[] = ["scores", "standards", "rubric"];
+type Tab = "scores" | "deep" | "standards" | "rubric";
+const TABS: Tab[] = ["scores", "deep", "standards", "rubric"];
 
 export default function QualityAnalyzerPage() {
   const [tab, setTab] = useState<Tab>("scores");
   const input = useQualityStore((s) => s.input);
   const isAnalyzing = useQualityStore((s) => s.isAnalyzing);
+  const isDeepAnalyzing = useQualityStore((s) => s.isDeepAnalyzing);
   const analyze = useQualityStore((s) => s.analyze);
+  const deepAnalyze = useQualityStore((s) => s.deepAnalyze);
   const reset = useQualityStore((s) => s.reset);
   const { agents, repoFiles, fetching, handleFetchUrl, handleRepoFileSelect, handleLoadAll, handleAgentSelect } = useAgentLoader();
+
+  const hasText = input.text.trim().length > 0;
 
   return (
     <div className="flex h-full flex-col gap-4 p-4">
@@ -50,7 +54,6 @@ export default function QualityAnalyzerPage() {
               {fetching ? "Fetching..." : "Fetch Content"}
             </button>
           )}
-          {/* Repo file list */}
           {input.mode === "url" && repoFiles.length > 0 && (
             <div className="max-h-[200px] overflow-y-auto rounded-lg border bg-muted/20 p-2">
               <div className="mb-1 flex items-center justify-between">
@@ -73,11 +76,18 @@ export default function QualityAnalyzerPage() {
             </div>
           )}
           <div className="flex-1 min-h-0 overflow-hidden"><InputPanel /></div>
-          <button onClick={analyze} disabled={!input.text.trim() || isAnalyzing}
-            className="flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground disabled:opacity-50">
-            {isAnalyzing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Zap className="h-4 w-4" />}
-            {isAnalyzing ? "Analyzing..." : "Analyze"}
-          </button>
+          <div className="flex gap-2">
+            <button onClick={analyze} disabled={!hasText || isAnalyzing}
+              className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground disabled:opacity-50">
+              {isAnalyzing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Zap className="h-4 w-4" />}
+              {isAnalyzing ? "Analyzing..." : "Analyze"}
+            </button>
+            <button onClick={deepAnalyze} disabled={!hasText || isDeepAnalyzing}
+              className="flex items-center gap-2 rounded-lg border border-primary px-4 py-2.5 text-sm font-medium text-primary disabled:opacity-50 hover:bg-primary/10">
+              {isDeepAnalyzing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Brain className="h-4 w-4" />}
+              Deep
+            </button>
+          </div>
         </div>
 
         {/* Results */}
@@ -92,6 +102,7 @@ export default function QualityAnalyzerPage() {
           </div>
           <div className="flex-1 min-h-0 overflow-y-auto">
             {tab === "scores" && <ScorePanel />}
+            {tab === "deep" && <DeepAnalysisPanel />}
             {tab === "standards" && <StandardsPanel />}
             {tab === "rubric" && <RubricPanel />}
           </div>

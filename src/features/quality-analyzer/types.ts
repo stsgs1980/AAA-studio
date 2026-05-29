@@ -23,6 +23,7 @@ export interface EvaluationResult {
   suggestions: string[];
   standardsCheck: StandardsCheckResult;
   rubricResult: RubricResult | null;
+  llmAnalysis: string | null;
 }
 
 export interface StandardsCheckResult {

@@ -11,6 +11,7 @@ interface QualityState {
   input: EvaluationInput;
   result: EvaluationResult | null;
   isAnalyzing: boolean;
+  isDeepAnalyzing: boolean;
   rubricScenario: RubricScenario;
   rubricThreshold: number;
 
@@ -23,6 +24,7 @@ interface QualityState {
   loadFile: (content: string, fileName: string) => void;
   loadAgent: (systemPrompt: string) => void;
   analyze: () => void;
+  deepAnalyze: () => void;
   reset: () => void;
 }
 
@@ -30,6 +32,7 @@ export const useQualityStore = create<QualityState>((set, get) => ({
   input: { ...EVAL_DEFAULTS },
   result: null,
   isAnalyzing: false,
+  isDeepAnalyzing: false,
   rubricScenario: 'prompt',
   rubricThreshold: 6,
 
@@ -75,7 +78,48 @@ export const useQualityStore = create<QualityState>((set, get) => ({
       .catch(() => {})
       .finally(() => {
         const rubricResult: RubricResult = evaluateRubric(text, rubricScenario, rubricThreshold);
-        set({ result: { score, suggestions, standardsCheck, rubricResult }, isAnalyzing: false });
+        set({ result: { score, suggestions, standardsCheck, rubricResult, llmAnalysis: null }, isAnalyzing: false });
+      });
+  },
+
+  deepAnalyze: () => {
+    const { input } = get();
+    const text = input.text.trim();
+    if (!text) return;
+    set({ isDeepAnalyzing: true });
+
+    const context = input.mode === 'url'
+      ? `Source: ${input.sourceUrl}`
+      : input.mode === 'agent'
+        ? `Agent ID: ${input.agentId}`
+        : input.mode === 'file'
+          ? `File: ${input.fileName}`
+          : undefined;
+
+    fetch('/api/evaluate-deep', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, context }),
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.analysis) {
+          set((s) => ({
+            result: s.result ? { ...s.result, llmAnalysis: data.analysis } : null,
+            isDeepAnalyzing: false,
+          }));
+        } else if (data.error) {
+          set((s) => ({
+            result: s.result ? { ...s.result, llmAnalysis: `Error: ${data.error}` } : null,
+            isDeepAnalyzing: false,
+          }));
+        }
+      })
+      .catch((err) => {
+        set((s) => ({
+          result: s.result ? { ...s.result, llmAnalysis: `Error: ${err.message}` } : null,
+          isDeepAnalyzing: false,
+        }));
       });
   },
 
