@@ -608,3 +608,32 @@ Stage Summary:
 - Per-node provider + model selection: fully functional on both client and server paths
 - Usage tracking: tokens (in/out), estimated cost per node + aggregate summary
 - Vercel CLI token expired — deployed via GitHub auto-deploy
+
+---
+Task ID: 1
+Agent: main
+Task: Fix 3 UI bugs — theme toggle, language switching, chevron collapse
+
+Work Log:
+- Analyzed screenshot: Settings page in light mode, sidebar collapsed, provider card expanded
+- Theme toggle bug: useTheme() returns undefined during SSR hydration → sidebar toggle always sets "dark"
+  - Fix: added mounted state guard + isDark derived variable in app-sidebar.tsx
+  - Fix: added mounted state in settings page for theme select value
+- Language switching bug: NO i18n system existed in codebase
+  - Created src/lib/i18n/translations.ts: en/ru dictionaries (nav, common, settings)
+  - Created src/lib/i18n/language-context.tsx: LanguageProvider + useLanguage hook
+  - Added LanguageProvider to root layout.tsx (wraps children inside ThemeProvider)
+  - Added Language selector in Settings Appearance section (English/Russian)
+  - Updated sidebar nav to use translated labels
+  - Language persists via localStorage, saves to backend on Settings save
+- Chevron collapse bug: ChevronUp/ChevronDown icon was NOT clickable (only name button toggled)
+  - Fix: wrapped chevron in <button onClick={onToggle}> in provider-row.tsx
+- All files ≤150 lines, 0 ESLint errors, next build successful
+
+Stage Summary:
+- Commit: 3bdbcf4 pushed to origin/main
+- 6 files changed, +218/-39
+- Theme toggle: now works with mounted guard preventing hydration mismatch
+- Language switching: basic i18n (en/ru) with sidebar + settings integration
+- Chevron: now clickable for collapse/expand in provider cards
+- Vercel auto-deploy from GitHub (CLI timed out)
