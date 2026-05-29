@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Zap, RotateCcw, Loader2 } from "lucide-react";
+import { Zap, RotateCcw, Loader2, FileCode, FolderGit2 } from "lucide-react";
 import {
   InputPanel, ScorePanel, StandardsPanel, RubricPanel,
   useQualityStore,
@@ -17,7 +17,7 @@ export default function QualityAnalyzerPage() {
   const isAnalyzing = useQualityStore((s) => s.isAnalyzing);
   const analyze = useQualityStore((s) => s.analyze);
   const reset = useQualityStore((s) => s.reset);
-  const { agents, handleFetchUrl, handleAgentSelect } = useAgentLoader();
+  const { agents, repoFiles, fetching, handleFetchUrl, handleRepoFileSelect, handleAgentSelect } = useAgentLoader();
 
   return (
     <div className="flex h-full flex-col gap-4 p-4">
@@ -44,10 +44,26 @@ export default function QualityAnalyzerPage() {
             </select>
           )}
           {input.mode === "url" && (
-            <button onClick={handleFetchUrl} disabled={!input.sourceUrl.trim()}
+            <button onClick={handleFetchUrl} disabled={!input.sourceUrl.trim() || fetching}
               className="flex items-center justify-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm text-primary-foreground disabled:opacity-50">
-              Fetch Content
+              {fetching ? <Loader2 className="h-4 w-4 animate-spin" /> : <FolderGit2 className="h-4 w-4" />}
+              {fetching ? "Fetching..." : "Fetch Content"}
             </button>
+          )}
+          {/* Repo file list */}
+          {input.mode === "url" && repoFiles.length > 0 && (
+            <div className="max-h-[200px] overflow-y-auto rounded-lg border bg-muted/20 p-2">
+              <p className="mb-1 text-xs font-medium text-muted-foreground">
+                {repoFiles.length} files found -- click to load:
+              </p>
+              {repoFiles.map((f) => (
+                <button key={f.path} onClick={() => handleRepoFileSelect(f)}
+                  className="flex w-full items-center gap-2 rounded-md px-2 py-1 text-xs hover:bg-accent text-left">
+                  <FileCode className="h-3 w-3 shrink-0 text-muted-foreground" />
+                  <span className="truncate">{f.path}</span>
+                </button>
+              ))}
+            </div>
           )}
           <div className="flex-1 min-h-0 overflow-hidden"><InputPanel /></div>
           <button onClick={analyze} disabled={!input.text.trim() || isAnalyzing}

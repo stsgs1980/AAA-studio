@@ -1,10 +1,18 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useQualityStore } from "../hooks/use-quality-store";
+import { useQualityStore } from "./use-quality-store";
+
+export interface RepoFile {
+  name: string;
+  path: string;
+  url: string | null;
+}
 
 export function useAgentLoader() {
   const [agents, setAgents] = useState<{ id: string; name: string }[]>([]);
+  const [repoFiles, setRepoFiles] = useState<RepoFile[]>([]);
+  const [fetching, setFetching] = useState(false);
   const setAgentId = useQualityStore((s) => s.setAgentId);
   const loadAgent = useQualityStore((s) => s.loadAgent);
   const setText = useQualityStore((s) => s.setText);
@@ -19,14 +27,51 @@ export function useAgentLoader() {
 
   const handleFetchUrl = useCallback(async () => {
     if (!input.sourceUrl.trim()) return;
+    setFetching(true);
+    setRepoFiles([]);
     try {
-      const res = await fetch(input.sourceUrl);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      setText(await res.text());
+      const res = await fetch("/api/fetch-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: input.sourceUrl.trim() }),
+      });
+      const data = await res.json();
+      if (data.type === "repo") {
+        setRepoFiles(data.files ?? []);
+      } else if (data.type === "content") {
+        setText(data.content);
+      } else if (data.error) {
+        console.error("Fetch error:", data.error);
+      }
     } catch (err) {
       console.error("Failed to fetch URL:", err);
+    } finally {
+      setFetching(false);
     }
   }, [input.sourceUrl, setText]);
+
+  const handleRepoFileSelect = useCallback(
+    async (file: RepoFile) => {
+      if (!file.url) return;
+      setFetching(true);
+      try {
+        const res = await fetch("/api/fetch-url", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: file.url }),
+        });
+        const data = await res.json();
+        if (data.type === "content") {
+          setText(data.content);
+        }
+      } catch (err) {
+        console.error("Failed to fetch file:", err);
+      } finally {
+        setFetching(false);
+      }
+    },
+    [setText],
+  );
 
   const handleAgentSelect = useCallback(
     async (agentId: string) => {
@@ -43,5 +88,5 @@ export function useAgentLoader() {
     [setAgentId, loadAgent],
   );
 
-  return { agents, handleFetchUrl, handleAgentSelect };
+  return { agents, repoFiles, fetching, handleFetchUrl, handleRepoFileSelect, handleAgentSelect };
 }
