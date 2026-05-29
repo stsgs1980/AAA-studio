@@ -39,12 +39,18 @@ export default function StandardsManagerPage() {
       fd.append("file", file);
       const res = await fetch("/api/standards/import", { method: "POST", body: fd });
       const data = await res.json();
-      if (res.status === 401) { setImportStatus("Please login first (Quick Admin)"); return; }
-      if (!res.ok) { setImportStatus(data.error?.message || "Import failed"); return; }
+      if (res.status === 401) { setImportStatus("Please login first"); return; }
+      if (!res.ok) {
+        const msg = data.error?.message || data.error || "Import failed";
+        setImportStatus(`Error: ${msg}`);
+        return;
+      }
       const { created, updated } = data.data ?? {};
       setImportStatus(`Imported: ${created} created, ${updated} updated`);
       await fetchStandards();
-    } catch { setImportStatus("Import failed"); }
+    } catch (err) {
+      setImportStatus(`Import failed: ${err instanceof Error ? err.message : "unknown"}`);
+    }
     finally {
       if (fileRef.current) fileRef.current.value = "";
       setTimeout(() => setImportStatus(null), 4000);
