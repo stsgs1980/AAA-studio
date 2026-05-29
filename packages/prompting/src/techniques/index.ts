@@ -1,5 +1,5 @@
 import type { PromptTechnique, TechniqueCategory, OutputFormat } from "@stsgs/shared";
-import { TECHNIQUES_DATA } from "./data.js";
+import { TECHNIQUES_DATA } from "./data";
 
 /** Return all techniques, optionally filtered by category. */
 export function getTechniques(filter?: TechniqueCategory): PromptTechnique[] {
