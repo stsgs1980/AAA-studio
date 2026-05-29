@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Shield, Plus, Search } from "lucide-react";
+import { useEffect, useRef, useState, useCallback } from "react";
+import { Shield, Plus, Search, Upload } from "lucide-react";
 import { cn } from "@stsgs/ui";
 import { PageSkeleton } from "@/components/ui";
 import { useStandardsStore } from "@/features/standards/store/standards-store";
@@ -19,8 +19,9 @@ export default function StandardsManagerPage() {
   const setSearch = useStandardsStore((s) => s.setSearch);
   const severityFilter = useStandardsStore((s) => s.severityFilter);
   const setSeverityFilter = useStandardsStore((s) => s.setSeverityFilter);
-
   const [showNew, setShowNew] = useState(false);
+  const [importStatus, setImportStatus] = useState<string | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => { fetchStandards(); }, [fetchStandards]);
 
@@ -29,20 +30,38 @@ export default function StandardsManagerPage() {
     setShowNew(false);
   };
 
-  if (loading) {
-    return (
-      <div className="p-6 space-y-4">
-        <div className="flex items-center gap-3">
-          <Shield className="h-6 w-6 text-text-muted" />
-          <h1 className="text-2xl font-bold tracking-tight text-text-primary">Standards Manager</h1>
-        </div>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 min-h-[60vh]">
-          <div className="rounded-xl border border-midnight-border bg-midnight-card p-4"><PageSkeleton rows={4} /></div>
-          <div className="lg:col-span-2 rounded-xl border border-midnight-border bg-midnight-card p-4"><PageSkeleton rows={3} /></div>
-        </div>
+  const handleImport = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImportStatus("Importing...");
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/standards/import", { method: "POST", body: fd });
+      const data = await res.json();
+      if (!res.ok) { setImportStatus(data.error?.message || "Import failed"); return; }
+      const { created, updated } = data.data ?? {};
+      setImportStatus(`Imported: ${created} created, ${updated} updated`);
+      await fetchStandards();
+    } catch { setImportStatus("Import failed"); }
+    finally {
+      if (fileRef.current) fileRef.current.value = "";
+      setTimeout(() => setImportStatus(null), 4000);
+    }
+  }, [fetchStandards]);
+
+  if (loading) return (
+    <div className="p-6 space-y-4">
+      <div className="flex items-center gap-3">
+        <Shield className="h-6 w-6 text-text-muted" />
+        <h1 className="text-2xl font-bold tracking-tight text-text-primary">Standards Manager</h1>
       </div>
-    );
-  }
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 min-h-[60vh]">
+        <div className="rounded-xl border border-midnight-border bg-midnight-card p-4"><PageSkeleton rows={4} /></div>
+        <div className="lg:col-span-2 rounded-xl border border-midnight-border bg-midnight-card p-4"><PageSkeleton rows={3} /></div>
+      </div>
+    </div>
+  );
 
   return (
     <div className="p-6 space-y-4">
@@ -52,54 +71,44 @@ export default function StandardsManagerPage() {
           <Shield className="h-6 w-6 text-text-muted" />
           <h1 className="text-2xl font-bold tracking-tight text-text-primary">Standards Manager</h1>
         </div>
-        <button
-          onClick={() => setShowNew(!showNew)}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-brand-accent text-white text-sm font-medium hover:bg-brand-accent/90"
-        >
-          <Plus className="h-4 w-4" /> New Standard
-        </button>
+        <div className="flex items-center gap-2">
+          <input ref={fileRef} type="file" accept=".md" onChange={handleImport} className="hidden" aria-label="Upload standard file" />
+          <button onClick={() => fileRef.current?.click()} className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-midnight-border bg-midnight-card text-text-primary text-sm font-medium hover:bg-midnight-card/80 transition-colors">
+            <Upload className="h-4 w-4" /> Import
+          </button>
+          <button onClick={() => setShowNew(!showNew)} className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-brand-accent text-white text-sm font-medium hover:bg-brand-accent/90">
+            <Plus className="h-4 w-4" /> New Standard
+          </button>
+        </div>
       </div>
 
-      {/* Create form */}
-      {showNew && (
-        <CreateStandardForm onCreate={handleCreate} onClose={() => setShowNew(false)} />
+      {/* Import status */}
+      {importStatus && (
+        <div className={cn("px-4 py-2 rounded-lg text-sm font-medium max-w-xs", importStatus.includes("failed") ? "bg-red-500/15 text-red-400 border border-red-500/30" : "bg-brand-accent/15 text-brand-accent border border-brand-accent/30")}>
+          {importStatus}
+        </div>
       )}
+
+      {showNew && <CreateStandardForm onCreate={handleCreate} onClose={() => setShowNew(false)} />}
 
       {/* Filters */}
       <div className="flex items-center gap-3">
         <div className="relative flex-1 max-w-xs">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-text-muted" />
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search standards..."
-            className="w-full h-8 pl-8 pr-3 rounded-lg border border-midnight-border bg-midnight-card text-sm text-text-primary placeholder:text-text-muted"
-          />
+          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search standards..." className="w-full h-8 pl-8 pr-3 rounded-lg border border-midnight-border bg-midnight-card text-sm text-text-primary placeholder:text-text-muted" />
         </div>
         <div className="flex gap-1">
           {(["all", ...SEVERITY_OPTIONS.map((o) => o.value)] as const).map((v) => (
-            <button
-              key={v}
-              onClick={() => setSeverityFilter(v as StandardSeverity | "all")}
-              className={cn(
-                "px-2.5 py-1 rounded-lg text-[11px] font-medium transition-colors capitalize",
-                severityFilter === v
-                  ? "bg-brand-accent/15 text-brand-accent"
-                  : "text-text-muted hover:text-text-secondary",
-              )}
-            >
+            <button key={v} onClick={() => setSeverityFilter(v as StandardSeverity | "all")} className={cn("px-2.5 py-1 rounded-lg text-[11px] font-medium transition-colors capitalize", severityFilter === v ? "bg-brand-accent/15 text-brand-accent" : "text-text-muted hover:text-text-secondary")}>
               {v}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Main layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 min-h-[60vh]">
         <StandardList />
-        <div className="lg:col-span-2">
-          <StandardDetail />
-        </div>
+        <div className="lg:col-span-2"><StandardDetail /></div>
       </div>
     </div>
   );
