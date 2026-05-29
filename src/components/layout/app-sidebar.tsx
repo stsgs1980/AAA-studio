@@ -10,8 +10,9 @@ import {
   Moon, Sun,
 } from "lucide-react";
 import { cn } from "@stsgs/ui";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useWikiStore } from "@/features/wiki/store/wiki-store";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 const navItems = [
   { title: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -32,6 +33,12 @@ export function AppSidebar() {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
   const { theme, setTheme } = useTheme();
+  const { t } = useLanguage();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => { setMounted(true); }, []);
+
+  const isDark = mounted ? theme === "dark" : true;
 
   return (
     <aside
@@ -67,6 +74,7 @@ export function AppSidebar() {
           {navItems.map((item) => {
             const isActive = pathname === item.href;
             const Icon = item.icon;
+            const label = t.nav[item.title] ?? item.title;
             return (
               <li key={item.href}>
                 <Link
@@ -77,10 +85,10 @@ export function AppSidebar() {
                       ? "bg-accent text-accent-foreground font-medium"
                       : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                   )}
-                  title={collapsed ? item.title : undefined}
+                  title={collapsed ? label : undefined}
                 >
                   <Icon className="h-4 w-4 shrink-0" />
-                  {!collapsed && <span>{item.title}</span>}
+                  {!collapsed && <span>{label}</span>}
                 </Link>
               </li>
             );
@@ -99,19 +107,19 @@ export function AppSidebar() {
           title="Wiki (Ctrl+K)"
         >
           <FileText className="h-4 w-4 shrink-0" />
-          {!collapsed && <span>Wiki</span>}
+          {!collapsed && <span>{t.nav.Wiki}</span>}
         </button>
       </div>
 
       {/* Footer — Theme toggle */}
       <div className={cn("border-t px-2 py-2", collapsed && "flex flex-col items-center gap-1")}>
         <button
-          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          onClick={() => setTheme(isDark ? "light" : "dark")}
           className="flex w-full items-center gap-3 rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
-          title={theme === "dark" ? "Switch to light" : "Switch to dark"}
+          title={isDark ? t.common['Switch to light'] : t.common['Switch to dark']}
         >
-          {theme === "dark" ? <Sun className="h-4 w-4 shrink-0" /> : <Moon className="h-4 w-4 shrink-0" />}
-          {!collapsed && <span>{theme === "dark" ? "Light Mode" : "Dark Mode"}</span>}
+          {isDark ? <Sun className="h-4 w-4 shrink-0" /> : <Moon className="h-4 w-4 shrink-0" />}
+          {!collapsed && <span>{isDark ? t.common['Light Mode'] : t.common['Dark Mode']}</span>}
         </button>
         {!collapsed && (
           <p className="text-[10px] text-muted-foreground px-2">

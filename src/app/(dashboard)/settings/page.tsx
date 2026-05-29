@@ -7,6 +7,8 @@ import { PageSkeleton } from '@/components/ui';
 import { DEFAULT_LLM_SETTINGS, builtinToConfig } from '@/lib/llm';
 import type { ProviderConfig } from '@/lib/llm';
 import { LLMProviderCard } from './llm-provider-card';
+import { useLanguage } from '@/lib/i18n/language-context';
+import type { Locale } from '@/lib/i18n/translations';
 
 const cls = 'h-9 px-3 rounded-md border bg-background text-sm w-48';
 const SEL = (opts: string[]) => opts.map(o => <option key={o} value={o}>{o}</option>);
@@ -21,12 +23,16 @@ function defaults() {
 
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
+  const { locale, setLocale, t } = useLanguage();
+  const [mounted, setMounted] = useState(false);
   const [settings, setSettings] = useState<Record<string, string>>({});
-  const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(true);
   const [providers, setProviders] = useState<ProviderConfig[]>([]);
   const [activeId, setActiveId] = useState(DEFAULT_LLM_SETTINGS.activeProviderId);
   const [activeModel, setActiveModel] = useState(DEFAULT_LLM_SETTINGS.activeModel);
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => { setMounted(true); }, []);
 
   const put = useCallback(async (p: Record<string, string>) => {
     const r = await fetch('/api/settings', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(p) });
@@ -44,35 +50,41 @@ export default function SettingsPage() {
       else { setProviders(defaults()); }
       setActiveId(d.llm_active_provider ?? DEFAULT_LLM_SETTINGS.activeProviderId);
       setActiveModel(d.llm_active_model ?? DEFAULT_LLM_SETTINGS.activeModel);
+      if (d.language && d.language in ['en', 'ru']) setLocale(d.language as Locale);
     } catch { /* */ } finally { setLoading(false); }
-  }, []);
+  }, [setLocale]);
 
   useEffect(() => { load(); }, [load]);
 
   const save = useCallback(async () => {
     try {
       await put({ ...settings, llm_providers: JSON.stringify(providers), llm_active_provider: activeId,
-        llm_active_model: activeModel, max_tokens: settings.max_tokens ?? String(DEFAULT_LLM_SETTINGS.maxTokens),
+        llm_active_model: activeModel, language: locale,
+        max_tokens: settings.max_tokens ?? String(DEFAULT_LLM_SETTINGS.maxTokens),
         temperature: settings.temperature ?? String(DEFAULT_LLM_SETTINGS.temperature) });
       setSaved(true); setTimeout(() => setSaved(false), 2000);
     } catch { /* */ }
-  }, [settings, providers, activeId, activeModel, put]);
+  }, [settings, providers, activeId, activeModel, locale, put]);
 
   const reset = useCallback(async () => {
     if (!confirm('Reset all settings to defaults?')) return;
     const d = defaults();
-    const p: Record<string, string> = { theme: 'dark', language: 'en', llm_providers: JSON.stringify(d),
-      llm_active_provider: DEFAULT_LLM_SETTINGS.activeProviderId, llm_active_model: DEFAULT_LLM_SETTINGS.activeModel,
-      max_tokens: String(DEFAULT_LLM_SETTINGS.maxTokens), temperature: String(DEFAULT_LLM_SETTINGS.temperature) };
-    try { await put(p); setSettings(p); setProviders(d); setActiveId(DEFAULT_LLM_SETTINGS.activeProviderId); setActiveModel(DEFAULT_LLM_SETTINGS.activeModel); }
-    catch { /* */ }
-  }, [put]);
+    const p: Record<string, string> = { theme: 'dark', language: 'en',
+      llm_providers: JSON.stringify(d),
+      llm_active_provider: DEFAULT_LLM_SETTINGS.activeProviderId,
+      llm_active_model: DEFAULT_LLM_SETTINGS.activeModel,
+      max_tokens: String(DEFAULT_LLM_SETTINGS.maxTokens),
+      temperature: String(DEFAULT_LLM_SETTINGS.temperature) };
+    try {
+      await put(p); setSettings(p); setProviders(d);
+      setActiveId(DEFAULT_LLM_SETTINGS.activeProviderId);
+      setActiveModel(DEFAULT_LLM_SETTINGS.activeModel); setLocale('en');
+    } catch { /* */ }
+  }, [put, setLocale]);
 
-  const up = (k: string, v: string) => setSettings(prev => ({ ...prev, [k]: v }));
-
-  if (loading) return (
+  const up = (k: string, v: string) => setSettings(prev => ({ ...prev, [k]: v })); if (loading) return (
     <div className="p-6 space-y-4">
-      <div className="flex items-center gap-3"><Settings className="h-6 w-6 text-muted-foreground" /><h1 className="text-2xl font-bold tracking-tight">Settings</h1></div>
+      <div className="flex items-center gap-3"><Settings className="h-6 w-6 text-muted-foreground" /><h1 className="text-2xl font-bold tracking-tight">{t.nav.Settings}</h1></div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4"><PageSkeleton rows={3} /><PageSkeleton rows={3} /></div>
     </div>
   );
@@ -80,37 +92,55 @@ export default function SettingsPage() {
   return (
     <div className="p-6 space-y-4">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3"><Settings className="h-6 w-6 text-muted-foreground" /><h1 className="text-2xl font-bold tracking-tight">Settings</h1></div>
+        <div className="flex items-center gap-3"><Settings className="h-6 w-6 text-muted-foreground" /><h1 className="text-2xl font-bold tracking-tight">{t.nav.Settings}</h1></div>
         <div className="flex gap-2">
-          <button onClick={reset} className="flex items-center gap-1.5 px-3 py-2 rounded-lg border text-sm hover:bg-accent"><RotateCcw className="h-4 w-4" /> Reset</button>
+          <button onClick={reset} className="flex items-center gap-1.5 px-3 py-2 rounded-lg border text-sm hover:bg-accent"><RotateCcw className="h-4 w-4" /> {t.common.Reset}</button>
           <button onClick={save} className={cn('flex items-center gap-1.5 px-3 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90', saved && 'bg-emerald-600')}>
-            <Save className="h-4 w-4" /> {saved ? 'Saved' : 'Save'}</button>
+            <Save className="h-4 w-4" /> {saved ? t.common.Saved : t.common.Save}</button>
         </div>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <LLMProviderCard providers={providers} activeProviderId={activeId} activeModel={activeModel}
           onProvidersChange={setProviders} onActiveChange={(id, m) => { setActiveId(id); setActiveModel(m); }} />
         <div className="rounded-xl border bg-card shadow-sm p-4">
-          <h2 className="text-sm font-semibold mb-4">Appearance</h2>
+          <h2 className="text-sm font-semibold mb-4">{t.settings.appearance}</h2>
           <div className="space-y-4">
-            <F l="Theme"><select value={theme ?? 'dark'} onChange={e => { setTheme(e.target.value); up('theme', e.target.value); }} className={cls}>{SEL(['dark', 'light', 'system'])}</select></F>
+            <F l={t.settings.theme}>
+              <select value={mounted ? theme ?? 'dark' : 'dark'} onChange={e => { setTheme(e.target.value); up('theme', e.target.value); }} className={cls}>
+                {SEL(['dark', 'light', 'system'])}
+              </select>
+            </F>
+            <F l={t.settings.language}>
+              <select value={locale} onChange={e => setLocale(e.target.value as Locale)} className={cls}>
+                <option value="en">English</option>
+                <option value="ru">Русский</option>
+              </select>
+            </F>
           </div>
         </div>
         <div className="rounded-xl border bg-card shadow-sm p-4">
-          <h2 className="text-sm font-semibold mb-4">LLM Defaults</h2>
+          <h2 className="text-sm font-semibold mb-4">{t.settings['LLM Defaults']}</h2>
           <div className="space-y-4">
-            <F l="Max Tokens"><input type="number" value={settings.max_tokens ?? '4096'} onChange={e => up('max_tokens', e.target.value)} className={cls} /></F>
-            <F l="Temperature"><div className="flex items-center gap-2 w-48">
-              <input type="range" min={0} max={2} step={0.1} value={settings.temperature ?? '0.7'} onChange={e => up('temperature', e.target.value)} className="flex-1" />
-              <span className="text-sm tabular-nums w-8 text-right">{settings.temperature}</span>
-            </div></F>
+            <F l={t.settings['Max Tokens']}>
+              <input type="number" value={settings.max_tokens ?? '4096'} onChange={e => up('max_tokens', e.target.value)} className={cls} />
+            </F>
+            <F l={t.settings.Temperature}>
+              <div className="flex items-center gap-2 w-48">
+                <input type="range" min={0} max={2} step={0.1} value={settings.temperature ?? '0.7'} onChange={e => up('temperature', e.target.value)} className="flex-1" />
+                <span className="text-sm tabular-nums w-8 text-right">{settings.temperature}</span>
+              </div>
+            </F>
           </div>
         </div>
         <div className="rounded-xl border bg-card shadow-sm p-4">
-          <h2 className="text-sm font-semibold mb-4">Editor</h2>
+          <h2 className="text-sm font-semibold mb-4">{t.settings.editor}</h2>
           <div className="space-y-4">
-            <F l="Auto-save"><input type="number" value={settings.auto_save ?? ''} onChange={e => up('auto_save', e.target.value)} className={cls} /></F>
-            <F l="Snap Grid"><select value={settings.snap_to_grid ?? 'false'} onChange={e => up('snap_to_grid', e.target.value)} className={cls}>{SEL(['true', 'false'])}</select></F>
+            <F l={t.settings['Auto-save']}>
+              <input type="number" value={settings.auto_save ?? ''} onChange={e => up('auto_save', e.target.value)} className={cls} />
+            </F>
+            <F l={t.settings['Snap Grid']}>
+              <select value={settings.snap_to_grid ?? 'false'} onChange={e => up('snap_to_grid', e.target.value)} className={cls}>{SEL(['true', 'false'])}</select>
+            </F>
           </div>
         </div>
       </div>

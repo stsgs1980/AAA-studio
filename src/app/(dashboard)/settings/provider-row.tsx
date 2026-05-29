@@ -47,7 +47,9 @@ export function ProviderRow({ provider, isActive, activeModel, expanded, isBuilt
           {testing ? <Loader2 className="h-3 w-3 animate-spin" /> : null}Test
         </button>
         {badge}
-        {expanded ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
+        <button onClick={onToggle} className="p-0.5 rounded hover:bg-accent text-muted-foreground">
+          {expanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+        </button>
       </div>
 
       {/* Expanded config */}
