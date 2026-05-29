@@ -1,19 +1,31 @@
-// 3A Studio — Auth middleware (Edge Runtime, no jose dependency)
-// Verifies JWT signature via Web Crypto API directly.
+// 3A Studio — Auth middleware (Edge Runtime)
+// Uses Web Crypto API for JWT verification.
 
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 const SESSION_COOKIE = '3a-session';
 
-const PUBLIC_PATHS = [
+const PUBLIC_PATHS = new Set([
   '/', '/login', '/signup', '/forgot-password', '/reset-password', '/verify',
+]);
+
+const PUBLIC_PREFIXES = [
+  '/api/auth/',
+  '/api/health',
+  '/_next/',
+  '/favicon',
 ];
 
 function isPublic(pathname: string): boolean {
-  if (PUBLIC_PATHS.some(p => pathname === p)) return true;
-  if (pathname.startsWith('/api/auth/')) return true;
-  if (pathname === '/api/health') return true;
+  // Exact match
+  if (PUBLIC_PATHS.has(pathname)) return true;
+  // Prefix match
+  for (const prefix of PUBLIC_PREFIXES) {
+    if (pathname.startsWith(prefix)) return true;
+  }
+  // Static assets (has extension)
+  if (pathname.includes('.')) return true;
   return false;
 }
 
@@ -34,7 +46,6 @@ async function verifyJWT(
       ['verify'],
     );
 
-    // Base64url → raw bytes
     const toBytes = (b64: string) =>
       Uint8Array.from(atob(b64.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0));
 
@@ -55,29 +66,29 @@ async function verifyJWT(
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Static assets & Next.js internals — always allow
-  if (
-    pathname.startsWith('/_next/') ||
-    pathname.startsWith('/favicon') ||
-    pathname.includes('.')
-  ) {
-    return NextResponse.next();
-  }
-
   if (isPublic(pathname)) return NextResponse.next();
 
   const token = request.cookies.get(SESSION_COOKIE)?.value;
   if (!token) {
-    return pathname.startsWith('/api/')
-      ? NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-      : NextResponse.redirect(new URL('/login', request.url));
+    if (pathname.startsWith('/api/')) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    // Build redirect URL with ONLY the pathname (strip query params from proxy)
+    const loginUrl = request.nextUrl.clone();
+    loginUrl.pathname = '/login';
+    loginUrl.search = '';
+    return NextResponse.redirect(loginUrl);
   }
 
   const session = await verifyJWT(token);
   if (!session) {
-    return pathname.startsWith('/api/')
-      ? NextResponse.json({ error: 'Session expired' }, { status: 401 })
-      : NextResponse.redirect(new URL('/login', request.url));
+    if (pathname.startsWith('/api/')) {
+      return NextResponse.json({ error: 'Session expired' }, { status: 401 });
+    }
+    const loginUrl = request.nextUrl.clone();
+    loginUrl.pathname = '/login';
+    loginUrl.search = '';
+    return NextResponse.redirect(loginUrl);
   }
 
   return NextResponse.next();
