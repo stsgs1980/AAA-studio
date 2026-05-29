@@ -1,6 +1,8 @@
 export interface StandardRule {
   id: string;
+  name: string;
   description: string;
+  pattern?: string;
   enabled: boolean;
 }
 

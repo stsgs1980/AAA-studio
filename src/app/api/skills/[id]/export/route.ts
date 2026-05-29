@@ -17,6 +17,12 @@ export async function GET(_request: Request, { params }: Params) {
     const tags: string[] = JSON.parse(skill.tags);
     const inputSchema: Record<string, unknown> = JSON.parse(skill.inputSchema);
     const outputSchema: Record<string, unknown> = JSON.parse(skill.outputSchema);
+    const standardIds: string[] = JSON.parse(skill.standardIds);
+
+    // Resolve linked standard names
+    const linkedStandards = standardIds.length > 0
+      ? await db.standard.findMany({ where: { id: { in: standardIds } }, select: { id: true, name: true } })
+      : [];
 
     const md = generateSkillMd({
       name: skill.name,
@@ -27,6 +33,7 @@ export async function GET(_request: Request, { params }: Params) {
       tests: skill.tests,
       inputSchema,
       outputSchema,
+      standards: linkedStandards.map(s => s.name),
     });
 
     return new NextResponse(md, {
@@ -45,6 +52,7 @@ function generateSkillMd(ctx: {
   name: string; description: string; category: string; tags: string[];
   code: string; tests: string;
   inputSchema: Record<string, unknown>; outputSchema: Record<string, unknown>;
+  standards: string[];
 }): string {
   const lines: string[] = [];
 
@@ -79,6 +87,9 @@ function generateSkillMd(ctx: {
   lines.push("");
   lines.push(`- **Category:** ${ctx.category}`);
   lines.push(`- **Tags:** ${ctx.tags.length > 0 ? ctx.tags.join(", ") : "none"}`);
+  if (ctx.standards.length > 0) {
+    lines.push(`- **Standards:** ${ctx.standards.join(", ")}`);
+  }
   lines.push("");
 
   // Input Schema

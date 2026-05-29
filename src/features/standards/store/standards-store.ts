@@ -59,7 +59,7 @@ export const useStandardsStore = create<StandardsStore>((set, get) => ({
     set((st) => ({
       standards: st.standards.map((s) =>
         s.id === st.selectedId
-          ? { ...s, rules: [...s.rules, { id: generateRuleId(), description, enabled: true }] }
+          ? { ...s, rules: [...s.rules, { id: generateRuleId(), name: description.slice(0, 40), description, enabled: true }] }
           : s,
       ),
     })),

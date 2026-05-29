@@ -6,6 +6,7 @@ import { ROLE_GROUPS, STATUS_OPTIONS, MODELS } from '../types';
 import type { RoleGroup } from '@stsgs/shared';
 import { X } from 'lucide-react';
 import { CodeBlock } from '@/components/code-block';
+import { EntityPicker } from '@/components/ui';
 
 export function AgentForm() {
   const store = useAgentStore();
@@ -21,11 +22,8 @@ export function AgentForm() {
   }, [store.showForm, store.setShowForm]);
 
   if (!store.showForm) return null;
-
-  const isEdit = !!store.editing;
-
-  const fieldClass = 'w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring';
-  const labelClass = 'block text-xs font-medium text-muted-foreground mb-1';
+  const isEdit = !!store.editing; const fc = 'w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring';
+  const lc = 'block text-xs font-medium text-muted-foreground mb-1';
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
@@ -44,18 +42,16 @@ export function AgentForm() {
             {store.error}
           </div>
         )}
-
-        {/* Form fields */}
         <div className="space-y-4">
           {/* Row: Name + Status */}
           <div className="grid grid-cols-3 gap-3">
             <div className="col-span-2">
-              <label className={labelClass}>Name *</label>
-              <input value={f.name} onChange={(e) => store.setField('name', e.target.value)} className={fieldClass} placeholder="Agent name" />
+              <label className={lc}>Name *</label>
+              <input value={f.name} onChange={(e) => store.setField('name', e.target.value)} className={fc} placeholder="Agent name" />
             </div>
             <div>
-              <label className={labelClass}>Status</label>
-              <select value={f.status} onChange={(e) => store.setField('status', e.target.value as typeof f.status)} className={fieldClass}>
+              <label className={lc}>Status</label>
+              <select value={f.status} onChange={(e) => store.setField('status', e.target.value as typeof f.status)} className={fc}>
                 {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
@@ -64,12 +60,12 @@ export function AgentForm() {
           {/* Row: Role + Group */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className={labelClass}>Role</label>
-              <input value={f.role} onChange={(e) => store.setField('role', e.target.value)} className={fieldClass} placeholder="e.g. Code Reviewer" />
+              <label className={lc}>Role</label>
+              <input value={f.role} onChange={(e) => store.setField('role', e.target.value)} className={fc} placeholder="e.g. Code Reviewer" />
             </div>
             <div>
-              <label className={labelClass}>Group</label>
-              <select value={f.group} onChange={(e) => store.setField('group', e.target.value as RoleGroup)} className={fieldClass}>
+              <label className={lc}>Group</label>
+              <select value={f.group} onChange={(e) => store.setField('group', e.target.value as RoleGroup)} className={fc}>
                 {ROLE_GROUPS.map((g) => <option key={g} value={g}>{g}</option>)}
               </select>
             </div>
@@ -78,27 +74,26 @@ export function AgentForm() {
           {/* Row: Model + Temperature */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className={labelClass}>Model</label>
-              <select value={f.model} onChange={(e) => store.setField('model', e.target.value)} className={fieldClass}>
+              <label className={lc}>Model</label>
+              <select value={f.model} onChange={(e) => store.setField('model', e.target.value)} className={fc}>
                 {MODELS.map((m) => <option key={m} value={m}>{m}</option>)}
               </select>
             </div>
             <div>
-              <label className={labelClass}>Temperature: {f.temperature}</label>
+              <label className={lc}>Temperature: {f.temperature}</label>
               <input type="range" min="0" max="2" step="0.1" value={f.temperature} onChange={(e) => store.setField('temperature', parseFloat(e.target.value))} className="w-full mt-1 accent-primary" />
             </div>
           </div>
-
           {/* Max Tokens */}
           <div>
-            <label className={labelClass}>Max Tokens</label>
-            <input type="number" value={f.maxTokens} onChange={(e) => store.setField('maxTokens', parseInt(e.target.value) || 4096)} className={fieldClass} />
+            <label className={lc}>Max Tokens</label>
+            <input type="number" value={f.maxTokens} onChange={(e) => store.setField('maxTokens', parseInt(e.target.value) || 4096)} className={fc} />
           </div>
 
           {/* System Prompt */}
           <div>
-            <label className={labelClass}>System Prompt</label>
-            <textarea value={f.systemPrompt} onChange={(e) => store.setField('systemPrompt', e.target.value)} rows={4} className={fieldClass + ' resize-y font-mono'} placeholder="Enter system prompt..." />
+            <label className={lc}>System Prompt</label>
+            <textarea value={f.systemPrompt} onChange={(e) => store.setField('systemPrompt', e.target.value)} rows={4} className={fc + ' resize-y font-mono'} placeholder="Enter system prompt..." />
             {f.systemPrompt && (
               <div className="mt-2">
                 <span className="text-[10px] text-muted-foreground">Preview</span>
@@ -107,20 +102,36 @@ export function AgentForm() {
             )}
           </div>
 
-          {/* Description */}
-          <div>
-            <label className={labelClass}>Description</label>
-            <textarea value={f.description} onChange={(e) => store.setField('description', e.target.value)} rows={2} className={fieldClass + ' resize-y'} placeholder="What does this agent do?" />
+          {/* Row: Description + Parent */}
+          <div className="grid grid-cols-3 gap-3">
+            <div className="col-span-2">
+              <label className={lc}>Description</label>
+              <textarea value={f.description} onChange={(e) => store.setField('description', e.target.value)} rows={2} className={fc + ' resize-y'} placeholder="What does this agent do?" />
+            </div>
+            <div>
+              <label className={lc}>Parent Agent ID</label>
+              <input value={f.parentId ?? ''} onChange={(e) => store.setField('parentId', e.target.value || null)} className={fc} placeholder="Optional" />
+            </div>
           </div>
 
-          {/* Parent Agent */}
-          <div>
-            <label className={labelClass}>Parent Agent ID</label>
-            <input value={f.parentId ?? ''} onChange={(e) => store.setField('parentId', e.target.value || null)} className={fieldClass} placeholder="Optional parent" />
+          {/* Skills & Standards */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className={lc}>Skills</label>
+              <EntityPicker entityType="skill"
+                linked={JSON.parse(f.skills || '[]')}
+                onAdd={(id) => store.setField('skills', JSON.stringify([...JSON.parse(f.skills || '[]'), id]))}
+                onRemove={(id) => store.setField('skills', JSON.stringify(JSON.parse(f.skills || '[]').filter((i: string) => i !== id)))} />
+            </div>
+            <div>
+              <label className={lc}>Standards</label>
+              <EntityPicker entityType="standard"
+                linked={JSON.parse(f.standards || '[]')}
+                onAdd={(id) => store.setField('standards', JSON.stringify([...JSON.parse(f.standards || '[]'), id]))}
+                onRemove={(id) => store.setField('standards', JSON.stringify(JSON.parse(f.standards || '[]').filter((i: string) => i !== id)))} />
+            </div>
           </div>
         </div>
-
-        {/* Actions */}
         <div className="flex items-center justify-end gap-2 mt-6 pt-4 border-t">
           <button onClick={() => store.setShowForm(false)} className="px-4 py-2 rounded-lg text-sm hover:bg-accent transition-colors">
             Cancel

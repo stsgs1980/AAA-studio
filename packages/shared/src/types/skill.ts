@@ -1,18 +1,5 @@
 // ============================================================================
-// Skill types
+// Skill types — re-export from unified standard.ts
 // ============================================================================
 
-/** Skill definition */
-export interface Skill {
-  id: string;
-  name: string;
-  category: string;
-  description: string;
-  inputSchema: Record<string, unknown>;
-  outputSchema: Record<string, unknown>;
-  code: string;
-  tests?: string;
-  tags: string[];
-  createdAt: Date;
-  updatedAt: Date;
-}
+export type { Skill, SkillCategory, SKILL_CATEGORIES } from "./standard";
