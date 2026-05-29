@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useDashboardData } from '../hooks/use-dashboard-data'
 
-const DOT_COLORS = ['#67E8F9', '#06B6D4', '#22D3EE', '#0891B2', '#0E7490']
+const DOT_COLORS = ['var(--chart-cyan-300)', 'var(--chart-cyan-500)', 'var(--chart-cyan-400)', 'var(--chart-cyan-600)', 'var(--chart-cyan-700)']
 
 export function TopPerformers() {
   const { data } = useDashboardData()

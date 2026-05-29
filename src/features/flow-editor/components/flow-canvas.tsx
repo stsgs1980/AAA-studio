@@ -23,13 +23,13 @@ const edgeTypes = { animated: AnimatedEdge };
 function miniMapNodeColor(node: Node): string {
   const def = getNodeDefinition((node.type as NodeType) ?? '');
   const c = def?.colorClass ?? '';
-  if (c.includes('blue')) return '#2563eb';
-  if (c.includes('purple')) return '#9333ea';
-  if (c.includes('emerald')) return '#059669';
-  if (c.includes('amber')) return '#d97706';
-  if (c.includes('orange')) return '#ea580c';
-  if (c.includes('red')) return '#dc2626';
-  return '#475569';
+  if (c.includes('blue')) return 'var(--flow-blue-600)';
+  if (c.includes('purple')) return 'var(--flow-purple-600)';
+  if (c.includes('emerald')) return 'var(--flow-emerald-600)';
+  if (c.includes('amber')) return 'var(--flow-amber-600)';
+  if (c.includes('orange')) return 'var(--flow-orange-600)';
+  if (c.includes('red')) return 'var(--flow-red-600)';
+  return 'var(--flow-slate-600)';
 }
 
 export function FlowCanvas() {

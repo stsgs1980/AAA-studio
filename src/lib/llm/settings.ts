@@ -17,16 +17,6 @@ const SETTINGS_MAP: Record<string, keyof LLMSettings> = {
   llm_max_tokens: 'maxTokens',
 };
 
-// ---- Raw SQL upsert helper ----
-async function upsertSetting(key: string, value: string) {
-  await db.$executeRawUnsafe(
-    `INSERT INTO "Settings" (id, key, value, "updatedAt")
-     VALUES ($1, $2, $3, NOW())
-     ON CONFLICT (key) DO UPDATE SET value = $3, "updatedAt" = NOW()`,
-    `cfg-${key}`, key, value,
-  );
-}
-
 // ---- Provider configs (JSON array) ----
 
 /** Get all provider configs from DB (apiKeys decrypted) */
@@ -53,7 +43,11 @@ export async function saveProviders(providers: ProviderConfig[]): Promise<void> 
     ...p,
     apiKey: p.apiKey ? encrypt(p.apiKey) : '',
   }));
-  await upsertSetting(PROVIDERS_KEY, JSON.stringify(encrypted));
+  await db.settings.upsert({
+    where: { key: PROVIDERS_KEY },
+    update: { value: JSON.stringify(encrypted) },
+    create: { id: `cfg-${PROVIDERS_KEY}`, key: PROVIDERS_KEY, value: JSON.stringify(encrypted) },
+  });
 }
 
 /** Get the currently active provider config + its selected model */
@@ -100,7 +94,11 @@ export async function saveLLMSettings(partial: Partial<LLMSettings>): Promise<vo
     .map(([key, val]) => {
       const dbKey = Object.entries(SETTINGS_MAP).find(([, v]) => v === key)?.[0];
       if (!dbKey) return null;
-      return upsertSetting(dbKey, String(val));
+      return db.settings.upsert({
+        where: { key: dbKey },
+        update: { value: String(val) },
+        create: { id: `cfg-${dbKey}`, key: dbKey, value: String(val) },
+      });
     })
     .filter(Boolean);
 

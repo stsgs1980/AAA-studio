@@ -71,12 +71,11 @@ export async function PUT(request: Request) {
     for (const [key, value] of entries) {
       const dbValue = key === PROVIDERS_KEY ? await encryptProviders(value) : value;
       try {
-        await db.$executeRawUnsafe(
-          `INSERT INTO "Settings" (id, key, value, "updatedAt")
-           VALUES ($1, $2, $3, NOW())
-           ON CONFLICT (key) DO UPDATE SET value = $3, "updatedAt" = NOW()`,
-          `cfg-${key}`, key, dbValue,
-        );
+        await db.settings.upsert({
+          where: { key },
+          update: { value: dbValue },
+          create: { id: `cfg-${key}`, key, value: dbValue },
+        });
       } catch (e) {
         console.error(`[PUT /api/settings] Failed for key=${key}:`, e);
         return NextResponse.json({ error: `Failed to save key "${key}"` }, { status: 500 });

@@ -3,8 +3,8 @@
 import { useDashboardData } from '../hooks/use-dashboard-data'
 
 const GROUP_COLORS = [
-  '#67E8F9', '#22D3EE', '#06B6D4', '#0891B2',
-  '#0E7490', '#155E75', '#164E63', '#1E3A5F',
+  'var(--chart-cyan-300)', 'var(--chart-cyan-400)', 'var(--chart-cyan-500)', 'var(--chart-cyan-600)',
+  'var(--chart-cyan-700)', 'var(--chart-cyan-800)', 'var(--chart-cyan-900)', 'var(--chart-navy-deep)',
 ]
 
 function heatColor(val: number, maxVal: number): string {

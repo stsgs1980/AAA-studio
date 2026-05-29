@@ -68,7 +68,7 @@ export function KpiCard({ data }: KpiCardProps) {
 
         {data.sparkData && (
           <div className="flex-1 h-7">
-            <MiniSparkline data={[...data.sparkData]} color="#06B6D4" />
+            <MiniSparkline data={[...data.sparkData]} color="var(--chart-cyan-500)" />
           </div>
         )}
       </div>

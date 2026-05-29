@@ -1,5 +1,17 @@
-import { db } from '@/lib/db';
+import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+import { db } from '@/lib/db';
+
+function requireAdmin(request: NextRequest): boolean {
+  const token = request.cookies.get('3a-session')?.value;
+  if (!token) return false;
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+    return payload.role === 'admin';
+  } catch {
+    return false;
+  }
+}
 
 const AGENTS = [
   { name: 'Orchestrator', role: 'Coordinates all agents and manages task delegation', group: 'orchestrator', status: 'active', model: 'gpt-4', temperature: 0.3, skills: JSON.stringify(['planning', 'delegation']), systemPrompt: 'You are the orchestrator agent.' },
@@ -13,9 +25,7 @@ const AGENTS = [
   { name: 'UX Writer', role: 'Writes UI microcopy and documentation', group: 'creator', status: 'draft', model: 'gpt-4', temperature: 0.7, skills: JSON.stringify(['copywriting', 'ux-design']), systemPrompt: 'You are a UX writer.' },
   { name: 'Security Auditor', role: 'Performs security audits and penetration tests', group: 'reviewer', status: 'draft', model: 'gpt-4', temperature: 0.1, skills: JSON.stringify(['security', 'pentesting']), systemPrompt: 'You are a security auditor.' },
 ];
-
-// Parent-child mapping: index → parentId index (0-based)
-const HIERARCHY: Record<number, number | null> = {
+const HIERARCHY: Record<number, number | null> = { // index → parentId index (0-based)
   1: 0, 2: 0, 3: 0,  // Analyst, Reviewer, Creator under Orchestrator
   4: 7, 5: 7,         // Data Engineer, QA under Product Manager
   6: 0,               // DevOps under Orchestrator
@@ -32,11 +42,14 @@ const FLOWS = [
 function hoursAgo(h: number): Date {
   return new Date(Date.now() - h * 60 * 60 * 1000);
 }
-
 const STATUSES: Array<'completed' | 'failed'> = ['completed', 'completed', 'completed', 'completed', 'failed'];
 
 /** POST /api/dashboard/seed — populate DB with realistic sample data. */
-export async function POST() {
+export async function POST(request: NextRequest) {
+  if (!requireAdmin(request)) {
+    return NextResponse.json({ error: 'Forbidden: admin only' }, { status: 403 });
+  }
+
   try {
     const existing = await db.agent.count();
     if (existing > 0) {

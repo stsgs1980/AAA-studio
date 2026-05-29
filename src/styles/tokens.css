@@ -1,0 +1,33 @@
+/* ============================================================
+   Design tokens — extracted from hardcoded hex colors in
+   dashboard & flow-editor components.
+   Do NOT put Google brand colours or landing-page literals here.
+   ============================================================ */
+
+:root {
+  /* Chart — cyan palette (dashboard heatmap / performers / status) */
+  --chart-cyan-300: #67e8f9;
+  --chart-cyan-400: #22d3ee;
+  --chart-cyan-500: #06b6d4;
+  --chart-cyan-600: #0891b2;
+  --chart-cyan-700: #0e7490;
+  --chart-cyan-800: #155e75;
+  --chart-cyan-900: #164e63;
+  --chart-navy-deep: #1e3a5f;
+
+  /* Chart — semantic status colours */
+  --chart-green-500: #10b981;
+  --chart-red-500: #ef4444;
+  --chart-yellow-500: #eab308;
+  --chart-zinc-600: #52525b;
+  --chart-slate-400: #94a3b8;
+
+  /* Flow editor — minimap node category colours */
+  --flow-blue-600: #2563eb;
+  --flow-purple-600: #9333ea;
+  --flow-emerald-600: #059669;
+  --flow-amber-600: #d97706;
+  --flow-orange-600: #ea580c;
+  --flow-red-600: #dc2626;
+  --flow-slate-600: #475569;
+}

@@ -1,6 +1,6 @@
 /**
  * LLM provider abstraction.
- * Frontend calls /api/llm which uses z-ai-web-dev-sdk server-side.
+ * Frontend calls /api/llm which proxies to the configured LLM provider.
  */
 
 export interface LLMMessage {
@@ -31,7 +31,7 @@ export interface LLMProvider {
 
 /**
  * Create an LLM provider that calls the /api/llm endpoint.
- * Server-side route proxies to z-ai-web-dev-sdk.
+ * Server-side route proxies to the active LLM provider configured in Settings.
  */
 export function createLLMProvider(): LLMProvider {
   return {

@@ -5,11 +5,11 @@ import { useDashboardData } from '../hooks/use-dashboard-data'
 import { useState } from 'react'
 
 const STATUS_COLORS: Record<string, string> = {
-  active: '#06B6D4',
-  inactive: '#eab308',
-  draft: '#52525b',
-  specialist: '#22D3EE',
-  strategy: '#67E8F9',
+  active: 'var(--chart-cyan-500)',
+  inactive: 'var(--chart-yellow-500)',
+  draft: 'var(--chart-zinc-600)',
+  specialist: 'var(--chart-cyan-400)',
+  strategy: 'var(--chart-cyan-300)',
 }
 
 function statusColor(label: string): string {
@@ -17,7 +17,7 @@ function statusColor(label: string): string {
   for (const [key, color] of Object.entries(STATUS_COLORS)) {
     if (lower.includes(key)) return color
   }
-  return '#94a3b8'
+  return 'var(--chart-slate-400)'
 }
 
 export function StatusDistribution() {
