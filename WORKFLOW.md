@@ -84,15 +84,17 @@ Zai-agent-toolkit (скомпилированные скиллы для Z.ai san
 | Prompt Studio | ✅ Полный | 5 модулей: Write (live scoring) + Formulas (10) + Frameworks (4) + Compare (A/B) + Intent |
 | Prompt Library | ✅ Полный | 15 шаблонов, 6 категорий, favorites (localStorage), Copy/Clear/Use in Studio |
 | Syntax Highlighting | ✅ Полный | Общий CodeBlock (shiki github-dark), 9 языков, compact/full режимы |
-| Agents | ✅ Работает | CRUD, executions, systemPrompt с markdown preview |
-| Flow Editor | ⚠️ Скелет | 18 nodes, ReactFlow, topological sort, но executeNode = placeholder |
-| Skill Forge | ⚠️ UI есть | CRUD, JSON подсветка, но без выполнения кода |
-| Standards | ⚠️ UI есть | CRUD + toggle rules, но "Edit via API to add rules" |
-| Knowledge | ⚠️ UI есть | Upload, но без vector search |
-| Pipelines | ⚠️ UI есть | Execution log, но без реального запуска |
-| Hierarchy | ⚠️ UI есть | Визуальный граф parent/child |
+| Agents | ✅ Работает | CRUD, executions, systemPrompt, **Skills/Standards picker (EntityPicker)** |
+| Flow Editor | ✅ Работает | 18 nodes, ReactFlow, live execution, per-node model, usage tracking |
+| Skill Forge | ✅ Работает | CRUD, code/tests, **StandardsPicker** (linked standards), SKILL.md export |
+| Standards | ✅ Работает | CRUD, rules editor, **cross-ref validation** on delete |
+| Knowledge | ✅ Работает | Upload, **TF-IDF semantic search** |
+| Pipelines | ✅ Работает | **Real flow execution**, node-level drill-down |
+| Hierarchy | ✅ Работает | Визуальный граф parent/child |
+| Templates | ✅ Работает | 6 flow templates + prompt library, clone to editor |
 | Audit Log | ✅ Работает | JSON подсветка деталей, фильтры по entity |
-| Settings | ⚠️ UI есть | Базовая страница |
+| Settings | ✅ Работает | Multi-provider LLM, theme/language, key masking |
+| i18n | ✅ Работает | en/ru, sidebar + settings |
 
 ---
 
@@ -138,7 +140,7 @@ Zai-agent-toolkit (скомпилированные скиллы для Z.ai san
 ### Phase 3 — Мосты (экспорт)
 
 - [x] Skill Forge → экспорт SKILL.md для Z.ai sandbox
-- [ ] Standards Manager → генерация ESLint правил из DB
+- [ ] Standards Manager → генерация ESLint правил из DB (**StandardRule.pattern уже есть**)
 - [ ] Wiki → синхронизация с GitHub Wiki
 - [ ] Prompt Studio → экспорт промптов в разные форматы
 
