@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 interface TreeEntry {
   path: string;
   type: string;
+  size?: number;
 }
 
 async function githubTreeRecursive(
@@ -22,6 +23,21 @@ async function githubTreeRecursive(
   }
   const data = await res.json();
   return (data.tree ?? []).filter((t: TreeEntry) => t.type === 'blob');
+}
+
+function isNoise(path: string, size?: number): boolean {
+  const skip = [
+    'node_modules/', '.next/', '.git/', '__pycache__/', '.venv/', 'venv/',
+    'dist/', 'build/', '.cache/', '.output/', '.nuxt/', '.turbo/',
+    'coverage/', '.DS_Store', 'package-lock.json', 'yarn.lock',
+    'pnpm-lock.yaml', '.env', '.env.local', 'next-env.d.ts',
+    'tsconfig.tsbuildinfo', '.tsbuildinfo',
+  ];
+  const lower = path.toLowerCase();
+  if (skip.some((s) => lower.includes(s))) return true;
+  if (/\.(png|jpg|jpeg|gif|svg|ico|bmp|webp|woff|woff2|ttf|eot|mp3|mp4|wav|zip|tar|gz|exe|dll|so|dylib)$/i.test(path)) return true;
+  if (size !== undefined && size > 500_000) return true;
+  return false;
 }
 
 function toRawUrl(owner: string, repo: string, path: string): string {
@@ -62,16 +78,18 @@ export async function POST(request: Request) {
         return NextResponse.json({ type: 'content', content: parts.join('\n') });
       }
 
-      // Recursive tree -- gets ALL files including subdirectories
+      // Recursive tree -- gets ALL files, then filter noise
       const tree = await githubTreeRecursive(owner, repo);
       return NextResponse.json({
         type: 'repo',
         owner,
         repo,
-        files: tree.map((t) => {
-          const name = t.path.split('/').pop() ?? t.path;
-          return { name, path: t.path, url: toRawUrl(owner, repo, t.path) };
-        }),
+        files: tree
+          .filter((t) => !isNoise(t.path, t.size as number | undefined))
+          .map((t) => {
+            const name = t.path.split('/').pop() ?? t.path;
+            return { name, path: t.path, url: toRawUrl(owner, repo, t.path) };
+          }),
       });
     }
 
