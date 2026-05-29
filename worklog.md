@@ -856,3 +856,23 @@ Stage Summary:
 - Before: raw Prisma error "the URL must start with file:" → 500 crash
 - After: graceful fallback to defaults → user sees "No LLM provider configured. Go to Settings to set up a provider."
 - Note: Settings table is empty (no LLM provider configured yet) — user needs to go to Settings to set up
+
+---
+Task ID: deep-e2e
+Agent: main
+Task: Make Deep Analysis work end-to-end — SDK integration + DB seed
+
+Work Log:
+- Previous fix (try/catch in getLLMSettings) was insufficient — PrismaClient crashed at import time, before any try/catch runs
+- Root cause: db.ts created `new PrismaClient()` eagerly on module import → module-level crash propagated everywhere
+- Fix 1: db.ts → Proxy-based lazy initialization. PrismaClient created only on first property access, error captured, isDbReady()/getDbError() exported
+- Fix 2: client.ts → z-ai provider now routes through z-ai-web-dev-sdk (dynamic import) instead of HTTP to external API. No API key needed — SDK handles auth internally
+- Fix 3: Seeded Settings table with z-ai provider (enabled), glm-4.7-flashx as active model, temperature 0.7, maxTokens 4096
+- Verified full E2E: curl → /api/evaluate-deep → SDK → GLM-4.7 → structured analysis with 8 criteria scores
+- Also added isDbReady() guard in evaluate-deep route.ts (503 if DB down)
+
+Stage Summary:
+- Deep Analysis now works: click Analyze → Deep → real LLM analysis results
+- 3 files changed: db.ts (lazy Proxy), client.ts (SDK for zai), settings.ts (isDbReady guard)
+- DB seeded with LLM provider config
+- Commits: fc6bcac (lazy Prisma), 8ac6736 (SDK + seed + E2E)
