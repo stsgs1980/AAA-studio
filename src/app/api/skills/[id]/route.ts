@@ -34,6 +34,15 @@ export async function PUT(request: Request, { params }: Params) {
 export async function DELETE(_request: Request, { params }: Params) {
   try {
     const { id } = await params;
+    // Cross-ref check: find Agents that reference this skill
+    const agents = await db.agent.findMany({ select: { id: true, name: true, skills: true } });
+    const linked = agents.filter(a => JSON.parse(a.skills).includes(id));
+    if (linked.length > 0) {
+      return NextResponse.json({
+        error: `Cannot delete: referenced by ${linked.length} agent(s)`,
+        referencedBy: linked.map(a => ({ id: a.id, name: a.name })),
+      }, { status: 409 });
+    }
     await db.skill.delete({ where: { id } });
     return NextResponse.json({ success: true });
   } catch (error) {

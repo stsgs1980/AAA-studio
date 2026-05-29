@@ -25,6 +25,24 @@ export async function PUT(request: Request, { params }: Params) {
 export async function DELETE(_request: Request, { params }: Params) {
   try {
     const { id } = await params;
+    // Cross-ref check: find Skills that reference this standard
+    const skills = await db.skill.findMany({ select: { id: true, name: true, standardIds: true } });
+    const linked = skills.filter(s => JSON.parse(s.standardIds).includes(id));
+    if (linked.length > 0) {
+      return NextResponse.json({
+        error: `Cannot delete: referenced by ${linked.length} skill(s)`,
+        referencedBy: linked.map(s => ({ id: s.id, name: s.name })),
+      }, { status: 409 });
+    }
+    // Cross-ref check: find Agents that reference this standard
+    const agents = await db.agent.findMany({ select: { id: true, name: true, standards: true } });
+    const linkedAgents = agents.filter(a => JSON.parse(a.standards).includes(id));
+    if (linkedAgents.length > 0) {
+      return NextResponse.json({
+        error: `Cannot delete: referenced by ${linkedAgents.length} agent(s)`,
+        referencedBy: linkedAgents.map(a => ({ id: a.id, name: a.name })),
+      }, { status: 409 });
+    }
     await db.standard.delete({ where: { id } });
     return NextResponse.json({ success: true });
   } catch (error) {

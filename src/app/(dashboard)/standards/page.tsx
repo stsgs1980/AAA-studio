@@ -54,6 +54,11 @@ export default function StandardsManagerPage() {
     if (!confirm("Delete this standard?")) return;
     try {
       const res = await fetch(`/api/standards/${id}`, { method: "DELETE" });
+      if (res.status === 409) {
+        const d = await res.json();
+        alert(d.error + "\n" + d.referencedBy.map((r: { name: string }) => "  - " + r.name).join("\n"));
+        return;
+      }
       if (!res.ok) throw new Error();
       removeStandard(id);
     } catch { /* silent */ }
