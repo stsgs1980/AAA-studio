@@ -75,6 +75,24 @@ export default function QualityAnalyzerPage() {
               ))}
             </div>
           )}
+          {/* Loading indicator */}
+          {fetching && (
+            <div className="flex items-center gap-2 rounded-lg border border-primary/30 bg-primary/5 px-3 py-2">
+              <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" />
+              <span className="text-xs text-primary">Loading files...</span>
+            </div>
+          )}
+          {/* Loaded content info */}
+          {!fetching && hasText && (
+            <div className="flex items-center justify-between rounded-md bg-muted/30 px-3 py-1.5">
+              <span className="text-xs text-muted-foreground">
+                Loaded: {input.text.length.toLocaleString()} chars
+              </span>
+              <span className="text-xs text-primary">
+                Ready to Analyze / Deep
+              </span>
+            </div>
+          )}
           <div className="flex-1 min-h-0 overflow-hidden"><InputPanel /></div>
           <div className="flex gap-2">
             <button onClick={analyze} disabled={!hasText || isAnalyzing}
