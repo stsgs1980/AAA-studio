@@ -58,6 +58,11 @@ Every session MUST:
 | Flexible FRONTEND_STANDARD | User directive — standard may be raw/harmful, discuss before following | Task 8 |
 | Universal LLM Provider | Internal API unreachable from Vercel. User provides own API key for any provider. | Task 13 |
 | Settings-based LLM config | Provider + key stored in DB Settings table, read by /api/llm at runtime. | Task 13 |
+| Phase 2.5 (Provider Intelligence) deprioritized | Multi-LLM routing not needed for core chain. One provider suffices. Moved after Phase 3. | Session: agent typology |
+| 10 agent types from cross-framework research | LangChain, CrewAI, AutoGen, Anthropic, OpenAI, Google ADK, Bedrock. All documented in docs/AGENT_TYPES.md. | Session: agent typology |
+| Phase 3 agent types: 5 (Tool-Calling, Router, Specialist, Orchestrator+Workers, Evaluator) | Covers 80% of use cases. Rest deferred to Phase 4-5. | Session: agent typology |
+| Prompting module migration plan | prompting-v0.0 has 20 techniques, 11 frameworks, 12 agent roles. Active module has 10 formulas, 4 frameworks. Migration plan in docs/PROMPTING_MODULE.md. | Session: agent typology |
+| 14/20 prompting techniques selected for Phase 3 | Tree-of-Thought, Least-to-Most, Assumption Challenge, Analogical Reasoning, Output Masking, Stakeholder Simulation deferred. | Session: agent typology |
 
 ## Technical Debt
 

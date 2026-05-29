@@ -684,3 +684,29 @@ Stage Summary:
 - Standards: unified types (@stsgs/shared), store-driven, 0 useState in detail
 - Skills: midnight palette consistent with rest of app
 - Commit: c335476 pushed to origin/main
+---
+Task ID: 1
+Agent: main
+Task: Agent typology research + prompting module documentation
+
+Work Log:
+- User asked about Phase 2.5 (Provider Intelligence) -- explained it's about multi-LLM routing, not needed for core chain, moved after Phase 3
+- Verified Standard <-> Skill <-> Agent links work (full code audit, build clean, cross-ref DELETE 409 works)
+- User directed: research agent typology before any prompting work
+- Commissioned cross-framework research: LangChain/LangGraph, CrewAI, AutoGen, Anthropic, OpenAI Agents SDK, Google ADK, Amazon Bedrock
+- Research produced 10 fundamental agent patterns, 10 system prompt templates, comparative matrix, academic references
+- Full research report saved to download/ai_agent_typology_research.md (~700 lines)
+- User approved: "в итоге мы придем к тому что нужны будут все, просто точно не на старте"
+- User directed: document everything properly
+- Created docs/AGENT_TYPES.md: 10 agent types with system prompt templates, priority phases, comparative matrix
+- Created docs/PROMPTING_MODULE.md: gap analysis (active vs prompting-v0.0), migration plan, technique selection (14/20 for Phase 3)
+- Updated docs/WORKFLOW.md: added 5 key decisions about agent typology and prompting priorities
+- Identified Phase 3 agent types: Tool-Calling, Router, Specialist, Orchestrator+Workers, Evaluator
+- Identified Phase 4 types: ReAct, Plan-and-Execute, Prompt Chaining
+- Identified Phase 5 types: Autonomous, Parallel/Voting
+- Mapped prompting-v0.0 contents: 20 techniques, 11 frameworks, 12 agent roles, orchestration patterns, resilience
+
+Stage Summary:
+- 3 documentation files created/updated
+- No code changes this session -- pure research + documentation
+- Next step: prompting module migration (Phase 3A per docs/PROMPTING_MODULE.md)
