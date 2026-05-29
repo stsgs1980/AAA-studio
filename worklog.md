@@ -731,3 +731,29 @@ Stage Summary:
 - docs/ROADMAP.md: new -- 7-item resource map with build order and "why this order" rationale
 - docs/AGENT_TYPES.md: fixed broken research report link
 - docs/research/agent-typology-full.md: moved from /home/z/
+
+---
+Task ID: 3A
+Agent: main
+Task: Phase 3A -- Prompting module replacement/upgrade
+
+Work Log:
+- Full audit of active module (8 files, ~500 lines) and legacy v0.0 (13 files, ~3600 lines)
+- Identified 7 missing subsystems in active module
+- Migrated core types to @stsgs/shared/src/types/prompt.ts (150 lines): PromptContext, PromptTone, OutputFormat, PromptBlock, PromptTechnique, PromptFramework, AgentType, AgentRole, ToolDescriptionDef, BackstoryDef, EvaluationCriterion, TeamMember
+- Updated @stsgs/shared/src/types/index.ts with new type re-exports
+- Created 5 system prompt templates (system-prompts/data.ts + index.ts): Tool-Calling, Router, Specialist, Orchestrator, Evaluator
+- Created 4 builders: tool-descriptions.ts (Anthropic ACI), backstory.ts (CrewAI pattern), evaluation-rubric.ts, collaboration.ts
+- Upgraded frameworks 4->11 (data.ts + index.ts) with backward compat (FRAMEWORKS, Framework, FrameworkSection deprecated exports)
+- Created techniques module (data.ts + index.ts) with 14 techniques from v0.0 (6 deferred to Phase 5)
+- Created agent-templates module (roles.ts + index.ts) with 12 role templates
+- Updated barrel export (src/index.ts) and package.json exports (added 6 sub-path exports)
+- Fixed consuming code: framework-card.tsx, framework-list-item.tsx (sections->steps, type->complexity)
+- TypeScript builds with zero errors
+- All files <= 150 lines
+
+Stage Summary:
+- @stsgs/prompting now has 9 modules: scoring, formulas, frameworks (11), techniques (14), system-prompts (5), builders (4), agent-templates (12), intent, comparison
+- @stsgs/shared exports 15 new prompting types
+- Backward compatibility maintained for existing Prompt Studio UI
+- Next: Phase 3B -- Standards Seed (17 standards from Zai-agent-toolkit)

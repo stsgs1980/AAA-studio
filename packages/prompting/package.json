@@ -8,7 +8,13 @@
     ".": "./src/index.ts",
     "./scoring": "./src/scoring/index.ts",
     "./formulas": "./src/formulas/index.ts",
-    "./frameworks": "./src/frameworks/index.ts"
+    "./frameworks": "./src/frameworks/index.ts",
+    "./techniques": "./src/techniques/index.ts",
+    "./system-prompts": "./src/system-prompts/index.ts",
+    "./builders": "./src/builders/index.ts",
+    "./agent-templates": "./src/agent-templates/index.ts",
+    "./intent": "./src/intent/index.ts",
+    "./comparison": "./src/comparison/index.ts"
   },
   "scripts": {
     "lint": "eslint src/",

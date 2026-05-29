@@ -5,11 +5,10 @@ import { cn } from "@stsgs/ui";
 import { ChevronDown, ChevronUp, Zap } from "lucide-react";
 import type { Framework } from "@/features/prompt-studio/types";
 
-const TYPE_COLORS: Record<string, string> = {
-  structured: "text-brand-accent bg-brand-accent/15",
-  chain: "text-brand-purple bg-brand-purple/15",
-  constraint: "text-brand-amber bg-brand-amber/15",
-  meta: "text-brand-cyan bg-brand-cyan/15",
+const COMPLEXITY_COLORS: Record<string, string> = {
+  simple: "text-brand-accent bg-brand-accent/15",
+  moderate: "text-brand-purple bg-brand-purple/15",
+  complex: "text-brand-amber bg-brand-amber/15",
 };
 
 interface FrameworkCardProps {
@@ -21,14 +20,13 @@ export function FrameworkCard({ framework, onGenerate }: FrameworkCardProps) {
   const [expanded, setExpanded] = useState(false);
   const [values, setValues] = useState<Record<string, string>>({});
 
-  const typeColor = TYPE_COLORS[framework.type] ?? TYPE_COLORS.structured;
+  const complexityColor = COMPLEXITY_COLORS[framework.complexity] ?? COMPLEXITY_COLORS.simple;
 
   const handleGenerate = () => {
-    const filled = framework.sections.map((s) => ({
-      id: s.id,
+    const filled = framework.steps.map((s) => ({
       label: s.label,
       placeholder: s.placeholder,
-      value: values[s.id] ?? "",
+      value: values[s.label] ?? "",
       required: s.required,
     }));
 
@@ -40,9 +38,9 @@ export function FrameworkCard({ framework, onGenerate }: FrameworkCardProps) {
     onGenerate(prompt);
   };
 
-  const allRequiredFilled = framework.sections
+  const allRequiredFilled = framework.steps
     .filter((s) => s.required)
-    .every((s) => values[s.id]?.trim());
+    .every((s) => values[s.label]?.trim());
 
   return (
     <div className="rounded-xl border border-midnight-border bg-midnight-card overflow-hidden">
@@ -55,8 +53,8 @@ export function FrameworkCard({ framework, onGenerate }: FrameworkCardProps) {
           <span className="text-sm font-semibold text-text-primary">
             {framework.name}
           </span>
-          <span className={cn("text-[10px] px-2 py-0.5 rounded-full font-medium", typeColor)}>
-            {framework.type}
+          <span className={cn("text-[10px] px-2 py-0.5 rounded-full font-medium", complexityColor)}>
+            {framework.complexity}
           </span>
         </div>
         {expanded ? (
@@ -76,16 +74,16 @@ export function FrameworkCard({ framework, onGenerate }: FrameworkCardProps) {
       {/* Expandable form */}
       {expanded && (
         <div className="border-t border-midnight-border p-4 space-y-3">
-          {framework.sections.map((section) => (
-            <div key={section.id} className="space-y-1.5">
+          {framework.steps.map((step) => (
+            <div key={step.label} className="space-y-1.5">
               <label className="text-xs text-text-muted flex items-center gap-1">
-                {section.label}
-                {section.required && <span className="text-brand-red">*</span>}
+                {step.label}
+                {step.required && <span className="text-brand-red">*</span>}
               </label>
               <textarea
-                value={values[section.id] ?? ""}
-                onChange={(e) => setValues((v) => ({ ...v, [section.id]: e.target.value }))}
-                placeholder={section.placeholder}
+                value={values[step.label] ?? ""}
+                onChange={(e) => setValues((v) => ({ ...v, [step.label]: e.target.value }))}
+                placeholder={step.placeholder}
                 rows={2}
                 className="w-full text-sm font-mono bg-midnight-base border border-midnight-border rounded-lg p-3 resize-none focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none text-text-primary placeholder:text-text-muted"
               />
