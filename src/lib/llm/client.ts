@@ -1,4 +1,5 @@
 // 3A Studio — LLM Provider Client. HTTP calls to LLM providers.
+// In Z.ai sandbox: uses z-ai-web-dev-sdk directly for the 'zai' provider.
 
 import type { LLMMessage, LLMResponse, ProviderConfig } from './types';
 
@@ -10,7 +11,40 @@ interface CallParams {
   maxTokens?: number;
 }
 
-// ---- OpenAI-compatible providers (Z.ai, OpenAI, OpenRouter, custom) ----
+// ---- Z.ai SDK (sandbox-only, avoids HTTP round-trip to external API) ----
+let _zaiSDK: any = null;
+async function getZaiSDK() {
+  if (!_zaiSDK) {
+    const mod = await import('z-ai-web-dev-sdk');
+    _zaiSDK = await (mod.ZAI || mod.default).create();
+  }
+  return _zaiSDK;
+}
+
+async function callZaiSDK(p: CallParams): Promise<LLMResponse> {
+  const sdk = await getZaiSDK();
+  const { model, messages, temperature, maxTokens } = p;
+  const body: any = {
+    messages: messages.map(m => ({ role: m.role, content: m.content })),
+    temperature: temperature ?? 0.7,
+    max_tokens: maxTokens ?? 4096,
+  };
+  if (model) body.model = model;
+  const data = await sdk.chat.completions.create(body);
+  return {
+    id: data.id ?? `zai-${Date.now()}`,
+    content: data.choices?.[0]?.message?.content ?? null,
+    model: data.model ?? model,
+    finishReason: data.choices?.[0]?.finish_reason ?? 'stop',
+    usage: data.usage ? {
+      promptTokens: data.usage.prompt_tokens ?? 0,
+      completionTokens: data.usage.completion_tokens ?? 0,
+      totalTokens: data.usage.total_tokens ?? 0,
+    } : undefined,
+  };
+}
+
+// ---- OpenAI-compatible providers (OpenAI, OpenRouter, custom) ----
 async function callOpenAI(p: CallParams): Promise<LLMResponse> {
   const { provider, model, messages, temperature, maxTokens } = p;
   const res = await fetch(`${provider.baseUrl}/chat/completions`, {
@@ -84,6 +118,12 @@ async function callAnthropic(p: CallParams): Promise<LLMResponse> {
 // ---- Router ----
 export async function callLLM(params: CallParams): Promise<LLMResponse> {
   const { provider } = params;
+
+  // Z.ai provider: use SDK directly (works in sandbox without API key)
+  if (provider.id === 'zai') {
+    return callZaiSDK(params);
+  }
+
   if (!provider.apiKey) {
     throw new Error('API key is not configured. Go to Settings → LLM Provider to set it up.');
   }
@@ -108,7 +148,6 @@ export async function testConnection(
       messages: [{ role: 'user', content: 'Hi, respond with just "OK"' }],
       maxTokens: 256,
     });
-    // Connection OK if API returned without error (any finishReason is fine)
     const ok = !!resp.content || resp.finishReason === 'stop' || resp.finishReason === 'end_turn' || resp.finishReason === 'length';
     return { ok, model: resp.model, latencyMs: Date.now() - start };
   } catch (err) {
