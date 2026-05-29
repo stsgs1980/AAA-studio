@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import { getActiveProvider, callLLM } from '@/lib/llm';
+import { callLLM } from '@/lib/llm/client';
+import { getActiveProvider } from '@/lib/llm';
 
 const EVAL_SYSTEM_PROMPT = `You are a rigorous AI agent quality auditor. Analyze the provided content (agent system prompt, configuration, documentation, or codebase) and produce a structured evaluation report.
 

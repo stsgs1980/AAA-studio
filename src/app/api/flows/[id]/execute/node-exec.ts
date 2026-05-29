@@ -1,6 +1,7 @@
 // Flow node execution logic — extracted from route.ts for anti-monolith compliance
 
-import { callLLM, type ProviderConfig, type LLMSettings, type LLMResponse } from "@/lib/llm";
+import { callLLM, type ProviderConfig, type LLMResponse } from "@/lib/llm/client";
+import type { LLMSettings } from "@/lib/llm";
 import { getProviders } from "@/lib/llm/settings";
 import { estimateCost } from "@/lib/cost";
 import { extractText, type FlowNode } from "./flow-utils";

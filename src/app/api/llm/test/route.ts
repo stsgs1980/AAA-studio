@@ -4,7 +4,7 @@
 
 import { NextResponse } from 'next/server';
 import { getProviders, getActiveProvider } from '@/lib/llm';
-import { testConnection } from '@/lib/llm';
+import { testConnection } from '@/lib/llm/client';
 
 export async function POST(request: Request) {
   try {
@@ -20,7 +20,8 @@ export async function POST(request: Request) {
 
     const provider = providers.find(p => p.id === targetId);
     if (!provider) return NextResponse.json({ ok: false, error: `Provider "${targetId}" not found.` });
-    if (!provider.apiKey) return NextResponse.json({ ok: false, error: 'API key not set for this provider.' });
+    // Z.ai uses SDK (no API key needed); others require a key
+    if (provider.id !== 'zai' && !provider.apiKey) return NextResponse.json({ ok: false, error: 'API key not set for this provider.' });
     if (!provider.baseUrl) return NextResponse.json({ ok: false, error: 'Endpoint URL not set for this provider.' });
 
     return NextResponse.json(await testConnection(provider, body.model as string | undefined));

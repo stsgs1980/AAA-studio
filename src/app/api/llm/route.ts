@@ -4,7 +4,8 @@
 // ============================================================================
 
 import { NextResponse } from 'next/server';
-import { callLLM, getActiveProvider } from '@/lib/llm';
+import { callLLM } from '@/lib/llm/client';
+import { getActiveProvider } from '@/lib/llm';
 import type { LLMMessage } from '@/lib/llm';
 
 export async function POST(request: Request) {

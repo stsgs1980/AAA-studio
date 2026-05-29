@@ -22,11 +22,6 @@ export {
 } from './types';
 
 export {
-  callLLM,
-  testConnection,
-} from './client';
-
-export {
   getLLMSettings,
   saveLLMSettings,
   isLLMConfigured,
