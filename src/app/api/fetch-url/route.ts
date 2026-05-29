@@ -1,20 +1,31 @@
 import { NextResponse } from 'next/server';
 
-async function githubTree(
-  owner: string, repo: string, path: string = '',
-): Promise<{ name: string; type: string; path: string; download_url: string | null }[]> {
-  const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+interface TreeEntry {
+  path: string;
+  type: string;
+}
+
+async function githubTreeRecursive(
+  owner: string, repo: string,
+): Promise<TreeEntry[]> {
+  const url = `https://api.github.com/repos/${owner}/${repo}/git/trees/main?recursive=1`;
   const res = await fetch(url, { headers: { 'Accept': 'application/vnd.github.v3+json' } });
-  if (!res.ok) throw new Error(`GitHub API ${res.status}`);
+  if (!res.ok) {
+    // fallback to master branch
+    const res2 = await fetch(
+      `https://api.github.com/repos/${owner}/${repo}/git/trees/master?recursive=1`,
+      { headers: { 'Accept': 'application/vnd.github.v3+json' } },
+    );
+    if (!res2.ok) throw new Error(`GitHub Trees API failed`);
+    const data = await res2.json();
+    return (data.tree ?? []).filter((t: TreeEntry) => t.type === 'blob');
+  }
   const data = await res.json();
-  return Array.isArray(data)
-    ? data.map((f: Record<string, unknown>) => ({
-        name: String(f.name),
-        type: String(f.type),
-        path: String(f.path),
-        download_url: f.download_url as string | null,
-      }))
-    : [];
+  return (data.tree ?? []).filter((t: TreeEntry) => t.type === 'blob');
+}
+
+function toRawUrl(owner: string, repo: string, path: string): string {
+  return `https://raw.githubusercontent.com/${owner}/${repo}/main/${path}`;
 }
 
 async function githubFile(url: string): Promise<string> {
@@ -38,6 +49,8 @@ export async function POST(request: Request) {
       /github\.com\/([a-zA-Z0-9_.-]+)\/([a-zA-Z0-9_.-]+?)(\.git)?$/,
     );
     if (repoMatch) {
+      const [, owner, repo] = repoMatch;
+
       if (bodyUrls && bodyUrls.length > 0) {
         const parts: string[] = [];
         for (const fileUrl of bodyUrls) {
@@ -48,14 +61,17 @@ export async function POST(request: Request) {
         }
         return NextResponse.json({ type: 'content', content: parts.join('\n') });
       }
-      const tree = await githubTree(repoMatch[1], repoMatch[2]);
+
+      // Recursive tree -- gets ALL files including subdirectories
+      const tree = await githubTreeRecursive(owner, repo);
       return NextResponse.json({
         type: 'repo',
-        owner: repoMatch[1],
-        repo: repoMatch[2],
-        files: tree
-          .filter((f) => f.type === 'file')
-          .map((f) => ({ name: f.name, path: f.path, url: f.download_url })),
+        owner,
+        repo,
+        files: tree.map((t) => {
+          const name = t.path.split('/').pop() ?? t.path;
+          return { name, path: t.path, url: toRawUrl(owner, repo, t.path) };
+        }),
       });
     }
 
