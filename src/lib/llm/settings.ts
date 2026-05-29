@@ -67,24 +67,31 @@ export async function getActiveProvider(): Promise<{
 
 /** Read active LLM settings from DB, merge with defaults */
 export async function getLLMSettings(): Promise<LLMSettings> {
-  const rows = await db.settings.findMany({
-    where: { key: { startsWith: 'llm_' } },
-  });
+  try {
+    const rows = await db.settings.findMany({
+      where: { key: { startsWith: 'llm_' } },
+    });
 
-  const map: Partial<LLMSettings> = {};
-  for (const row of rows) {
-    const field = SETTINGS_MAP[row.key];
-    if (!field) continue;
-    if (field === 'temperature') {
-      map[field] = parseFloat(row.value) || DEFAULT_LLM_SETTINGS.temperature;
-    } else if (field === 'maxTokens') {
-      map[field] = parseInt(row.value, 10) || DEFAULT_LLM_SETTINGS.maxTokens;
-    } else {
-      map[field] = row.value;
+    const map: Partial<LLMSettings> = {};
+    for (const row of rows) {
+      const field = SETTINGS_MAP[row.key];
+      if (!field) continue;
+      if (field === 'temperature') {
+        map[field] = parseFloat(row.value) || DEFAULT_LLM_SETTINGS.temperature;
+      } else if (field === 'maxTokens') {
+        map[field] = parseInt(row.value, 10) || DEFAULT_LLM_SETTINGS.maxTokens;
+      } else {
+        map[field] = row.value;
+      }
     }
-  }
 
-  return { ...DEFAULT_LLM_SETTINGS, ...map };
+    return { ...DEFAULT_LLM_SETTINGS, ...map };
+  } catch (error) {
+    // DB unavailable or misconfigured — return defaults so the app stays functional
+    console.error('[LLM Settings] Failed to read settings from DB, using defaults:',
+      error instanceof Error ? error.message : error);
+    return { ...DEFAULT_LLM_SETTINGS };
+  }
 }
 
 /** Save active LLM settings (partial update) */
