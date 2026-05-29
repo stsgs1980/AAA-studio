@@ -86,8 +86,8 @@ Zai-agent-toolkit (скомпилированные скиллы для Z.ai san
 | Syntax Highlighting | ✅ Полный | Общий CodeBlock (shiki github-dark), 9 языков, compact/full режимы |
 | Agents | ✅ Работает | CRUD, executions, systemPrompt, **Skills/Standards picker (EntityPicker)** |
 | Flow Editor | ✅ Работает | 18 nodes, ReactFlow, live execution, per-node model, usage tracking |
-| Skill Forge | ✅ Работает | CRUD, code/tests, **StandardsPicker** (linked standards), SKILL.md export |
-| Standards | ✅ Работает | CRUD, rules editor, **cross-ref validation** on delete |
+| Skill Forge | ✅ Rebuild | CRUD, code/tests, **StandardsPicker**, SKILL.md export, **midnight palette** |
+| Standards | ✅ Rebuild | CRUD, rules editor, **cross-ref validation**, unified types (@stsgs/shared), store-driven, 0 useState in detail |
 | Knowledge | ✅ Работает | Upload, **TF-IDF semantic search** |
 | Pipelines | ✅ Работает | **Real flow execution**, node-level drill-down |
 | Hierarchy | ✅ Работает | Визуальный граф parent/child |
@@ -208,3 +208,5 @@ Zai-agent-toolkit (скомпилированные скиллы для Z.ai san
 | c4b0040 | Shared CodeBlock component |
 | 707c3af | Prompt Library (15 templates, favorites, studio integration) |
 | 3bdbcf4 | Theme toggle fix + i18n (en/ru) + clickable chevron |
+| 1bd409a | Key masking (GET /api/settings returns sk-****abcd) |
+| c335476 | Standards/Skills rebuild — unified types, midnight palette, store-driven |

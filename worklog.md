@@ -661,3 +661,26 @@ Stage Summary:
 - Cross-reference chain: Standard ←→ Skill ←→ Agent (all via ID)
 - All files ≤150 lines, 0 ESLint errors, build successful
 - Vercel auto-deploy from GitHub (DB migration will run on deploy)
+---
+Task ID: 7
+Agent: main
+Task: Standards/Skills full rebuild — unified types, midnight palette, store-driven architecture
+
+Work Log:
+- Enriched @stsgs/shared/types/standard.ts: added STANDARD_CATEGORIES, SEVERITY_OPTIONS, generateRuleId()
+- Updated @stsgs/shared/types/index.ts: export new types + constants
+- Killed duplicate features/standards/types.ts: now pure re-exports from @stsgs/shared
+- Rebuilt standards-store.ts (140 lines): added fetchStandards, createStandard, saveStandard, deleteStandard
+  - Consolidated edit state: editForm + newRule in store (was 6 useState in component)
+  - syncRules() helper collapses toggleRule/removeRule
+- Rebuilt standard-detail.tsx: 6 useState → 0 (all from store selectors)
+- Simplified standard-list.tsx: delete moved to store, removed onDelete prop
+- Simplified standards page.tsx: store does fetch+create+delete
+- Migrated Skills components to midnight palette (bg-midnight-*, text-text-*)
+- TypeScript ✅, ESLint ✅, Next.js build ✅
+
+Stage Summary:
+- 13 files changed, +330/-311
+- Standards: unified types (@stsgs/shared), store-driven, 0 useState in detail
+- Skills: midnight palette consistent with rest of app
+- Commit: c335476 pushed to origin/main
