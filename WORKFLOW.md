@@ -116,6 +116,25 @@ Zai-agent-toolkit (скомпилированные скиллы для Z.ai san
 - [x] **Pipeline → реальный запуск flow execution** (node-level drill-down)
 - [x] **Templates → flow templates (6 patterns + prompt library)**
 
+### Phase 2.5 — Provider Intelligence 🔥 NEW
+
+> **Стратегическое прозрение**: завтра любой LLM (DeepSeek, Groq, Gemini, Mistral, Cohere).
+> Для эффективной работы агентов нужно несколько провайдеров с роутингом по задачам.
+
+- [ ] **Provider Health API** — переписать /api/llm/debug в нормальный diagnostic endpoint
+  - GET /api/llm/health: статус ВСЕХ провайдеров разом (status, latency, available models)
+  - Health check: жив ли провайдер, валиден ли ключ
+  - Latency benchmark: реальный round-trip (не пинг)
+- [ ] **Cost Dashboard** — расходы по провайдерам (уже есть usage токенов)
+- [ ] **Provider Router** — автоматический выбор провайдера по задаче
+  - Дешёвый для bulk-операций
+  - Быстрый для streaming
+  - Умный для reasoning
+- [ ] **Failover** — если основной упал → автоматически на запасной
+- [ ] **Feature-порт** — любой провайдер подключается плагином, не хардкодом
+
+Файлы: `/api/llm/debug/route.ts` → `/api/llm/health/route.ts`, `src/lib/llm/client.ts`
+
 ### Phase 3 — Мосты (экспорт)
 
 - [x] Skill Forge → экспорт SKILL.md для Z.ai sandbox
@@ -138,13 +157,10 @@ Zai-agent-toolkit (скомпилированные скиллы для Z.ai san
 > 1. **Authentication** — заменить demo admin/admin на реальную авторизацию
 >    (NextAuth.js / Clerk / Auth.js). Middleware для защиты `/api/settings`, `/api/llm/*`.
 >
-> 2. **API Key Encryption** — сейчас ключ хранится в plain text в БД (Settings таблица).
->    Нужно шифровать перед сохранением (AES-256-GCM через crypto.subtle)
->    и расшифровывать только в server-side `/api/llm` перед отправкой к провайдеру.
+> 2. **API Key Encryption** — ✅ DONE (AES-256-GCM, commit f171311)
 >
-> 3. **Key Masking в UI** — LLM Provider Card показывает полный ключ в DevTools
->    (ответ GET /api/settings). Вернуть с клиента только последние 4 символа
->    (`sk-****abcd`), полный ключ — только при POST (сохранение).
+> 3. **Key Masking в UI** — 🔥 В РАБОТЕ. GET /api/settings маскирует ключ (sk-****abcd),
+>    полный ключ только при POST (сохранение).
 >
 > 4. **Rate Limiting** — ограничить вызовы `/api/llm` чтобы предотвратить
 >    разорение через чужой ключ при компрометации сессии.
@@ -189,3 +205,4 @@ Zai-agent-toolkit (скомпилированные скиллы для Z.ai san
 | 49f6929 | Prompt Studio v2 |
 | c4b0040 | Shared CodeBlock component |
 | 707c3af | Prompt Library (15 templates, favorites, studio integration) |
+| 3bdbcf4 | Theme toggle fix + i18n (en/ru) + clickable chevron |
