@@ -29,7 +29,7 @@ const SEV_MAP: Record<string, "error" | "warning" | "info"> = {
 };
 
 function parse(content: string, filename: string): StandardDef | null {
-  const idMatch = content.match(/> ID:\s*(STD-[A-Z0-9]+-\d+)/);
+  const idMatch = content.match(/> ID:\s*(STD-[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*-\d+)/);
   if (!idMatch) return null;
   const id = idMatch[1];
   const nameMatch = content.match(/^#\s+Standard:\s+(.+)/m);
