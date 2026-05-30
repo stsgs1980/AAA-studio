@@ -36,30 +36,30 @@
   --color-brand-cyan: #39D2C0;
 }
 
-/* Dark theme */
+/* Dark theme — matched to original midnight palette (#0D1117 / #161B22 / #30363D) */
 .dark {
-  --color-background: hsl(224 71.4% 4.1%);
-  --color-foreground: hsl(210 20% 98%);
-  --color-card: hsl(224 71.4% 4.1%);
-  --color-card-foreground: hsl(210 20% 98%);
-  --color-popover: hsl(224 71.4% 4.1%);
-  --color-popover-foreground: hsl(210 20% 98%);
-  --color-primary: hsl(217.2 91.2% 59.8%);
+  --color-background: hsl(216 27.8% 7.1%);       /* #0D1117 midnight-base */
+  --color-foreground: hsl(207.7 35.1% 92.7%);    /* #E6EDF3 text-primary */
+  --color-card: hsl(215 21.4% 11%);              /* #161B22 midnight-card */
+  --color-card-foreground: hsl(207.7 35.1% 92.7%);
+  --color-popover: hsl(215 21.4% 11%);
+  --color-popover-foreground: hsl(207.7 35.1% 92.7%);
+  --color-primary: hsl(217.2 91.2% 59.8%);       /* brand-accent blue */
   --color-primary-foreground: hsl(222.2 47.4% 11.2%);
-  --color-secondary: hsl(215.3 19.3% 16.5%);
-  --color-secondary-foreground: hsl(210 20% 98%);
-  --color-muted: hsl(215.3 19.3% 16.5%);
-  --color-muted-foreground: hsl(217.9 10.6% 64.9%);
-  --color-accent: hsl(215.3 19.3% 16.5%);
-  --color-accent-foreground: hsl(210 20% 98%);
+  --color-secondary: hsl(215 15.4% 15.3%);       /* #21262D midnight-elevated */
+  --color-secondary-foreground: hsl(207.7 35.1% 92.7%);
+  --color-muted: hsl(215 15.4% 15.3%);           /* #21262D midnight-elevated */
+  --color-muted-foreground: hsl(211.6 8.9% 58.2%); /* #8B949E text-secondary */
+  --color-accent: hsl(215 15.4% 15.3%);
+  --color-accent-foreground: hsl(207.7 35.1% 92.7%);
   --color-destructive: hsl(0 62.8% 30.6%);
-  --color-destructive-foreground: hsl(210 20% 98%);
-  --color-border: hsl(215.3 19.3% 16.5%);
-  --color-input: hsl(215.3 19.3% 16.5%);
-  --color-ring: hsl(224 64% 32.9%);
-  --color-sidebar: hsl(224 71.4% 4.1%);
-  --color-sidebar-foreground: hsl(210 20% 98%);
-  --color-sidebar-border: hsl(215.3 19.3% 16.5%);
+  --color-destructive-foreground: hsl(207.7 35.1% 92.7%);
+  --color-border: hsl(212.3 11.9% 21.4%);        /* #30363D midnight-border */
+  --color-input: hsl(212.3 11.9% 21.4%);
+  --color-ring: hsl(217.2 91.2% 59.8%);
+  --color-sidebar: hsl(216 27.8% 7.1%);
+  --color-sidebar-foreground: hsl(207.7 35.1% 92.7%);
+  --color-sidebar-border: hsl(212.3 11.9% 21.4%);
 }
 
 @layer base {
