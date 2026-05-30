@@ -7,7 +7,7 @@ interface AuthFooterProps {
 
 export function AuthFooter({ mode }: AuthFooterProps) {
   return (
-    <p className={cn("text-center text-sm text-text-secondary")}>
+    <p className={cn("text-center text-sm text-muted-foreground")}>
       {mode === "login" ? (
         <>
           Don&apos;t have an account?{" "}

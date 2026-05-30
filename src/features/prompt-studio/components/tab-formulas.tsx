@@ -33,13 +33,13 @@ export function TabFormulas() {
               "px-3 py-1.5 rounded-full text-xs font-medium transition-colors capitalize",
               filter === cat
                 ? "bg-brand-accent text-white"
-                : "bg-midnight-elevated text-text-secondary hover:text-text-primary",
+                : "bg-muted text-muted-foreground hover:text-foreground",
             )}
           >
             {cat}
           </button>
         ))}
-        <span className="text-xs text-text-muted ml-2">
+        <span className="text-xs text-muted-foreground ml-2">
           {filtered.length} formula{filtered.length !== 1 ? "s" : ""}
         </span>
       </div>

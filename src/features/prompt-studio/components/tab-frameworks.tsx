@@ -12,7 +12,7 @@ export function TabFrameworks() {
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-text-secondary">
+      <p className="text-sm text-muted-foreground">
         Select a framework and fill in the sections to generate a structured prompt.
       </p>
 

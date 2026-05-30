@@ -14,10 +14,10 @@ export function ScoreBar({ label, value, max = 10 }: ScoreBarProps) {
 
   return (
     <div className="flex items-center gap-2">
-      <span className="text-xs text-text-muted w-[76px] shrink-0">
+      <span className="text-xs text-muted-foreground w-[76px] shrink-0">
         {label}
       </span>
-      <div className="flex-1 h-2 rounded-full bg-midnight-elevated overflow-hidden">
+      <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
         <motion.div
           className={`h-full rounded-full ${getScoreColor(value)}`}
           initial={{ width: 0 }}
@@ -25,7 +25,7 @@ export function ScoreBar({ label, value, max = 10 }: ScoreBarProps) {
           transition={{ duration: 0.4, ease: "easeOut" }}
         />
       </div>
-      <span className="text-xs text-text-secondary w-5 text-right tabular-nums">
+      <span className="text-xs text-muted-foreground w-5 text-right tabular-nums">
         {value}
       </span>
     </div>

@@ -14,8 +14,8 @@ export function WikiContent({ slug }: WikiContentProps) {
   if (!Page) {
     return (
       <div className="flex flex-col items-center justify-center gap-3 py-20 text-center">
-        <p className="text-lg font-medium text-text-primary">Page not found</p>
-        <p className="text-sm text-text-secondary">
+        <p className="text-lg font-medium text-foreground">Page not found</p>
+        <p className="text-sm text-muted-foreground">
           The wiki page &quot;{slug}&quot; does not exist.
         </p>
       </div>

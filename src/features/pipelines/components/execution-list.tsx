@@ -61,7 +61,7 @@ export function ExecutionList({
               </span>
             )}
             {ex.error && (
-              <span className="text-xs text-red-400 truncate max-w-[160px]">
+              <span className="text-xs text-red-600 truncate max-w-[160px]">
                 {ex.error}
               </span>
             )}

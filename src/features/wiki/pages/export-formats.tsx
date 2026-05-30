@@ -5,25 +5,25 @@ export function ExportFormatsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-text-primary">
+        <h2 className="text-xl font-semibold text-foreground">
           Export Formats
         </h2>
-        <p className="mt-1 text-sm text-text-muted">
+        <p className="mt-1 text-sm text-muted-foreground">
           Share and version your agent configurations
         </p>
       </div>
 
-      <p className="text-sm leading-relaxed text-text-secondary">
+      <p className="text-sm leading-relaxed text-muted-foreground">
         3A Studio supports exporting your entire agent system or individual
         agents in multiple formats. Export is useful for version control,
         team sharing, CI/CD integration, and backup.
       </p>
 
       <div>
-        <h3 className="mb-2 text-base font-semibold text-text-primary">
+        <h3 className="mb-2 text-base font-semibold text-foreground">
           Supported Formats
         </h3>
-        <ul className="space-y-1.5 text-sm text-text-secondary">
+        <ul className="space-y-1.5 text-sm text-muted-foreground">
           <li className="flex gap-2">
             <span className="text-brand-accent shrink-0">JSON</span>
             Full fidelity export including all agent properties, edges, and scoring configs
@@ -40,10 +40,10 @@ export function ExportFormatsPage() {
       </div>
 
       <div>
-        <h3 className="mb-2 text-base font-semibold text-text-primary">
+        <h3 className="mb-2 text-base font-semibold text-foreground">
           Code Generation
         </h3>
-        <p className="text-sm leading-relaxed text-text-secondary">
+        <p className="text-sm leading-relaxed text-muted-foreground">
           The export system can also generate runnable code. Export an agent as a
           Python class, TypeScript module, or OpenAI function spec. This bridges
           the gap between visual design and production deployment.

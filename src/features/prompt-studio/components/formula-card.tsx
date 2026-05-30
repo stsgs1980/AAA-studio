@@ -22,14 +22,14 @@ export function FormulaCard({ formula, onSelect }: FormulaCardProps) {
   const catColor = CATEGORY_COLORS[formula.category] ?? CATEGORY_COLORS.structure;
 
   return (
-    <div className="rounded-xl border border-midnight-border bg-midnight-card p-4 flex flex-col gap-3 hover:border-brand-accent/30 transition-colors">
+    <div className="rounded-xl border border-border bg-card p-4 flex flex-col gap-3 hover:border-brand-accent/30 transition-colors">
       {/* Header */}
       <div className="flex items-start justify-between">
         <div className="flex flex-col gap-1">
           <span className="text-lg font-bold text-brand-accent leading-none">
             {formula.acronym}
           </span>
-          <span className="text-sm text-text-primary font-medium">
+          <span className="text-sm text-foreground font-medium">
             {formula.name}
           </span>
         </div>
@@ -39,7 +39,7 @@ export function FormulaCard({ formula, onSelect }: FormulaCardProps) {
       </div>
 
       {/* Description */}
-      <p className="text-xs text-text-secondary leading-relaxed line-clamp-2">
+      <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
         {formula.description}
       </p>
 
@@ -50,7 +50,7 @@ export function FormulaCard({ formula, onSelect }: FormulaCardProps) {
           : formula.template}
         language="markdown"
         compact
-        className="bg-midnight-base"
+        className="bg-background"
       />
 
       {/* Action */}

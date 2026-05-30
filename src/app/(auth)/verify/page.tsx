@@ -33,10 +33,10 @@ export default function VerifyPage() {
     <div className="space-y-6">
       <Logo />
       <div className="space-y-1 text-center">
-        <h1 className="text-2xl font-bold text-text-primary">
+        <h1 className="text-2xl font-bold text-foreground">
           Two-Factor Authentication
         </h1>
-        <p className="text-sm text-text-secondary">
+        <p className="text-sm text-muted-foreground">
           Enter the 6-digit code from your authenticator app
         </p>
       </div>
@@ -50,12 +50,12 @@ export default function VerifyPage() {
         </AuthButton>
       </form>
 
-      <div className="flex justify-center gap-4 text-sm text-text-secondary">
-        <button type="button" onClick={() => toast.info("Code resent")} className="hover:text-text-primary">
+      <div className="flex justify-center gap-4 text-sm text-muted-foreground">
+        <button type="button" onClick={() => toast.info("Code resent")} className="hover:text-foreground">
           Resend code
         </button>
-        <span className="text-text-muted">|</span>
-        <button type="button" onClick={() => toast.info("Backup code flow")} className="hover:text-text-primary">
+        <span className="text-muted-foreground">|</span>
+        <button type="button" onClick={() => toast.info("Backup code flow")} className="hover:text-foreground">
           Use backup code
         </button>
       </div>

@@ -40,8 +40,8 @@ export default function SignupPage() {
     <div className="space-y-6">
       <Logo />
       <div className="space-y-1 text-center">
-        <h1 className="text-2xl font-bold text-text-primary">Create Account</h1>
-        <p className="text-sm text-text-secondary">Get started with 3A Studio</p>
+        <h1 className="text-2xl font-bold text-foreground">Create Account</h1>
+        <p className="text-sm text-muted-foreground">Get started with 3A Studio</p>
       </div>
 
       <div className="space-y-3">
@@ -91,7 +91,7 @@ export default function SignupPage() {
           {...register("confirmPassword")}
         />
         <div>
-          <label className="mb-1.5 block text-sm text-text-secondary">Role</label>
+          <label className="mb-1.5 block text-sm text-muted-foreground">Role</label>
           <Controller
             control={control}
             name="role"
@@ -103,8 +103,8 @@ export default function SignupPage() {
             <p className="mt-1 text-xs text-brand-red">{errors.role.message}</p>
           )}
         </div>
-        <label className="flex items-center gap-2 text-sm text-text-secondary">
-          <input type="checkbox" {...register("agreeTerms")} className="rounded border-midnight-border" />
+        <label className="flex items-center gap-2 text-sm text-muted-foreground">
+          <input type="checkbox" {...register("agreeTerms")} className="rounded border-border" />
           I agree to the{" "}
           <a href="#" className="text-brand-accent hover:underline">Terms of Service</a>
         </label>

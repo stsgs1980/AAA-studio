@@ -20,18 +20,18 @@ export function FrameworkListItem({ framework, onGenerate }: FrameworkListItemPr
   const stepCount = framework.steps.length;
 
   return (
-    <div className="flex items-center gap-4 rounded-xl border border-midnight-border bg-midnight-card px-4 py-3 hover:border-brand-accent/30 transition-colors">
+    <div className="flex items-center gap-4 rounded-xl border border-border bg-card px-4 py-3 hover:border-brand-accent/30 transition-colors">
       <div className="flex-1 min-w-0 flex items-center gap-3">
-        <span className="text-sm font-semibold text-text-primary shrink-0">
+        <span className="text-sm font-semibold text-foreground shrink-0">
           {framework.name}
         </span>
         <span className={cn("text-[10px] px-2 py-0.5 rounded-full font-medium shrink-0", complexityColor)}>
           {framework.complexity}
         </span>
-        <p className="text-xs text-text-muted truncate max-w-md">
+        <p className="text-xs text-muted-foreground truncate max-w-md">
           {framework.description}
         </p>
-        <span className="text-[10px] text-text-muted shrink-0">
+        <span className="text-[10px] text-muted-foreground shrink-0">
           {stepCount} steps
         </span>
       </div>

@@ -30,21 +30,21 @@ export function StandardList() {
   });
 
   return (
-    <div className="rounded-xl border border-midnight-border bg-midnight-card overflow-hidden">
-      <div className="px-3 py-2 border-b border-midnight-border bg-midnight-base/50">
-        <h2 className="text-sm font-semibold text-text-primary">
+    <div className="rounded-xl border border-border bg-card overflow-hidden">
+      <div className="px-3 py-2 border-b border-border bg-background/50">
+        <h2 className="text-sm font-semibold text-foreground">
           Standards ({filtered.length})
         </h2>
       </div>
-      <div className="divide-y divide-midnight-border overflow-y-auto max-h-[55vh]">
+      <div className="divide-y divide-border overflow-y-auto max-h-[55vh]">
         {filtered.map((s) => {
           const Icon = SEV_ICON[s.severity] ?? Info;
           return (
             <div
               key={s.id}
               className={cn(
-                "flex items-center gap-2 px-3 py-2.5 cursor-pointer hover:bg-midnight-elevated transition-colors group",
-                selectedId === s.id && "bg-midnight-elevated border-l-2 border-brand-accent",
+                "flex items-center gap-2 px-3 py-2.5 cursor-pointer hover:bg-muted transition-colors group",
+                selectedId === s.id && "bg-muted border-l-2 border-brand-accent",
               )}
               onClick={() => selectStandard(s.id)}
             >
@@ -52,8 +52,8 @@ export function StandardList() {
                 <Icon className={cn("h-3.5 w-3.5", SEV_COLOR[s.severity])} />
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-medium text-text-primary truncate">{s.name}</div>
-                <span className="text-[10px] text-text-muted">
+                <div className="text-sm font-medium text-foreground truncate">{s.name}</div>
+                <span className="text-[10px] text-muted-foreground">
                   {s.rules.length} rules | v{s.version} | {s.category}
                 </span>
               </div>
@@ -67,7 +67,7 @@ export function StandardList() {
           );
         })}
         {filtered.length === 0 && (
-          <p className="text-sm text-text-muted p-4 text-center">
+          <p className="text-sm text-muted-foreground p-4 text-center">
             {standards.length === 0 ? "No standards yet. Create one!" : "No matching standards."}
           </p>
         )}

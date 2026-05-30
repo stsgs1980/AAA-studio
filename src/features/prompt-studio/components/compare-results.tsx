@@ -31,7 +31,7 @@ export function CompareResults({ result }: CompareResultsProps) {
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      className="rounded-xl border border-midnight-border bg-midnight-card p-5 space-y-4"
+      className="rounded-xl border border-border bg-card p-5 space-y-4"
     >
       {/* Winner banner */}
       <div className="flex items-center gap-2">
@@ -39,7 +39,7 @@ export function CompareResults({ result }: CompareResultsProps) {
         <span className={cn("text-lg font-bold", winnerColor)}>
           {winnerText}
         </span>
-        <span className="text-xs text-text-muted ml-auto">
+        <span className="text-xs text-muted-foreground ml-auto">
           A: {result.scoreA} / B: {result.scoreB}
         </span>
       </div>
@@ -49,12 +49,12 @@ export function CompareResults({ result }: CompareResultsProps) {
         {result.criteria.map((c) => {
           const diff = c.scoreA - c.scoreB;
           const diffText = diff > 0 ? `+${diff}` : diff === 0 ? "0" : `${diff}`;
-          const diffColor = diff > 0 ? "text-brand-accent" : diff < 0 ? "text-brand-purple" : "text-text-muted";
+          const diffColor = diff > 0 ? "text-brand-accent" : diff < 0 ? "text-brand-purple" : "text-muted-foreground";
 
           return (
             <div key={c.name} className="space-y-1.5">
               <div className="flex items-center justify-between text-xs">
-                <span className="text-text-secondary font-medium">{c.name}</span>
+                <span className="text-muted-foreground font-medium">{c.name}</span>
                 <span className={cn("font-medium tabular-nums", diffColor)}>
                   {diffText}
                 </span>
@@ -62,25 +62,25 @@ export function CompareResults({ result }: CompareResultsProps) {
               <div className="flex gap-3 items-center">
                 {/* A bar */}
                 <div className="flex-1 flex items-center gap-2">
-                  <span className="text-[10px] text-text-muted w-4">A</span>
-                  <div className="flex-1 h-2 rounded-full bg-midnight-elevated overflow-hidden">
+                  <span className="text-[10px] text-muted-foreground w-4">A</span>
+                  <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
                     <div
                       className={`h-full rounded-full ${getScoreColor(c.scoreA)}`}
                       style={{ width: `${c.scoreA * 10}%` }}
                     />
                   </div>
-                  <span className="text-xs text-text-secondary w-5 text-right tabular-nums">{c.scoreA}</span>
+                  <span className="text-xs text-muted-foreground w-5 text-right tabular-nums">{c.scoreA}</span>
                 </div>
                 {/* B bar */}
                 <div className="flex-1 flex items-center gap-2">
-                  <span className="text-[10px] text-text-muted w-4">B</span>
-                  <div className="flex-1 h-2 rounded-full bg-midnight-elevated overflow-hidden">
+                  <span className="text-[10px] text-muted-foreground w-4">B</span>
+                  <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
                     <div
                       className={`h-full rounded-full ${getScoreColor(c.scoreB)}`}
                       style={{ width: `${c.scoreB * 10}%` }}
                     />
                   </div>
-                  <span className="text-xs text-text-secondary w-5 text-right tabular-nums">{c.scoreB}</span>
+                  <span className="text-xs text-muted-foreground w-5 text-right tabular-nums">{c.scoreB}</span>
                 </div>
               </div>
             </div>

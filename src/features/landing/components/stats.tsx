@@ -32,12 +32,12 @@ function AnimatedCounter({ target, suffix, inView }: { target: number | null; su
   }, [inView, target]);
 
   if (target === null) {
-    return <span className="text-3xl font-bold text-text-primary">Free</span>;
+    return <span className="text-3xl font-bold text-foreground">Free</span>;
   }
 
   const display = target % 1 !== 0 ? count.toFixed(1) : Math.round(count);
   return (
-    <span className="text-3xl font-bold text-text-primary sm:text-4xl">
+    <span className="text-3xl font-bold text-foreground sm:text-4xl">
       {display}{suffix}
     </span>
   );
@@ -48,7 +48,7 @@ export function Stats() {
   const inView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section className="border-y border-midnight-border/40 bg-midnight-card/50 py-16">
+    <section className="border-y border-border/40 bg-card/50 py-16">
       <motion.div
         ref={ref}
         initial={{ opacity: 0 }}
@@ -59,7 +59,7 @@ export function Stats() {
         {stats.map((stat) => (
           <div key={stat.label} className="text-center">
             <AnimatedCounter target={stat.value} suffix={stat.suffix} inView={inView} />
-            <p className="mt-2 text-sm text-text-secondary">{stat.label}</p>
+            <p className="mt-2 text-sm text-muted-foreground">{stat.label}</p>
           </div>
         ))}
       </motion.div>

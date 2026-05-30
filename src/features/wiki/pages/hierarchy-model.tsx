@@ -5,15 +5,15 @@ export function HierarchyModelPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-text-primary">
+        <h2 className="text-xl font-semibold text-foreground">
           Hierarchy Model
         </h2>
-        <p className="mt-1 text-sm text-text-muted">
+        <p className="mt-1 text-sm text-muted-foreground">
           5-layer agent organization
         </p>
       </div>
 
-      <p className="text-sm leading-relaxed text-text-secondary">
+      <p className="text-sm leading-relaxed text-muted-foreground">
         3A Studio uses a 5-layer hierarchy to enforce clear delegation and
         separation of concerns. Each layer has specific responsibilities,
         authority boundaries, and communication patterns with adjacent layers.
@@ -41,11 +41,11 @@ export function HierarchyModelPage() {
           { layer: "L2 Worker", desc: "Executes a single task using its system prompt and available tools. The most common agent type in a hierarchy." },
           { layer: "L1 Tool", desc: "Atomic function calls with no reasoning. Tools are invoked by Workers and return structured data responses." },
         ].map((item) => (
-          <div key={item.layer} className="rounded-md border border-midnight-border p-3">
+          <div key={item.layer} className="rounded-md border border-border p-3">
             <p className="mb-1 text-sm font-medium text-brand-accent">
               {item.layer}
             </p>
-            <p className="text-sm text-text-secondary">{item.desc}</p>
+            <p className="text-sm text-muted-foreground">{item.desc}</p>
           </div>
         ))}
       </div>

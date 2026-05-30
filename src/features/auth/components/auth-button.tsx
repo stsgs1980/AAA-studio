@@ -25,7 +25,7 @@ export function AuthButton({
         variant === "primary" &&
           "bg-brand-accent text-white hover:bg-brand-accent-dim",
         variant === "ghost" &&
-          "border border-midnight-border bg-transparent text-text-primary hover:bg-midnight-elevated",
+          "border border-border bg-transparent text-foreground hover:bg-muted",
         className
       )}
       disabled={loading || props.disabled}

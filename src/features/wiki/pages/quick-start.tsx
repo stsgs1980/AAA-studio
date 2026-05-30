@@ -5,19 +5,19 @@ export function QuickStartPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-text-primary">
+        <h2 className="text-xl font-semibold text-foreground">
           Quick Start Guide
         </h2>
-        <p className="mt-1 text-sm text-text-muted">
+        <p className="mt-1 text-sm text-muted-foreground">
           Build and run your first agent in under 5 minutes
         </p>
       </div>
 
       <div>
-        <h3 className="mb-2 text-base font-semibold text-text-primary">
+        <h3 className="mb-2 text-base font-semibold text-foreground">
           Step 1: Create Your First Agent
         </h3>
-        <p className="text-sm leading-relaxed text-text-secondary">
+        <p className="text-sm leading-relaxed text-muted-foreground">
           Navigate to the Agents page and click &quot;New Agent&quot;. Give it a name,
           select a role group (e.g., Execution), and choose the target LLM model.
           The system will scaffold a basic agent configuration for you.
@@ -25,10 +25,10 @@ export function QuickStartPage() {
       </div>
 
       <div>
-        <h3 className="mb-2 text-base font-semibold text-text-primary">
+        <h3 className="mb-2 text-base font-semibold text-foreground">
           Step 2: Write the System Prompt
         </h3>
-        <p className="text-sm leading-relaxed text-text-secondary">
+        <p className="text-sm leading-relaxed text-muted-foreground">
           In the Prompt Studio, compose your agent&apos;s system prompt. Use structured
           sections for Role, Context, Instructions, and Constraints. The quality
           scoring engine will evaluate your prompt in real time across six
@@ -37,10 +37,10 @@ export function QuickStartPage() {
       </div>
 
       <div>
-        <h3 className="mb-2 text-base font-semibold text-text-primary">
+        <h3 className="mb-2 text-base font-semibold text-foreground">
           Step 3: Place in the Hierarchy
         </h3>
-        <p className="text-sm leading-relaxed text-text-secondary">
+        <p className="text-sm leading-relaxed text-muted-foreground">
           Open the Hierarchy page and assign your agent to a layer. Workers report
           to Managers, who report to Coordinators, who report to the Supervisor.
           Connect agents with typed edges (Command, Sync, Twin, Delegate, Feedback).
@@ -48,10 +48,10 @@ export function QuickStartPage() {
       </div>
 
       <div>
-        <h3 className="mb-2 text-base font-semibold text-text-primary">
+        <h3 className="mb-2 text-base font-semibold text-foreground">
           Step 4: Run Your First Execution
         </h3>
-        <p className="text-sm leading-relaxed text-text-secondary">
+        <p className="text-sm leading-relaxed text-muted-foreground">
           Click &quot;Execute&quot; on the agent detail page. The orchestrator will route
           the request through the hierarchy, collect responses, and display the
           execution trace in real time.
@@ -59,7 +59,7 @@ export function QuickStartPage() {
       </div>
 
       <WikiCallout variant="tip" title="Keyboard Shortcuts">
-        Press <kbd className="rounded bg-midnight-elevated px-1.5 py-0.5 text-xs font-mono text-text-primary">Ctrl+K</kbd> to open the Wiki drawer from any page. Use
+        Press <kbd className="rounded bg-muted px-1.5 py-0.5 text-xs font-mono text-foreground">Ctrl+K</kbd> to open the Wiki drawer from any page. Use
         it to quickly look up documentation without leaving your workflow.
       </WikiCallout>
 

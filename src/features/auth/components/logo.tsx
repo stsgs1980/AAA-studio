@@ -9,7 +9,7 @@ export function Logo() {
         <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-accent">
           <Cpu className="h-5 w-5 text-white" />
         </div>
-        <span className={cn("text-lg font-bold text-text-primary")}>
+        <span className={cn("text-lg font-bold text-foreground")}>
           3A Studio
         </span>
       </Link>

@@ -5,25 +5,25 @@ export function PromptStructurePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-text-primary">
+        <h2 className="text-xl font-semibold text-foreground">
           Prompt Structure
         </h2>
-        <p className="mt-1 text-sm text-text-muted">
+        <p className="mt-1 text-sm text-muted-foreground">
           Anatomy of an effective system prompt
         </p>
       </div>
 
-      <p className="text-sm leading-relaxed text-text-secondary">
+      <p className="text-sm leading-relaxed text-muted-foreground">
         In 3A Studio, every agent is driven by its system prompt. A well-structured
         prompt follows a consistent anatomy that the scoring engine can evaluate.
         Understanding this structure is essential for building high-quality agents.
       </p>
 
       <div>
-        <h3 className="mb-2 text-base font-semibold text-text-primary">
+        <h3 className="mb-2 text-base font-semibold text-foreground">
           Prompt Anatomy
         </h3>
-        <ul className="space-y-1.5 text-sm text-text-secondary">
+        <ul className="space-y-1.5 text-sm text-muted-foreground">
           <li className="flex gap-2">
             <span className="font-medium text-brand-accent shrink-0">Role</span>
             <span>Who the agent is and what authority it has</span>

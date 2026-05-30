@@ -82,7 +82,7 @@ export function TaskList() {
               {task.status === 'pending' && (
                 <button
                   onClick={() => updateTask(task.id, { status: 'running' })}
-                  className="text-xs bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded hover:bg-blue-500/20"
+                  className="text-xs bg-blue-500/10 text-blue-600 px-2 py-0.5 rounded hover:bg-blue-500/20"
                 >
                   Start
                 </button>
@@ -90,14 +90,14 @@ export function TaskList() {
               {task.status === 'running' && (
                 <button
                   onClick={() => updateTask(task.id, { status: 'completed' })}
-                  className="text-xs bg-green-500/10 text-green-400 px-2 py-0.5 rounded hover:bg-green-500/20"
+                  className="text-xs bg-green-500/10 text-green-600 px-2 py-0.5 rounded hover:bg-green-500/20"
                 >
                   Complete
                 </button>
               )}
               <button
                 onClick={() => deleteTask(task.id)}
-                className="text-xs text-red-400 hover:text-red-300 px-1"
+                className="text-xs text-red-600 hover:text-red-300 px-1"
               >
                 x
               </button>

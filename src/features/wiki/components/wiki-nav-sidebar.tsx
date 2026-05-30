@@ -24,8 +24,8 @@ export function WikiNavSidebar({
     : wikiNavItems;
 
   return (
-    <nav className="w-[220px] shrink-0 overflow-y-auto border-r border-midnight-border p-3">
-      <p className="mb-3 px-2 text-[11px] font-semibold uppercase tracking-wider text-text-muted">
+    <nav className="w-[220px] shrink-0 overflow-y-auto border-r border-border p-3">
+      <p className="mb-3 px-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
         Documentation
       </p>
       <div className="space-y-4">
@@ -34,7 +34,7 @@ export function WikiNavSidebar({
           if (items.length === 0) return null;
           return (
             <div key={cat}>
-              <p className="mb-1 px-2 text-[10px] font-semibold uppercase tracking-wider text-text-muted">
+              <p className="mb-1 px-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                 {cat}
               </p>
               <ul className="space-y-0.5">
@@ -46,7 +46,7 @@ export function WikiNavSidebar({
                         "w-full rounded-md px-2 py-1.5 text-left text-sm transition-colors",
                         activePage === item.id
                           ? "bg-brand-accent/10 font-medium text-brand-accent"
-                          : "text-text-secondary hover:bg-midnight-elevated hover:text-text-primary"
+                          : "text-muted-foreground hover:bg-muted hover:text-foreground"
                       )}
                     >
                       {item.title}

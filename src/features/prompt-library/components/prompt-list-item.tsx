@@ -28,7 +28,7 @@ export function PromptListItem({ prompt: p }: PromptListItemProps) {
   const navigateToFormula = usePromptLibraryStore((s) => s.navigateToFormula);
 
   const cat = PROMPT_CATEGORIES.find((c) => c.id === p.category);
-  const catColor = cat?.color ?? "text-text-muted bg-midnight-elevated";
+  const catColor = cat?.color ?? "text-muted-foreground bg-muted";
 
   const flash = (setter: (v: boolean) => void) => { setter(true); setTimeout(() => setter(false), 2000); };
 
@@ -41,12 +41,12 @@ export function PromptListItem({ prompt: p }: PromptListItemProps) {
   };
 
   return (
-    <div className="rounded-xl border border-midnight-border bg-midnight-card overflow-hidden hover:border-brand-accent/30 transition-colors">
+    <div className="rounded-xl border border-border bg-card overflow-hidden hover:border-brand-accent/30 transition-colors">
       {/* Main row */}
       <div className="flex items-center gap-4 px-4 py-3">
         {/* Info */}
         <div className="flex-1 min-w-0 flex items-center gap-3">
-          <h3 className="text-sm font-semibold text-text-primary shrink-0">
+          <h3 className="text-sm font-semibold text-foreground shrink-0">
             {p.title}
           </h3>
           <span className={cn("text-[10px] px-2 py-0.5 rounded-full font-medium shrink-0", catColor)}>
@@ -60,7 +60,7 @@ export function PromptListItem({ prompt: p }: PromptListItemProps) {
               {p.formulaRef.toUpperCase()}
             </button>
           )}
-          <p className="text-xs text-text-muted truncate max-w-sm">
+          <p className="text-xs text-muted-foreground truncate max-w-sm">
             {p.description}
           </p>
         </div>
@@ -69,7 +69,7 @@ export function PromptListItem({ prompt: p }: PromptListItemProps) {
         <div className="flex items-center gap-1.5 shrink-0">
           <button
             onClick={() => setExpanded(!expanded)}
-            className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-[11px] font-medium bg-midnight-elevated text-text-secondary hover:text-text-primary transition-colors"
+            className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-[11px] font-medium bg-muted text-muted-foreground hover:text-foreground transition-colors"
           >
             <BookOpen className="h-3 w-3" />
             {expanded ? "Hide" : "Preview"}
@@ -80,7 +80,7 @@ export function PromptListItem({ prompt: p }: PromptListItemProps) {
               "flex items-center gap-1 px-2 py-1.5 rounded-lg text-[11px] font-medium transition-colors",
               copied
                 ? "bg-brand-green/15 text-brand-green"
-                : "bg-midnight-elevated text-text-secondary hover:text-text-primary",
+                : "bg-muted text-muted-foreground hover:text-foreground",
             )}
           >
             {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
@@ -100,12 +100,12 @@ export function PromptListItem({ prompt: p }: PromptListItemProps) {
           </button>
           <button
             onClick={() => toggleFav(p.id)}
-            className="p-1 rounded hover:bg-midnight-elevated transition-colors"
+            className="p-1 rounded hover:bg-muted transition-colors"
           >
             <Star
               className={cn("h-4 w-4", isFav
                 ? "fill-brand-amber text-brand-amber"
-                : "text-text-muted")}
+                : "text-muted-foreground")}
             />
           </button>
         </div>
@@ -113,7 +113,7 @@ export function PromptListItem({ prompt: p }: PromptListItemProps) {
 
       {/* Expandable preview */}
       {expanded && (
-        <div className="px-4 pb-3 border-t border-midnight-border">
+        <div className="px-4 pb-3 border-t border-border">
           <CodeBlock
             code={p.prompt}
             language="markdown"

@@ -34,7 +34,7 @@ export function PasswordStrength({ password, className }: PasswordStrengthProps)
 
   return (
     <div className={cn("space-y-1.5", className)}>
-      <div className="h-1.5 w-full rounded-full bg-midnight-elevated">
+      <div className="h-1.5 w-full rounded-full bg-muted">
         {level && (
           <div
             className={cn("h-full rounded-full transition-all duration-300", level.color, level.width)}
@@ -42,7 +42,7 @@ export function PasswordStrength({ password, className }: PasswordStrengthProps)
         )}
       </div>
       {level && (
-        <p className={cn("text-xs", score <= 1 ? "text-brand-red" : score === 2 ? "text-brand-amber" : score === 3 ? "text-yellow-400" : "text-brand-green")}>
+        <p className={cn("text-xs", score <= 1 ? "text-brand-red" : score === 2 ? "text-brand-amber" : score === 3 ? "text-yellow-600" : "text-brand-green")}>
           {level.label}
         </p>
       )}

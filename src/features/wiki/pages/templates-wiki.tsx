@@ -5,23 +5,23 @@ export function TemplatesWikiPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-text-primary">Templates</h2>
-        <p className="mt-1 text-sm text-text-muted">
+        <h2 className="text-xl font-semibold text-foreground">Templates</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
           Prebuilt prompt templates for common agent patterns
         </p>
       </div>
 
-      <p className="text-sm leading-relaxed text-text-secondary">
+      <p className="text-sm leading-relaxed text-muted-foreground">
         3A Studio ships with a library of prebuilt prompt templates organized by
         role group and use case. Templates provide a starting point that you can
         customize, or use as-is for standard agent types.
       </p>
 
       <div>
-        <h3 className="mb-2 text-base font-semibold text-text-primary">
+        <h3 className="mb-2 text-base font-semibold text-foreground">
           Built-in Categories
         </h3>
-        <ul className="space-y-1.5 text-sm text-text-secondary">
+        <ul className="space-y-1.5 text-sm text-muted-foreground">
           <li className="flex gap-2">
             <span className="text-brand-accent shrink-0">Code</span>
             Code Writer, Code Reviewer, Refactoring Agent
@@ -46,10 +46,10 @@ export function TemplatesWikiPage() {
       </div>
 
       <div>
-        <h3 className="mb-2 text-base font-semibold text-text-primary">
+        <h3 className="mb-2 text-base font-semibold text-foreground">
           Using Templates
         </h3>
-        <p className="text-sm leading-relaxed text-text-secondary">
+        <p className="text-sm leading-relaxed text-muted-foreground">
           When creating a new agent, select a template from the Templates page or
           the agent creation dialog. The template pre-fills the system prompt,
           role group, model settings, and scoring formula. Edit any field before

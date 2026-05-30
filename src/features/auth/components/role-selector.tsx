@@ -27,7 +27,7 @@ export function RoleSelector({ value, onChange }: RoleSelectorProps) {
             "flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors",
             value === role.value
               ? "border-brand-accent bg-brand-accent/10 text-brand-accent"
-              : "border-midnight-border bg-midnight-card text-text-secondary hover:bg-midnight-elevated"
+              : "border-border bg-card text-muted-foreground hover:bg-muted"
           )}
         >
           {role.label}

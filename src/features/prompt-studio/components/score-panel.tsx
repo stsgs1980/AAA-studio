@@ -18,8 +18,8 @@ const DIMENSIONS = [
 export function ScorePanel({ score }: { score: PromptScore | null }) {
   if (!score) {
     return (
-      <div className="rounded-xl border border-midnight-border bg-midnight-card p-6 flex items-center justify-center min-h-[200px]">
-        <p className="text-sm text-text-muted text-center">
+      <div className="rounded-xl border border-border bg-card p-6 flex items-center justify-center min-h-[200px]">
+        <p className="text-sm text-muted-foreground text-center">
           Start typing to see live prompt scoring
         </p>
       </div>
@@ -27,7 +27,7 @@ export function ScorePanel({ score }: { score: PromptScore | null }) {
   }
 
   return (
-    <div className="rounded-xl border border-midnight-border bg-midnight-card p-6 space-y-5">
+    <div className="rounded-xl border border-border bg-card p-6 space-y-5">
       {/* Overall score circle */}
       <div className="flex flex-col items-center gap-2">
         <motion.div
@@ -39,7 +39,7 @@ export function ScorePanel({ score }: { score: PromptScore | null }) {
         >
           {score.overall}
         </motion.div>
-        <span className="text-sm font-medium text-text-secondary">
+        <span className="text-sm font-medium text-muted-foreground">
           {getScoreLabel(score.overall)}
         </span>
       </div>

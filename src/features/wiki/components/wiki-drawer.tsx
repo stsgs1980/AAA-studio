@@ -30,11 +30,11 @@ export function WikiDrawer() {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 30, stiffness: 300 }}
-            className="fixed right-0 top-0 z-50 flex h-full w-[420px] flex-col border-l border-midnight-border bg-midnight-card"
+            className="fixed right-0 top-0 z-50 flex h-full w-[420px] flex-col border-l border-border bg-card"
           >
             {/* Header */}
-            <div className="flex h-14 items-center gap-3 border-b border-midnight-border px-4">
-              <span className="text-sm font-semibold text-text-primary">
+            <div className="flex h-14 items-center gap-3 border-b border-border px-4">
+              <span className="text-sm font-semibold text-foreground">
                 Wiki
               </span>
               <div className="flex-1">
@@ -49,7 +49,7 @@ export function WikiDrawer() {
               </div>
               <button
                 onClick={close}
-                className="rounded p-1 text-text-muted hover:bg-midnight-elevated hover:text-text-primary transition-colors"
+                className="rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -73,7 +73,7 @@ export function WikiDrawer() {
             </div>
 
             {/* Footer */}
-            <div className="border-t border-midnight-border px-4 py-2">
+            <div className="border-t border-border px-4 py-2">
               <a
                 href={`/wiki/${activePage}`}
                 onClick={close}

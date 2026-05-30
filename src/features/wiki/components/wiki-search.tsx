@@ -52,7 +52,7 @@ export function WikiSearch({ value, onChange, onResultSelect }: WikiSearchProps)
   return (
     <div className="relative">
       <div className="relative">
-        <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-muted" />
+        <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
         <input
           ref={inputRef}
           type="text"
@@ -62,11 +62,11 @@ export function WikiSearch({ value, onChange, onResultSelect }: WikiSearchProps)
           onFocus={() => results.length > 0 && setOpen(true)}
           onBlur={() => setTimeout(() => setOpen(false), 150)}
           placeholder="Search docs..."
-          className="h-8 w-full rounded-md border border-midnight-border bg-midnight-base pl-8 pr-3 text-sm text-text-primary placeholder:text-text-muted focus:border-brand-accent focus:outline-none focus:ring-1 focus:ring-brand-accent/30"
+          className="h-8 w-full rounded-md border border-border bg-background pl-8 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-brand-accent focus:outline-none focus:ring-1 focus:ring-brand-accent/30"
         />
       </div>
       {open && results.length > 0 && (
-        <div className="absolute top-full z-10 mt-1 w-full rounded-md border border-midnight-border bg-midnight-card py-1 shadow-lg">
+        <div className="absolute top-full z-10 mt-1 w-full rounded-md border border-border bg-card py-1 shadow-lg">
           {results.map((item, i) => (
             <button
               key={item.id}
@@ -78,11 +78,11 @@ export function WikiSearch({ value, onChange, onResultSelect }: WikiSearchProps)
                 "flex w-full items-center gap-2 px-3 py-1.5 text-left text-sm transition-colors",
                 i === activeIndex
                   ? "bg-brand-accent/10 text-brand-accent"
-                  : "text-text-secondary hover:bg-midnight-elevated"
+                  : "text-muted-foreground hover:bg-muted"
               )}
             >
               <span>{item.title}</span>
-              <span className="ml-auto text-[11px] text-text-muted">
+              <span className="ml-auto text-[11px] text-muted-foreground">
                 {item.category}
               </span>
             </button>

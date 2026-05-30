@@ -4,13 +4,13 @@ export function PipelinesWikiPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-text-primary">Pipelines</h2>
+        <h2 className="text-xl font-semibold text-foreground">Pipelines</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           Automated multi-step execution flows
         </p>
       </div>
 
-      <p className="text-sm leading-relaxed text-text-secondary">
+      <p className="text-sm leading-relaxed text-muted-foreground">
         Pipelines are automated workflows that chain multiple agents or operations
         into a sequential execution flow. Built in the Flow Editor, pipelines
         handle complex tasks that require coordination across agents, data
@@ -18,10 +18,10 @@ export function PipelinesWikiPage() {
       </p>
 
       <div>
-        <h3 className="mb-2 text-base font-semibold text-text-primary">
+        <h3 className="mb-2 text-base font-semibold text-foreground">
           Creating Pipelines
         </h3>
-        <p className="text-sm leading-relaxed text-text-secondary">
+        <p className="text-sm leading-relaxed text-muted-foreground">
           Open the Flow Editor and switch to Pipeline mode. Drag agent nodes onto
           the canvas, connect them with edges, and configure execution parameters.
           Use branch nodes for conditional logic and merge nodes to combine
@@ -30,10 +30,10 @@ export function PipelinesWikiPage() {
       </div>
 
       <div>
-        <h3 className="mb-2 text-base font-semibold text-text-primary">
+        <h3 className="mb-2 text-base font-semibold text-foreground">
           Execution Model
         </h3>
-        <ul className="space-y-1.5 text-sm text-text-secondary">
+        <ul className="space-y-1.5 text-sm text-muted-foreground">
           <li className="flex gap-2">
             <span className="text-brand-accent shrink-0">Sequential</span>
             Nodes execute one after another, passing outputs forward
@@ -54,10 +54,10 @@ export function PipelinesWikiPage() {
       </div>
 
       <div>
-        <h3 className="mb-2 text-base font-semibold text-text-primary">
+        <h3 className="mb-2 text-base font-semibold text-foreground">
           Monitoring Pipeline Runs
         </h3>
-        <p className="text-sm leading-relaxed text-text-secondary">
+        <p className="text-sm leading-relaxed text-muted-foreground">
           Each pipeline execution is tracked with a unique run ID. View real-time
           status, node-level timing, and error traces in the Pipelines page. The
           Audit Log captures all execution events for compliance debugging.

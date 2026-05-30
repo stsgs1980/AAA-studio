@@ -64,12 +64,12 @@ export function ExecutionDetail({
                   {r.nodeId.slice(0, 8)}
                 </span>
                 {r.model && (
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 truncate max-w-[120px]">
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-600 truncate max-w-[120px]">
                     {r.model}
                   </span>
                 )}
                 {r.cost != null && r.cost > 0 && (
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400">
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600">
                     {formatCost(r.cost)}
                   </span>
                 )}
@@ -81,7 +81,7 @@ export function ExecutionDetail({
                 </div>
               )}
               {r.error && (
-                <p className="text-xs text-red-400 bg-red-500/10 rounded px-2 py-1 mt-1">{r.error}</p>
+                <p className="text-xs text-red-600 bg-red-500/10 rounded px-2 py-1 mt-1">{r.error}</p>
               )}
               {r.output && (
                 <pre className="text-xs text-muted-foreground bg-muted/50 rounded px-2 py-1 font-mono overflow-x-auto whitespace-pre-wrap">

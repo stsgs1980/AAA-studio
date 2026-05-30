@@ -15,7 +15,7 @@ export function Architecture() {
   const inView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section id="architecture" className="bg-midnight-base py-20 sm:py-28">
+    <section id="architecture" className="bg-background py-20 sm:py-28">
       <div className="mx-auto max-w-[1200px] px-4 sm:px-6">
         <motion.div
           ref={ref}
@@ -24,10 +24,10 @@ export function Architecture() {
           transition={{ duration: 0.5 }}
           className="mb-14 text-center"
         >
-          <h2 className="text-3xl font-bold text-text-primary sm:text-4xl">
+          <h2 className="text-3xl font-bold text-foreground sm:text-4xl">
             Powered by a structured orchestration engine
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-text-secondary">
+          <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
             A modular architecture designed for reliability, scalability, and extensibility.
           </p>
         </motion.div>
@@ -39,16 +39,16 @@ export function Architecture() {
           className="relative mx-auto max-w-3xl"
         >
           {/* Circuit lines */}
-          <div className="absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-gradient-to-b from-brand-accent/40 via-midnight-border to-brand-accent/40 hidden md:block" />
+          <div className="absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-gradient-to-b from-brand-accent/40 via-border to-brand-accent/40 hidden md:block" />
 
           {/* Central core */}
           <div className="relative mb-12 flex justify-center">
-            <div className="rounded-xl border border-brand-accent/40 bg-midnight-card p-6 text-center shadow-lg shadow-brand-accent/5">
+            <div className="rounded-xl border border-brand-accent/40 bg-card p-6 text-center shadow-lg shadow-brand-accent/5">
               <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-brand-accent/10 mx-auto">
                 <Cpu className="h-6 w-6 text-brand-accent" />
               </div>
-              <h3 className="text-lg font-semibold text-text-primary">Orchestrator Core</h3>
-              <p className="mt-1 text-sm text-text-secondary">Central coordination engine</p>
+              <h3 className="text-lg font-semibold text-foreground">Orchestrator Core</h3>
+              <p className="mt-1 text-sm text-muted-foreground">Central coordination engine</p>
             </div>
           </div>
 
@@ -60,13 +60,13 @@ export function Architecture() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.5, delay: 0.3 + i * 0.1 }}
-                className="rounded-xl border border-midnight-border bg-midnight-card p-5 transition-colors hover:border-brand-accent/40"
+                className="rounded-xl border border-border bg-card p-5 transition-colors hover:border-brand-accent/40"
               >
-                <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-midnight-elevated">
+                <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-muted">
                   <ep.icon className="h-4 w-4 text-brand-accent" />
                 </div>
-                <h4 className="mb-1 text-sm font-semibold text-text-primary">{ep.title}</h4>
-                <p className="text-xs text-text-secondary leading-relaxed">{ep.description}</p>
+                <h4 className="mb-1 text-sm font-semibold text-foreground">{ep.title}</h4>
+                <p className="text-xs text-muted-foreground leading-relaxed">{ep.description}</p>
               </motion.div>
             ))}
           </div>

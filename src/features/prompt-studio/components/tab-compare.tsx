@@ -26,25 +26,25 @@ export function TabCompare() {
       {/* Two editor panels */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="flex flex-col gap-2">
-          <label className="text-xs text-text-muted font-medium">
+          <label className="text-xs text-muted-foreground font-medium">
             Prompt A
           </label>
           <textarea
             value={compareA}
             onChange={(e) => setCompareA(e.target.value)}
             placeholder="Paste your first prompt here..."
-            className="w-full h-64 text-sm font-mono bg-midnight-base border border-midnight-border rounded-lg p-4 resize-none focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none text-text-primary placeholder:text-text-muted"
+            className="w-full h-64 text-sm font-mono bg-background border border-border rounded-lg p-4 resize-none focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none text-foreground placeholder:text-muted-foreground"
           />
         </div>
         <div className="flex flex-col gap-2">
-          <label className="text-xs text-text-muted font-medium">
+          <label className="text-xs text-muted-foreground font-medium">
             Prompt B
           </label>
           <textarea
             value={compareB}
             onChange={(e) => setCompareB(e.target.value)}
             placeholder="Paste your second prompt here..."
-            className="w-full h-64 text-sm font-mono bg-midnight-base border border-midnight-border rounded-lg p-4 resize-none focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none text-text-primary placeholder:text-text-muted"
+            className="w-full h-64 text-sm font-mono bg-background border border-border rounded-lg p-4 resize-none focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none text-foreground placeholder:text-muted-foreground"
           />
         </div>
       </div>
@@ -56,7 +56,7 @@ export function TabCompare() {
         className={`flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
           canCompare
             ? "bg-brand-accent text-white hover:bg-brand-accent/90"
-            : "bg-midnight-elevated text-text-muted cursor-not-allowed"
+            : "bg-muted text-muted-foreground cursor-not-allowed"
         }`}
       >
         <ArrowLeftRight className="h-4 w-4" />

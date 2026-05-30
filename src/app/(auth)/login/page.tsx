@@ -62,8 +62,8 @@ export default function LoginPage() {
     <div className="space-y-6">
       <Logo />
       <div className="space-y-1 text-center">
-        <h1 className="text-2xl font-bold text-text-primary">Welcome Back</h1>
-        <p className="text-sm text-text-secondary">
+        <h1 className="text-2xl font-bold text-foreground">Welcome Back</h1>
+        <p className="text-sm text-muted-foreground">
           Sign in to your 3A Studio dashboard
         </p>
       </div>
@@ -94,8 +94,8 @@ export default function LoginPage() {
           {...register("password")}
         />
         <div className="flex items-center justify-between">
-          <label className="flex items-center gap-2 text-sm text-text-secondary">
-            <input type="checkbox" className="rounded border-midnight-border" />
+          <label className="flex items-center gap-2 text-sm text-muted-foreground">
+            <input type="checkbox" className="rounded border-border" />
             Remember me
           </label>
           <Link href="/forgot-password" className="text-sm text-brand-accent hover:underline">
@@ -106,13 +106,13 @@ export default function LoginPage() {
           Sign In
         </AuthButton>
       </form>
-      <p className="text-center text-xs text-text-muted">
+      <p className="text-center text-xs text-muted-foreground">
         Demo: admin / admin
       </p>
       <button
         type="button"
         onClick={quickLogin}
-        className="w-full rounded-lg border border-midnight-border bg-midnight-elevated py-2 text-sm text-text-secondary transition-colors hover:border-brand-accent hover:text-text-primary"
+        className="w-full rounded-lg border border-border bg-muted py-2 text-sm text-muted-foreground transition-colors hover:border-brand-accent hover:text-foreground"
       >
         Quick Login as Admin
       </button>

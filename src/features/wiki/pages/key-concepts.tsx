@@ -4,15 +4,15 @@ export function KeyConceptsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-text-primary">Key Concepts</h2>
-        <p className="mt-1 text-sm text-text-muted">
+        <h2 className="text-xl font-semibold text-foreground">Key Concepts</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
           The building blocks of 3A Studio
         </p>
       </div>
 
       <div>
-        <h3 className="mb-2 text-base font-semibold text-text-primary">Agents</h3>
-        <p className="text-sm leading-relaxed text-text-secondary">
+        <h3 className="mb-2 text-base font-semibold text-foreground">Agents</h3>
+        <p className="text-sm leading-relaxed text-muted-foreground">
           Agents are autonomous units defined by a system prompt, a role group, and
           a target LLM. Each agent has configurable parameters (temperature,
           max tokens, model selection) and belongs to exactly one hierarchy layer.
@@ -22,10 +22,10 @@ export function KeyConceptsPage() {
       </div>
 
       <div>
-        <h3 className="mb-2 text-base font-semibold text-text-primary">
+        <h3 className="mb-2 text-base font-semibold text-foreground">
           Role Groups
         </h3>
-        <p className="text-sm leading-relaxed text-text-secondary">
+        <p className="text-sm leading-relaxed text-muted-foreground">
           3A Studio organizes agents into 8 role groups: Strategy, Tactics,
           Execution, Control, Memory, Communication, Interface, and Security.
           Role groups determine an agent&apos;s functional domain and influence
@@ -34,10 +34,10 @@ export function KeyConceptsPage() {
       </div>
 
       <div>
-        <h3 className="mb-2 text-base font-semibold text-text-primary">
+        <h3 className="mb-2 text-base font-semibold text-foreground">
           Hierarchy Layers
         </h3>
-        <p className="text-sm leading-relaxed text-text-secondary">
+        <p className="text-sm leading-relaxed text-muted-foreground">
           The 5-layer hierarchy enforces clear delegation: Supervisor (top-level
           governance), Coordinator (cross-team routing), Manager (task
           decomposition), Worker (single-task execution), and Tool (atomic
@@ -47,8 +47,8 @@ export function KeyConceptsPage() {
       </div>
 
       <div>
-        <h3 className="mb-2 text-base font-semibold text-text-primary">Edges</h3>
-        <p className="text-sm leading-relaxed text-text-secondary">
+        <h3 className="mb-2 text-base font-semibold text-foreground">Edges</h3>
+        <p className="text-sm leading-relaxed text-muted-foreground">
           Edges define how agents communicate. There are 5 types: Command
           (directive, one-way), Sync (bidirectional handshake), Twin (parallel
           mirror agents), Delegate (subtask assignment), and Feedback (loop-back
@@ -58,10 +58,10 @@ export function KeyConceptsPage() {
       </div>
 
       <div>
-        <h3 className="mb-2 text-base font-semibold text-text-primary">
+        <h3 className="mb-2 text-base font-semibold text-foreground">
           Orchestration Engine
         </h3>
-        <p className="text-sm leading-relaxed text-text-secondary">
+        <p className="text-sm leading-relaxed text-muted-foreground">
           The orchestrator manages request routing, error handling, retries, and
           governance across the entire hierarchy. It interprets the edge graph to
           determine execution order, collects responses, and applies quality gates

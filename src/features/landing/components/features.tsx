@@ -42,7 +42,7 @@ export function Features() {
   const inView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section id="features" className="bg-midnight-base py-20 sm:py-28">
+    <section id="features" className="bg-background py-20 sm:py-28">
       <div className="mx-auto max-w-[1200px] px-4 sm:px-6">
         <motion.div
           ref={ref}
@@ -51,10 +51,10 @@ export function Features() {
           transition={{ duration: 0.5 }}
           className="mb-14 text-center"
         >
-          <h2 className="text-3xl font-bold text-text-primary sm:text-4xl">
+          <h2 className="text-3xl font-bold text-foreground sm:text-4xl">
             Everything you need to build intelligent systems
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-text-secondary">
+          <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
             A comprehensive toolkit for designing, deploying, and managing AI agent pipelines at scale.
           </p>
         </motion.div>
@@ -69,15 +69,15 @@ export function Features() {
             <motion.div
               key={feature.title}
               variants={itemVariants}
-              className="group rounded-xl border border-midnight-border bg-midnight-card p-6 transition-all duration-200 hover:-translate-y-1 hover:border-brand-accent/40"
+              className="group rounded-xl border border-border bg-card p-6 transition-all duration-200 hover:-translate-y-1 hover:border-brand-accent/40"
             >
               <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-brand-accent/10">
                 <feature.icon className="h-5 w-5 text-brand-accent" />
               </div>
-              <h3 className="mb-2 text-base font-semibold text-text-primary">
+              <h3 className="mb-2 text-base font-semibold text-foreground">
                 {feature.title}
               </h3>
-              <p className="text-sm leading-relaxed text-text-secondary">
+              <p className="text-sm leading-relaxed text-muted-foreground">
                 {feature.description}
               </p>
             </motion.div>

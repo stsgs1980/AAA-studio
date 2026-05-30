@@ -5,15 +5,15 @@ export function OverviewPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-text-primary">
+        <h2 className="text-xl font-semibold text-foreground">
           Getting Started with 3A Studio
         </h2>
-        <p className="mt-1 text-sm text-text-muted">
+        <p className="mt-1 text-sm text-muted-foreground">
           Artificial. Agentic. Architecture.
         </p>
       </div>
 
-      <p className="text-sm leading-relaxed text-text-secondary">
+      <p className="text-sm leading-relaxed text-muted-foreground">
         3A Studio is a visual IDE for designing, orchestrating, and deploying
         multi-agent AI systems. Built on the P-MAS (Prompt-driven Multi-Agent
         System) architecture pattern, it enables teams to build complex agent
@@ -29,10 +29,10 @@ export function OverviewPage() {
       </WikiCallout>
 
       <div>
-        <h3 className="mb-2 text-base font-semibold text-text-primary">
+        <h3 className="mb-2 text-base font-semibold text-foreground">
           Core Capabilities
         </h3>
-        <ul className="space-y-1.5 text-sm text-text-secondary">
+        <ul className="space-y-1.5 text-sm text-muted-foreground">
           <li className="flex gap-2">
             <span className="text-brand-accent">01</span> Visual Flow Editor
             with drag-and-drop node placement
@@ -57,10 +57,10 @@ export function OverviewPage() {
       </div>
 
       <div>
-        <h3 className="mb-2 text-base font-semibold text-text-primary">
+        <h3 className="mb-2 text-base font-semibold text-foreground">
           Who Is It For?
         </h3>
-        <p className="text-sm leading-relaxed text-text-secondary">
+        <p className="text-sm leading-relaxed text-muted-foreground">
           AI engineers building production agent systems, researchers
           experimenting with multi-agent architectures, and teams managing
           prompt libraries at scale. Whether you are prototyping a single agent or

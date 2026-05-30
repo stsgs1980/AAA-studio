@@ -4,13 +4,13 @@ export function RoleGroupsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-text-primary">Role Groups</h2>
-        <p className="mt-1 text-sm text-text-muted">
+        <h2 className="text-xl font-semibold text-foreground">Role Groups</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
           8 functional domains for agent classification
         </p>
       </div>
 
-      <p className="text-sm leading-relaxed text-text-secondary">
+      <p className="text-sm leading-relaxed text-muted-foreground">
         Role groups define an agent&apos;s functional domain within the system.
         Each group comes with tailored prompt templates, scoring weights, and
         recommended tools. Assigning the correct role group ensures the agent
@@ -30,16 +30,16 @@ export function RoleGroupsPage() {
         ].map((group) => (
           <div
             key={group.name}
-            className="flex gap-3 rounded-md border border-midnight-border p-3"
+            className="flex gap-3 rounded-md border border-border p-3"
           >
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-midnight-elevated text-xs font-bold text-text-primary">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-muted text-xs font-bold text-foreground">
               {group.icon}
             </div>
             <div>
               <p className={`text-sm font-semibold ${group.color}`}>
                 {group.name}
               </p>
-              <p className="text-sm text-text-secondary">{group.desc}</p>
+              <p className="text-sm text-muted-foreground">{group.desc}</p>
             </div>
           </div>
         ))}

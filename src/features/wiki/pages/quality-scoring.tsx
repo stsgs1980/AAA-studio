@@ -5,15 +5,15 @@ export function QualityScoringPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-text-primary">
+        <h2 className="text-xl font-semibold text-foreground">
           Quality Scoring
         </h2>
-        <p className="mt-1 text-sm text-text-muted">
+        <p className="mt-1 text-sm text-muted-foreground">
           6 dimensions of prompt evaluation
         </p>
       </div>
 
-      <p className="text-sm leading-relaxed text-text-secondary">
+      <p className="text-sm leading-relaxed text-muted-foreground">
         Every prompt in 3A Studio is evaluated across six quality dimensions,
         each scored from 0 to 10. The scoring engine analyzes prompt structure,
         vocabulary, and pattern compliance to produce actionable scores.
@@ -28,9 +28,9 @@ export function QualityScoringPage() {
           { name: "Efficiency", desc: "How concisely the prompt achieves its goal. Penalizes unnecessary verbosity while rewarding completeness." },
           { name: "Safety", desc: "How well the prompt guards against misuse. Checks for constraint sections, output format enforcement, and boundary definitions." },
         ].map((dim) => (
-          <div key={dim.name} className="rounded-md border border-midnight-border p-3">
+          <div key={dim.name} className="rounded-md border border-border p-3">
             <p className="text-sm font-medium text-brand-accent">{dim.name}</p>
-            <p className="mt-1 text-sm text-text-secondary">{dim.desc}</p>
+            <p className="mt-1 text-sm text-muted-foreground">{dim.desc}</p>
           </div>
         ))}
       </div>

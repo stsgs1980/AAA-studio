@@ -50,9 +50,9 @@ export function WikiCallout({ variant, title, children }: WikiCalloutProps) {
         <Icon className={cn("mt-0.5 h-4 w-4 shrink-0", v.iconColor)} />
         <div className="min-w-0 flex-1">
           {title && (
-            <p className="font-medium text-text-primary">{title}</p>
+            <p className="font-medium text-foreground">{title}</p>
           )}
-          <div className="text-text-secondary">{children}</div>
+          <div className="text-muted-foreground">{children}</div>
         </div>
       </div>
     </div>

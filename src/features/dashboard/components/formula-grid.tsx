@@ -47,7 +47,7 @@ export function FormulaGrid() {
                 <td className="py-2.5 px-3 font-semibold text-foreground border-b border-border font-mono">
                   {row.name}
                 </td>
-                <td className="py-2.5 px-3 font-medium text-cyan-500 border-b border-border">
+                <td className="py-2.5 px-3 font-medium text-cyan-700 border-b border-border">
                   {row.agents}
                 </td>
                 <td className="py-2.5 px-3 border-b border-border">

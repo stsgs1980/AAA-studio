@@ -15,7 +15,7 @@ export function CodeBlockHeader({
   const copyBtn = (
     <button
       onClick={onCopy}
-      className="rounded p-1 text-text-muted hover:bg-midnight-elevated hover:text-text-secondary transition-colors"
+      className="rounded p-1 text-muted-foreground hover:bg-muted hover:text-muted-foreground transition-colors"
     >
       {copied ? <Check className="h-3.5 w-3.5 text-brand-green" /> : <Copy className="h-3.5 w-3.5" />}
     </button>
@@ -23,14 +23,14 @@ export function CodeBlockHeader({
 
   if (title || language) {
     return (
-      <div className="flex items-center justify-between border-b border-midnight-border px-4 py-2 bg-midnight-card">
+      <div className="flex items-center justify-between border-b border-border px-4 py-2 bg-card">
         <div className="flex items-center gap-2">
           {language && (
-            <span className="rounded bg-midnight-elevated px-2 py-0.5 text-[11px] font-medium text-brand-accent">
+            <span className="rounded bg-muted px-2 py-0.5 text-[11px] font-medium text-brand-accent">
               {language}
             </span>
           )}
-          {title && <span className="text-xs text-text-muted">{title}</span>}
+          {title && <span className="text-xs text-muted-foreground">{title}</span>}
         </div>
         {copyBtn}
       </div>
@@ -38,7 +38,7 @@ export function CodeBlockHeader({
   }
 
   return (
-    <div className="flex justify-end border-b border-midnight-border px-3 py-1 bg-midnight-card">
+    <div className="flex justify-end border-b border-border px-3 py-1 bg-card">
       {copyBtn}
     </div>
   );

@@ -45,7 +45,7 @@ export function CodeBlock({
             dangerouslySetInnerHTML={{ __html: html }}
           />
         ) : (
-          <pre className="text-[11px] font-mono leading-relaxed text-text-muted overflow-hidden">
+          <pre className="text-[11px] font-mono leading-relaxed text-muted-foreground overflow-hidden">
             {code}
           </pre>
         )}
@@ -59,7 +59,7 @@ export function CodeBlock({
   const isOverflow = maxLines && code.split("\n").length > maxLines;
 
   return (
-    <div className={cn("rounded-lg border border-midnight-border overflow-hidden", className)}>
+    <div className={cn("rounded-lg border border-border overflow-hidden", className)}>
       <CodeBlockHeader language={language} title={title} copied={copied} onCopy={handleCopy} />
       {html ? (
         <div
@@ -67,9 +67,9 @@ export function CodeBlock({
           dangerouslySetInnerHTML={{ __html: html }}
         />
       ) : (
-        <pre className="overflow-x-auto bg-midnight-base p-4">
-          <code className="text-sm font-mono leading-relaxed text-text-primary">
-            {truncated}{isOverflow && <span className="text-text-muted">...</span>}
+        <pre className="overflow-x-auto bg-background p-4">
+          <code className="text-sm font-mono leading-relaxed text-foreground">
+            {truncated}{isOverflow && <span className="text-muted-foreground">...</span>}
           </code>
         </pre>
       )}

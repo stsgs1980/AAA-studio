@@ -17,7 +17,7 @@ const ENTITY_COLORS: Record<string, string> = {
   execution: 'bg-emerald-500/10 text-emerald-500',
   prompt: 'bg-amber-500/10 text-amber-500',
   standard: 'bg-red-500/10 text-red-500',
-  skill: 'bg-cyan-500/10 text-cyan-500',
+  skill: 'bg-cyan-500/10 text-cyan-700',
 };
 
 export default function AuditLogPage() {

@@ -27,7 +27,7 @@ export function FormulaPicker({
             "hover:shadow-md hover:-translate-y-0.5",
             activeId === f.id
               ? "bg-brand-accent text-white"
-              : "bg-midnight-elevated text-text-secondary hover:text-text-primary"
+              : "bg-muted text-muted-foreground hover:text-foreground"
           )}
           title={f.description}
         >

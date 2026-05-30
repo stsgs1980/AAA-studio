@@ -49,7 +49,7 @@ export function TabWrite() {
               <>
                 <button
                   onClick={handleCopy}
-                  className="flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-medium bg-midnight-elevated text-text-secondary hover:text-text-primary transition-colors"
+                  className="flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-medium bg-muted text-muted-foreground hover:text-foreground transition-colors"
                 >
                   {copied ? (
                     <Check className="h-3 w-3 text-brand-green" />
@@ -60,7 +60,7 @@ export function TabWrite() {
                 </button>
                 <button
                   onClick={handleClear}
-                  className="flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-medium bg-midnight-elevated text-text-secondary hover:text-brand-red transition-colors"
+                  className="flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-medium bg-muted text-muted-foreground hover:text-brand-red transition-colors"
                 >
                   <Trash2 className="h-3 w-3" />
                   Clear
@@ -75,11 +75,11 @@ export function TabWrite() {
           value={editorText}
           onChange={(e) => setEditorText(e.target.value)}
           placeholder="Write or paste your prompt here to see live scoring..."
-          className="flex-1 w-full min-h-[300px] text-sm font-mono bg-midnight-base border border-midnight-border rounded-lg p-4 resize-none focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none text-text-primary placeholder:text-text-muted"
+          className="flex-1 w-full min-h-[300px] text-sm font-mono bg-background border border-border rounded-lg p-4 resize-none focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none text-foreground placeholder:text-muted-foreground"
         />
 
         {/* Bottom stats */}
-        <div className="flex items-center gap-3 text-xs text-text-muted">
+        <div className="flex items-center gap-3 text-xs text-muted-foreground">
           <span>{charCount} chars</span>
           <span>{lineCount} lines</span>
           {variables.length > 0 && (

@@ -42,18 +42,18 @@ export default function PromptStudioPage() {
       {/* Header */}
       <div className="flex items-center gap-3 px-6 pt-6 pb-2">
         <Sparkles className="h-6 w-6 text-brand-accent" />
-        <h1 className="text-2xl font-bold tracking-tight text-text-primary">
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">
           Prompt Studio
         </h1>
         {GRID_TABS.has(activeTab) && (
-          <div className="ml-auto flex items-center gap-1 bg-midnight-elevated rounded-lg p-0.5">
+          <div className="ml-auto flex items-center gap-1 bg-muted rounded-lg p-0.5">
             <button
               onClick={() => setViewMode("grid")}
               className={cn(
                 "p-1.5 rounded-md transition-colors",
                 viewMode === "grid"
                   ? "bg-brand-accent text-white"
-                  : "text-text-muted hover:text-text-secondary",
+                  : "text-muted-foreground hover:text-muted-foreground",
               )}
               title="Grid view"
             >
@@ -65,7 +65,7 @@ export default function PromptStudioPage() {
                 "p-1.5 rounded-md transition-colors",
                 viewMode === "list"
                   ? "bg-brand-accent text-white"
-                  : "text-text-muted hover:text-text-secondary",
+                  : "text-muted-foreground hover:text-muted-foreground",
               )}
               title="List view"
             >
@@ -76,7 +76,7 @@ export default function PromptStudioPage() {
       </div>
 
       {/* Tab bar */}
-      <div className="px-6 border-b border-midnight-border">
+      <div className="px-6 border-b border-border">
         <nav className="flex gap-1 -mb-px">
           {TABS.map(({ id, label, icon: Icon }) => (
             <button
@@ -86,7 +86,7 @@ export default function PromptStudioPage() {
                 "flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors",
                 activeTab === id
                   ? "text-brand-accent border-brand-accent"
-                  : "text-text-muted hover:text-text-secondary border-transparent",
+                  : "text-muted-foreground hover:text-muted-foreground border-transparent",
               )}
             >
               <Icon className="h-4 w-4" />

@@ -5,23 +5,23 @@ export function RestApiPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-text-primary">REST API</h2>
-        <p className="mt-1 text-sm text-text-muted">
+        <h2 className="text-xl font-semibold text-foreground">REST API</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
           HTTP endpoints for external integration
         </p>
       </div>
 
-      <p className="text-sm leading-relaxed text-text-secondary">
+      <p className="text-sm leading-relaxed text-muted-foreground">
         3A Studio exposes a REST API for programmatic access to agents, flows,
         executions, and knowledge bases. Use the API to integrate with CI/CD
         pipelines, custom dashboards, or external tools.
       </p>
 
       <div>
-        <h3 className="mb-2 text-base font-semibold text-text-primary">
+        <h3 className="mb-2 text-base font-semibold text-foreground">
           Authentication
         </h3>
-        <p className="text-sm leading-relaxed text-text-secondary">
+        <p className="text-sm leading-relaxed text-muted-foreground">
           All API requests require a Bearer token in the Authorization header.
           Generate API tokens from the Settings page. Tokens are scoped to your
           workspace and can be revoked at any time.
@@ -34,10 +34,10 @@ export function RestApiPage() {
       </div>
 
       <div>
-        <h3 className="mb-2 text-base font-semibold text-text-primary">
+        <h3 className="mb-2 text-base font-semibold text-foreground">
           Key Endpoints
         </h3>
-        <div className="space-y-2 text-sm text-text-secondary">
+        <div className="space-y-2 text-sm text-muted-foreground">
           <p><code className="text-brand-accent font-mono">GET /api/agents</code> &mdash; List all agents</p>
           <p><code className="text-brand-accent font-mono">POST /api/agents</code> &mdash; Create an agent</p>
           <p><code className="text-brand-accent font-mono">GET /api/agents/:id</code> &mdash; Get agent details</p>

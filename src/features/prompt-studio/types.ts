@@ -44,10 +44,10 @@ export function getIntentColor(intent: string): string {
     analysis: "text-brand-amber bg-brand-amber/15",
     question: "text-brand-accent bg-brand-accent/15",
     instruction: "text-brand-green bg-brand-green/15",
-    conversation: "text-text-secondary bg-midnight-elevated",
+    conversation: "text-muted-foreground bg-muted",
     correction: "text-brand-red bg-brand-red/15",
   };
-  return map[intent] ?? "text-text-secondary bg-midnight-elevated";
+  return map[intent] ?? "text-muted-foreground bg-muted";
 }
 
 // Re-exports from @stsgs/prompting

@@ -43,14 +43,14 @@ export function FrameworkCard({ framework, onGenerate }: FrameworkCardProps) {
     .every((s) => values[s.label]?.trim());
 
   return (
-    <div className="rounded-xl border border-midnight-border bg-midnight-card overflow-hidden">
+    <div className="rounded-xl border border-border bg-card overflow-hidden">
       {/* Header */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-between p-4 hover:bg-midnight-elevated/50 transition-colors"
+        className="w-full flex items-center justify-between p-4 hover:bg-muted/50 transition-colors"
       >
         <div className="flex items-center gap-3">
-          <span className="text-sm font-semibold text-text-primary">
+          <span className="text-sm font-semibold text-foreground">
             {framework.name}
           </span>
           <span className={cn("text-[10px] px-2 py-0.5 rounded-full font-medium", complexityColor)}>
@@ -58,25 +58,25 @@ export function FrameworkCard({ framework, onGenerate }: FrameworkCardProps) {
           </span>
         </div>
         {expanded ? (
-          <ChevronUp className="h-4 w-4 text-text-muted" />
+          <ChevronUp className="h-4 w-4 text-muted-foreground" />
         ) : (
-          <ChevronDown className="h-4 w-4 text-text-muted" />
+          <ChevronDown className="h-4 w-4 text-muted-foreground" />
         )}
       </button>
 
       {/* Description */}
       <div className="px-4 pb-3">
-        <p className="text-xs text-text-secondary leading-relaxed">
+        <p className="text-xs text-muted-foreground leading-relaxed">
           {framework.description}
         </p>
       </div>
 
       {/* Expandable form */}
       {expanded && (
-        <div className="border-t border-midnight-border p-4 space-y-3">
+        <div className="border-t border-border p-4 space-y-3">
           {framework.steps.map((step) => (
             <div key={step.label} className="space-y-1.5">
-              <label className="text-xs text-text-muted flex items-center gap-1">
+              <label className="text-xs text-muted-foreground flex items-center gap-1">
                 {step.label}
                 {step.required && <span className="text-brand-red">*</span>}
               </label>
@@ -85,7 +85,7 @@ export function FrameworkCard({ framework, onGenerate }: FrameworkCardProps) {
                 onChange={(e) => setValues((v) => ({ ...v, [step.label]: e.target.value }))}
                 placeholder={step.placeholder}
                 rows={2}
-                className="w-full text-sm font-mono bg-midnight-base border border-midnight-border rounded-lg p-3 resize-none focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none text-text-primary placeholder:text-text-muted"
+                className="w-full text-sm font-mono bg-background border border-border rounded-lg p-3 resize-none focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none text-foreground placeholder:text-muted-foreground"
               />
             </div>
           ))}
@@ -97,7 +97,7 @@ export function FrameworkCard({ framework, onGenerate }: FrameworkCardProps) {
               "flex items-center justify-center gap-1.5 w-full px-4 py-2.5 rounded-lg text-sm font-medium transition-colors",
               allRequiredFilled
                 ? "bg-brand-accent text-white hover:bg-brand-accent/90"
-                : "bg-midnight-elevated text-text-muted cursor-not-allowed",
+                : "bg-muted text-muted-foreground cursor-not-allowed",
             )}
           >
             <Zap className="h-3.5 w-3.5" />

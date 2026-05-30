@@ -72,9 +72,9 @@ export function RubricPanel() {
         )}
       >
         {rubric.passed ? (
-          <Check className="h-4 w-4 text-green-400" />
+          <Check className="h-4 w-4 text-green-600" />
         ) : (
-          <X className="h-4 w-4 text-red-400" />
+          <X className="h-4 w-4 text-red-600" />
         )}
         <span className="text-sm font-medium">
           {rubric.passed ? "PASS" : "FAIL"} -- Score: {rubric.overall}/{threshold} threshold
@@ -96,7 +96,7 @@ export function RubricPanel() {
               <span
                 className={cn(
                   "text-xs font-mono",
-                  c.passed ? "text-green-400" : "text-red-400",
+                  c.passed ? "text-green-600" : "text-red-600",
                 )}
               >
                 {c.score}/10

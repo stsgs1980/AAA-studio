@@ -20,21 +20,21 @@ export function CreateStandardForm({ onCreate, onClose }: CreateStandardFormProp
   };
 
   return (
-    <div className="flex items-end gap-2 rounded-xl border border-midnight-border bg-midnight-card p-3">
+    <div className="flex items-end gap-2 rounded-xl border border-border bg-card p-3">
       <div className="flex-1">
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleCreate()}
           placeholder="Standard name"
-          className="w-full h-9 px-3 rounded-lg border border-midnight-border bg-midnight-base text-sm text-text-primary placeholder:text-text-muted"
+          className="w-full h-9 px-3 rounded-lg border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground"
           autoFocus
         />
       </div>
       <select
         value={severity}
         onChange={(e) => setSeverity(e.target.value)}
-        className="h-9 px-3 rounded-lg border border-midnight-border bg-midnight-base text-sm text-text-primary"
+        className="h-9 px-3 rounded-lg border border-border bg-background text-sm text-foreground"
       >
         {SEVERITY_OPTIONS.map((o) => (
           <option key={o.value} value={o.value}>{o.label}</option>
@@ -49,7 +49,7 @@ export function CreateStandardForm({ onCreate, onClose }: CreateStandardFormProp
       </button>
       <button
         onClick={onClose}
-        className="p-2 rounded-lg border border-midnight-border text-text-secondary hover:bg-midnight-elevated"
+        className="p-2 rounded-lg border border-border text-muted-foreground hover:bg-muted"
       >
         <X className="h-4 w-4" />
       </button>

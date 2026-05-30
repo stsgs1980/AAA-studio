@@ -4,15 +4,15 @@ export function OrchestrationPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-text-primary">
+        <h2 className="text-xl font-semibold text-foreground">
           Orchestration
         </h2>
-        <p className="mt-1 text-sm text-text-muted">
+        <p className="mt-1 text-sm text-muted-foreground">
           Multi-agent coordination and governance
         </p>
       </div>
 
-      <p className="text-sm leading-relaxed text-text-secondary">
+      <p className="text-sm leading-relaxed text-muted-foreground">
         The orchestration engine is the runtime backbone of 3A Studio. It manages
         request routing across the agent hierarchy, enforces communication
         patterns defined by edges, handles failures gracefully, and ensures
@@ -20,10 +20,10 @@ export function OrchestrationPage() {
       </p>
 
       <div>
-        <h3 className="mb-2 text-base font-semibold text-text-primary">
+        <h3 className="mb-2 text-base font-semibold text-foreground">
           Coordination Patterns
         </h3>
-        <ul className="space-y-1.5 text-sm text-text-secondary">
+        <ul className="space-y-1.5 text-sm text-muted-foreground">
           <li className="flex gap-2">
             <span className="text-brand-accent shrink-0">Fan-out</span>
             One Coordinator dispatches tasks to multiple Managers in parallel
@@ -44,10 +44,10 @@ export function OrchestrationPage() {
       </div>
 
       <div>
-        <h3 className="mb-2 text-base font-semibold text-text-primary">
+        <h3 className="mb-2 text-base font-semibold text-foreground">
           Error Handling
         </h3>
-        <p className="text-sm leading-relaxed text-text-secondary">
+        <p className="text-sm leading-relaxed text-muted-foreground">
           When an agent fails, the orchestrator evaluates the error severity and
           applies the configured strategy: retry with backoff, fallback to a
           backup agent, escalate to the parent layer, or abort the pipeline. All
@@ -56,10 +56,10 @@ export function OrchestrationPage() {
       </div>
 
       <div>
-        <h3 className="mb-2 text-base font-semibold text-text-primary">
+        <h3 className="mb-2 text-base font-semibold text-foreground">
           Retry Logic
         </h3>
-        <p className="text-sm leading-relaxed text-text-secondary">
+        <p className="text-sm leading-relaxed text-muted-foreground">
           Retries use exponential backoff starting at 1 second with a configurable
           max (default 3 retries, 10s max backoff). Transient errors (rate limits,
           timeouts) are retried automatically. Permanent errors (invalid input,

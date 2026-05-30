@@ -5,15 +5,15 @@ export function ScoringFormulasPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-text-primary">
+        <h2 className="text-xl font-semibold text-foreground">
           Scoring Formulas
         </h2>
-        <p className="mt-1 text-sm text-text-muted">
+        <p className="mt-1 text-sm text-muted-foreground">
           Evaluate agent and prompt quality programmatically
         </p>
       </div>
 
-      <p className="text-sm leading-relaxed text-text-secondary">
+      <p className="text-sm leading-relaxed text-muted-foreground">
         3A Studio includes a formula-based scoring engine that evaluates agents
         and prompts across multiple dimensions. Formulas are expressed as
         weighted expressions and can reference any of the six quality dimensions
@@ -21,10 +21,10 @@ export function ScoringFormulasPage() {
       </p>
 
       <div>
-        <h3 className="mb-2 text-base font-semibold text-text-primary">
+        <h3 className="mb-2 text-base font-semibold text-foreground">
           Formula Syntax
         </h3>
-        <p className="text-sm leading-relaxed text-text-secondary">
+        <p className="text-sm leading-relaxed text-muted-foreground">
           Formulas use a simple expression language. Dimension names are
           identifiers, numeric constants are supported, and the standard
           arithmetic operators (+, -, *, /) work as expected. Parentheses
@@ -50,10 +50,10 @@ adjustedScore = overall - max(0, (10 - Safety) * 0.5)`}
       />
 
       <div>
-        <h3 className="mb-2 text-base font-semibold text-text-primary">
+        <h3 className="mb-2 text-base font-semibold text-foreground">
           How Formulas Are Evaluated
         </h3>
-        <ul className="space-y-1.5 text-sm text-text-secondary">
+        <ul className="space-y-1.5 text-sm text-muted-foreground">
           <li className="flex gap-2">
             <span className="text-brand-accent shrink-0">1.</span>
             Each dimension is scored 0-10 by the evaluation engine

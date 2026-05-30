@@ -10,7 +10,7 @@ export function CtaSection() {
   const inView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section id="pricing" className="bg-midnight-base py-20 sm:py-28">
+    <section id="pricing" className="bg-background py-20 sm:py-28">
       <motion.div
         ref={ref}
         initial={{ opacity: 0, y: 24 }}
@@ -18,11 +18,11 @@ export function CtaSection() {
         transition={{ duration: 0.6 }}
         className="mx-auto max-w-2xl px-4 sm:px-6"
       >
-        <div className="rounded-xl border border-dashed border-brand-accent/30 bg-midnight-card/50 p-8 text-center sm:p-12">
-          <h2 className="text-2xl font-bold text-text-primary sm:text-3xl">
+        <div className="rounded-xl border border-dashed border-brand-accent/30 bg-card/50 p-8 text-center sm:p-12">
+          <h2 className="text-2xl font-bold text-foreground sm:text-3xl">
             Ready to build intelligent systems?
           </h2>
-          <p className="mx-auto mt-4 max-w-md text-text-secondary">
+          <p className="mx-auto mt-4 max-w-md text-muted-foreground">
             Start designing multi-agent workflows today with our open-source visual IDE.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -34,7 +34,7 @@ export function CtaSection() {
             </Link>
             <a
               href="#"
-              className="flex h-11 items-center gap-2 rounded-lg border border-midnight-border px-6 text-sm font-medium text-text-secondary transition-colors hover:bg-midnight-card hover:text-text-primary"
+              className="flex h-11 items-center gap-2 rounded-lg border border-border px-6 text-sm font-medium text-muted-foreground transition-colors hover:bg-card hover:text-foreground"
             >
               <BookOpen className="h-4 w-4" />
               Read Documentation

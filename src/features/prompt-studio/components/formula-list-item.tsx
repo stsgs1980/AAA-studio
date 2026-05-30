@@ -21,17 +21,17 @@ export function FormulaListItem({ formula, onSelect }: FormulaListItemProps) {
   const catColor = CATEGORY_COLORS[formula.category] ?? CATEGORY_COLORS.structure;
 
   return (
-    <div className="flex items-center gap-4 rounded-xl border border-midnight-border bg-midnight-card px-4 py-3 hover:border-brand-accent/30 transition-colors">
+    <div className="flex items-center gap-4 rounded-xl border border-border bg-card px-4 py-3 hover:border-brand-accent/30 transition-colors">
       {/* Info */}
       <div className="flex-1 min-w-0 flex items-center gap-3">
         <span className="text-base font-bold text-brand-accent shrink-0">
           {formula.acronym}
         </span>
         <div className="min-w-0">
-          <span className="text-sm font-medium text-text-primary">
+          <span className="text-sm font-medium text-foreground">
             {formula.name}
           </span>
-          <p className="text-xs text-text-muted truncate max-w-md">
+          <p className="text-xs text-muted-foreground truncate max-w-md">
             {formula.description}
           </p>
         </div>
