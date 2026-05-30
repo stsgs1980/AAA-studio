@@ -25,8 +25,18 @@ Thumbs.db
 *.swp
 *.swo
 
-# Embedded repos
+# Embedded / donor repos (NOT part of AAA Studio)
+3a-studio/
+3a-studio-mas/
+Flow-Studio-Pro/
+P-MAS-architector/
+Zai-agent-toolkit/
+prompting-v0.0/
 StsDev-Wiki/
+agent-ctx/
+docs/
+_3a-studio-bare/
+_3a-studio-mas-bare/
 
 # Prisma
 prisma/*.db
