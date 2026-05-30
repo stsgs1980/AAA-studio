@@ -972,3 +972,24 @@ Work Log:
 
 Stage Summary:
 - ESLint работает корректно, Wave 0 полностью завершена
+---
+Task ID: 0.4
+Agent: main
+Task: Wave 0.4 -- Zod Validation + Unified API Error Handling
+
+Work Log:
+- Fixed tf-idf.ts: replaced `new RegExp(String.fromCharCode(...))` hack with clean regex literal `/[^a-z0-9а-яё\s]/g`
+- Verified `eval-helpers.ts` `new RegExp(r.pattern!, 'im')` is legitimate runtime usage, not ESLint bypass
+- Fixed 7 unused import warnings across API routes (created, success, BadRequest, NextResponse)
+- Connected all 32 API routes to @/lib/api-error (handleError, success, created, paginate, BadRequest, NotFound, Unauthorized, Forbidden, Conflict)
+- Connected all CRUD routes to @/lib/validations Zod schemas
+- Replaced all manual NextResponse.json({error...}) with AppError throws + handleError
+- Removed console.error from API routes (centralized in handleError)
+- Verified ESLint: 0 errors, build: passes
+
+Stage Summary:
+- 70 files changed, +277/-294
+- All 32 API routes now use unified error handling
+- All CRUD routes use Zod validation
+- Commit: bcd9f81 pushed to local-bare
+- GitHub push pending: needs PAT (previous token revoked)
