@@ -1,5 +1,5 @@
 import { db } from '@/lib/db';
-import { NextResponse } from 'next/server';
+import { handleError, success } from '@/lib/api-error';
 import { fetchCoreCounts, resolvePerformers, fetchHourlyExecutions, fetchHeatmap, fetchSkillDistribution } from './helpers';
 
 export async function GET() {
@@ -34,7 +34,7 @@ export async function GET() {
       status: ex.status, duration: ex.duration, tokensUsed: ex.tokensUsed,
     }));
 
-    return NextResponse.json({
+    return success({
       agents: { total: a.totalAgents, active: a.activeAgents, idle: a.inactiveAgents, draft: a.draftAgents },
       executions: { total: a.totalExecutions, completed: a.completedExecutions, failed: a.failedExecutions, running: a.runningExecutions, successRate },
       avgDuration: avgDuration?._avg?.duration ?? null,
@@ -48,7 +48,6 @@ export async function GET() {
       meta: { skills: a.skills, pipelines: a.pipelines },
     });
   } catch (error) {
-    console.error('Failed to fetch dashboard stats:', error);
-    return NextResponse.json({ error: 'Failed to fetch dashboard stats' }, { status: 500 });
+    return handleError(error);
   }
 }

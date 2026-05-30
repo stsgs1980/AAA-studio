@@ -1,12 +1,15 @@
 import { db } from '@/lib/db';
-import { NextResponse } from 'next/server';
+import { handleError, success, created, paginate } from '@/lib/api-error';
+import { agentCreateSchema, agentQuerySchema, paginationSchema } from '@/lib/validations';
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const search = searchParams.get('search')?.trim() || '';
-    const group = searchParams.get('group') || '';
-    const status = searchParams.get('status') || '';
+    const filter = agentQuerySchema.parse(Object.fromEntries(searchParams));
+    const pag = paginationSchema.parse(Object.fromEntries(searchParams));
+    const search = filter.search?.trim() || '';
+    const group = filter.group || '';
+    const status = filter.status || '';
     const includeExecutions = searchParams.get('executions') === 'true';
 
     const where: Record<string, unknown> = {};
@@ -20,6 +23,7 @@ export async function GET(request: Request) {
     if (group) where.roleGroup = group;
     if (status) where.status = status;
 
+    const total = await db.agent.count({ where });
     const agents = await db.agent.findMany({
       where,
       include: {
@@ -28,31 +32,25 @@ export async function GET(request: Request) {
           executions: { select: { id: true, status: true, duration: true, startedAt: true }, take: 5, orderBy: { startedAt: 'desc' } },
         } : {}),
       },
+      skip: (pag.page - 1) * pag.pageSize,
+      take: pag.pageSize,
       orderBy: { createdAt: 'asc' },
     });
 
-    const count = await db.agent.count({ where });
-
-    return NextResponse.json({ agents, count });
+    return paginate(agents, total, pag.page, pag.pageSize);
   } catch (error) {
-    console.error('Failed to fetch agents:', error);
-    return NextResponse.json({ error: 'Failed to fetch agents' }, { status: 500 });
+    return handleError(error);
   }
 }
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-
-    if (!body.name?.trim()) {
-      return NextResponse.json({ error: 'Name is required' }, { status: 400 });
-    }
-
+    const body = agentCreateSchema.parse(await request.json());
     const agent = await db.agent.create({
       data: {
-        name: body.name.trim(),
+        name: body.name,
         role: body.role?.trim() || '',
-        roleGroup: body.group || 'specialist',
+        roleGroup: body.roleGroup || 'specialist',
         formula: body.formula || '',
         avatar: body.avatar || '',
         status: body.status || 'draft',
@@ -68,9 +66,8 @@ export async function POST(request: Request) {
       },
     });
 
-    return NextResponse.json(agent, { status: 201 });
+    return created(agent);
   } catch (error) {
-    console.error('Failed to create agent:', error);
-    return NextResponse.json({ error: 'Failed to create agent' }, { status: 500 });
+    return handleError(error);
   }
 }

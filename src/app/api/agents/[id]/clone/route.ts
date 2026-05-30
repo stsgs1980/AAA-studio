@@ -1,5 +1,5 @@
 import { db } from '@/lib/db';
-import { NextResponse } from 'next/server';
+import { handleError, created, NotFound } from '@/lib/api-error';
 
 export async function POST(
   _request: Request,
@@ -9,9 +9,7 @@ export async function POST(
     const { id } = await params;
 
     const original = await db.agent.findUnique({ where: { id } });
-    if (!original) {
-      return NextResponse.json({ error: 'Agent not found' }, { status: 404 });
-    }
+    if (!original) throw NotFound('Agent not found');
 
     const clone = await db.agent.create({
       data: {
@@ -33,9 +31,8 @@ export async function POST(
       },
     });
 
-    return NextResponse.json(clone, { status: 201 });
+    return created(clone);
   } catch (error) {
-    console.error('Failed to clone agent:', error);
-    return NextResponse.json({ error: 'Failed to clone agent' }, { status: 500 });
+    return handleError(error);
   }
 }

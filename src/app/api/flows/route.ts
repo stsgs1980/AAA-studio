@@ -1,43 +1,40 @@
-import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { handleError, success, created, paginate } from '@/lib/api-error';
+import { flowCreateSchema, paginationSchema } from '@/lib/validations';
 
 /** GET /api/flows — list all flows (latest first). */
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const url = new URL(request.url);
+    const query = paginationSchema.parse(Object.fromEntries(url.searchParams));
+    const total = await db.flow.count();
     const flows = await db.flow.findMany({
+      skip: (query.page - 1) * query.pageSize,
+      take: query.pageSize,
       orderBy: { updatedAt: 'desc' },
     });
-    return NextResponse.json(flows);
+    return paginate(flows, total, query.page, query.pageSize);
   } catch (error) {
-    console.error('[GET /api/flows]', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch flows' },
-      { status: 500 },
-    );
+    return handleError(error);
   }
 }
 
 /** POST /api/flows — create a new flow. */
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const { name, description, nodes, edges } = body;
+    const body = flowCreateSchema.parse(await request.json());
 
     const flow = await db.flow.create({
       data: {
-        name: name ?? 'Untitled Flow',
-        description: description ?? '',
-        nodes: JSON.stringify(nodes ?? []),
-        edges: JSON.stringify(edges ?? []),
+        name: body.name ?? 'Untitled Flow',
+        description: body.description ?? '',
+        nodes: JSON.stringify(body.nodes ?? []),
+        edges: JSON.stringify(body.edges ?? []),
       },
     });
 
-    return NextResponse.json(flow, { status: 201 });
+    return created(flow);
   } catch (error) {
-    console.error('[POST /api/flows]', error);
-    return NextResponse.json(
-      { error: 'Failed to create flow' },
-      { status: 500 },
-    );
+    return handleError(error);
   }
 }

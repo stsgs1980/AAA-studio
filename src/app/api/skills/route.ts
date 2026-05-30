@@ -1,10 +1,18 @@
-import { db } from "@/lib/db";
-import { NextResponse } from "next/server";
+import { db } from '@/lib/db';
+import { handleError, success, created, paginate } from '@/lib/api-error';
+import { skillCreateSchema, paginationSchema } from '@/lib/validations';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const skills = await db.skill.findMany({ orderBy: { updatedAt: "desc" } });
-    return NextResponse.json(
+    const url = new URL(request.url);
+    const query = paginationSchema.parse(Object.fromEntries(url.searchParams));
+    const total = await db.skill.count();
+    const skills = await db.skill.findMany({
+      skip: (query.page - 1) * query.pageSize,
+      take: query.pageSize,
+      orderBy: { updatedAt: 'desc' },
+    });
+    return paginate(
       skills.map((s) => ({
         ...s,
         inputSchema: JSON.parse(s.inputSchema),
@@ -12,37 +20,39 @@ export async function GET() {
         tags: JSON.parse(s.tags),
         standardIds: JSON.parse(s.standardIds),
       })),
+      total,
+      query.page,
+      query.pageSize,
     );
   } catch (error) {
-    console.error("[GET /api/skills]", error);
-    return NextResponse.json({ error: "Failed to fetch skills" }, { status: 500 });
+    return handleError(error);
   }
 }
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const { name, category, description, inputSchema, outputSchema, code, tests, tags, standardIds } = body;
-    if (!name?.trim()) return NextResponse.json({ error: "Name is required" }, { status: 400 });
+    const body = skillCreateSchema.parse(await request.json());
     const skill = await db.skill.create({
       data: {
-        name: name.trim(),
-        category: category ?? "general",
-        description: description ?? "",
-        inputSchema: JSON.stringify(inputSchema ?? {}),
-        outputSchema: JSON.stringify(outputSchema ?? {}),
-        code: code ?? "",
-        tests: tests ?? "",
-        tags: JSON.stringify(tags ?? []),
-        standardIds: JSON.stringify(standardIds ?? []),
+        name: body.name,
+        category: body.category ?? 'general',
+        description: body.description ?? '',
+        inputSchema: JSON.stringify(body.inputSchema ?? {}),
+        outputSchema: JSON.stringify(body.outputSchema ?? {}),
+        code: body.code ?? '',
+        tests: body.tests ?? '',
+        tags: JSON.stringify(body.tags ?? []),
+        standardIds: JSON.stringify(body.standardIds ?? []),
       },
     });
-    return NextResponse.json(
-      { ...skill, inputSchema: JSON.parse(skill.inputSchema), outputSchema: JSON.parse(skill.outputSchema), tags: JSON.parse(skill.tags), standardIds: JSON.parse(skill.standardIds) },
-      { status: 201 },
-    );
+    return created({
+      ...skill,
+      inputSchema: JSON.parse(skill.inputSchema),
+      outputSchema: JSON.parse(skill.outputSchema),
+      tags: JSON.parse(skill.tags),
+      standardIds: JSON.parse(skill.standardIds),
+    });
   } catch (error) {
-    console.error("[POST /api/skills]", error);
-    return NextResponse.json({ error: "Failed to create skill" }, { status: 500 });
+    return handleError(error);
   }
 }

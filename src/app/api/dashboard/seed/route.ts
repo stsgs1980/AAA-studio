@@ -1,5 +1,5 @@
 import type { NextRequest } from 'next/server';
-import { NextResponse } from 'next/server';
+import { handleError, success, Forbidden, BadRequest } from '@/lib/api-error';
 import { db } from '@/lib/db';
 
 function requireAdmin(request: NextRequest): boolean {
@@ -11,6 +11,10 @@ function requireAdmin(request: NextRequest): boolean {
   } catch {
     return false;
   }
+}
+
+function hoursAgo(h: number): Date {
+  return new Date(Date.now() - h * 60 * 60 * 1000);
 }
 
 const AGENTS = [
@@ -25,11 +29,12 @@ const AGENTS = [
   { name: 'UX Writer', role: 'Writes UI microcopy and documentation', roleGroup: 'creator', status: 'draft', model: 'gpt-4', temperature: 0.7, skills: JSON.stringify(['copywriting', 'ux-design']), systemPrompt: 'You are a UX writer.' },
   { name: 'Security Auditor', role: 'Performs security audits and penetration tests', roleGroup: 'reviewer', status: 'draft', model: 'gpt-4', temperature: 0.1, skills: JSON.stringify(['security', 'pentesting']), systemPrompt: 'You are a security auditor.' },
 ];
-const HIERARCHY: Record<number, number | null> = { // index → parentId index (0-based)
-  1: 0, 2: 0, 3: 0,  // Analyst, Reviewer, Creator under Orchestrator
-  4: 7, 5: 7,         // Data Engineer, QA under Product Manager
-  6: 0,               // DevOps under Orchestrator
-  8: 3, 9: 2,         // UX Writer under Creator, Security under Reviewer
+
+const HIERARCHY: Record<number, number | null> = {
+  1: 0, 2: 0, 3: 0,
+  4: 7, 5: 7,
+  6: 0,
+  8: 3, 9: 2,
 };
 
 const FLOWS = [
@@ -39,33 +44,24 @@ const FLOWS = [
   { name: 'Data Analysis', description: 'Automated data processing and insight extraction', status: 'active', nodes: JSON.stringify([{ id: 's1', type: 'start', position: { x: 250, y: 50 }, data: {} }, { id: 'l1', type: 'llm', position: { x: 250, y: 180 }, data: { systemPrompt: 'Analyze the data.' } }, { id: 'o1', type: 'output', position: { x: 250, y: 310 }, data: {} }, { id: 'e1', type: 'end', position: { x: 250, y: 420 }, data: {} }]), edges: JSON.stringify([{ id: 'ea', source: 's1', target: 'l1' }, { id: 'eb', source: 'l1', target: 'o1' }, { id: 'ec', source: 'o1', target: 'e1' }]) },
 ];
 
-function hoursAgo(h: number): Date {
-  return new Date(Date.now() - h * 60 * 60 * 1000);
-}
 const STATUSES: Array<'completed' | 'failed'> = ['completed', 'completed', 'completed', 'completed', 'failed'];
 
-/** POST /api/dashboard/seed — populate DB with realistic sample data. */
+/** POST /api/dashboard/seed -- populate DB with realistic sample data. */
 export async function POST(request: NextRequest) {
   if (!requireAdmin(request)) {
-    return NextResponse.json({ error: 'Forbidden: admin only' }, { status: 403 });
+    throw Forbidden('Admin only');
   }
 
   try {
     const existing = await db.agent.count();
     if (existing > 0) {
-      return NextResponse.json({ message: 'Database already has data — use Reset first', seeded: false });
+      return success({ message: 'Database already has data -- use Reset first', seeded: false });
     }
 
-    // Create agents with hierarchy
     const createdAgents = await Promise.all(
-      AGENTS.map((a, i) =>
-        db.agent.create({
-          data: { ...a, parentId: HIERARCHY[i] !== undefined && HIERARCHY[i] !== null ? undefined : undefined },
-        }),
-      ),
+      AGENTS.map((a) => db.agent.create({ data: a })),
     );
 
-    // Wire up parent relationships
     for (const [childIdx, parentIdx] of Object.entries(HIERARCHY)) {
       if (parentIdx === null) continue;
       const child = createdAgents[Number(childIdx)];
@@ -73,7 +69,6 @@ export async function POST(request: NextRequest) {
       await db.agent.update({ where: { id: child.id }, data: { parentId: parent.id } });
     }
 
-    // Create executions spread across last 24 hours
     const executions: Array<{ agentId: string; status: string; input: string; output: string; duration: number; tokensUsed: number; startedAt: Date }> = [];
     const execQueries: string[] = [
       '{"query": "Analyze market trends for AI agents in 2026"}',
@@ -103,11 +98,8 @@ export async function POST(request: NextRequest) {
     }
 
     await db.agentExecution.createMany({ data: executions });
-
-    // Create flows
     await Promise.all(FLOWS.map((f) => db.flow.create({ data: f })));
 
-    // Create some pipeline executions
     const flows = await db.flow.findMany({ take: 2 });
     for (let i = 0; i < 8; i++) {
       const flow = flows[i % flows.length];
@@ -123,7 +115,6 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Create skills
     const SKILLS = [
       { name: 'Web Search', category: 'integration', description: 'Search the web for real-time information', tags: JSON.stringify(['search', 'web', 'realtime']) },
       { name: 'Code Analysis', category: 'analysis', description: 'Static analysis of source code', tags: JSON.stringify(['code', 'review', 'static']) },
@@ -135,7 +126,7 @@ export async function POST(request: NextRequest) {
     const total = await db.agent.count();
     const execCount = await db.agentExecution.count();
 
-    return NextResponse.json({
+    return success({
       message: 'Database seeded with realistic data',
       seeded: true,
       agents: total,
@@ -143,7 +134,6 @@ export async function POST(request: NextRequest) {
       flows: FLOWS.length,
     });
   } catch (error) {
-    console.error('[POST /api/dashboard/seed]', error);
-    return NextResponse.json({ error: 'Seed failed' }, { status: 500 });
+    return handleError(error);
   }
 }

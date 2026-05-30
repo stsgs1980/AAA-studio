@@ -1,5 +1,6 @@
 import { db } from '@/lib/db';
-import { NextResponse } from 'next/server';
+import { handleError, success, created, NotFound } from '@/lib/api-error';
+import { agentUpdateSchema } from '@/lib/validations';
 
 export async function GET(
   _request: Request,
@@ -16,14 +17,11 @@ export async function GET(
       },
     });
 
-    if (!agent) {
-      return NextResponse.json({ error: 'Agent not found' }, { status: 404 });
-    }
+    if (!agent) throw NotFound('Agent not found');
 
-    return NextResponse.json(agent);
+    return success(agent);
   } catch (error) {
-    console.error('Failed to fetch agent:', error);
-    return NextResponse.json({ error: 'Failed to fetch agent' }, { status: 500 });
+    return handleError(error);
   }
 }
 
@@ -33,19 +31,17 @@ export async function PUT(
 ) {
   try {
     const { id } = await params;
-    const body = await request.json();
+    const body = agentUpdateSchema.parse(await request.json());
 
     const existing = await db.agent.findUnique({ where: { id } });
-    if (!existing) {
-      return NextResponse.json({ error: 'Agent not found' }, { status: 404 });
-    }
+    if (!existing) throw NotFound('Agent not found');
 
     const agent = await db.agent.update({
       where: { id },
       data: {
         name: body.name?.trim(),
         role: body.role?.trim(),
-        roleGroup: body.group ?? body.roleGroup,
+        roleGroup: body.roleGroup,
         formula: body.formula,
         avatar: body.avatar,
         status: body.status,
@@ -61,10 +57,9 @@ export async function PUT(
       },
     });
 
-    return NextResponse.json(agent);
+    return success(agent);
   } catch (error) {
-    console.error('Failed to update agent:', error);
-    return NextResponse.json({ error: 'Failed to update agent' }, { status: 500 });
+    return handleError(error);
   }
 }
 
@@ -76,17 +71,14 @@ export async function DELETE(
     const { id } = await params;
 
     const existing = await db.agent.findUnique({ where: { id } });
-    if (!existing) {
-      return NextResponse.json({ error: 'Agent not found' }, { status: 404 });
-    }
+    if (!existing) throw NotFound('Agent not found');
 
     await db.agent.updateMany({ where: { parentId: id }, data: { parentId: null } });
     await db.agentExecution.deleteMany({ where: { agentId: id } });
     await db.agent.delete({ where: { id } });
 
-    return NextResponse.json({ message: 'Agent deleted', id });
+    return success({ message: 'Agent deleted', id });
   } catch (error) {
-    console.error('Failed to delete agent:', error);
-    return NextResponse.json({ error: 'Failed to delete agent' }, { status: 500 });
+    return handleError(error);
   }
 }

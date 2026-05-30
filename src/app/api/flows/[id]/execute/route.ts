@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { NextResponse } from "next/server";
+import { handleError, success, NotFound, BadRequest } from "@/lib/api-error";
 import { getActiveProvider } from "@/lib/llm";
 import { topoSort, gatherInputs, type FlowNode, type FlowEdge } from "./flow-utils";
 import { execNode } from "./node-exec";
@@ -28,19 +28,14 @@ export async function POST(request: Request, { params }: Params) {
   const { id } = await params;
   try {
     const flow = await db.flow.findUnique({ where: { id } });
-    if (!flow) return NextResponse.json({ error: "Flow not found" }, { status: 404 });
+    if (!flow) throw NotFound('Flow not found');
 
     const nodes: FlowNode[] = JSON.parse(flow.nodes);
     const edges: FlowEdge[] = JSON.parse(flow.edges);
-    if (!nodes.length) return NextResponse.json({ error: "Flow has no nodes" }, { status: 400 });
+    if (!nodes.length) throw BadRequest('Flow has no nodes');
 
     const active = await getActiveProvider();
-    if (!active) {
-      return NextResponse.json(
-        { error: 'LLM not configured', message: 'Go to Settings to configure LLM.' },
-        { status: 422 },
-      );
-    }
+    if (!active) throw BadRequest('LLM not configured. Go to Settings to configure LLM.');
 
     const execution = await db.pipelineExecution.create({
       data: { flowId: id, status: "running", startedAt: new Date() },
@@ -58,11 +53,9 @@ export async function POST(request: Request, { params }: Params) {
       },
     });
 
-    return NextResponse.json({ executionId: execution.id, ...result });
+    return success({ executionId: execution.id, ...result });
   } catch (error) {
-    const msg = error instanceof Error ? error.message : String(error);
-    console.error("[POST /api/flows/:id/execute]", msg);
-    return NextResponse.json({ error: msg }, { status: 500 });
+    return handleError(error);
   }
 }
 

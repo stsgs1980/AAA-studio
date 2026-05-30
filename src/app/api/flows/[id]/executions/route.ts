@@ -1,5 +1,5 @@
 import { db } from '@/lib/db';
-import { NextResponse } from 'next/server';
+import { handleError, success } from '@/lib/api-error';
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -11,9 +11,8 @@ export async function GET(_request: Request, { params }: Params) {
       orderBy: { startedAt: 'desc' },
       take: 50,
     });
-    return NextResponse.json(executions);
+    return success(executions);
   } catch (error) {
-    console.error(`[GET /api/flows/:id/executions]`, error);
-    return NextResponse.json({ error: 'Failed to fetch executions' }, { status: 500 });
+    return handleError(error);
   }
 }

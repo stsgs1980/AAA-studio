@@ -1,5 +1,6 @@
-import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { handleError, success, NotFound } from '@/lib/api-error';
+import { flowUpdateSchema } from '@/lib/validations';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -8,20 +9,14 @@ export async function GET(_request: Request, { params }: RouteParams) {
   try {
     const { id } = await params;
     const flow = await db.flow.findUnique({ where: { id } });
-    if (!flow) {
-      return NextResponse.json({ error: 'Not found' }, { status: 404 });
-    }
-    return NextResponse.json({
+    if (!flow) throw NotFound('Flow not found');
+    return success({
       ...flow,
       nodes: JSON.parse(flow.nodes),
       edges: JSON.parse(flow.edges),
     });
   } catch (error) {
-    console.error('[GET /api/flows/:id]', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch flow' },
-      { status: 500 },
-    );
+    return handleError(error);
   }
 }
 
@@ -29,24 +24,19 @@ export async function GET(_request: Request, { params }: RouteParams) {
 export async function PUT(request: Request, { params }: RouteParams) {
   try {
     const { id } = await params;
-    const body = await request.json();
-    const { name, description, nodes, edges, status } = body;
+    const body = flowUpdateSchema.parse(await request.json());
 
     const data: Record<string, unknown> = {};
-    if (name != null) data.name = name;
-    if (description != null) data.description = description;
-    if (nodes != null) data.nodes = JSON.stringify(nodes);
-    if (edges != null) data.edges = JSON.stringify(edges);
-    if (status != null) data.status = status;
+    if (body.name != null) data.name = body.name;
+    if (body.description != null) data.description = body.description;
+    if (body.nodes != null) data.nodes = JSON.stringify(body.nodes);
+    if (body.edges != null) data.edges = JSON.stringify(body.edges);
+    if (body.status != null) data.status = body.status;
 
     const flow = await db.flow.update({ where: { id }, data });
-    return NextResponse.json(flow);
+    return success(flow);
   } catch (error) {
-    console.error('[PUT /api/flows/:id]', error);
-    return NextResponse.json(
-      { error: 'Failed to update flow' },
-      { status: 500 },
-    );
+    return handleError(error);
   }
 }
 
@@ -55,12 +45,8 @@ export async function DELETE(_request: Request, { params }: RouteParams) {
   try {
     const { id } = await params;
     await db.flow.delete({ where: { id } });
-    return NextResponse.json({ success: true });
+    return success({ success: true });
   } catch (error) {
-    console.error('[DELETE /api/flows/:id]', error);
-    return NextResponse.json(
-      { error: 'Failed to delete flow' },
-      { status: 500 },
-    );
+    return handleError(error);
   }
 }

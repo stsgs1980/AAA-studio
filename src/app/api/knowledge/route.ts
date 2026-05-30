@@ -1,5 +1,6 @@
 import { db } from '@/lib/db';
-import { NextResponse } from 'next/server';
+import { handleError, success, created } from '@/lib/api-error';
+import { knowledgeCreateSchema } from '@/lib/validations';
 
 export async function GET() {
   try {
@@ -7,30 +8,24 @@ export async function GET() {
       orderBy: { updatedAt: 'desc' },
       include: { _count: { select: { documents: true } } },
     });
-    return NextResponse.json(collections);
+    return success(collections);
   } catch (error) {
-    console.error('[GET /api/knowledge]', error);
-    return NextResponse.json({ error: 'Failed to fetch collections' }, { status: 500 });
+    return handleError(error);
   }
 }
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const { name, description, tags } = body;
-    if (!name?.trim()) {
-      return NextResponse.json({ error: 'Name is required' }, { status: 400 });
-    }
+    const body = knowledgeCreateSchema.parse(await request.json());
     const collection = await db.knowledgeCollection.create({
       data: {
-        name: name.trim(),
-        description: description ?? '',
-        tags: JSON.stringify(tags ?? []),
+        name: body.name.trim(),
+        description: body.description ?? '',
+        tags: JSON.stringify(body.tags ?? []),
       },
     });
-    return NextResponse.json(collection, { status: 201 });
+    return created(collection);
   } catch (error) {
-    console.error('[POST /api/knowledge]', error);
-    return NextResponse.json({ error: 'Failed to create collection' }, { status: 500 });
+    return handleError(error);
   }
 }

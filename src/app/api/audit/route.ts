@@ -1,5 +1,5 @@
 import { db } from '@/lib/db';
-import { NextResponse } from 'next/server';
+import { handleError, success, created, BadRequest } from '@/lib/api-error';
 
 export async function GET(request: Request) {
   try {
@@ -14,10 +14,9 @@ export async function GET(request: Request) {
       orderBy: { timestamp: 'desc' },
       take: limit,
     });
-    return NextResponse.json(logs);
+    return success(logs);
   } catch (error) {
-    console.error('[GET /api/audit]', error);
-    return NextResponse.json({ error: 'Failed to fetch audit logs' }, { status: 500 });
+    return handleError(error);
   }
 }
 
@@ -25,15 +24,12 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { action, entityType, entityId, userId, details } = body;
-    if (!action || !entityType) {
-      return NextResponse.json({ error: 'action and entityType are required' }, { status: 400 });
-    }
+    if (!action || !entityType) throw BadRequest('action and entityType are required');
     const log = await db.auditLog.create({
       data: { action, entityType, entityId: entityId ?? '', userId: userId ?? null, details: details ? JSON.stringify(details) : null },
     });
-    return NextResponse.json(log, { status: 201 });
+    return created(log);
   } catch (error) {
-    console.error('[POST /api/audit]', error);
-    return NextResponse.json({ error: 'Failed to create audit log' }, { status: 500 });
+    return handleError(error);
   }
 }

@@ -1,5 +1,6 @@
-import { db } from "@/lib/db";
-import { NextResponse } from "next/server";
+import { db } from '@/lib/db';
+import { NextResponse } from 'next/server';
+import { handleError, NotFound } from '@/lib/api-error';
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -12,7 +13,7 @@ export async function GET(_request: Request, { params }: Params) {
   try {
     const { id } = await params;
     const skill = await db.skill.findUnique({ where: { id } });
-    if (!skill) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    if (!skill) throw NotFound('Skill not found');
 
     const tags: string[] = JSON.parse(skill.tags);
     const inputSchema: Record<string, unknown> = JSON.parse(skill.inputSchema);
@@ -43,8 +44,7 @@ export async function GET(_request: Request, { params }: Params) {
       },
     });
   } catch (error) {
-    console.error("[GET /api/skills/:id/export]", error);
-    return NextResponse.json({ error: "Export failed" }, { status: 500 });
+    return handleError(error);
   }
 }
 

@@ -1,5 +1,5 @@
 import { db } from '@/lib/db';
-import { NextResponse } from 'next/server';
+import { handleError, created, NotFound, BadRequest } from '@/lib/api-error';
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -7,7 +7,7 @@ export async function POST(request: Request, { params }: Params) {
   try {
     const { id } = await params;
     const collection = await db.knowledgeCollection.findUnique({ where: { id } });
-    if (!collection) return NextResponse.json({ error: 'Collection not found' }, { status: 404 });
+    if (!collection) throw NotFound('Collection not found');
 
     const formData = await request.formData();
     const file = formData.get('file') as File | null;
@@ -20,17 +20,13 @@ export async function POST(request: Request, { params }: Params) {
     if (file) {
       fileType = file.name.split('.').pop()?.toLowerCase() ?? 'txt';
       if (!['txt', 'md', 'pdf', 'docx'].includes(fileType)) {
-        return NextResponse.json({ error: `Unsupported file type: ${fileType}` }, { status: 400 });
+        throw BadRequest(`Unsupported file type: ${fileType}`);
       }
       content = await file.text();
-    } else {
-      // Body already consumed by formData — no file case
-      content = '';
-      fileType = 'txt';
     }
 
     if (!content.trim() && !file) {
-      return NextResponse.json({ error: 'Content or file is required' }, { status: 400 });
+      throw BadRequest('Content or file is required');
     }
 
     const doc = await db.knowledgeDocument.create({
@@ -43,9 +39,8 @@ export async function POST(request: Request, { params }: Params) {
       },
     });
 
-    return NextResponse.json(doc, { status: 201 });
+    return created(doc);
   } catch (error) {
-    console.error('[POST /api/knowledge/:id/documents]', error);
-    return NextResponse.json({ error: 'Failed to add document' }, { status: 500 });
+    return handleError(error);
   }
 }

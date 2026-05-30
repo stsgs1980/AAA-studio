@@ -4,6 +4,7 @@
 
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
+import { handleError, success, BadRequest } from "@/lib/api-error";
 import { parseStandardFile } from "@/lib/standards/parse-md";
 
 // TODO: Add authentication check before processing upload (demo mode = no auth)
@@ -14,27 +15,18 @@ export async function POST(request: Request) {
     const file = formData.get("file");
 
     if (!file || !(file instanceof File)) {
-      return NextResponse.json(
-        { success: false, error: { code: "VALIDATION_ERROR", message: "No file provided" } },
-        { status: 400 },
-      );
+      throw BadRequest("No file provided");
     }
 
     if (!file.name.endsWith(".md")) {
-      return NextResponse.json(
-        { success: false, error: { code: "VALIDATION_ERROR", message: "Only .md files are supported" } },
-        { status: 400 },
-      );
+      throw BadRequest("Only .md files are supported");
     }
 
     const content = await file.text();
     const parsed = parseStandardFile(content, file.name);
 
     if (!parsed) {
-      return NextResponse.json(
-        { success: false, error: { code: "PARSE_ERROR", message: "Could not parse standard from file. Ensure it has an > ID: line." } },
-        { status: 400 },
-      );
+      throw BadRequest("Could not parse standard from file. Ensure it has an > ID: line.");
     }
 
     const data = {
@@ -47,7 +39,7 @@ export async function POST(request: Request) {
     };
 
     const existing = await db.standard.findUnique({ where: { id: parsed.id } });
-    let created = 0;
+    let createdCount = 0;
     let updated = 0;
 
     if (existing) {
@@ -55,18 +47,11 @@ export async function POST(request: Request) {
       updated = 1;
     } else {
       await db.standard.create({ data: { id: parsed.id, ...data } });
-      created = 1;
+      createdCount = 1;
     }
 
-    return NextResponse.json({
-      success: true,
-      data: { created, updated, errors: [] },
-    });
+    return success({ created: createdCount, updated, errors: [] });
   } catch (error) {
-    console.error("[POST /api/standards/import]", error);
-    return NextResponse.json(
-      { success: false, error: { code: "INTERNAL_ERROR", message: "Failed to import standard" } },
-      { status: 500 },
-    );
+    return handleError(error);
   }
 }

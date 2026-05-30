@@ -1,5 +1,5 @@
 import type { NextRequest } from 'next/server';
-import { NextResponse } from 'next/server';
+import { handleError, success, Forbidden } from '@/lib/api-error';
 import { db } from '@/lib/db';
 
 function requireAdmin(request: NextRequest): boolean {
@@ -13,10 +13,10 @@ function requireAdmin(request: NextRequest): boolean {
   }
 }
 
-/** POST /api/dashboard/reset — clear all data from all tables. */
+/** POST /api/dashboard/reset -- clear all data from all tables. */
 export async function POST(request: NextRequest) {
   if (!requireAdmin(request)) {
-    return NextResponse.json({ error: 'Forbidden: admin only' }, { status: 403 });
+    throw Forbidden('Admin only');
   }
 
   try {
@@ -39,9 +39,8 @@ export async function POST(request: NextRequest) {
       await (db[model as keyof typeof db] as { deleteMany: () => Promise<unknown> }).deleteMany();
     }
 
-    return NextResponse.json({ message: 'All data cleared' });
+    return success({ message: 'All data cleared' });
   } catch (error) {
-    console.error('[POST /api/dashboard/reset]', error);
-    return NextResponse.json({ error: 'Reset failed' }, { status: 500 });
+    return handleError(error);
   }
 }

@@ -1,27 +1,43 @@
 import { db } from '@/lib/db';
-import { NextResponse } from 'next/server';
+import { handleError, success, created, paginate } from '@/lib/api-error';
+import { standardCreateSchema, paginationSchema } from '@/lib/validations';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const standards = await db.standard.findMany({ orderBy: { updatedAt: 'desc' } });
-    return NextResponse.json(standards.map((s) => ({ ...s, rules: JSON.parse(s.rules) })));
+    const url = new URL(request.url);
+    const query = paginationSchema.parse(Object.fromEntries(url.searchParams));
+    const total = await db.standard.count();
+    const standards = await db.standard.findMany({
+      skip: (query.page - 1) * query.pageSize,
+      take: query.pageSize,
+      orderBy: { updatedAt: 'desc' },
+    });
+    return paginate(
+      standards.map((s) => ({ ...s, rules: JSON.parse(s.rules) })),
+      total,
+      query.page,
+      query.pageSize,
+    );
   } catch (error) {
-    console.error('[GET /api/standards]', error);
-    return NextResponse.json({ error: 'Failed to fetch standards' }, { status: 500 });
+    return handleError(error);
   }
 }
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const { name, category, description, rules, severity, version } = body;
-    if (!name?.trim()) return NextResponse.json({ error: 'Name is required' }, { status: 400 });
+    const body = standardCreateSchema.parse(await request.json());
     const standard = await db.standard.create({
-      data: { name: name.trim(), category: category ?? 'general', description: description ?? '', rules: JSON.stringify(rules ?? []), severity: severity ?? 'info', version: version ?? '1.0.0' },
+      data: {
+        name: body.name,
+        category: body.category ?? 'general',
+        description: body.description ?? '',
+        rules: JSON.stringify(body.rules ?? []),
+        severity: body.severity ?? 'info',
+        version: body.version ?? '1.0.0',
+      },
     });
-    return NextResponse.json({ ...standard, rules: JSON.parse(standard.rules) }, { status: 201 });
+    return created({ ...standard, rules: JSON.parse(standard.rules) });
   } catch (error) {
-    console.error('[POST /api/standards]', error);
-    return NextResponse.json({ error: 'Failed to create standard' }, { status: 500 });
+    return handleError(error);
   }
 }
