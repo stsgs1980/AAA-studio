@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { handleError, success, BadRequest } from '@/lib/api-error';
 
 interface TreeEntry {
   path: string;
@@ -57,7 +57,7 @@ export async function POST(request: Request) {
   try {
     const { url, urls } = await request.json();
     if (!url?.trim()) {
-      return NextResponse.json({ error: 'URL is required' }, { status: 400 });
+      throw BadRequest('URL is required');
     }
     const bodyUrls = urls as string[] | undefined;
 
@@ -78,12 +78,12 @@ export async function POST(request: Request) {
             if (c) parts.push(`\n=== ${fileUrl} ===\n${c}`);
           } catch { /* skip failed */ }
         }
-        return NextResponse.json({ type: 'content', content: parts.join('\n') });
+        return success({ type: 'content', content: parts.join('\n') });
       }
 
       // Recursive tree -- gets ALL files, then filter noise
       const tree = await githubTreeRecursive(owner, repo);
-      return NextResponse.json({
+      return success({
         type: 'repo',
         owner,
         repo,
@@ -98,9 +98,8 @@ export async function POST(request: Request) {
 
     // 2. GitHub raw URL or any other direct file URL
     const content = await githubFile(trimmed);
-    return NextResponse.json({ type: 'content', content });
+    return success({ type: 'content', content });
   } catch (error) {
-    const msg = error instanceof Error ? error.message : 'Failed to fetch';
-    return NextResponse.json({ error: msg }, { status: 500 });
+    return handleError(error);
   }
 }

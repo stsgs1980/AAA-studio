@@ -94,7 +94,7 @@ export function detectIntent(prompt: string): IntentResult {
   const lower = prompt.toLowerCase().trim();
   const wordCount = lower.split(/\s+/).length;
 
-  // Very short input → conversation fallback
+  // Very short input -> conversation fallback
   if (wordCount < 3) {
     return { intent: "conversation", confidence: 0.2, signals: ["too-short"] };
   }

@@ -28,7 +28,7 @@ function toKpis(data: NonNullable<ReturnType<typeof useDashboardData>['data']>):
     },
     {
       label: 'Avg Response',
-      value: dur ? String(Math.round(dur / 100) / 10) : '—',
+      value: dur ? String(Math.round(dur / 100) / 10) : '--',
       suffix: dur ? 's' : '',
       mono: true,
     },

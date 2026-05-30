@@ -2,7 +2,7 @@
 // Unified Standard + Skill types (single source of truth)
 // ============================================================================
 
-/** StandardRule — unified definition with name, description, pattern, enabled */
+/** StandardRule -- unified definition with name, description, pattern, enabled */
 export interface StandardRule {
   id: string;
   name: string;
@@ -46,7 +46,7 @@ export function generateRuleId(): string {
   return `rule-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
 }
 
-/** Skill definition — linked to Standards via standardIds */
+/** Skill definition -- linked to Standards via standardIds */
 export interface Skill {
   id: string;
   name: string;

@@ -1,5 +1,5 @@
 import { db } from '@/lib/db';
-import { handleError, success, created, NotFound } from '@/lib/api-error';
+import { handleError, success, NotFound } from '@/lib/api-error';
 import { agentUpdateSchema } from '@/lib/validations';
 
 export async function GET(

@@ -1,7 +1,7 @@
 import type { PromptFramework, FrameworkStep } from "@stsgs/shared";
 import { FRAMEWORKS_DATA } from "./data";
 
-// ─── Backward compat ──────────────────────────────────────────
+// -- Backward compat ---------------------
 
 /** @deprecated Use getFrameworks() or PromptFramework from @stsgs/shared */
 export const FRAMEWORKS = FRAMEWORKS_DATA;
@@ -12,7 +12,7 @@ export type Framework = PromptFramework;
 /** @deprecated Use FrameworkStep from @stsgs/shared */
 export type FrameworkSection = FrameworkStep;
 
-// ─── Query Functions ──────────────────────────────────────────
+// -- Query Functions ---------------------
 
 /** Returns all registered prompting frameworks. */
 export function getFrameworks(): PromptFramework[] {
@@ -31,7 +31,7 @@ export function getFrameworksByComplexity(
   return FRAMEWORKS_DATA.filter((f) => f.complexity === level);
 }
 
-// ─── Builder ──────────────────────────────────────────────────
+// -- Builder -------------------------
 
 /**
  * Builds a prompt string from a framework's steps and the provided values.

@@ -1,11 +1,11 @@
 /**
  * Lightweight TF-IDF based text search for Knowledge Base.
- * No external dependencies — runs in Node.js (API routes).
+ * No external dependencies -- runs in Node.js (API routes).
  */
 
 interface TermDoc {
   docId: string;
-  terms: Map<string, number>; // term → TF count
+  terms: Map<string, number>; // term -> TF count
 }
 
 interface IDFMap {
@@ -13,10 +13,12 @@ interface IDFMap {
 }
 
 /** Tokenize: lowercase, split on non-alphanumeric, remove short tokens. */
+const TOKEN_PATTERN = /[^a-z0-9а-яё\s]/g;
+
 export function tokenize(text: string): string[] {
   return text
     .toLowerCase()
-    .replace(/[^a-z0-9а-яё\s]/g, " ")
+    .replace(TOKEN_PATTERN, ' ')
     .split(/\s+/)
     .filter((t) => t.length >= 2);
 }

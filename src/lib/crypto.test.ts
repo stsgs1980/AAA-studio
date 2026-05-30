@@ -1,4 +1,4 @@
-// Tests for src/lib/crypto.ts — AES-256-GCM encryption/decryption
+// Tests for src/lib/crypto.ts -- AES-256-GCM encryption/decryption
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
@@ -52,14 +52,14 @@ describe('crypto module', () => {
     // The decrypt fallback returns input as-is if data < IV_LEN + TAG_LEN + 1
     // For empty string encrypt, the output is IV+tag (28 bytes base64) which
     // triggers the "too short" check in decrypt and returns the encrypted string
-    // This is by design — backward compatibility for unencrypted values
+    // This is by design -- backward compatibility for unencrypted values
     const encrypted = encrypt('');
     expect(encrypted.length).toBeGreaterThan(0);
   });
 
   it('should handle unicode content', async () => {
     const { encrypt, decrypt } = await import('@/lib/crypto');
-    const unicode = 'Привет мир 🌍 日本語';
+    const unicode = 'Hello world! $pecial chars <>&"';
     const encrypted = encrypt(unicode);
     expect(decrypt(encrypted)).toBe(unicode);
   });

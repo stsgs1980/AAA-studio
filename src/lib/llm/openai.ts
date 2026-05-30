@@ -1,4 +1,4 @@
-// 3A Studio — OpenAI-compatible LLM provider (OpenAI, OpenRouter, custom)
+// 3A Studio -- OpenAI-compatible LLM provider (OpenAI, OpenRouter, custom)
 
 import type { CallParams } from './client';
 import type { LLMResponse } from './types';

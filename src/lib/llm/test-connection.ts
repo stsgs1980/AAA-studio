@@ -1,4 +1,4 @@
-// 3A Studio — LLM connection test utility
+// 3A Studio -- LLM connection test utility
 
 import { callLLM } from './client';
 import type { ProviderConfig } from './types';

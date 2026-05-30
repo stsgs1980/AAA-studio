@@ -1,4 +1,4 @@
-/** Small inline SVG icons for agent actions — avoids lucide for 2 icons. */
+/** Small inline SVG icons for agent actions -- avoids lucide for 2 icons. */
 
 export function CopyIcon({ className }: { className?: string }) {
   return (

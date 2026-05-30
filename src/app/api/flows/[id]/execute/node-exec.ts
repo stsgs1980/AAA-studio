@@ -1,4 +1,4 @@
-// Flow node execution logic — extracted from route.ts for anti-monolith compliance
+// Flow node execution logic -- extracted from route.ts for anti-monolith compliance
 
 import { callLLM, type ProviderConfig, type LLMResponse } from "@/lib/llm/client";
 import type { LLMSettings } from "@/lib/llm";
@@ -13,7 +13,7 @@ export interface ExecOutput {
   cost?: number;
 }
 
-/** Resolve provider config — per-node override or fallback to active */
+/** Resolve provider config -- per-node override or fallback to active */
 async function resolveProvider(
   node: FlowNode,
   active: { provider: ProviderConfig; model: string; settings: LLMSettings },

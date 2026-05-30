@@ -84,7 +84,7 @@ function NodeCard({ r }: { r: ExecutionResult }) {
 }
 
 /**
- * Execution History tab — shows results with model, tokens, and cost.
+ * Execution History tab -- shows results with model, tokens, and cost.
  */
 export function ExecutionTab() {
   const results = useFlowEditorStore((s) => s.executionResults);

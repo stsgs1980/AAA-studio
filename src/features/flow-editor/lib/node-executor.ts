@@ -102,7 +102,7 @@ function gatherInputs(
   return inputs;
 }
 
-/** Kahn's algorithm — node IDs in execution order. */
+/** Kahn's algorithm -- node IDs in execution order. */
 function topologicalSort(nodes: Node[], edges: Edge[]): string[] {
   const inDeg = new Map<string, number>();
   const adj = new Map<string, string[]>();

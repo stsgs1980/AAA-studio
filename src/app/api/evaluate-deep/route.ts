@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { handleError, success, BadRequest } from '@/lib/api-error';
 import { callLLM } from '@/lib/llm/client';
 import { getActiveProvider } from '@/lib/llm';
 
@@ -68,15 +68,12 @@ export async function POST(request: Request) {
   try {
     const { text, context } = await request.json();
     if (!text?.trim()) {
-      return NextResponse.json({ error: 'Text is required' }, { status: 400 });
+      throw BadRequest('Text is required');
     }
 
     const active = await getActiveProvider();
     if (!active) {
-      return NextResponse.json(
-        { error: 'No LLM provider configured. Go to Settings → LLM Provider to add and activate a provider.' },
-        { status: 400 },
-      );
+      throw BadRequest('No LLM provider configured. Go to Settings -> LLM Provider to add and activate a provider.');
     }
 
     const userMessage = context
@@ -96,9 +93,8 @@ export async function POST(request: Request) {
 
     const content = response.content ?? 'No response from LLM.';
 
-    return NextResponse.json({ analysis: content });
+    return success({ analysis: content });
   } catch (error) {
-    const msg = error instanceof Error ? error.message : 'Evaluation failed';
-    return NextResponse.json({ error: msg }, { status: 500 });
+    return handleError(error);
   }
 }

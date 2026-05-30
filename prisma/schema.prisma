@@ -667,7 +667,7 @@ model Skill {
   code         String   @default("")
   tests        String   @default("")
   tags         String   @default("[]")  // JSON string[]
-  standardIds  String   @default("[]")  // JSON string[] — linked Standard IDs
+  standardIds  String   @default("[]")  // JSON string[] -- linked Standard IDs
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 

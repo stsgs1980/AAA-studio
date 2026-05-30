@@ -1,5 +1,5 @@
 import { db } from '@/lib/db';
-import { NextResponse } from 'next/server';
+import { handleError, success, BadRequest } from '@/lib/api-error';
 import { encrypt, decrypt } from '@/lib/crypto';
 
 const PROVIDERS_KEY = 'llm_providers';
@@ -57,10 +57,9 @@ export async function GET() {
         ? decryptProviders(s.value)
         : s.value;
     });
-    return NextResponse.json(map);
+    return success(map);
   } catch (error) {
-    console.error('[GET /api/settings]', error);
-    return NextResponse.json({ error: 'Failed to fetch settings' }, { status: 500 });
+    return handleError(error);
   }
 }
 
@@ -76,14 +75,12 @@ export async function PUT(request: Request) {
           update: { value: dbValue },
           create: { id: `cfg-${key}`, key, value: dbValue },
         });
-      } catch (e) {
-        console.error(`[PUT /api/settings] Failed for key=${key}:`, e);
-        return NextResponse.json({ error: `Failed to save key "${key}"` }, { status: 500 });
+      } catch {
+        throw BadRequest(`Failed to save key "${key}"`);
       }
     }
-    return NextResponse.json({ success: true, updated: entries.length });
+    return success({ updated: entries.length });
   } catch (error) {
-    console.error('[PUT /api/settings]', error);
-    return NextResponse.json({ error: 'Failed to update settings' }, { status: 500 });
+    return handleError(error);
   }
 }

@@ -1,4 +1,4 @@
-// 3A Studio — Auth middleware (Edge Runtime)
+// 3A Studio -- Auth middleware (Edge Runtime)
 // Uses Web Crypto API for JWT verification.
 
 import { NextResponse } from 'next/server';

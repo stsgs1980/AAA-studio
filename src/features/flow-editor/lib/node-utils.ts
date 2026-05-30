@@ -52,5 +52,5 @@ export function safeEvalCondition(expr: string, ctx: Record<string, unknown>): b
   const em = expr.match(/^(\w+)\s+empty$/);
   if (em) return ctx[em[1]] === undefined || ctx[em[1]] === "";
 
-  return false; // fail-safe: unrecognized expression → false
+  return false; // fail-safe: unrecognized expression -> false
 }

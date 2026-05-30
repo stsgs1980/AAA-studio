@@ -46,7 +46,7 @@ export function useFlowActions() {
       useFlowEditorStore.setState({ isRunning: true });
 
       if (flowId) {
-        // Saved flow → server-side execution with full usage tracking
+        // Saved flow -> server-side execution with full usage tracking
         setMessage('Executing on server...');
 
         // Save first to sync nodes/edges
@@ -81,7 +81,7 @@ export function useFlowActions() {
         const tokenStr = u?.totalTokens ? ` | ${u.totalTokens} tokens` : '';
         setMessage(data.success ? `Done (${results.length} nodes${tokenStr}${costStr})` : `Failed: ${data.error}`);
       } else {
-        // Unsaved flow → client-side execution via /api/llm proxy
+        // Unsaved flow -> client-side execution via /api/llm proxy
         setMessage('Executing locally...');
         const { results, success } = await executeFlow(nodes, edges);
         setExecutionResults(results);

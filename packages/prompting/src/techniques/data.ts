@@ -26,7 +26,7 @@ const TECHNIQUES_DATA: PromptTechnique[] = [
     category: "reasoning",
     applicableTo: ["json", "markdown", "code", "yaml", "html", "table"],
     difficulty: "intermediate",
-    example: 'Q: "Hello world" → {"lang":"en"}\nQ: "Bonjour le monde" → {"lang":"fr"}',
+    example: 'Q: "Hello world" -> {"lang":"en"}\nQ: "Bonjour le monde" -> {"lang":"fr"}',
   },
   {
     id: "chain-of-thought",
@@ -116,7 +116,7 @@ const TECHNIQUES_DATA: PromptTechnique[] = [
     category: "meta",
     applicableTo: ["json", "markdown", "code", "yaml"],
     difficulty: "advanced",
-    example: "Step 1: Extract entities → Step 2: Classify relationships → Step 3: Build knowledge graph.",
+    example: "Step 1: Extract entities -> Step 2: Classify relationships -> Step 3: Build knowledge graph.",
   },
   {
     id: "plan-and-solve",

@@ -1,5 +1,5 @@
 // ============================================================================
-// 3A Studio — LLM Provider Layer (barrel export)
+// 3A Studio -- LLM Provider Layer (barrel export)
 // ============================================================================
 
 export type {

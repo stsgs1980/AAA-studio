@@ -113,7 +113,7 @@ export function AppSidebar() {
         </button>
       </div>
 
-      {/* Footer — Theme toggle */}
+      {/* Footer -- Theme toggle */}
       <div className={cn("border-t px-2 py-2", collapsed && "flex flex-col items-center gap-1")}>
         <button
           onClick={() => setTheme(isDark ? "light" : "dark")}

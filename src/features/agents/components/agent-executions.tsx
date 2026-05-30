@@ -22,7 +22,7 @@ const statusConfig: Record<string, { icon: typeof CheckCircle2; color: string; l
 };
 
 function formatDuration(ms: number | null): string {
-  if (ms === null) return '—';
+  if (ms === null) return '--';
   if (ms < 1000) return `${ms}ms`;
   if (ms < 60000) return `${(ms / 1000).toFixed(1)}s`;
   const m = Math.floor(ms / 60000);
@@ -115,7 +115,7 @@ export function AgentExecutions({ agentId }: Props) {
                       {ex.error && <p className="text-red-400/70 mt-0.5 truncate max-w-[200px]" title={ex.error}>{ex.error}</p>}
                     </td>
                     <td className="px-3 py-2 font-mono">{formatDuration(ex.duration)}</td>
-                    <td className="px-3 py-2 text-muted-foreground">{ex.tokensUsed ?? '—'}</td>
+                    <td className="px-3 py-2 text-muted-foreground">{ex.tokensUsed ?? '--'}</td>
                     <td className="px-3 py-2 text-muted-foreground">{timeAgo(ex.startedAt)}</td>
                   </tr>
                 );

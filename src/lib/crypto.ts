@@ -1,4 +1,4 @@
-// 3A Studio — AES-256-GCM encryption for sensitive data (API keys)
+// 3A Studio -- AES-256-GCM encryption for sensitive data (API keys)
 
 import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
 
@@ -16,7 +16,7 @@ function getKey(): Buffer {
   return Buffer.from(hex, 'hex');
 }
 
-/** Encrypt plaintext → base64(iv + authTag + ciphertext) */
+/** Encrypt plaintext -> base64(iv + authTag + ciphertext) */
 export function encrypt(plaintext: string): string {
   const key = getKey();
   const iv = randomBytes(IV_LEN);
@@ -29,7 +29,7 @@ export function encrypt(plaintext: string): string {
   return Buffer.concat([iv, tag, encrypted]).toString('base64');
 }
 
-/** Decrypt base64(iv + authTag + ciphertext) → plaintext.
+/** Decrypt base64(iv + authTag + ciphertext) -> plaintext.
  *  Falls back to returning input as-is if decryption fails (backward compat). */
 export function decrypt(ciphertext: string): string {
   try {
@@ -43,7 +43,7 @@ export function decrypt(ciphertext: string): string {
     decipher.setAuthTag(tag);
     return Buffer.concat([decipher.update(enc), decipher.final()]).toString('utf8');
   } catch {
-    // Not encrypted yet (backward compatibility) — return as-is
+    // Not encrypted yet (backward compatibility) -- return as-is
     return ciphertext;
   }
 }

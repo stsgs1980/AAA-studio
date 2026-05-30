@@ -9,21 +9,21 @@ Work Log:
 - Read existing project globals.css, sidebar layout, and dashboard stubs
 - Created `src/features/dashboard/types.ts` with TypeScript interfaces for all dashboard data
 - Rewrote `src/features/dashboard/data/constants.ts` with wireframe-accurate mock data (KPI, status distribution, top performers, timeline events, health metrics, formula data, heatmap density matrix)
-- Created `animated-counter.tsx` — rAF-based ease-out number animation component
-- Rewrote `mini-sparkline.tsx` — SVG area sparkline with gradient fill and fade-in animation
-- Created `kpi-card.tsx` — single KPI card with animated counter, trend indicators, sparkline, badge support, and hover accent line
-- Created `kpi-strip.tsx` — responsive 2x2/4-column grid of KPI cards
-- Rewrote `status-distribution.tsx` — SVG donut chart with hover highlight/dim, animated center counter, and 2-column legend
-- Rewrote `top-performers.tsx` — ranked performer list with staggered score bar animation
-- Rewrote `network-chart.tsx` — dual-series SVG area chart (API Calls + WS Events) with gridlines, Y/X labels, line draw animation, and data dots
-- Rewrote `system-health.tsx` — health metric bars with staggered fill animation and status indicators
-- Rewrote `activity-timeline.tsx` — expandable timeline with agent highlighting and expand/collapse animation
-- Rewrote `connection-heatmap.tsx` — 8x8 inter-group heatmap with CSS Grid, hover effects, and heat color interpolation
-- Created `formula-grid.tsx` — formula-agent mapping table with category badges
+- Created `animated-counter.tsx` -- rAF-based ease-out number animation component
+- Rewrote `mini-sparkline.tsx` -- SVG area sparkline with gradient fill and fade-in animation
+- Created `kpi-card.tsx` -- single KPI card with animated counter, trend indicators, sparkline, badge support, and hover accent line
+- Created `kpi-strip.tsx` -- responsive 2x2/4-column grid of KPI cards
+- Rewrote `status-distribution.tsx` -- SVG donut chart with hover highlight/dim, animated center counter, and 2-column legend
+- Rewrote `top-performers.tsx` -- ranked performer list with staggered score bar animation
+- Rewrote `network-chart.tsx` -- dual-series SVG area chart (API Calls + WS Events) with gridlines, Y/X labels, line draw animation, and data dots
+- Rewrote `system-health.tsx` -- health metric bars with staggered fill animation and status indicators
+- Rewrote `activity-timeline.tsx` -- expandable timeline with agent highlighting and expand/collapse animation
+- Rewrote `connection-heatmap.tsx` -- 8x8 inter-group heatmap with CSS Grid, hover effects, and heat color interpolation
+- Created `formula-grid.tsx` -- formula-agent mapping table with category badges
 - Updated barrel exports in `components/index.ts` and `features/dashboard/index.ts`
 - Updated dashboard page with proper 60/40 and equal two-column responsive layouts
 - Fixed variable name collision in status-distribution.tsx
-- Ran `npx next build` — compiled successfully, dashboard route 6.78 kB
+- Ran `npx next build` -- compiled successfully, dashboard route 6.78 kB
 
 Stage Summary:
 - Files created/modified:
@@ -43,7 +43,7 @@ Stage Summary:
   - `src/features/dashboard/components/index.ts` (updated)
   - `src/features/dashboard/index.ts` (updated)
   - `src/app/(dashboard)/dashboard/page.tsx` (updated)
-- Build status: ✅ Successful (compiled in 8.2s, no errors)
+- Build status: [OK] Successful (compiled in 8.2s, no errors)
 - All components ≤ 150 lines, ≤ 3 useState, 1 component per file
 - Dashboard page weight: 6.78 kB first load JS
 ---
@@ -52,22 +52,22 @@ Agent: main (anti-monolith + code-reviewer + commit-work skills)
 Task: Fix remaining Phase 0-5 tails, verify eslint/anti-monolith compliance
 
 Work Log:
-- Read toolbar.tsx — Save button ALREADY wired via useFlowActions.saveFlow (false positive in previous session)
-- Read quick-actions.tsx — calls /api/dashboard/seed and /api/dashboard/reset which do NOT exist
-- Read use-flow-actions.ts — saveFlow correctly POST/PUT to /api/flows
-- Read eslint.config.mjs — confirmed 4 anti-monolith rules: max-lines(150), max-use-state(3), no-cross-layer, no-unicode-escapes
-- Created /api/dashboard/seed/route.ts — seeds sample agents, executions, flows
-- Created /api/dashboard/reset/route.ts — clears all tables in FK-safe order
-- Ran eslint on src/ — 0 errors, 0 warnings
-- Checked line counts — max 148 lines (network-chart.tsx), all under 150
-- Checked useState counts — max 3 per component (agent-executions, node-config-panel)
-- Ran next build — compiled successfully, all routes including new seed/reset
+- Read toolbar.tsx -- Save button ALREADY wired via useFlowActions.saveFlow (false positive in previous session)
+- Read quick-actions.tsx -- calls /api/dashboard/seed and /api/dashboard/reset which do NOT exist
+- Read use-flow-actions.ts -- saveFlow correctly POST/PUT to /api/flows
+- Read eslint.config.mjs -- confirmed 4 anti-monolith rules: max-lines(150), max-use-state(3), no-cross-layer, no-unicode-escapes
+- Created /api/dashboard/seed/route.ts -- seeds sample agents, executions, flows
+- Created /api/dashboard/reset/route.ts -- clears all tables in FK-safe order
+- Ran eslint on src/ -- 0 errors, 0 warnings
+- Checked line counts -- max 148 lines (network-chart.tsx), all under 150
+- Checked useState counts -- max 3 per component (agent-executions, node-config-panel)
+- Ran next build -- compiled successfully, all routes including new seed/reset
 - Committed: feat(dashboard): add seed and reset API routes for Quick Actions
 - Pushed to origin/main: 070b6f1..0657161
 
 Stage Summary:
-- Save button was NOT a tail (already working) — previous session misidentified
-- Real tail: Quick Actions calling non-existent API endpoints — FIXED
+- Save button was NOT a tail (already working) -- previous session misidentified
+- Real tail: Quick Actions calling non-existent API endpoints -- FIXED
 - ESLint compliance: 0 errors across entire src/
 - Anti-monolith compliance: all files ≤150 lines, all components ≤3 useState
 - Commit: 0657161 pushed to origin/main
@@ -82,7 +82,7 @@ Work Log:
 - Installed @neondatabase/serverless, @prisma/adapter-neon, ws
 - Added postinstall: prisma generate, vercel-build: prisma db push --skip-generate
 - Deleted stale pnpm-lock.yaml (Vercel uses bun.lock)
-- Fixed @prisma/adapter-neon v7 incompatibility with Prisma v6 — removed adapter, plain PrismaClient works fine via connection string
+- Fixed @prisma/adapter-neon v7 incompatibility with Prisma v6 -- removed adapter, plain PrismaClient works fine via connection string
 - Set DATABASE_URL + DIRECT_URL in Vercel env vars
 - Deployment successful on Vercel
 
@@ -92,7 +92,7 @@ Stage Summary:
 ---
 Task ID: 7
 Agent: main
-Task: Bug audit — fix all bugs across all pages
+Task: Bug audit -- fix all bugs across all pages
 
 Work Log:
 - Full audit: 24 bugs found (3 critical, 5 high, 4 medium)
@@ -108,7 +108,7 @@ Work Log:
 - 17 files changed, +578/-409
 
 Stage Summary:
-- Commit: 1ba196f — all 24 bugs fixed
+- Commit: 1ba196f -- all 24 bugs fixed
 - Build: passing, deployment verified
 ---
 Task ID: 8
@@ -116,10 +116,10 @@ Agent: main
 Task: Dark theme + remove hardcoded colors
 
 Work Log:
-- Audited all .tsx files for hardcoded hex colors — found only 1: bg-[#22D3EE]
+- Audited all .tsx files for hardcoded hex colors -- found only 1: bg-[#22D3EE]
 - Added .dark{} block to globals.css with full HSL dark theme variables (shadcn standard)
 - Replaced bg-[#22D3EE] with bg-cyan-400 (Tailwind semantic token)
-- ThemeProvider (next-themes, attribute=class) already in layout.tsx — dark activates via .dark class
+- ThemeProvider (next-themes, attribute=class) already in layout.tsx -- dark activates via .dark class
 
 Stage Summary:
 - Commit: 187978b pushed
@@ -142,7 +142,7 @@ Work Log:
 - Rewrote NetworkChart: 24h hourly execution timeline with completed/failed lines
 - Rewrote ConnectionHeatmap: parent-child connections aggregated by agent group
 - Rewrote FormulaGrid: skills distribution parsed from Agent.skills JSON
-- Deleted data/constants.ts — all mocks removed
+- Deleted data/constants.ts -- all mocks removed
 - All components show graceful empty state when DB has no data
 - Build: passing, 0 ESLint errors
 
@@ -159,7 +159,7 @@ Task: Build Landing Page + Auth System
 Work Log:
 - Added brand design tokens to globals.css @theme block (midnight theme colors, brand accent, text hierarchy)
 - Added custom CSS animations: bounce-slow, pulse-dot, circuit-flow, gradient-text, particle-bg
-- Refactored root layout — removed AppSidebar wrapper, kept only ThemeProvider + Toaster + font
+- Refactored root layout -- removed AppSidebar wrapper, kept only ThemeProvider + Toaster + font
 - Created (dashboard)/layout.tsx with AppSidebar + main content area
 - Moved all dashboard pages (agents, audit, editor, etc.) into (dashboard) route group
 - Built 10 auth shared components: auth-input, auth-button, github-button, google-button, otp-input, password-strength, role-selector, auth-divider, auth-footer, logo
@@ -275,20 +275,20 @@ Task: Fix formulaRef case mismatch + clickable formula badges in Prompt Library
 
 Work Log:
 - Audited all 15 prompts: 13 have formulaRef, 2 without (cr-ux-writing, da-sql-generator)
-- Fixed formulaRef uppercase→lowercase in 6 data files: system, code, creative, analysis, data, security
+- Fixed formulaRef uppercase->lowercase in 6 data files: system, code, creative, analysis, data, security
 - All 10 formulaRef values now match @stsgs/prompting formula.id exactly
 - Added `formulaId: string | null`, `setFormulaId()`, `navigateToFormula()` to prompt-library-store
 - `navigateToFormula()` calls `usePromptStudioStore.getState().setActiveTab("formulas")` + sets formulaId
 - Converted formulaRef badge from static `<span>` to clickable `<button>` in PromptCard and PromptListItem
-- Badge click: navigateToFormula(id) → router.push("/studio")
+- Badge click: navigateToFormula(id) -> router.push("/studio")
 - Display still shows UPPERCASE via `.toUpperCase()` for readability
 - Extracted shared `flash()` helper to reduce handler duplication
-- PromptCard refactored from 161→119 lines, PromptListItem 135→131 lines
+- PromptCard refactored from 161->119 lines, PromptListItem 135->131 lines
 - tsc + next build clean, pushed as ded2ee3
 
 Stage Summary:
 - Fixed latent bug: formulaRef now uses lowercase formula.id matching @stsgs/prompting
-- Real cross-feature link: Library → Prompt Studio formulas tab is now functional
+- Real cross-feature link: Library -> Prompt Studio formulas tab is now functional
 - All files under 150 line limit
 
 ---
@@ -298,19 +298,19 @@ Task: Flow Editor live execution via z-ai-web-dev-sdk
 
 Work Log:
 - Installed z-ai-web-dev-sdk@0.0.18
-- Created POST /api/llm — proxy to SDK chat completions
-- Split node-executor.ts (277→120 lines) into orchestrator + node-handlers.ts (138 lines)
+- Created POST /api/llm -- proxy to SDK chat completions
+- Split node-executor.ts (277->120 lines) into orchestrator + node-handlers.ts (138 lines)
 - Implemented real executeNode for 12 node types: LLM, Agent, Prompt, Transform, Condition, Filter, Chain, Start, End, Input, Output, Error
-- LLM/Agent nodes call /api/llm → z-ai-web-dev-sdk → real AI responses
+- LLM/Agent nodes call /api/llm -> z-ai-web-dev-sdk -> real AI responses
 - Prompt node: {{variable}} substitution from upstream inputs
 - Transform: uppercase/lowercase/trim/json_parse/json_stringify
 - Condition/Filter: safe expression evaluator (==, ===, contains)
-- Created POST /api/flows/[id]/execute — server-side execution via SDK directly
+- Created POST /api/flows/[id]/execute -- server-side execution via SDK directly
   - flow-utils.ts (49 lines): topoSort, gatherInputs, extractText
   - route.ts (121 lines): loads flow from DB, runs execution, creates PipelineExecution
 - Updated use-flow-actions.ts: real runFlow logic
-  - Saved flow → server-side via /api/flows/:id/execute
-  - Unsaved flow → client-side via executeFlow → /api/llm
+  - Saved flow -> server-side via /api/flows/:id/execute
+  - Unsaved flow -> client-side via executeFlow -> /api/llm
 - Updated flow-store.ts: added executionResults[], isRunning, setExecutionResults()
 - Replaced ExecutionTab MOCK data with real store-driven results
   - Shows: node type label, status dot, duration, truncated output preview
@@ -327,7 +327,7 @@ Stage Summary:
 ---
 Task ID: 3
 Agent: main
-Task: Standards Manager — full CRUD UI with rules editor
+Task: Standards Manager -- full CRUD UI with rules editor
 
 Work Log:
 - Created feature module src/features/standards/ with 6 files
@@ -344,7 +344,7 @@ Work Log:
 - All files ≤ 150 lines, tsc + next build clean, pushed as 90254d0
 
 Stage Summary:
-- Standards Manager: SKELETON → FULL (Phase 1 complete)
+- Standards Manager: SKELETON -> FULL (Phase 1 complete)
 - Full CRUD: create, edit, delete standards + add, toggle, remove rules
 - Search by name + filter by severity
 - Midnight palette consistent with rest of 3A Studio
@@ -352,7 +352,7 @@ Stage Summary:
 ---
 Task ID: 4
 Agent: main
-Task: Pipelines — real flow execution with node-level drill-down
+Task: Pipelines -- real flow execution with node-level drill-down
 
 Work Log:
 - Created feature module src/features/pipelines/ (5 files)
@@ -361,62 +361,62 @@ Work Log:
   - fetchFlows, fetchExecutions, executeFlow (POST /api/flows/:id/execute)
   - deleteFlow with confirm, selectFlow/selectExec navigation
 - components/execution-list.tsx: Execution list with status icons, duration, node count, error preview, clickable drill-down
-- components/execution-detail.tsx: Node-level results view — per-node type/status/duration/output/error
-- Rewrote pipelines/page.tsx (144→116 lines):
+- components/execution-detail.tsx: Node-level results view -- per-node type/status/duration/output/error
+- Rewrote pipelines/page.tsx (144->116 lines):
   - Play button now calls POST /api/flows/:id/execute (was PUT status:active)
   - Loader2 spinner during execution
-  - Click execution → drill-down into node-level results
+  - Click execution -> drill-down into node-level results
   - Back button returns to execution list
-  - Removed 4 useState → 1 via usePipelines hook (max-use-state compliant)
+  - Removed 4 useState -> 1 via usePipelines hook (max-use-state compliant)
 - Fixed type errors: STATUS_ICON Record<string, React.ElementType> instead of as const
 - All files ≤150 lines, tsc + next build clean
 
 Stage Summary:
-- Pipelines: SKELETON → REAL EXECUTION
+- Pipelines: SKELETON -> REAL EXECUTION
 - Feature module: 5 files (types, hook, 2 components, barrel)
 - Play button triggers real server-side flow execution via z-ai-web-dev-sdk
 - Execution list shows status, duration, node count, errors
-- Drill-down: click execution → see per-node results (type, output, timing, errors)
+- Drill-down: click execution -> see per-node results (type, output, timing, errors)
 - Commit: 3805128 pushed
 - Phase 2 Task 1: COMPLETE
 ---
 Task ID: 5
 Agent: main
-Task: Phase 2 — complete all integration tasks
+Task: Phase 2 -- complete all integration tasks
 
 Work Log:
-- Task 1: Pipelines — real flow execution (commit 3805128)
+- Task 1: Pipelines -- real flow execution (commit 3805128)
   - Created feature module src/features/pipelines/ (5 files)
-  - Play button → POST /api/flows/:id/execute (was PUT status:active)
+  - Play button -> POST /api/flows/:id/execute (was PUT status:active)
   - Execution list with status icons, duration, node count
-  - Drill-down: click execution → node-level results
+  - Drill-down: click execution -> node-level results
   - 1 useState via usePipelines hook (max-use-state compliant)
 
-- Task 2: Templates — dual-tab gallery (commit 01b1e00)
+- Task 2: Templates -- dual-tab gallery (commit 01b1e00)
   - Added Flow Templates tab alongside Prompt Library
   - 6 pre-built flow patterns: Simple LLM, Chain of Thought, Prompt Template,
     Multi-Agent Review, Transform Pipeline, RAG Pipeline (Stub)
-  - Clone to Editor: POST /api/flows → redirect to /editor?id=NEW
+  - Clone to Editor: POST /api/flows -> redirect to /editor?id=NEW
   - Category filter for flow templates
 
-- Task 3: Knowledge Base — TF-IDF search (commit d49c8c2)
+- Task 3: Knowledge Base -- TF-IDF search (commit d49c8c2)
   - lib/tf-idf.ts: tokenize (latin + cyrillic), computeTF, computeIDF,
     tfidfVector, cosineSimilarity, buildSearchIndex, searchIndex
   - POST /api/knowledge/search: query + collectionId + topK
   - SearchBar component: results with scores, snippets, file type icons
   - Added to Knowledge Base page between header and collections
 
-- Task 4: Skill Forge — SKILL.md export (commit efafc92)
+- Task 4: Skill Forge -- SKILL.md export (commit efafc92)
   - GET /api/skills/[id]/export generates SKILL.md format
   - YAML frontmatter + Description + Metadata + Schemas + Code + Tests
   - Export button in Skill Forge toolbar
-  - Fixed .gitignore: skills/ → /skills/ (was blocking src/app/api/skills/)
+  - Fixed .gitignore: skills/ -> /skills/ (was blocking src/app/api/skills/)
 
 Stage Summary:
 - Phase 2 COMPLETE: Pipelines, Templates, Knowledge Search, Skill Export
 - 4 commits pushed: 3805128, 01b1e00, d49c8c2, efafc92
-- WORKFLOW.md updated: Phase 1 ✅, Phase 2 ✅ (3/4), Phase 3 started (1/4)
-- Remaining: Skill Forge sandbox execution, Standards→ESLint, Wiki→GitHub, Prompt→Export
+- WORKFLOW.md updated: Phase 1 [OK], Phase 2 [OK] (3/4), Phase 3 started (1/4)
+- Remaining: Skill Forge sandbox execution, Standards->ESLint, Wiki->GitHub, Prompt->Export
 ---
 Task ID: 1
 Agent: main
@@ -445,19 +445,19 @@ Work Log:
 - Connected Vercel CLI with user's access token (vcp_3THU...)
 - Linked project: stsgs1980-4463s-projects/3a-studio
 - Found production error: "Configuration file not found" on execute endpoint
-- Root cause: z-ai-web-dev-sdk's loadConfig() searches cwd/homedir/etc — all read-only on Vercel
+- Root cause: z-ai-web-dev-sdk's loadConfig() searches cwd/homedir/etc -- all read-only on Vercel
 - Created createZAI() in zai-config.ts: reads ZAI_* env vars, monkey-patches process.cwd() temporarily
 - Added 5 ZAI_* env vars to Vercel project via CLI
 - Updated /api/flows/:id/execute and /api/llm to use createZAI()
-- Second issue: internal-api.z.ai resolves to private Alibaba Cloud IPs (172.25.x.x) — unreachable from Vercel
+- Second issue: internal-api.z.ai resolves to private Alibaba Cloud IPs (172.25.x.x) -- unreachable from Vercel
 - Created llm-mock.ts: context-aware mock responses for 6 prompt types
 - Added callLLMWithFallback(): tries real API first, falls back to mock on network errors
 - Pipeline execution now works on Vercel with mock responses
 - Prompt Studio /api/llm also has mock fallback
 
 Stage Summary:
-- Pipeline execution: ✅ working on production (mock mode)
-- Prompt Studio: ✅ working on production (mock mode)
+- Pipeline execution: [OK] working on production (mock mode)
+- Prompt Studio: [OK] working on production (mock mode)
 - Real LLM: only works inside Z.ai sandbox infrastructure
 - Key files: src/lib/zai-config.ts, src/lib/llm-mock.ts, src/app/api/flows/[id]/execute/route.ts, src/app/api/llm/route.ts
 - 3 commits pushed, all deployed successfully
@@ -473,18 +473,18 @@ Work Log:
 - Created DOCX document: /home/z/my-project/download/3A-Studio-LLM-Architecture.docx
   - Section 1: Current implementation (z-ai-web-dev-sdk, config mechanism, network limitation, mock fallback)
   - Section 2: Universal LLM Provider architecture (provider interface, per-node model selection, cost tracking)
-  - Section 3: 4-phase implementation roadmap (OpenAI → Anthropic+Google → Per-node → Cost dashboard)
+  - Section 3: 4-phase implementation roadmap (OpenAI -> Anthropic+Google -> Per-node -> Cost dashboard)
   - Section 4: Proposed file structure
 - Postcheck: 0 errors, 6/9 passed, TOC fixed
 
 Stage Summary:
 - Document generated successfully with cover, TOC, 4 sections, tables
-- Key architectural decision: LLMProvider interface → provider registry → per-node routing
+- Key architectural decision: LLMProvider interface -> provider registry -> per-node routing
 - Phased approach ensures backward compatibility with existing mock fallback
 ---
 Task ID: 1
 Agent: main
-Task: Multi-provider LLM config — add custom provider support to Settings
+Task: Multi-provider LLM config -- add custom provider support to Settings
 
 Work Log:
 - Read full codebase: types.ts, client.ts, settings.ts, llm-provider-card.tsx, page.tsx, all API routes
@@ -497,7 +497,7 @@ Work Log:
 - Rewrote /api/llm/test: accepts providerId in POST body, tests specific provider
 - Rewrote /api/llm: uses getActiveProvider() for automatic provider resolution
 - Rewrote /api/flows/[id]/execute: uses getActiveProvider() + new callLLM signature
-- Split llm-provider-card.tsx (330→134 lines) into 3 files:
+- Split llm-provider-card.tsx (330->134 lines) into 3 files:
   - llm-provider-card.tsx (134): main card with provider list + test logic
   - provider-row.tsx (143): expandable per-provider config (toggle, endpoint, key, format, models)
   - add-provider-menu.tsx (44): dropdown to add built-in or custom providers
@@ -516,23 +516,23 @@ Stage Summary:
 ---
 Task ID: 2
 Agent: main
-Task: Debug Test Connection failures — 3 root causes found and fixed
+Task: Debug Test Connection failures -- 3 root causes found and fixed
 
 Work Log:
-- Diagnosed "Test API Failed" — curl showed ok:false despite Z.ai returning 200
+- Diagnosed "Test API Failed" -- curl showed ok:false despite Z.ai returning 200
 - Created diagnostic endpoint returning raw Z.ai response for analysis
-- Root cause 1: GLM-5.1 is a reasoning model — max_tokens:10 exhausted on reasoning_content, leaving content:"" and finish_reason:"length"
-- Root cause 2: testConnection checked `!!resp.content` — always false for reasoning models
-- Root cause 3: UI never passed selected model to test endpoint — always tested models[0] (GLM-5.1)
-- Fix 1: max_tokens 10→256, added finish_reason:"length" as valid
+- Root cause 1: GLM-5.1 is a reasoning model -- max_tokens:10 exhausted on reasoning_content, leaving content:"" and finish_reason:"length"
+- Root cause 2: testConnection checked `!!resp.content` -- always false for reasoning models
+- Root cause 3: UI never passed selected model to test endpoint -- always tested models[0] (GLM-5.1)
+- Fix 1: max_tokens 10->256, added finish_reason:"length" as valid
 - Fix 2: pass `model: activeModel` in test request body
 - Fix 3: mergeWithBuiltins operator precedence bug (&& vs ||)
 - Fix 4: provider.enabled forced to true on test
-- Also fixed: ESLint errors (page.tsx 157→148 lines, unused imports, prefer-const)
+- Also fixed: ESLint errors (page.tsx 157->148 lines, unused imports, prefer-const)
 
 Stage Summary:
 - Test Connection now works correctly with selected model
-- GLM-4.7 test: ~4-5s latency (Moscow→Vercel US→Z.ai China round trip — expected)
+- GLM-4.7 test: ~4-5s latency (Moscow->Vercel US->Z.ai China round trip -- expected)
 - Commits: c093d0b, abefd6f, c3425fd, e45c64b (diag), 797d723, 3dbbabb
 - All pushed and deployed to production
 ---
@@ -546,8 +546,8 @@ Work Log:
   - verifySession() verifies JWT via jose (server routes)
   - SESSION_COOKIE constant: '3a-session'
 - Created src/lib/crypto.ts: AES-256-GCM encryption for API keys
-  - encrypt(plaintext) → base64(iv + authTag + ciphertext)
-  - decrypt(ciphertext) → plaintext with backward compat fallback
+  - encrypt(plaintext) -> base64(iv + authTag + ciphertext)
+  - decrypt(ciphertext) -> plaintext with backward compat fallback
   - Uses ENCRYPTION_KEY env var (64-char hex, 32 bytes)
 - Created src/middleware.ts: Edge-compatible auth middleware
   - verifyJWT() using Web Crypto API (no jose dependency in Edge)
@@ -570,11 +570,11 @@ Work Log:
 - Added jose@6.2.3 dependency
 - All files <= 150 lines, 0 ESLint errors
 - Production verified:
-  - /api/settings without cookie → 401
-  - /dashboard without cookie → 307 redirect to /login
-  - /login, /, /api/health → 200 (public)
-  - POST /api/auth/login → 200 + JWT cookie
-  - GET /api/settings with cookie → 200 (decrypted apiKeys)
+  - /api/settings without cookie -> 401
+  - /dashboard without cookie -> 307 redirect to /login
+  - /login, /, /api/health -> 200 (public)
+  - POST /api/auth/login -> 200 + JWT cookie
+  - GET /api/settings with cookie -> 200 (decrypted apiKeys)
   - Save + read round-trip: encrypt on save, decrypt on read
 
 Stage Summary:
@@ -607,16 +607,16 @@ Stage Summary:
 - 8 files changed, +330/-211
 - Per-node provider + model selection: fully functional on both client and server paths
 - Usage tracking: tokens (in/out), estimated cost per node + aggregate summary
-- Vercel CLI token expired — deployed via GitHub auto-deploy
+- Vercel CLI token expired -- deployed via GitHub auto-deploy
 
 ---
 Task ID: 1
 Agent: main
-Task: Fix 3 UI bugs — theme toggle, language switching, chevron collapse
+Task: Fix 3 UI bugs -- theme toggle, language switching, chevron collapse
 
 Work Log:
 - Analyzed screenshot: Settings page in light mode, sidebar collapsed, provider card expanded
-- Theme toggle bug: useTheme() returns undefined during SSR hydration → sidebar toggle always sets "dark"
+- Theme toggle bug: useTheme() returns undefined during SSR hydration -> sidebar toggle always sets "dark"
   - Fix: added mounted state guard + isDark derived variable in app-sidebar.tsx
   - Fix: added mounted state in settings page for theme select value
 - Language switching bug: NO i18n system existed in codebase
@@ -641,7 +641,7 @@ Stage Summary:
 ---
 Task ID: 2
 Agent: main
-Task: Standards→Skills→Agents cross-reference architecture + Skill CRUD
+Task: Standards->Skills->Agents cross-reference architecture + Skill CRUD
 
 Work Log:
 - Updated Prisma schema: added standardIds to Skill model
@@ -658,13 +658,13 @@ Work Log:
 Stage Summary:
 - Commit: 27b2e0e pushed
 - 18 files changed, +637/-187
-- Cross-reference chain: Standard ←→ Skill ←→ Agent (all via ID)
+- Cross-reference chain: Standard ←-> Skill ←-> Agent (all via ID)
 - All files ≤150 lines, 0 ESLint errors, build successful
 - Vercel auto-deploy from GitHub (DB migration will run on deploy)
 ---
 Task ID: 7
 Agent: main
-Task: Standards/Skills full rebuild — unified types, midnight palette, store-driven architecture
+Task: Standards/Skills full rebuild -- unified types, midnight palette, store-driven architecture
 
 Work Log:
 - Enriched @stsgs/shared/types/standard.ts: added STANDARD_CATEGORIES, SEVERITY_OPTIONS, generateRuleId()
@@ -673,11 +673,11 @@ Work Log:
 - Rebuilt standards-store.ts (140 lines): added fetchStandards, createStandard, saveStandard, deleteStandard
   - Consolidated edit state: editForm + newRule in store (was 6 useState in component)
   - syncRules() helper collapses toggleRule/removeRule
-- Rebuilt standard-detail.tsx: 6 useState → 0 (all from store selectors)
+- Rebuilt standard-detail.tsx: 6 useState -> 0 (all from store selectors)
 - Simplified standard-list.tsx: delete moved to store, removed onDelete prop
 - Simplified standards page.tsx: store does fetch+create+delete
 - Migrated Skills components to midnight palette (bg-midnight-*, text-text-*)
-- TypeScript ✅, ESLint ✅, Next.js build ✅
+- TypeScript [OK], ESLint [OK], Next.js build [OK]
 
 Stage Summary:
 - 13 files changed, +330/-311
@@ -837,7 +837,7 @@ Stage Summary:
 ---
 Task ID: deep-fix
 Agent: main
-Task: Fix Deep Analysis DB crash — add try/catch to getLLMSettings()
+Task: Fix Deep Analysis DB crash -- add try/catch to getLLMSettings()
 
 Work Log:
 - User reported Deep Analysis (Quality Analyzer) crashing with: "Invalid prisma.settings.findMany() invocation - the URL must start with file:"
@@ -847,32 +847,32 @@ Work Log:
 - Verified all 26 API routes have proper try/catch (Explore agent audit)
 - Only gap: dashboard/helpers.ts functions (low risk, protected by caller)
 - Added try/catch to getLLMSettings() that falls back to DEFAULT_LLM_SETTINGS
-- Now: DB failure → defaults → getActiveProvider() returns null → clear "No LLM provider configured" message
-- Dev server tested: endpoint returns 401 (auth middleware) — correct behavior
+- Now: DB failure -> defaults -> getActiveProvider() returns null -> clear "No LLM provider configured" message
+- Dev server tested: endpoint returns 401 (auth middleware) -- correct behavior
 - Committed as ed911e4
 
 Stage Summary:
-- Fix: src/lib/llm/settings.ts — getLLMSettings() now resilient to DB connection failures
-- Before: raw Prisma error "the URL must start with file:" → 500 crash
-- After: graceful fallback to defaults → user sees "No LLM provider configured. Go to Settings to set up a provider."
-- Note: Settings table is empty (no LLM provider configured yet) — user needs to go to Settings to set up
+- Fix: src/lib/llm/settings.ts -- getLLMSettings() now resilient to DB connection failures
+- Before: raw Prisma error "the URL must start with file:" -> 500 crash
+- After: graceful fallback to defaults -> user sees "No LLM provider configured. Go to Settings to set up a provider."
+- Note: Settings table is empty (no LLM provider configured yet) -- user needs to go to Settings to set up
 
 ---
 Task ID: deep-e2e
 Agent: main
-Task: Make Deep Analysis work end-to-end — SDK integration + DB seed
+Task: Make Deep Analysis work end-to-end -- SDK integration + DB seed
 
 Work Log:
-- Previous fix (try/catch in getLLMSettings) was insufficient — PrismaClient crashed at import time, before any try/catch runs
-- Root cause: db.ts created `new PrismaClient()` eagerly on module import → module-level crash propagated everywhere
-- Fix 1: db.ts → Proxy-based lazy initialization. PrismaClient created only on first property access, error captured, isDbReady()/getDbError() exported
-- Fix 2: client.ts → z-ai provider now routes through z-ai-web-dev-sdk (dynamic import) instead of HTTP to external API. No API key needed — SDK handles auth internally
+- Previous fix (try/catch in getLLMSettings) was insufficient -- PrismaClient crashed at import time, before any try/catch runs
+- Root cause: db.ts created `new PrismaClient()` eagerly on module import -> module-level crash propagated everywhere
+- Fix 1: db.ts -> Proxy-based lazy initialization. PrismaClient created only on first property access, error captured, isDbReady()/getDbError() exported
+- Fix 2: client.ts -> z-ai provider now routes through z-ai-web-dev-sdk (dynamic import) instead of HTTP to external API. No API key needed -- SDK handles auth internally
 - Fix 3: Seeded Settings table with z-ai provider (enabled), glm-4.7-flashx as active model, temperature 0.7, maxTokens 4096
-- Verified full E2E: curl → /api/evaluate-deep → SDK → GLM-4.7 → structured analysis with 8 criteria scores
+- Verified full E2E: curl -> /api/evaluate-deep -> SDK -> GLM-4.7 -> structured analysis with 8 criteria scores
 - Also added isDbReady() guard in evaluate-deep route.ts (503 if DB down)
 
 Stage Summary:
-- Deep Analysis now works: click Analyze → Deep → real LLM analysis results
+- Deep Analysis now works: click Analyze -> Deep -> real LLM analysis results
 - 3 files changed: db.ts (lazy Proxy), client.ts (SDK for zai), settings.ts (isDbReady guard)
 - DB seeded with LLM provider config
 - Commits: fc6bcac (lazy Prisma), 8ac6736 (SDK + seed + E2E)
@@ -884,10 +884,10 @@ Task: Кросс-тесты всего приложения 3A Studio
 
 Work Log:
 - Проверен db.ts: хардкод fallback URL на месте (file:/home/z/my-project/db/custom.db)
-- Проверены ВСЕ env-зависимости: DATABASE_URL, AUTH_SECRET, ADMIN_USER/PASS — все имеют fallback
-- Проверен единственный импорт PrismaClient — только в db.ts, нигде больше
+- Проверены ВСЕ env-зависимости: DATABASE_URL, AUTH_SECRET, ADMIN_USER/PASS -- все имеют fallback
+- Проверен единственный импорт PrismaClient -- только в db.ts, нигде больше
 - Тест 18 API endpoints (login, logout, health, dashboard, settings, llm, llm/test, audit, standards, skills, agents, flows, knowledge, knowledge/search, prompt-templates, fetch-url, evaluate-deep, seed)
-- Результат: 17/18 = 200, 1 фейл (fetch-url — недоступный httpbin.org, не баг)
+- Результат: 17/18 = 200, 1 фейл (fetch-url -- недоступный httpbin.org, не баг)
 - Тест 18 UI страниц: все 200
 - Найден и исправлен баг: seed/reset проверяли role==='admin', но login ставит role==='owner'
 - Найдены и исправлены 3 TypeScript ошибки: re-export LLMResponse/ProviderConfig, z-ai SDK import fix
@@ -897,21 +897,21 @@ Work Log:
 
 Stage Summary:
 - Приложение полностью функционально после чистого рестарта
-- Prisma fallback URL работает — DATABASE_URL не нужен в preview
+- Prisma fallback URL работает -- DATABASE_URL не нужен в preview
 - Deep Analysis (evaluate-deep) стабильно работает через z-ai SDK
 - Все 18 UI страниц рендерятся без ошибок
 
 ---
 Task ID: 0.2
 Agent: main
-Task: Prisma Schema — дополнить из донора, исправить group→roleGroup
+Task: Prisma Schema -- дополнить из донора, исправить group->roleGroup
 
 Work Log:
 - Сравнил Prisma schema чистого репо (12 моделей) с донором 3a-studio-mas (35 моделей)
 - Добавил 23 модели из донора: Task, Workflow, PipelineStep, WorkflowExecution, StepExecution, AgentMessage, InteractionLog, PromptHistory, PromptVersion, PromptRegistryEntry, Contradiction, AgentImport, KeyValueStore, TestCase, TestRun, TestResult, CitationCheck, ApprovalRequest, ComparisonSnapshot, AnalysisSession, CostRecord, LatencyAlert, SelfCorrectionSession, FeedbackRecord
 - Обновил Agent model: добавлены roleGroup (вместо group), formula, twinId, avatar
-- Исправил group→roleGroup во всех файлах: API routes, dashboard helpers, seed, types, stores
-- Prisma validate ✅, Prisma db push ✅, Next.js build ✅, ESLint 0 errors ✅
+- Исправил group->roleGroup во всех файлах: API routes, dashboard helpers, seed, types, stores
+- Prisma validate [OK], Prisma db push [OK], Next.js build [OK], ESLint 0 errors [OK]
 
 Stage Summary:
 - Prisma schema: 35 моделей, полностью синхронизирована с донором
@@ -921,14 +921,14 @@ Stage Summary:
 ---
 Task ID: 0.3
 Agent: main
-Task: API Error Handling — единый wrapper
+Task: API Error Handling -- единый wrapper
 
 Work Log:
 - Проверил доноров: нет готового error handler
 - Создал src/lib/api-error.ts: AppError class + convenience constructors (NotFound, BadRequest, Unauthorized, Forbidden, Conflict)
 - Создал helpers: success(), created(), paginate()
-- Создал handleError() — конвертит ZodError, AppError, Prisma errors (P2025, P2002) в NextResponse
-- Build ✅, ESLint ✅
+- Создал handleError() -- конвертит ZodError, AppError, Prisma errors (P2025, P2002) в NextResponse
+- Build [OK], ESLint [OK]
 
 Stage Summary:
 - Единый API error handling готов к использованию в routes
@@ -942,7 +942,7 @@ Work Log:
 - Проверил доноров: Zod схемы есть только для auth
 - Создал src/lib/validations/agent.ts с schemas для: agentCreate, agentUpdate, agentQuery, flowCreate, flowUpdate, skillCreate, skillUpdate, standardCreate, standardUpdate, knowledgeCreate, documentCreate, promptTemplateCreate, pagination
 - Создал barrel export src/lib/validations/index.ts
-- Build ✅
+- Build [OK]
 
 Stage Summary:
 - Zod schemas готовы для подключения к API routes
@@ -963,12 +963,12 @@ Stage Summary:
 ---
 Task ID: 0.6
 Agent: main
-Task: ESLint Plugin — проверка
+Task: ESLint Plugin -- проверка
 
 Work Log:
 - Кастомные правила работают: 3a/max-lines (150), 3a/max-use-state (3), 3a/no-cross-layer, 3a/no-unicode-escapes
 - ESLint: 0 ошибок, 7 предупреждений (только в тестах)
-- Seed route: 149 строк — под лимитом
+- Seed route: 149 строк -- под лимитом
 
 Stage Summary:
 - ESLint работает корректно, Wave 0 полностью завершена

@@ -59,7 +59,7 @@ export function usePipelines() {
       }
       await fetchExecutions(flowId);
     } catch {
-      // execution failed — refresh will show error status
+      // execution failed -- refresh will show error status
     } finally {
       setState((s) => ({ ...s, running: false }));
     }

@@ -19,7 +19,7 @@ export function saveBackup(backup: FlowBackup): void {
     }
     localStorage.setItem(STORAGE_KEY, JSON.stringify(backups));
   } catch {
-    // localStorage full or unavailable — silently ignore
+    // localStorage full or unavailable -- silently ignore
   }
 }
 

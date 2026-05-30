@@ -52,7 +52,7 @@ export function FlowTemplateCard({
         <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
           {Object.entries(counts).map(([type, count]) => (
             <span key={type} className="px-1.5 py-0.5 rounded bg-muted">
-              {type}×{count}
+              {type} x {count}
             </span>
           ))}
         </div>

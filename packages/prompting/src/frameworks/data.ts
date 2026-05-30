@@ -133,7 +133,7 @@ export const FRAMEWORKS_DATA: PromptFramework[] = [
     id: "chain", name: "Multi-Agent Chain Framework", acronym: "CHAIN",
     description: "Complex framework for orchestrating multi-step agent pipelines with handoff coordination.",
     steps: [
-      { label: "Pipeline Definition", description: "Agent sequence and roles", required: true, placeholder: "Researcher → Writer → Reviewer → Publisher" },
+      { label: "Pipeline Definition", description: "Agent sequence and roles", required: true, placeholder: "Researcher -> Writer -> Reviewer -> Publisher" },
       { label: "Agent Prompts", description: "Per-agent instructions", required: true, placeholder: "Agent 1: Gather sources. Agent 2: Draft..." },
       { label: "Handoff Format", description: "Inter-agent data contract", required: true, placeholder: "JSON with title, content, sources, status" },
       { label: "Routing Rules", description: "Decision logic for flow", required: false, placeholder: "If score < 7, send back to Writer..." },

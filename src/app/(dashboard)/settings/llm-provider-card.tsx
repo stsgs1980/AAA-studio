@@ -84,7 +84,7 @@ export function LLMProviderCard({
       });
       const d = await res.json();
       setTestResult(p.id, d.ok
-        ? { ok: true, msg: `${d.model} — ${d.latencyMs}ms` }
+        ? { ok: true, msg: `${d.model} -- ${d.latencyMs}ms` }
         : { ok: false, msg: d.error?.slice(0, 120) ?? 'Failed' });
     } catch { setTestResult(p.id, { ok: false, msg: 'Network error' }); }
     finally { setTestingId(null); }
@@ -126,7 +126,7 @@ export function LLMProviderCard({
 
       <div className="flex items-center justify-between pt-2 border-t">
         <span className="text-[11px] text-muted-foreground">
-          Z.ai → docs.z.ai &ensp;|&ensp; OpenAI → platform.openai.com &ensp;|&ensp; Anthropic → console.anthropic.com
+          Z.ai {'->'} docs.z.ai &ensp;|&ensp; OpenAI {'->'} platform.openai.com &ensp;|&ensp; Anthropic {'->'} console.anthropic.com
         </span>
       </div>
     </div>

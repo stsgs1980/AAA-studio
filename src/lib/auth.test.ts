@@ -1,4 +1,4 @@
-// Tests for src/lib/auth.ts — JWT session management
+// Tests for src/lib/auth.ts -- JWT session management
 // Note: jose uses Web Crypto API which requires node environment, not jsdom
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';

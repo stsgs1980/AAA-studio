@@ -1,5 +1,5 @@
 // ============================================================================
-// Standards feature types — re-exports from @stsgs/shared
+// Standards feature types -- re-exports from @stsgs/shared
 // Single source of truth: packages/shared/src/types/standard.ts
 // ============================================================================
 

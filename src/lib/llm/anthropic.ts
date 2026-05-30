@@ -1,4 +1,4 @@
-// 3A Studio — Anthropic LLM provider (Claude API format)
+// 3A Studio -- Anthropic LLM provider (Claude API format)
 
 import type { CallParams } from './client';
 import type { LLMResponse } from './types';

@@ -1,5 +1,5 @@
 // ============================================================================
-// 3A Studio — Universal LLM Provider Types
+// 3A Studio -- Universal LLM Provider Types
 // ============================================================================
 
 export interface LLMMessage {
@@ -32,7 +32,7 @@ export interface LLMResponse {
 export type LLMProviderId = 'zai' | 'openai' | 'anthropic' | 'openrouter';
 export type LLMProviderFormat = 'openai' | 'anthropic';
 
-/** Stored per-provider config — supports built-in + custom providers */
+/** Stored per-provider config -- supports built-in + custom providers */
 export interface ProviderConfig {
   id: string;            // unique key, e.g. 'zai', 'openai', 'my-groq'
   name: string;          // display name
@@ -51,7 +51,7 @@ export interface LLMModel {
   contextWindow?: number;
 }
 
-/** Active LLM selection — which provider + model is currently in use */
+/** Active LLM selection -- which provider + model is currently in use */
 export interface LLMSettings {
   activeProviderId: string;  // which provider config to use
   activeModel: string;

@@ -1,4 +1,4 @@
-// Tests for src/middleware.ts — Auth middleware logic
+// Tests for src/middleware.ts -- Auth middleware logic
 
 import { describe, it, expect, vi } from 'vitest';
 import { NextRequest } from 'next/server';

@@ -1,5 +1,5 @@
 import type { NextRequest } from 'next/server';
-import { handleError, success, Forbidden, BadRequest } from '@/lib/api-error';
+import { handleError, success, Forbidden } from '@/lib/api-error';
 import { db } from '@/lib/db';
 
 function requireAdmin(request: NextRequest): boolean {

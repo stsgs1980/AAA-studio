@@ -1,4 +1,4 @@
-// Tests for src/lib/llm/types.ts — LLM provider types and defaults
+// Tests for src/lib/llm/types.ts -- LLM provider types and defaults
 
 import { describe, it, expect } from 'vitest';
 import {

@@ -1,4 +1,4 @@
-// 3A Studio — Auth utilities
+// 3A Studio -- Auth utilities
 
 import { SignJWT, jwtVerify } from 'jose';
 

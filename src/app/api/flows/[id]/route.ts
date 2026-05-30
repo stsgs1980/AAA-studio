@@ -4,7 +4,7 @@ import { flowUpdateSchema } from '@/lib/validations';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
-/** GET /api/flows/:id — fetch a single flow with parsed nodes/edges. */
+/** GET /api/flows/:id -- fetch a single flow with parsed nodes/edges. */
 export async function GET(_request: Request, { params }: RouteParams) {
   try {
     const { id } = await params;
@@ -20,7 +20,7 @@ export async function GET(_request: Request, { params }: RouteParams) {
   }
 }
 
-/** PUT /api/flows/:id — update a flow (nodes, edges, name, status). */
+/** PUT /api/flows/:id -- update a flow (nodes, edges, name, status). */
 export async function PUT(request: Request, { params }: RouteParams) {
   try {
     const { id } = await params;
@@ -40,7 +40,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
   }
 }
 
-/** DELETE /api/flows/:id — delete a flow and its versions. */
+/** DELETE /api/flows/:id -- delete a flow and its versions. */
 export async function DELETE(_request: Request, { params }: RouteParams) {
   try {
     const { id } = await params;

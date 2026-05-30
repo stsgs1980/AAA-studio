@@ -4,7 +4,7 @@
 
 import type { AgentType, AgentTypeVariable } from "@stsgs/shared";
 
-// ─── Variables ────────────────────────────────────────────────
+// -- Variables ------------------------
 
 const toolCallingVars: AgentTypeVariable[] = [
   { key: "role", label: "Role", required: true, description: "Who the agent is" },
@@ -36,7 +36,7 @@ const evaluatorVars: AgentTypeVariable[] = [
   { key: "threshold", label: "Threshold", required: false, defaultValue: "7", description: "Minimum score to pass (1-10)" },
 ];
 
-// ─── Templates ─────────────────────────────────────────────────
+// -- Templates -------------------------
 
 export const SYSTEM_PROMPT_TEMPLATES: AgentType[] = [
   {

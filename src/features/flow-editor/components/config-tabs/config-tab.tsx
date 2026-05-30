@@ -9,7 +9,7 @@ import type { LLMModel, ProviderConfig } from '@/lib/llm';
 const AI_TYPES = new Set(['llm', 'rag', 'agent', 'orchestrator']);
 
 /**
- * Configuration tab — editable node fields.
+ * Configuration tab -- editable node fields.
  * AI nodes get a provider + model dropdown from all configured providers.
  */
 export function ConfigTab() {

@@ -1,12 +1,12 @@
 // ============================================================================
-// 3A Studio — Unified API Error Handling
+// 3A Studio -- Unified API Error Handling
 // ============================================================================
 
 import { NextResponse } from 'next/server';
 import { ZodError } from 'zod';
 
 // ---------------------------------------------------------------------------
-// AppError — typed error class for API routes
+// AppError -- typed error class for API routes
 // ---------------------------------------------------------------------------
 
 export class AppError extends Error {
@@ -65,7 +65,7 @@ export function paginate<T>(items: T[], total: number, page: number, pageSize: n
 }
 
 // ---------------------------------------------------------------------------
-// Error → Response converter
+// Error -> Response converter
 // ---------------------------------------------------------------------------
 
 export function handleError(error: unknown): NextResponse {
@@ -101,7 +101,7 @@ export function handleError(error: unknown): NextResponse {
     );
   }
 
-  // Fallback — unknown error
+  // Fallback -- unknown error
   console.error('[API Error]', error);
   return NextResponse.json(
     { error: 'Internal server error', code: 'INTERNAL_ERROR' },

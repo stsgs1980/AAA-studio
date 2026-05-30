@@ -1,8 +1,8 @@
 import { db } from '@/lib/db';
-import { handleError, success, created, paginate } from '@/lib/api-error';
+import { handleError, created, paginate } from '@/lib/api-error';
 import { flowCreateSchema, paginationSchema } from '@/lib/validations';
 
-/** GET /api/flows — list all flows (latest first). */
+/** GET /api/flows -- list all flows (latest first). */
 export async function GET(request: Request) {
   try {
     const url = new URL(request.url);
@@ -19,7 +19,7 @@ export async function GET(request: Request) {
   }
 }
 
-/** POST /api/flows — create a new flow. */
+/** POST /api/flows -- create a new flow. */
 export async function POST(request: Request) {
   try {
     const body = flowCreateSchema.parse(await request.json());

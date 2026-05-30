@@ -65,7 +65,7 @@ export async function executeLLM(
   return { output: { ...inputs, model: usedModel, response: content, usage }, model: usedModel, usage };
 }
 
-/** Execute an agent node — LLM with role context. */
+/** Execute an agent node -- LLM with role context. */
 export async function executeAgent(
   inputs: Record<string, unknown>,
   data: Record<string, unknown>,
@@ -96,7 +96,7 @@ export async function executeAgent(
   return { output: { ...inputs, agentResponse: content }, model: usedModel, usage };
 }
 
-/** Prompt node — template + variable substitution. */
+/** Prompt node -- template + variable substitution. */
 export function executePrompt(
   inputs: Record<string, unknown>,
   data: Record<string, unknown>,
@@ -108,7 +108,7 @@ export function executePrompt(
   return { ...inputs, renderedPrompt: template };
 }
 
-/** Condition node — evaluate expression against inputs. */
+/** Condition node -- evaluate expression against inputs. */
 export function executeCondition(
   inputs: Record<string, unknown>,
   data: Record<string, unknown>,
@@ -117,7 +117,7 @@ export function executeCondition(
   return { ...inputs, conditionResult: safeEvalCondition(expr, inputs) };
 }
 
-/** Filter node — check condition, mark pass/fail. */
+/** Filter node -- check condition, mark pass/fail. */
 export function executeFilter(
   inputs: Record<string, unknown>,
   data: Record<string, unknown>,
@@ -126,7 +126,7 @@ export function executeFilter(
   return { ...inputs, passed: safeEvalCondition(cond, inputs) };
 }
 
-/** Transform node — apply string/data transforms. */
+/** Transform node -- apply string/data transforms. */
 export function executeTransform(
   inputs: Record<string, unknown>,
   data: Record<string, unknown>,

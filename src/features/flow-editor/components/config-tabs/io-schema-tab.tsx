@@ -4,7 +4,7 @@ import { useFlowEditorStore } from '../../store/flow-store';
 import { getNodeDefinition } from '../../nodes/node-registry';
 
 /**
- * I/O Schema tab — displays input and output ports for the selected node.
+ * I/O Schema tab -- displays input and output ports for the selected node.
  */
 export function IOSchemaTab() {
   const { nodes, selectedNodeId } = useFlowEditorStore();

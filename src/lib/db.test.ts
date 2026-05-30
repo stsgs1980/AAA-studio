@@ -1,4 +1,4 @@
-// Tests for src/lib/db.ts — Prisma client initialization
+// Tests for src/lib/db.ts -- Prisma client initialization
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 

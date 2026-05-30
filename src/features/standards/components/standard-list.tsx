@@ -54,7 +54,7 @@ export function StandardList() {
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-medium text-text-primary truncate">{s.name}</div>
                 <span className="text-[10px] text-text-muted">
-                  {s.rules.length} rules · v{s.version} · {s.category}
+                  {s.rules.length} rules | v{s.version} | {s.category}
                 </span>
               </div>
               <button

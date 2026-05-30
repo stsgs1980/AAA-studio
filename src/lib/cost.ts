@@ -1,4 +1,4 @@
-// 3A Studio — Model pricing table (per 1M tokens, USD)
+// 3A Studio -- Model pricing table (per 1M tokens, USD)
 // Used for cost estimation in flow executions.
 
 const MODEL_PRICING: Record<string, { input: number; output: number }> = {

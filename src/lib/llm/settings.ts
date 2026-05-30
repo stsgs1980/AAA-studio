@@ -1,4 +1,4 @@
-// 3A Studio — LLM Settings helper
+// 3A Studio -- LLM Settings helper
 // Stores provider list as JSON in Settings table + active selection.
 
 import { db } from '@/lib/db';

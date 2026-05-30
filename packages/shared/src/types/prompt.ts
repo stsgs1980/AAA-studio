@@ -41,7 +41,7 @@ export interface PromptBlock {
 export type SystemPromptLayer =
   | "identity" | "context" | "constraints" | "output" | "behavior";
 
-// ─── Techniques ───────────────────────────────────────────────
+// -- Techniques ------------------------
 export interface PromptTechnique {
   id: string;
   name: string;
@@ -56,7 +56,7 @@ export type TechniqueCategory =
   | "clarity" | "reasoning" | "constraint"
   | "role-play" | "formatting" | "meta" | "chain-of-thought";
 
-// ─── Frameworks ──────────────────────────────────────────────
+// -- Frameworks -----------------------
 export interface PromptFramework {
   id: string;
   name: string;
@@ -74,7 +74,7 @@ export interface FrameworkStep {
   placeholder: string;
 }
 
-// ─── Agent Types (10 patterns) ──────────────────────────────────
+// -- Agent Types (10 patterns) -----------------
 
 export type AgentTypeId =
   | "tool-calling" | "router" | "specialist" | "orchestrator" | "evaluator"
@@ -109,7 +109,7 @@ export interface AgentRole {
   maxTokens: number;
 }
 
-// ─── Builder Types ─────────────────────────────────────────────
+// -- Builder Types -----------------------
 
 export interface ToolDescriptionDef {
   name: string;

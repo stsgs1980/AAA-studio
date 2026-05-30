@@ -1,4 +1,4 @@
-// 3A Studio — LLM Provider Client. Routes to correct provider implementation.
+// 3A Studio -- LLM Provider Client. Routes to correct provider implementation.
 
 import type { LLMMessage, LLMResponse, ProviderConfig } from './types';
 export type { LLMResponse, ProviderConfig } from './types';
@@ -55,7 +55,7 @@ export async function callLLM(params: CallParams): Promise<LLMResponse> {
   }
 
   if (!provider.apiKey) {
-    throw new Error('API key is not configured. Go to Settings → LLM Provider to set it up.');
+    throw new Error('API key is not configured. Go to Settings -> LLM Provider to set it up.');
   }
 
   if (provider.format === 'anthropic') {
