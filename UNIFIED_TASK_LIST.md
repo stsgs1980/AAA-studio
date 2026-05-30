@@ -53,22 +53,19 @@
 ### 0.3 [DONE] API Error Handling
 - [+] `src/lib/api-error.ts` -- AppError class + handleError + success/created/paginate
 - [+] Zod + Prisma error detection
-- [+] Updated agents + dashboard routes
-- [~] Not all API routes use it yet (flows, skills, standards, knowledge still have old error handling)
+- [+] ALL 32 API routes use unified error handling
+### 0.4 [DONE] Zod Validation Schemas
+- [+] `src/lib/validations/agent.ts` -- Agent schemas (create, update, query)
+- [+] `src/lib/validations/flow.ts` -- Flow, Skill, Standard schemas
+- [+] `src/lib/validations/common.ts` -- Knowledge, Document, PromptTemplate, Task, Workflow, Pagination
+- [+] `src/lib/validations/index.ts` -- barrel export
+- [+] ALL API routes wired with Zod + error handling
+- [+] `npm run build` passes, `npm run lint` 0 errors
 
-### 0.4 [PARTIAL] Zod Validation Schemas
-- [+] `src/lib/validations/agent.ts` + `index.ts`
-- [ ] Flow validation schema
-- [ ] Skill validation schema
-- [ ] Standard validation schema
-- [ ] Knowledge validation schema
-- [ ] Task validation schema
-- [ ] Connect all to API routes
-
-### 0.5 [PARTIAL] Seed Data
-- [+] `prisma/seed.ts` -- basic demo data
-- [ ] Verify `bun run db:seed` works
-- [ ] Add more realistic demo data (workflows, executions)
+### 0.5 [DONE] Seed Data
+- [+] `prisma/seed.ts` -- demo data with 10 agents, hierarchy, 48 executions, 4 flows, 4 skills
+- [+] `bun run db:seed` works
+- [+] Dashboard seed/reset API routes
 
 ### 0.6 ESLint Plugin
 - [+] Custom rules work (`3a/max-lines`, `3a/max-use-state`, `3a/no-cross-layer`, `3a/no-unicode-escapes`)
