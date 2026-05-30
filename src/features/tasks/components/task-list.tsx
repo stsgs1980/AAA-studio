@@ -97,7 +97,7 @@ export function TaskList() {
               )}
               <button
                 onClick={() => deleteTask(task.id)}
-                className="text-xs text-red-600 hover:text-red-300 px-1"
+                className="text-xs text-red-600 hover:text-red-400 px-1"
               >
                 x
               </button>

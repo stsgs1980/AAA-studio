@@ -38,20 +38,20 @@ export function WorkflowCreateForm() {
         value={name}
         onChange={(e) => setName(e.target.value)}
         placeholder="Workflow name"
-        className="w-full bg-transparent text-sm border border-border rounded px-3 py-2 focus:outline-none focus:border-primary"
+        className="w-full bg-background text-foreground text-sm border border-border rounded px-3 py-2 focus:outline-none focus:border-primary"
         autoFocus
       />
       <textarea
         value={description}
         onChange={(e) => setDescription(e.target.value)}
         placeholder="Description (optional)"
-        className="w-full bg-transparent text-sm border border-border rounded px-3 py-2 focus:outline-none focus:border-primary resize-none h-16"
+        className="w-full bg-background text-foreground text-sm border border-border rounded px-3 py-2 focus:outline-none focus:border-primary resize-none h-16"
       />
       <div className="flex items-center gap-2">
         <select
           value={triggerType}
           onChange={(e) => setTriggerType(e.target.value)}
-          className="bg-transparent text-sm border border-border rounded px-2 py-1 focus:outline-none focus:border-primary"
+          className="bg-background text-foreground text-sm border border-border rounded px-2 py-1 focus:outline-none focus:border-primary"
         >
           {TRIGGER_TYPES.map((t) => (
             <option key={t} value={t}>{t}</option>
