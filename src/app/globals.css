@@ -38,6 +38,7 @@
 
 /* Dark theme — matched to original midnight palette (#0D1117 / #161B22 / #30363D) */
 .dark {
+  color-scheme: dark; /* makes native <select>/<option> render dark */
   --color-background: hsl(216 27.8% 7.1%);       /* #0D1117 midnight-base */
   --color-foreground: hsl(207.7 35.1% 92.7%);    /* #E6EDF3 text-primary */
   --color-card: hsl(215 21.4% 11%);              /* #161B22 midnight-card */

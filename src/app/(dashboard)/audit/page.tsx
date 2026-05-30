@@ -17,7 +17,7 @@ const ENTITY_COLORS: Record<string, string> = {
   execution: 'bg-emerald-500/10 text-emerald-500',
   prompt: 'bg-amber-500/10 text-amber-500',
   standard: 'bg-red-500/10 text-red-500',
-  skill: 'bg-cyan-500/10 text-cyan-700',
+  skill: 'bg-cyan-500/10 text-cyan-700 dark:text-cyan-400',
 };
 
 export default function AuditLogPage() {
@@ -47,7 +47,7 @@ export default function AuditLogPage() {
           <h1 className="text-2xl font-bold tracking-tight">Audit Log</h1>
         </div>
         <div className="flex items-center gap-2">
-          <select value={filter} onChange={(e) => setFilter(e.target.value)} className="h-9 px-3 rounded-md border bg-background text-sm">
+          <select value={filter} onChange={(e) => setFilter(e.target.value)} className="h-9 px-3 rounded-md border bg-input text-foreground text-sm">
             <option value="">All entities</option>
             <option value="agent">Agent</option>
             <option value="flow">Flow</option>

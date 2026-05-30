@@ -42,7 +42,7 @@ export default function QualityAnalyzerPage() {
         <div className="flex w-1/2 flex-col gap-3">
           {input.mode === "agent" && (
             <select value={input.agentId} onChange={(e) => handleAgentSelect(e.target.value)}
-              className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary">
+              className="w-full rounded-lg border bg-input text-foreground px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary">
               <option value="">Select an agent to evaluate...</option>
               {agents.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
             </select>

@@ -91,7 +91,7 @@ export default function StandardsManagerPage() {
 
       {/* Import status */}
       {importStatus && (
-        <div className={cn("px-4 py-2 rounded-lg text-sm font-medium max-w-xs", importStatus.includes("failed") ? "bg-red-500/15 text-red-600 border border-red-500/30" : "bg-brand-accent/15 text-brand-accent border border-brand-accent/30")}>
+        <div className={cn("px-4 py-2 rounded-lg text-sm font-medium max-w-xs", importStatus.includes("failed") ? "bg-red-500/15 text-red-600 dark:text-red-400 border border-red-500/30" : "bg-brand-accent/15 text-brand-accent border border-brand-accent/30")}>
           {importStatus}
         </div>
       )}

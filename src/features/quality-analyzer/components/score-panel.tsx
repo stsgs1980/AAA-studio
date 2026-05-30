@@ -15,10 +15,10 @@ function getBarColor(score: number): string {
 }
 
 function getTextColor(score: number): string {
-  if (score >= 8) return "text-green-600";
-  if (score >= 6) return "text-yellow-600";
-  if (score >= 4) return "text-orange-600";
-  return "text-red-600";
+  if (score >= 8) return "text-green-600 dark:text-green-400";
+  if (score >= 6) return "text-yellow-600 dark:text-yellow-400";
+  if (score >= 4) return "text-orange-600 dark:text-orange-400";
+  return "text-red-600 dark:text-red-400";
 }
 
 interface ScoreBarProps {

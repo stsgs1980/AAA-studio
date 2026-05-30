@@ -23,6 +23,6 @@ export const STATUS_COLORS: Record<string, string> = {
 export const PRIORITY_COLORS: Record<string, string> = {
   low: 'text-muted-foreground',
   medium: 'text-foreground',
-  high: 'text-orange-600',
-  critical: 'text-red-600',
+  high: 'text-orange-600 dark:text-orange-400',
+  critical: 'text-red-600 dark:text-red-400',
 };

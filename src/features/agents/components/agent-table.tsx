@@ -5,12 +5,12 @@ import type { AgentRecord } from '../types';
 import { CopyIcon, TrashIcon } from './agent-icons';
 
 export const groupColors: Record<string, string> = {
-  orchestrator: 'bg-purple-500/15 text-purple-600',
-  planner: 'bg-blue-500/15 text-blue-600',
-  researcher: 'bg-emerald-500/15 text-emerald-600',
-  coder: 'bg-cyan-500/15 text-cyan-600',
-  reviewer: 'bg-amber-500/15 text-amber-600',
-  tester: 'bg-orange-500/15 text-orange-600',
+  orchestrator: 'bg-purple-500/15 text-purple-600 dark:text-purple-400',
+  planner: 'bg-blue-500/15 text-blue-600 dark:text-blue-400',
+  researcher: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400',
+  coder: 'bg-cyan-500/15 text-cyan-600 dark:text-cyan-400',
+  reviewer: 'bg-amber-500/15 text-amber-600 dark:text-amber-400',
+  tester: 'bg-orange-500/15 text-orange-600 dark:text-orange-400',
   deployer: 'bg-pink-500/15 text-pink-400',
   specialist: 'bg-slate-500/15 text-slate-400',
 };

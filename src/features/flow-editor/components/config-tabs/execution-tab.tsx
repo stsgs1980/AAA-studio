@@ -70,7 +70,7 @@ function NodeCard({ r }: { r: ExecutionResult }) {
         <div className="flex items-center gap-2 text-[9px] text-muted-foreground">
           <span>{r.usage.totalTokens.toLocaleString()} tok</span>
           <span className="font-mono">({r.usage.promptTokens}/{r.usage.completionTokens})</span>
-          {r.cost != null && <span className="text-amber-600/80">{fmtCost(r.cost)}</span>}
+          {r.cost != null && <span className="text-amber-600 dark:text-amber-400/80">{fmtCost(r.cost)}</span>}
         </div>
       )}
       {r.error && <p className="text-[10px] text-destructive leading-relaxed">{r.error}</p>}
@@ -107,7 +107,7 @@ export function ExecutionTab() {
       {isRunning && (
         <div className="flex items-center gap-2 px-2 py-1.5 rounded border border-blue-500/30 bg-blue-500/5">
           <div className="h-1.5 w-1.5 rounded-full bg-blue-500 animate-pulse" />
-          <span className="text-[11px] font-medium text-blue-600">Running...</span>
+          <span className="text-[11px] font-medium text-blue-600 dark:text-blue-400">Running...</span>
         </div>
       )}
 
@@ -123,7 +123,7 @@ export function ExecutionTab() {
           </div>
           <div className="flex justify-between text-[10px]">
             <span className="text-muted-foreground">Est. cost</span>
-            <span className="font-medium text-amber-600">{fmtCost(summary.totalCost)}</span>
+            <span className="font-medium text-amber-600 dark:text-amber-400">{fmtCost(summary.totalCost)}</span>
           </div>
           {summary.models.length > 0 && (
             <div className="flex justify-between text-[10px]">

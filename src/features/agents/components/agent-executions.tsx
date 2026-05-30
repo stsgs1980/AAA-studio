@@ -15,10 +15,10 @@ interface ExecutionRecord {
 }
 
 const statusConfig: Record<string, { icon: typeof CheckCircle2; color: string; label: string }> = {
-  completed: { icon: CheckCircle2, color: 'text-emerald-600', label: 'Done' },
-  failed: { icon: XCircle, color: 'text-red-600', label: 'Failed' },
-  running: { icon: Loader2, color: 'text-blue-600', label: 'Running' },
-  pending: { icon: Clock, color: 'text-amber-600', label: 'Pending' },
+  completed: { icon: CheckCircle2, color: 'text-emerald-600 dark:text-emerald-400', label: 'Done' },
+  failed: { icon: XCircle, color: 'text-red-600 dark:text-red-400', label: 'Failed' },
+  running: { icon: Loader2, color: 'text-blue-600 dark:text-blue-400', label: 'Running' },
+  pending: { icon: Clock, color: 'text-amber-600 dark:text-amber-400', label: 'Pending' },
 };
 
 function formatDuration(ms: number | null): string {
@@ -80,8 +80,8 @@ export function AgentExecutions({ agentId }: Props) {
       {/* Summary chips */}
       {executions.length > 0 && (
         <div className="flex gap-3 text-xs">
-          <span className="text-emerald-600">{successCount} passed</span>
-          {failCount > 0 && <span className="text-red-600">{failCount} failed</span>}
+          <span className="text-emerald-600 dark:text-emerald-400">{successCount} passed</span>
+          {failCount > 0 && <span className="text-red-600 dark:text-red-400">{failCount} failed</span>}
           {avgDuration !== null && <span className="text-muted-foreground">avg {formatDuration(avgDuration)}</span>}
         </div>
       )}
@@ -112,7 +112,7 @@ export function AgentExecutions({ agentId }: Props) {
                         <Icon className={cn('h-3.5 w-3.5', cfg.color, ex.status === 'running' && 'animate-spin')} />
                         <span>{cfg.label}</span>
                       </div>
-                      {ex.error && <p className="text-red-600/70 mt-0.5 truncate max-w-[200px]" title={ex.error}>{ex.error}</p>}
+                      {ex.error && <p className="text-red-600 dark:text-red-400/70 mt-0.5 truncate max-w-[200px]" title={ex.error}>{ex.error}</p>}
                     </td>
                     <td className="px-3 py-2 font-mono">{formatDuration(ex.duration)}</td>
                     <td className="px-3 py-2 text-muted-foreground">{ex.tokensUsed ?? '--'}</td>

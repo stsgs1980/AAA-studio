@@ -55,7 +55,7 @@ export function ConfigTab() {
         <Fld label="Name">
           <input type="text" value={(data.label as string) ?? ''}
             onChange={(e) => set('label', e.target.value)}
-            className="w-full rounded border border-input bg-background px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary" />
+            className="w-full rounded border border-input bg-input text-foreground px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary" />
         </Fld>
         <Fld label="Type">
           <span className="text-xs text-muted-foreground">{def?.label ?? node.type}</span>
@@ -70,7 +70,7 @@ export function ConfigTab() {
           <Fld label="Provider">
             {providers.length > 0 ? (
               <select value={nodeProviderId} onChange={(e) => handleProviderChange(e.target.value)}
-                className="w-full rounded border border-input bg-background px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary">
+                className="w-full rounded border border-input bg-input text-foreground px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary">
                 <option value="">Default (from Settings)</option>
                 {providers.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
               </select>
@@ -79,14 +79,14 @@ export function ConfigTab() {
           <Fld label="Model">
             {models.length > 0 ? (
               <select value={(data.model as string) || ''} onChange={(e) => set('model', e.target.value)}
-                className="w-full rounded border border-input bg-background px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary">
+                className="w-full rounded border border-input bg-input text-foreground px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary">
                 <option value="">Default (from Settings)</option>
                 {models.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
               </select>
             ) : (
               <input type="text" placeholder="e.g. gpt-4o" value={(data.model as string) ?? ''}
                 onChange={(e) => set('model', e.target.value)}
-                className="w-full rounded border border-input bg-background px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary" />
+                className="w-full rounded border border-input bg-input text-foreground px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary" />
             )}
           </Fld>
           <Fld label="Temperature">
@@ -98,7 +98,7 @@ export function ConfigTab() {
           <Fld label="Max Tokens">
             <input type="number" value={(data.maxTokens as number) ?? 4096}
               onChange={(e) => set('maxTokens', parseInt(e.target.value))}
-              className="w-full rounded border border-input bg-background px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary" />
+              className="w-full rounded border border-input bg-input text-foreground px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary" />
           </Fld>
         </Grp>
       )}

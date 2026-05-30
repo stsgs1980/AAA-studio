@@ -25,7 +25,7 @@ export function ProviderRow({ provider, isActive, activeModel, expanded, isBuilt
   const [newModel, setNewModel] = useState('');
 
   const badge = testResult ? (testResult.ok
-    ? <span className="flex items-center gap-1 text-xs text-emerald-600"><CheckCircle className="h-3 w-3" />{testResult.msg}</span>
+    ? <span className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400"><CheckCircle className="h-3 w-3" />{testResult.msg}</span>
     : <span className="flex items-center gap-1 text-xs text-red-500"><XCircle className="h-3 w-3" />{testResult.msg}</span>) : null;
 
   return (

@@ -19,7 +19,7 @@ interface Props {
 }
 
 const FILE_COLORS: Record<string, string> = {
-  txt: "text-blue-500", md: "text-purple-500", pdf: "text-red-500", docx: "text-blue-600",
+  txt: "text-blue-500", md: "text-purple-500", pdf: "text-red-500", docx: "text-blue-600 dark:text-blue-400",
 };
 
 export function SearchBar({ collectionId, onSelect }: Props) {

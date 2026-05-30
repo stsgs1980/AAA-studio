@@ -25,7 +25,7 @@ export function StandardsPanel() {
         <Shield
           className={cn(
             "h-5 w-5",
-            allPassed ? "text-green-600" : "text-orange-600",
+            allPassed ? "text-green-600 dark:text-green-400" : "text-orange-600 dark:text-orange-400",
           )}
         />
         <div className="flex flex-col">
@@ -52,9 +52,9 @@ export function StandardsPanel() {
               )}
             >
               {item.passed ? (
-                <Check className="mt-0.5 h-3 w-3 shrink-0 text-green-600" />
+                <Check className="mt-0.5 h-3 w-3 shrink-0 text-green-600 dark:text-green-400" />
               ) : (
-                <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0 text-red-600" />
+                <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0 text-red-600 dark:text-red-400" />
               )}
               <span className="text-muted-foreground">{item.standardName}</span>
             </div>

@@ -14,7 +14,7 @@ export function Toolbar() {
       <div className="flex items-center gap-2 mr-4 min-w-0">
         <h2 className="text-sm font-semibold truncate">{flowName}</h2>
         {isDirty && <span className="text-[10px] text-amber-500 font-medium shrink-0">unsaved</span>}
-        {message && <span className="text-[10px] text-emerald-600 font-medium shrink-0">{message}</span>}
+        {message && <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium shrink-0">{message}</span>}
       </div>
 
       <div className="flex-1" />

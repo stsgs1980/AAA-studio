@@ -42,7 +42,7 @@ export function PasswordStrength({ password, className }: PasswordStrengthProps)
         )}
       </div>
       {level && (
-        <p className={cn("text-xs", score <= 1 ? "text-brand-red" : score === 2 ? "text-brand-amber" : score === 3 ? "text-yellow-600" : "text-brand-green")}>
+        <p className={cn("text-xs", score <= 1 ? "text-brand-red" : score === 2 ? "text-brand-amber" : score === 3 ? "text-yellow-600 dark:text-yellow-400" : "text-brand-green")}>
           {level.label}
         </p>
       )}

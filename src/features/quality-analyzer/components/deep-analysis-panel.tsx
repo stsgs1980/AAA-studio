@@ -46,7 +46,7 @@ export function DeepAnalysisPanel() {
               const isPass = parts.includes("PASS");
               const isWarn = parts.includes("WARN");
               return (
-                <p key={i} className={`text-sm font-bold ${isPass ? "text-green-600" : isWarn ? "text-yellow-600" : "text-red-600"}`}>
+                <p key={i} className={`text-sm font-bold ${isPass ? "text-green-600 dark:text-green-400" : isWarn ? "text-yellow-600 dark:text-yellow-400" : "text-red-600 dark:text-red-400"}`}>
                   {line}
                 </p>
               );
@@ -58,7 +58,7 @@ export function DeepAnalysisPanel() {
               const scoreMatch = line.match(/(\d+)/);
               const score = scoreMatch ? Number(scoreMatch[1]) : 0;
               return (
-                <p key={i} className={`font-medium ${score >= 7 ? "text-green-600" : score >= 4 ? "text-yellow-600" : "text-red-600"}`}>
+                <p key={i} className={`font-medium ${score >= 7 ? "text-green-600 dark:text-green-400" : score >= 4 ? "text-yellow-600 dark:text-yellow-400" : "text-red-600 dark:text-red-400"}`}>
                   {line}
                 </p>
               );

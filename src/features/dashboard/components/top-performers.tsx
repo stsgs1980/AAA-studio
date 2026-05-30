@@ -74,7 +74,7 @@ export function TopPerformers() {
                     transitionDuration: '600ms',
                   }} />
               </div>
-              <span className="text-[13px] font-semibold min-w-6 text-right text-cyan-700">
+              <span className="text-[13px] font-semibold min-w-6 text-right text-cyan-700 dark:text-cyan-400">
                 {agent.tasks}
               </span>
               <span className="text-[11px] min-w-[42px] text-right text-muted-foreground">

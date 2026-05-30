@@ -57,13 +57,13 @@ export function WorkflowList() {
             <button
               onClick={() => handleRun(wf)}
               disabled={runningId === wf.id}
-              className="text-xs bg-green-500/10 text-green-600 px-2 py-0.5 rounded hover:bg-green-500/20 disabled:opacity-50"
+              className="text-xs bg-green-500/10 text-green-600 dark:text-green-400 px-2 py-0.5 rounded hover:bg-green-500/20 disabled:opacity-50"
             >
               {runningId === wf.id ? 'Running...' : 'Run'}
             </button>
             <button
               onClick={() => deleteWorkflow(wf.id)}
-              className="text-xs text-red-600 hover:text-red-400 px-1"
+              className="text-xs text-red-600 dark:text-red-400 hover:text-red-400 px-1"
             >
               x
             </button>

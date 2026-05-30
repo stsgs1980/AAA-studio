@@ -12,7 +12,7 @@ interface Props {
   onUpload: (collectionId: string, file: File) => void;
 }
 
-const FILE_COLORS: Record<string, string> = { txt: 'text-blue-500', md: 'text-purple-500', pdf: 'text-red-500', docx: 'text-blue-600' };
+const FILE_COLORS: Record<string, string> = { txt: 'text-blue-500', md: 'text-purple-500', pdf: 'text-red-500', docx: 'text-blue-600 dark:text-blue-400' };
 
 export function DocumentList({ documents, collectionId, onDelete, onUpload }: Props) {
   const [dragOver, setDragOver] = useState(false);
