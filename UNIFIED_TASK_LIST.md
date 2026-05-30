@@ -7,242 +7,204 @@
 
 ### Clean repo `/home/z/my-project/3a-studio/`
 - [+] Next.js 15 + TypeScript + Tailwind 4 + shadcn/ui
-- [+] ESLint with custom plugin `3a/max-lines`, `3a/max-use-state`, `3a/no-cross-layer`, `3a/no-unicode-escapes`
-- [+] Prisma schema: 30 models (see schema.prisma)
+- [+] ESLint with custom plugin (4 rules)
+- [+] Prisma schema: 30 models
 - [+] `npm run build` -- passes
-- [+] `npm run lint` -- 0 errors, 7 warnings (tests only)
-- [+] API routes: 32 endpoints
-- [+] Features: agent-creator, agents, auth, dashboard, flow-editor, knowledge, landing, pipelines, prompt-library, prompt-studio, quality-analyzer, skills, standards, wiki
-- [+] Packages: @stsgs/ui, @stsgs/shared, @stsgs/prompting
-- [~] Some donor components not yet verified for rendering
-
-### Donor 1: `/home/z/my-project/3a-studio-mas/` (~280 src files)
-- Prisma: 30+ models
-- API routes: 33 endpoints (added /tasks, /self-correction, /executions)
-- Features: agents, auth, dashboard, flow-editor, knowledge, landing, pipelines, prompt-library, prompt-studio, standards, wiki
-- Missing: agent-creator, quality-analyzer, skills (as separate features)
-- Components: hierarchy (full), workflows, testing, citation, approval, comparison, cost-monitor, feedback, self-correction, task-input, paginator
-
-### Donor 2: `/home/z/my-project/p-mas/` (80 files)
-- Hierarchy, workflow components
-- API: agent hierarchy
-- Lib: api-retry, circuit-breaker, fallback-manager, health-check, resilience
-- Minimal but working
+- [+] `npm run lint` -- 0 errors
+- [+] API routes: 32 endpoints, ALL with unified error handling + Zod
+- [+] 16 features, 3 packages
+- [+] Auth middleware + API key encryption
+- [+] Multi-provider LLM (Z.ai, OpenAI, Anthropic, OpenRouter, custom)
+- [+] i18n (en/ru)
+- [+] Dark/light theme
 
 ---
 
-## Wave 0 -- Infrastructure (project runnable)
+## Wave 0 -- Infrastructure [DONE]
 
 ### 0.1 [DONE] SQLite/PostgreSQL conflict check
-- Result: NO conflict, pure Prisma ORM
-
-### 0.2 [DONE] Prisma Schema -- merged from donor
-- [+] Task model (from 3a-studio-mas)
-- [+] Workflow + PipelineStep + WorkflowExecution + StepExecution + AgentMessage (from 3a-studio-mas)
-- [+] PromptVersion + PromptHistory + PromptRegistryEntry (from 3a-studio-mas)
-- [+] TestCase + TestRun + TestResult (from 3a-studio-mas)
-- [+] SelfCorrectionSession (from 3a-studio-mas)
-- [+] CostRecord + LatencyAlert (from 3a-studio-mas)
-- [+] Agent model: formula, twinId, avatar (from 3a-studio-mas)
-- [+] Skill.standardIds
-- [+] Contradiction, AgentImport, KeyValueStore, InteractionLog
-- [+] CitationCheck, ApprovalRequest, ComparisonSnapshot, AnalysisSession, FeedbackRecord
-- [~] `npx prisma db push` -- needs verification with real data
-- [+] `npm run build` -- passes
-
-### 0.3 [DONE] API Error Handling
-- [+] `src/lib/api-error.ts` -- AppError class + handleError + success/created/paginate
-- [+] Zod + Prisma error detection
-- [+] ALL 32 API routes use unified error handling
-### 0.4 [DONE] Zod Validation Schemas
-- [+] `src/lib/validations/agent.ts` -- Agent schemas (create, update, query)
-- [+] `src/lib/validations/flow.ts` -- Flow, Skill, Standard schemas
-- [+] `src/lib/validations/common.ts` -- Knowledge, Document, PromptTemplate, Task, Workflow, Pagination
-- [+] `src/lib/validations/index.ts` -- barrel export
-- [+] ALL API routes wired with Zod + error handling
-- [+] `npm run build` passes, `npm run lint` 0 errors
-
+### 0.2 [DONE] Prisma Schema -- 30 models
+### 0.3 [DONE] API Error Handling -- all 32 routes
+### 0.4 [DONE] Zod Validation -- all routes
 ### 0.5 [DONE] Seed Data
-- [+] `prisma/seed.ts` -- demo data with 10 agents, hierarchy, 48 executions, 4 flows, 4 skills
-- [+] `bun run db:seed` works
-- [+] Dashboard seed/reset API routes
-
-### 0.6 ESLint Plugin
-- [+] Custom rules work (`3a/max-lines`, `3a/max-use-state`, `3a/no-cross-layer`, `3a/no-unicode-escapes`)
-- [ ] Rule `3a/no-json-column` (warn about String for JSON)
-- [+] `npm run lint` -- 0 errors
+### 0.6 [DONE] ESLint Plugin (4 rules, no-json-column cancelled -- String+JSON is deliberate)
 
 ---
 
-## Wave 1 -- Core API & Data Layer
+## Wave 1 -- Core API & Data Layer [DONE]
 
-### 1.1 Agent API -- full CRUD
-**Donor**: 3a-studio-mas/src/app/api/agents/ -- already exists
-- [ ] Verify current routes work
-- [ ] Add Zod validation
-- [ ] Add pagination
-- [ ] Test via curl
-
-### 1.2 Flow API -- CRUD + Execute
-**Donor**: 3a-studio-mas/src/app/api/flows/ -- already exists
-- [ ] Verify execute route
-- [ ] Add versioning
-- [ ] Add validation
-
-### 1.3 Skills & Standards API
-**Donor**: 3a-studio/src/app/api/skills/, standards/ -- already exists
-- [ ] Verify CRUD
-- [ ] Add export endpoint
-- [ ] Add import for Standards
-
-### 1.4 Knowledge API
-**Donor**: 3a-studio/src/app/api/knowledge/ -- already exists
-- [ ] Verify CRUD + search
-- [ ] Add document upload
-
-### 1.5 New API from donor
-**Donor**: 3a-studio-mas/src/app/api/
-- [ ] /tasks -- CRUD (from 3a-studio-mas)
-- [ ] /self-correction -- CRUD (from 3a-studio-mas)
-- [ ] /executions -- list (from 3a-studio-mas)
+### 1.1 [DONE] Agent API -- CRUD + pagination + Zod
+### 1.2 [DONE] Flow API -- CRUD + execute + Zod
+### 1.3 [DONE] Skills & Standards API -- CRUD + export + import
+### 1.4 [DONE] Knowledge API -- CRUD + search + document upload
 
 ---
 
-## Wave 2 -- Feature Stores (Zustand)
+## Wave 2 -- Feature Stores (Zustand) [DONE]
 
-### 2.1 Agent Store
-**Donor**: 3a-studio-mas/src/features/agents/hooks/use-agent-store.ts
-- [ ] Port/verify store
-- [ ] Connect to API
-
-### 2.2 Flow Store
-**Donor**: 3a-studio/src/features/flow-editor/store/flow-store.ts -- already exists
-- [ ] Verify store works with ReactFlow
-- [ ] Add undo/redo
-
-### 2.3 Prompt Studio Store
-**Donor**: 3a-studio/src/features/prompt-studio/store/ -- already exists
-- [ ] Verify store
-- [ ] Connect scoring
-
-### 2.4 Dashboard Store
-**Donor**: 3a-studio/src/features/dashboard/hooks/use-dashboard-data.ts
-- [ ] Verify data hooks
-- [ ] Add real-time updates
-
-### 2.5 Skills & Standards Stores
-**Donor**: 3a-studio/src/features/skills/store/, standards/store/
-- [ ] Port/verify stores
-
-### 2.6 Quality Analyzer Store
-**Donor**: 3a-studio/src/features/quality-analyzer/hooks/
-- [ ] Port/verify store
+### 2.1 [DONE] Agent Store -- use-agent-store.ts
+### 2.2 [DONE] Flow Store -- flow-store.ts (undo/redo deferred)
+### 2.3 [DONE] Prompt Studio Store -- with live scoring
+### 2.4 [DONE] Dashboard Store -- useDashboardData hook + auto-refresh
+### 2.5 [DONE] Skills & Standards Stores
+### 2.6 [DONE] Quality Analyzer Store
 
 ---
 
-## Wave 3 -- UI Pages (rendering)
+## Wave 3 -- UI Pages [DONE]
 
-### 3.1 Dashboard Page
-**Donor**: 3a-studio/src/app/(dashboard)/dashboard/ -- already exists
-- [ ] Verify rendering
-- [ ] Connect to real data via API
-- [ ] KPI cards, activity timeline, network chart
-
-### 3.2 Agents Page
-**Donor**: 3a-studio/src/app/(dashboard)/agents/ -- already exists
-- [ ] Verify agent list/table
-- [ ] CRUD via modals
-- [ ] Agent Creator wizard
-
-### 3.3 Flow Editor Page
-**Donor**: 3a-studio/src/app/(dashboard)/editor/ -- already exists
-- [ ] Verify ReactFlow canvas
-- [ ] Node palette (drag panel)
-- [ ] Config panel (IO schema, execution)
-
-### 3.4 Prompt Studio Page
-**Donor**: 3a-studio/src/app/(dashboard)/prompt-studio/ -- already exists
-- [ ] Verify tabs: Write, Frameworks, Formulas, Compare
-- [ ] Scoring panel
-
-### 3.5 Knowledge Page
-**Donor**: 3a-studio/src/app/(dashboard)/knowledge/ -- already exists
-- [ ] Verify collections list
-- [ ] Document viewer
-
-### 3.6 Skills & Standards Pages
-**Donor**: 3a-studio/src/app/(dashboard)/skills-page/, standards/ -- already exists
-- [ ] Verify lists
-- [ ] CRUD forms
-
-### 3.7 Wiki Page
-**Donor**: 3a-studio/src/app/(dashboard)/wiki/ -- already exists
-- [ ] Verify sidebar navigation
-- [ ] Verify content rendering
-
-### 3.8 Settings Page
-**Donor**: 3a-studio/src/app/(dashboard)/settings/ -- already exists
-- [ ] LLM provider cards
-- [ ] Connection test
+### 3.1 [DONE] Dashboard -- live data, KPI, sparklines, heatmap, timeline
+### 3.2 [DONE] Agents -- CRUD, EntityPicker, executions
+### 3.3 [DONE] Flow Editor -- ReactFlow, 18 nodes, live execution
+### 3.4 [DONE] Prompt Studio -- 5 modules (Write, Formulas, Frameworks, Compare, Intent)
+### 3.5 [DONE] Knowledge -- collections, documents, TF-IDF search
+### 3.6 [DONE] Skills & Standards -- CRUD, rules editor, cross-ref
+### 3.7 [DONE] Wiki -- 14 pages, drawer, shiki
+### 3.8 [DONE] Settings -- multi-provider LLM, theme, language
+### 3.9 [DONE] Landing + Auth (login/signup/verify/forgot/reset)
+### 3.10 [DONE] Pipelines -- real execution, node drill-down
+### 3.11 [DONE] Templates -- 6 flow templates + 15 prompt templates
+### 3.12 [DONE] Hierarchy -- parent/child graph
+### 3.13 [DONE] Audit Log -- JSON highlighting, filters
 
 ---
 
-## Wave 4 -- LLM Integration
+## Wave 4 -- LLM Integration [DONE]
 
-### 4.1 z-ai-web-dev-sdk Chat Completions
-- [ ] Configure SDK in backend
-- [ ] `/api/llm` route -- chat proxy
-- [ ] `/api/llm/test` -- connection test
-
-### 4.2 Prompt Evaluation (Quality Analyzer)
-- [ ] `/api/evaluate-deep` -- deep prompt evaluation
-- [ ] Scoring rubric from @stsgs/prompting
-- [ ] Results in UI
-
-### 4.3 Flow Execution Engine
-- [ ] `/api/flows/[id]/execute` -- run flow
-- [ ] node-exec.ts -- execute nodes
-- [ ] Results in PipelineExecution
+### 4.1 [DONE] z-ai-web-dev-sdk -- /api/llm, /api/llm/test
+### 4.2 [DONE] Prompt Evaluation -- /api/evaluate-deep, scoring rubric
+### 4.3 [DONE] Flow Execution Engine -- /api/flows/[id]/execute, per-node provider/model, usage tracking
 
 ---
 
-## Wave 5 -- Advanced Features
+## Wave 5 -- Agent Intelligence (CURRENT)
 
-### 5.1 Pipeline Engine (Workflow)
-**Donor**: 3a-studio-mas -- Task, Workflow models
-- [ ] Workflow CRUD
-- [ ] Step execution
-- [ ] Agent messages
+> This wave makes agents ACTUALLY WORK together, not just exist as data.
 
-### 5.2 Self-Correction Loop
-**Donor**: 3a-studio-mas -- SelfCorrectionSession
-- [ ] API route
-- [ ] UI panel
+### 5.1 Task API + UI
+**Donor**: 3a-studio-mas/src/app/api/tasks/
+**Why**: Agents need tasks. Without Task API, agents are just configs in DB.
+**Prisma**: Task model already exists (id, title, description, status, priority, agentId, etc.)
+- [ ] Check donor for working Task API code
+- [ ] Create /api/tasks -- CRUD with Zod validation
+- [ ] Create /api/tasks/[id] -- GET/PUT/DELETE
+- [ ] Create Task store (Zustand)
+- [ ] Create Task UI: task list, create form, assign to agent
+- [ ] Verify build + lint
 
-### 5.3 Agent Import
+### 5.2 Workflow Engine
+**Donor**: 3a-studio-mas/src/app/api/workflows/ (if exists)
+**Why**: Orchestrate multi-step agent workflows. Different from Flow (visual canvas) -- Workflow is programmatic step-by-step execution.
+**Prisma**: Workflow, WorkflowExecution, StepExecution, AgentMessage already exist
+- [ ] Check donor for Workflow API code
+- [ ] Create /api/workflows -- CRUD
+- [ ] Create /api/workflows/[id]/execute -- run workflow steps
+- [ ] Step execution: sequential, parallel, conditional
+- [ ] AgentMessage logging per step
+- [ ] Workflow UI: list, create, monitor execution
+- [ ] Verify build + lint
+
+### 5.3 Executions API (unified)
+**Donor**: 3a-studio-mas/src/app/api/executions/
+**Why**: Single endpoint to query all execution types (agent, flow, workflow)
+- [ ] Check donor for executions code
+- [ ] Create /api/executions -- unified list with filters (type, status, agentId)
+- [ ] Verify build + lint
+
+### 5.4 Router -> Specialist Routing
+**Why**: Router agent type exists as template but doesn't actually route. This makes the Router pattern functional.
+**How**: When a Router agent classifies input, it should forward to the matching Specialist agent.
+- [ ] Extend /api/flows/[id]/execute: if Router node, classify then forward to linked agent
+- [ ] Add "routing map" to Router node config: category -> agentId
+- [ ] Flow Editor: config panel for Router node shows agent dropdown per category
+- [ ] Verify build + lint
+
+### 5.5 Self-Correction Loop
+**Donor**: 3a-studio-mas -- SelfCorrectionSession model
+**Why**: Agent generates, Evaluator scores, if below threshold -> self-correct and retry.
+**Prisma**: SelfCorrectionSession already exists
+- [ ] Check donor for self-correction code
+- [ ] Create /api/self-correction -- start session, get session, list sessions
+- [ ] Logic: agent output -> evaluate -> if below threshold -> re-prompt with feedback -> repeat
+- [ ] UI: self-correction panel in agent detail
+- [ ] Verify build + lint
+
+### 5.6 Team Builder (for Orchestrator)
+**Why**: Orchestrator template exists but no way to assign team members.
+- [ ] Add teamMembers field to Agent model or use existing Flow nodes
+- [ ] Agent detail page: "Team" tab showing child agents + their roles
+- [ ] Orchestrator node in Flow Editor: auto-populate team from agent's children
+- [ ] Verify build + lint
+
+---
+
+## Wave 6 -- Resilience & Polish
+
+### 6.1 Resilience from donor
+**Donor**: p-mas/src/lib/ -- api-retry, circuit-breaker, fallback-manager, health-check
+- [ ] Port api-retry with exponential backoff
+- [ ] Port circuit-breaker
+- [ ] Port fallback-manager
+- [ ] Port health-check
+- [ ] Apply to /api/llm and /api/flows/[id]/execute
+
+### 6.2 Flow Store undo/redo
+- [ ] Implement undo/redo in flow-store.ts
+- [ ] Keyboard shortcuts Ctrl+Z / Ctrl+Shift+Z
+
+### 6.3 Agent Import (ZIP)
 **Donor**: 3a-studio-mas -- AgentImport model
-- [ ] ZIP upload
+- [ ] ZIP upload endpoint
 - [ ] Parse agents from archive
+- [ ] Import UI
 
-### 5.4 Hierarchy Visualization
+### 6.4 Hierarchy Visualization
 **Donor**: p-mas -- hierarchy components
-- [ ] Tree view
-- [ ] Drag & drop
+- [ ] Tree view (not just graph)
+- [ ] Drag & drop reparenting
+
+### 6.5 Standards -> ESLint bridge
+- [ ] Generate ESLint rules from Standards DB records
+- [ ] Export as JSON config
+
+### 6.6 Wiki -> GitHub sync
+- [ ] Sync wiki pages to GitHub Wiki
+
+### 6.7 Prompt Export
+- [ ] Export prompts in multiple formats (Markdown, YAML, JSON)
 
 ---
 
-## Wave 6 -- Polish & Quality
+## Wave 7 -- Quality
 
-### 6.1 i18n
-**Donor**: 3a-studio/src/lib/i18n/ -- already exists
-- [ ] RU/EN translations
-- [ ] Language switcher
+### 7.1 i18n -- full translations
+- [ ] Complete RU translations for all pages
+- [ ] Complete EN translations for all pages
 
-### 6.2 Testing
-- [ ] Unit tests for lib/
+### 7.2 Testing
+- [ ] Unit tests for lib/ (auth, crypto, llm, api-error)
 - [ ] Integration tests for API routes
-- [ ] E2E for key flows
+- [ ] E2E for key flows (agent CRUD, flow execution)
 
-### 6.3 Documentation
-- [ ] API docs (OpenAPI?)
+### 7.3 Documentation
+- [ ] API docs (OpenAPI)
 - [ ] Wiki content verification
+
+---
+
+## Wave 8 -- Production
+
+### 8.1 Multi-user auth
+- [ ] Replace demo admin/admin with NextAuth.js / Clerk
+- [ ] RBAC (roles/permissions)
+
+### 8.2 API Rate Limiting
+- [ ] Rate limit /api/llm
+- [ ] Rate limit /api/flows/[id]/execute
+
+### 8.3 Versioning
+- [ ] Versioning for standards + skills
+
+### 8.4 Monitoring
+- [ ] Logging
+- [ ] Health monitoring
