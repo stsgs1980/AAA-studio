@@ -1,5 +1,5 @@
 // ============================================================================
-// 3A Studio - Prisma Schema
+// 3A Studio - Prisma Schema (merged from 3a-studio-mas + p-mas)
 // ============================================================================
 
 generator client {
@@ -16,69 +16,93 @@ datasource db {
 // ============================================================================
 
 model Agent {
-  id          String   @id @default(cuid())
-  name        String
-  role        String
-  group       String   @default("specialist") // RoleGroup enum
-  status      String   @default("draft")      // active | inactive | draft
-  model       String   @default("gpt-4")
-  temperature Float    @default(0.7)
-  maxTokens   Int      @default(4096)
-  systemPrompt String  @default("")
-  tools       String   @default("[]") // JSON array
-  skills      String   @default("[]") // JSON array
-  standards   String   @default("[]") // JSON array
-  parentId    String?
-  description String   @default("")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           String   @id @default(cuid())
+  name         String
+  role         String
+  roleGroup    String   @default("specialist") // Strategy | Tactics | Control | Execution | Governance | Capabilities | Infrastructure | Behavior
+  status       String   @default("active")     // active | idle | error | offline | draft
+  model        String   @default("gpt-4")
+  temperature  Float    @default(0.7)
+  maxTokens    Int      @default(4096)
+  systemPrompt String   @default("")
+  formula      String   @default("")           // ToT | CoVe | ReWOO | Reflexion | ReAct | MoA
+  tools        String   @default("[]")         // JSON array
+  skills       String   @default("[]")         // JSON array
+  standards    String   @default("[]")         // JSON array
+  parentId     String?
+  twinId       String?  @unique
+  description  String   @default("")
+  avatar       String   @default("")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  parent      Agent?   @relation("AgentHierarchy", fields: [parentId], references: [id])
-  children    Agent[]  @relation("AgentHierarchy")
+  parent   Agent?  @relation("AgentHierarchy", fields: [parentId], references: [id])
+  children Agent[] @relation("AgentHierarchy")
+  twin     Agent?  @relation("AgentTwin", fields: [twinId], references: [id])
+  twinOf   Agent?  @relation("AgentTwin")
 
-  executions  AgentExecution[]
+  tasks                  Task[]
+  executions             AgentExecution[]
+  promptVersions         PromptVersion[]
+  selfCorrectionSessions SelfCorrectionSession[]
 
-  @@index([group])
+  @@index([roleGroup])
   @@index([status])
   @@index([parentId])
 }
 
 model AgentExecution {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   agentId     String
-  status      String   @default("pending") // pending | running | completed | failed
-  input       String   @default("{}")     // JSON
-  output      String?                  // JSON
+  status      String    @default("pending") // pending | running | completed | failed
+  input       String    @default("{}")      // JSON
+  output      String?                       // JSON
   error       String?
-  duration    Int?                     // ms
-  tokensUsed  Int?                     // total tokens
-  startedAt   DateTime @default(now())
+  duration    Int?                          // ms
+  tokensUsed  Int?                          // total tokens
+  startedAt   DateTime  @default(now())
   completedAt DateTime?
 
-  agent       Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  agent Agent @relation(fields: [agentId], references: [id], onDelete: Cascade)
 
   @@index([agentId])
   @@index([status])
 }
 
 // ============================================================================
-// Flow Editor
+// Task (from P-MAS)
+// ============================================================================
+
+model Task {
+  id          String   @id @default(cuid())
+  title       String
+  description String   @default("")
+  status      String   @default("pending") // pending | running | completed | failed
+  priority    String   @default("medium")  // low | medium | high | critical
+  agentId     String?
+  agent       Agent?   @relation(fields: [agentId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ============================================================================
+// Flow / Visual Editor
 // ============================================================================
 
 model Flow {
-  id          String       @id @default(cuid())
+  id          String   @id @default(cuid())
   name        String
-  description String       @default("")
-  version     Int          @default(1)
-  status      String       @default("draft") // draft | active | archived
-  nodes       String       @default("[]")    // JSON FlowNode[]
-  edges       String       @default("[]")    // JSON FlowEdge[]
-  metadata    String       @default("{}")    // JSON
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  description String   @default("")
+  version     Int      @default(1)
+  status      String   @default("draft") // draft | active | archived
+  nodes       String   @default("[]")    // JSON FlowNode[]
+  edges       String   @default("[]")    // JSON FlowEdge[]
+  metadata    String   @default("{}")    // JSON
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  versions    FlowVersion[]
-  executions  PipelineExecution[]
+  versions   FlowVersion[]
+  executions PipelineExecution[]
 
   @@index([status])
 }
@@ -92,29 +116,147 @@ model FlowVersion {
   description String   @default("")
   createdAt   DateTime @default(now())
 
-  flow        Flow     @relation(fields: [flowId], references: [id], onDelete: Cascade)
+  flow Flow @relation(fields: [flowId], references: [id], onDelete: Cascade)
 
   @@unique([flowId, version])
   @@index([flowId])
 }
 
-// ============================================================================
-// Pipeline Execution
-// ============================================================================
-
 model PipelineExecution {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   flowId      String
-  status      String   @default("pending") // pending | running | completed | failed
-  result      String?  // JSON
+  status      String    @default("pending") // pending | running | completed | failed
+  result      String?                       // JSON
   error       String?
-  startedAt   DateTime @default(now())
+  startedAt   DateTime  @default(now())
   completedAt DateTime?
 
-  flow        Flow     @relation(fields: [flowId], references: [id], onDelete: Cascade)
+  flow Flow @relation(fields: [flowId], references: [id], onDelete: Cascade)
 
   @@index([flowId])
   @@index([status])
+}
+
+// ============================================================================
+// Workflow / Pipeline Engine (from P-MAS)
+// ============================================================================
+
+model Workflow {
+  id            String     @id @default(cuid())
+  name          String
+  description   String     @default("")
+  status        String     @default("draft")  // draft | active | paused | archived
+  triggerType   String     @default("manual") // manual | event | schedule | webhook | agent
+  triggerConfig String     @default("{}")     // JSON
+  version       Int        @default(1)
+  tags          String     @default("")       // comma-separated
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  steps      PipelineStep[]
+  executions WorkflowExecution[]
+}
+
+model PipelineStep {
+  id             String   @id @default(cuid())
+  workflowId     String
+  workflow       Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  order          Int
+  name           String
+  agentId        String?
+  roleGroup      String?
+  action         String   @default("process") // process | review | transform | delegate | broadcast | decision
+  inputSchema    String   @default("{}")      // JSON
+  outputSchema   String   @default("{}")      // JSON
+  condition      String   @default("{}")      // JSON
+  fallbackStepId String?
+  timeout        Int      @default(300)
+  retryPolicy    String   @default("{}")      // JSON
+  config         String   @default("{}")      // JSON
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  stepExecutions StepExecution[]
+}
+
+model WorkflowExecution {
+  id          String     @id @default(cuid())
+  workflowId  String
+  workflow    Workflow   @relation(fields: [workflowId], references: [id])
+  status      String     @default("running") // running | completed | failed | cancelled | paused
+  taskContext String     @default("{}")      // JSON
+  input       String     @default("{}")      // JSON
+  output      String     @default("{}")      // JSON
+  error       String?
+  startedAt   DateTime   @default(now())
+  completedAt DateTime?
+
+  steps StepExecution[]
+}
+
+model StepExecution {
+  id          String            @id @default(cuid())
+  executionId String
+  execution   WorkflowExecution @relation(fields: [executionId], references: [id], onDelete: Cascade)
+  stepId      String
+  step        PipelineStep      @relation(fields: [stepId], references: [id])
+  agentId     String?
+  status      String            @default("pending") // pending | running | completed | failed | skipped | waiting_feedback
+  inputData   String            @default("{}")      // JSON
+  outputData  String            @default("{}")      // JSON
+  error       String?
+  thinking    String?
+  startedAt   DateTime?
+  completedAt DateTime?
+
+  messages AgentMessage[]
+}
+
+model AgentMessage {
+  id               String        @id @default(cuid())
+  stepExecutionId  String
+  stepExecution    StepExecution @relation(fields: [stepExecutionId], references: [id], onDelete: Cascade)
+  fromAgentId      String
+  toAgentId        String?
+  type             String        @default("request") // request | response | feedback | error | status | context_update
+  content          String        @default("{}")      // JSON
+  metadata         String        @default("{}")      // JSON
+  sources          String        @default("[]")
+  verificationStatus String      @default("unverified") // unverified | verified | disputed | hallucination
+  timestamp        DateTime      @default(now())
+}
+
+// ============================================================================
+// Interaction Log (from P-MAS)
+// ============================================================================
+
+model InteractionLog {
+  id          String   @id @default(cuid())
+  fromAgentId String
+  toAgentId   String?
+  type        String   @default("request") // request | response | feedback | error | status | context_update
+  status      String   @default("success") // success | error | conflict | timeout
+  duration    Int      @default(0)         // ms
+  content     String   @default("{}")      // JSON
+  metadata    String   @default("{}")      // JSON
+  timestamp   DateTime @default(now())
+}
+
+// ============================================================================
+// Prompt History (from P-MAS)
+// ============================================================================
+
+model PromptHistory {
+  id          String   @id @default(cuid())
+  prompt      String
+  intent      String   @default("")
+  confidence  Int      @default(0)       // 0-100
+  formula     String   @default("")
+  avgScore    Int      @default(0)       // 0-100
+  verdict     String   @default("")      // approved | needs-work | rejected
+  stepCount   Int      @default(0)
+  executionId String?
+  createdAt   DateTime @default(now())
 }
 
 // ============================================================================
@@ -122,17 +264,361 @@ model PipelineExecution {
 // ============================================================================
 
 model PromptTemplate {
+  id        String   @id @default(cuid())
+  name      String
+  category  String   @default("general")
+  content   String
+  variables String   @default("[]") // JSON string[]
+  framework String?
+  tags      String   @default("[]") // JSON string[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([category])
+}
+
+// ============================================================================
+// Prompt Versioning (from P-MAS)
+// ============================================================================
+
+model PromptVersion {
+  id           String   @id @default(cuid())
+  agentId      String
+  version      Int
+  label        String   @default("")
+  systemPrompt String
+  isActive     Boolean  @default(false)
+  changelog    String   @default("")
+  metadata     String   @default("{}") // JSON
+  createdAt    DateTime @default(now())
+
+  agent Agent @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  @@unique([agentId, version])
+  @@index([agentId, isActive])
+}
+
+// ============================================================================
+// Prompt Registry (from P-MAS)
+// ============================================================================
+
+model PromptRegistryEntry {
   id          String   @id @default(cuid())
   name        String
-  category    String   @default("general")
+  category    String   @default("general") // system | agent | task | tool
+  description String   @default("")
   content     String
-  variables   String   @default("[]") // JSON string[]
-  framework   String?
-  tags        String   @default("[]") // JSON string[]
+  version     Int      @default(1)
+  isActive    Boolean  @default(true)
+  tags        String   @default("")
+  metadata    String   @default("{}") // JSON
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  @@unique([name, version])
   @@index([category])
+  @@index([isActive])
+}
+
+// ============================================================================
+// Contradiction Detection (from P-MAS)
+// ============================================================================
+
+model Contradiction {
+  id             String   @id @default(cuid())
+  agentId        String
+  relatedAgentId String?
+  category       String   // conflict | gap | duplicate | circular | orphan
+  severity       String   @default("warning") // critical | warning | info
+  title          String
+  description    String   @default("")
+  evidence       String   @default("{}") // JSON
+  autoDetected   Boolean  @default(true)
+  resolved       Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([agentId])
+  @@index([category])
+  @@index([severity])
+  @@index([autoDetected])
+}
+
+// ============================================================================
+// Agent Import (from P-MAS Universal Parser)
+// ============================================================================
+
+model AgentImport {
+  id            String   @id @default(cuid())
+  sourceType    String   // zip | github | local
+  sourceUrl     String?
+  fileName      String?
+  status        String   @default("pending") // pending | parsing | done | error
+  detectedNodes Int      @default(0)
+  detectedEdges Int      @default(0)
+  parseResult   String   @default("{}") // JSON
+  error         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([status])
+  @@index([sourceType])
+}
+
+// ============================================================================
+// Key-Value Store (from P-MAS)
+// ============================================================================
+
+model KeyValueStore {
+  id        String    @id @default(cuid())
+  scope     String    @default("global")
+  key       String
+  value     String
+  valueType String    @default("string") // string | number | boolean | json | array
+  expiresAt DateTime?
+  metadata  String    @default("{}")     // JSON
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@unique([scope, key])
+  @@index([scope])
+  @@index([key])
+}
+
+// ============================================================================
+// Testing (from P-MAS)
+// ============================================================================
+
+model TestCase {
+  id             String   @id @default(cuid())
+  name           String
+  agentId        String?
+  input          String   // JSON
+  expectedOutput String   // JSON
+  category       String   @default("general") // functional | edge_case | regression | performance
+  difficulty     String   @default("medium")
+  tags           String   @default("")
+  metadata       String   @default("{}") // JSON
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  results TestResult[]
+
+  @@index([agentId])
+}
+
+model TestRun {
+  id          String    @id @default(cuid())
+  name        String
+  agentId     String?
+  status      String    @default("pending") // pending | running | completed | failed
+  totalCases  Int       @default(0)
+  passedCases Int       @default(0)
+  failedCases Int       @default(0)
+  errorCases  Int       @default(0)
+  duration    Int       @default(0)     // ms
+  metrics     String    @default("{}")  // JSON
+  metadata    String    @default("{}")  // JSON
+  createdAt   DateTime  @default(now())
+  completedAt DateTime?
+
+  results TestResult[]
+
+  @@index([agentId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model TestResult {
+  id             String   @id @default(cuid())
+  runId          String
+  run            TestRun  @relation(fields: [runId], references: [id], onDelete: Cascade)
+  caseId         String
+  testCase       TestCase @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  status         String   @default("pending") // passed | failed | error
+  actualOutput   String   @default("{}")      // JSON
+  judgeScore     Int      @default(0)
+  judgeLabel     String   @default("")
+  judgeReasoning String   @default("")
+  duration       Int      @default(0) // ms
+  error          String?
+  createdAt      DateTime @default(now())
+
+  @@index([runId])
+  @@index([caseId])
+  @@index([status])
+}
+
+// ============================================================================
+// Citation Verification (from P-MAS)
+// ============================================================================
+
+model CitationCheck {
+  id         String   @id @default(cuid())
+  messageId  String
+  source     String
+  claim      String
+  verdict    String   @default("pending") // pending | verified | disputed | hallucination | unreachable
+  confidence Int      @default(0)
+  reasoning  String   @default("")
+  checkedAt  DateTime @default(now())
+
+  @@index([messageId])
+  @@index([verdict])
+}
+
+// ============================================================================
+// HITL Approvals (from P-MAS)
+// ============================================================================
+
+model ApprovalRequest {
+  id          String    @id @default(cuid())
+  agentId     String?
+  workflowId  String?
+  stepId      String?
+  action      String
+  actionType  String    @default("general") // deploy | delete | modify | external_call | data_access | prompt_change
+  payload     String    @default("{}")      // JSON
+  riskLevel   String    @default("medium")
+  status      String    @default("pending") // pending | approved | rejected | expired | cancelled
+  response    String?
+  respondedBy String?
+  expiresAt   DateTime?
+  createdAt   DateTime  @default(now())
+  respondedAt DateTime?
+
+  @@index([agentId])
+  @@index([status])
+  @@index([riskLevel])
+  @@index([createdAt])
+}
+
+// ============================================================================
+// Comparison (from P-MAS)
+// ============================================================================
+
+model ComparisonSnapshot {
+  id              String   @id @default(cuid())
+  type            String   // version_diff | agent_benchmark | regression
+  agentAId        String
+  agentBId        String?
+  versionA        Int?
+  versionB        Int?
+  diff            String   @default("{}") // JSON
+  metrics         String   @default("{}") // JSON
+  summary         String   @default("")
+  findings        String   @default("[]") // JSON array
+  regressionItems String   @default("[]") // JSON array
+  createdAt       DateTime @default(now())
+
+  @@index([type])
+  @@index([agentAId])
+  @@index([createdAt])
+}
+
+// ============================================================================
+// Multi-Agent Analysis (from P-MAS)
+// ============================================================================
+
+model AnalysisSession {
+  id          String   @id @default(cuid())
+  name        String   @default("")
+  agentIds    String   // JSON array
+  findings    String   @default("[]")
+  conflicts   String   @default("[]")
+  suggestions String   @default("[]")
+  metrics     String   @default("{}")
+  summary     String   @default("")
+  status      String   @default("completed")
+  createdAt   DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+// ============================================================================
+// Cost Monitoring (from P-MAS)
+// ============================================================================
+
+model CostRecord {
+  id            String   @id @default(cuid())
+  agentId       String?
+  executionType String   @default("workflow") // workflow | test | analysis
+  executionId   String?
+  inputTokens   Int      @default(0)
+  outputTokens  Int      @default(0)
+  totalTokens   Int      @default(0)
+  durationMs    Int      @default(0)
+  costUsd       Float    @default(0)
+  model         String   @default("")
+  timestamp     DateTime @default(now())
+
+  @@index([agentId])
+  @@index([executionType])
+  @@index([timestamp])
+}
+
+model LatencyAlert {
+  id            String   @id @default(cuid())
+  agentId       String?
+  metric        String   // latency | error_rate | throughput | cost
+  currentValue  Float
+  threshold     Float
+  severity      String   @default("warning") // info | warning | critical
+  message       String   @default("")
+  acknowledged  Boolean  @default(false)
+  createdAt     DateTime @default(now())
+
+  @@index([agentId])
+  @@index([severity])
+  @@index([acknowledged])
+  @@index([createdAt])
+}
+
+// ============================================================================
+// Self-Correction (from P-MAS)
+// ============================================================================
+
+model SelfCorrectionSession {
+  id             String   @id @default(cuid())
+  agentId        String?
+  agent          Agent?   @relation(fields: [agentId], references: [id])
+  input          String
+  initialOutput  String
+  judgeScore     Float
+  judgeVerdict   String   @default("pending") // pending | approved | needs_revision | rejected
+  judgeReasoning String?
+  revisedOutput  String?
+  revisionScore  Float?
+  status         String   @default("pending") // pending | reviewing | revising | completed | failed
+  maxRetries     Int      @default(2)
+  retryCount     Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([agentId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// ============================================================================
+// Feedback (from P-MAS)
+// ============================================================================
+
+model FeedbackRecord {
+  id        String   @id @default(cuid())
+  traceId   String
+  traceType String   @default("step_execution") // step_execution | interaction
+  agentId   String?
+  rating    Int      @default(0)  // 1-5
+  sentiment String   @default("neutral") // positive | neutral | negative
+  comment   String   @default("")
+  tags      String   @default("")
+  metadata  String   @default("{}") // JSON
+  createdAt DateTime @default(now())
+
+  @@index([traceId])
+  @@index([agentId])
+  @@index([createdAt])
 }
 
 // ============================================================================
@@ -140,28 +626,28 @@ model PromptTemplate {
 // ============================================================================
 
 model KnowledgeCollection {
-  id            String             @id @default(cuid())
-  name          String
-  description   String             @default("")
-  tags          String             @default("[]") // JSON string[]
-  createdAt     DateTime           @default(now())
-  updatedAt     DateTime           @updatedAt
+  id          String             @id @default(cuid())
+  name        String
+  description String             @default("")
+  tags        String             @default("[]") // JSON string[]
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
 
-  documents     KnowledgeDocument[]
+  documents KnowledgeDocument[]
 
   @@index([name])
 }
 
 model KnowledgeDocument {
-  id            String   @id @default(cuid())
-  collectionId  String
-  title         String
-  content       String
-  fileType      String   @default("txt") // pdf | txt | md | docx
-  tags          String   @default("[]") // JSON string[]
-  createdAt     DateTime @default(now())
+  id           String   @id @default(cuid())
+  collectionId String
+  title        String
+  content      String
+  fileType     String   @default("txt") // pdf | txt | md | docx
+  tags         String   @default("[]")  // JSON string[]
+  createdAt    DateTime @default(now())
 
-  collection    KnowledgeCollection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  collection KnowledgeCollection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
 
   @@index([collectionId])
   @@index([fileType])
@@ -172,32 +658,32 @@ model KnowledgeDocument {
 // ============================================================================
 
 model Skill {
-  id            String   @id @default(cuid())
-  name          String
-  category      String   @default("general")
-  description   String   @default("")
-  inputSchema   String   @default("{}") // JSON
-  outputSchema  String   @default("{}") // JSON
-  code          String   @default("")
-  tests         String   @default("")
-  tags          String   @default("[]") // JSON string[]
-  standardIds   String   @default("[]") // JSON string[] — linked Standard IDs
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id           String   @id @default(cuid())
+  name         String
+  category     String   @default("general")
+  description  String   @default("")
+  inputSchema  String   @default("{}") // JSON
+  outputSchema String   @default("{}") // JSON
+  code         String   @default("")
+  tests        String   @default("")
+  tags         String   @default("[]")  // JSON string[]
+  standardIds  String   @default("[]")  // JSON string[] — linked Standard IDs
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   @@index([category])
 }
 
 model Standard {
-  id            String   @id @default(cuid())
-  name          String
-  category      String   @default("general")
-  description   String   @default("")
-  rules         String   @default("[]") // JSON StandardRule[]
-  severity      String   @default("info") // info | warning | error
-  version       String   @default("1.0.0")
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id          String   @id @default(cuid())
+  name        String
+  category    String   @default("general")
+  description String   @default("")
+  rules       String   @default("[]")   // JSON StandardRule[]
+  severity    String   @default("info") // info | warning | error
+  version     String   @default("1.0.0")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@index([category])
   @@index([severity])
@@ -208,13 +694,13 @@ model Standard {
 // ============================================================================
 
 model AuditLog {
-  id            String   @id @default(cuid())
-  action        String
-  entityType    String
-  entityId      String
-  userId        String?
-  details       String?  // JSON
-  timestamp     DateTime @default(now())
+  id         String   @id @default(cuid())
+  action     String
+  entityType String
+  entityId   String
+  userId     String?
+  details    String?  // JSON
+  timestamp  DateTime @default(now())
 
   @@index([entityType])
   @@index([entityId])
@@ -226,8 +712,8 @@ model AuditLog {
 // ============================================================================
 
 model Settings {
-  id    String @id @default("system")
-  key   String @unique
-  value String
+  id        String   @id @default("system")
+  key       String   @unique
+  value     String
   updatedAt DateTime @updatedAt
 }

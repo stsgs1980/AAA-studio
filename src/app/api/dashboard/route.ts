@@ -30,7 +30,7 @@ export async function GET() {
 
     const timeline = a.recentExecutions.map((ex) => ({
       id: ex.id, time: ex.startedAt.toISOString(),
-      agent: ex.agent.name, group: ex.agent.group,
+      agent: ex.agent.name, group: ex.agent.roleGroup,
       status: ex.status, duration: ex.duration, tokensUsed: ex.tokensUsed,
     }));
 
@@ -38,7 +38,7 @@ export async function GET() {
       agents: { total: a.totalAgents, active: a.activeAgents, idle: a.inactiveAgents, draft: a.draftAgents },
       executions: { total: a.totalExecutions, completed: a.completedExecutions, failed: a.failedExecutions, running: a.runningExecutions, successRate },
       avgDuration: avgDuration?._avg?.duration ?? null,
-      statusGroups: a.agentGroups.map((g) => ({ label: g.group, count: g._count })),
+      statusGroups: a.agentGroups.map((g) => ({ label: g.roleGroup, count: g._count })),
       topPerformers: performers,
       healthMetrics,
       timeline,

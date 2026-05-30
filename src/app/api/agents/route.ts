@@ -17,7 +17,7 @@ export async function GET(request: Request) {
         { description: { contains: search } },
       ];
     }
-    if (group) where.group = group;
+    if (group) where.roleGroup = group;
     if (status) where.status = status;
 
     const agents = await db.agent.findMany({
@@ -52,7 +52,9 @@ export async function POST(request: Request) {
       data: {
         name: body.name.trim(),
         role: body.role?.trim() || '',
-        group: body.group || 'specialist',
+        roleGroup: body.group || 'specialist',
+        formula: body.formula || '',
+        avatar: body.avatar || '',
         status: body.status || 'draft',
         model: body.model || 'glm-4',
         temperature: body.temperature ?? 0.7,

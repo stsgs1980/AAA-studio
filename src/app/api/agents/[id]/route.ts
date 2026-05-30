@@ -45,7 +45,9 @@ export async function PUT(
       data: {
         name: body.name?.trim(),
         role: body.role?.trim(),
-        group: body.group,
+        roleGroup: body.group ?? body.roleGroup,
+        formula: body.formula,
+        avatar: body.avatar,
         status: body.status,
         model: body.model,
         temperature: body.temperature,

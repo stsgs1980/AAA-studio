@@ -19,6 +19,8 @@ export interface WizardForm {
   name: string;
   description: string;
   group: RoleGroup;
+  roleGroup: RoleGroup;
+  formula: string;
   model: string;
   temperature: number;
   maxTokens: number;
@@ -37,6 +39,8 @@ export const CREATOR_DEFAULTS: WizardForm = {
   name: '',
   description: '',
   group: 'specialist',
+  roleGroup: 'specialist' as RoleGroup,
+  formula: '',
   model: 'glm-4',
   temperature: 0.7,
   maxTokens: 4096,

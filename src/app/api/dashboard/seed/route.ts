@@ -14,16 +14,16 @@ function requireAdmin(request: NextRequest): boolean {
 }
 
 const AGENTS = [
-  { name: 'Orchestrator', role: 'Coordinates all agents and manages task delegation', group: 'orchestrator', status: 'active', model: 'gpt-4', temperature: 0.3, skills: JSON.stringify(['planning', 'delegation']), systemPrompt: 'You are the orchestrator agent.' },
-  { name: 'Research Analyst', role: 'Researches topics and synthesizes findings', group: 'analyst', status: 'active', model: 'gpt-4', temperature: 0.3, skills: JSON.stringify(['web-search', 'summarization']), systemPrompt: 'You are a research analyst.' },
-  { name: 'Code Reviewer', role: 'Reviews code for quality and best practices', group: 'reviewer', status: 'active', model: 'gpt-4', temperature: 0.2, skills: JSON.stringify(['code-analysis', 'security']), systemPrompt: 'You are a senior code reviewer.' },
-  { name: 'Creative Writer', role: 'Generates creative content and copy', group: 'creator', status: 'active', model: 'gpt-4', temperature: 0.9, skills: JSON.stringify(['copywriting', 'storytelling']), systemPrompt: 'You are a creative writer.' },
-  { name: 'Data Engineer', role: 'Transforms and processes data pipelines', group: 'specialist', status: 'active', model: 'gpt-4', temperature: 0.1, skills: JSON.stringify(['sql', 'python', 'data-analysis']), systemPrompt: 'You are a data engineer.' },
-  { name: 'QA Tester', role: 'Writes and executes test plans', group: 'reviewer', status: 'active', model: 'gpt-4', temperature: 0.2, skills: JSON.stringify(['testing', 'automation']), systemPrompt: 'You are a QA engineer.' },
-  { name: 'DevOps Agent', role: 'Manages CI/CD and infrastructure', group: 'specialist', status: 'active', model: 'gpt-4', temperature: 0.1, skills: JSON.stringify(['docker', 'kubernetes', 'ci-cd']), systemPrompt: 'You are a DevOps specialist.' },
-  { name: 'Product Manager', role: 'Defines requirements and priorities', group: 'orchestrator', status: 'active', model: 'gpt-4', temperature: 0.5, skills: JSON.stringify(['planning', 'user-research']), systemPrompt: 'You are a product manager.' },
-  { name: 'UX Writer', role: 'Writes UI microcopy and documentation', group: 'creator', status: 'draft', model: 'gpt-4', temperature: 0.7, skills: JSON.stringify(['copywriting', 'ux-design']), systemPrompt: 'You are a UX writer.' },
-  { name: 'Security Auditor', role: 'Performs security audits and penetration tests', group: 'reviewer', status: 'draft', model: 'gpt-4', temperature: 0.1, skills: JSON.stringify(['security', 'pentesting']), systemPrompt: 'You are a security auditor.' },
+  { name: 'Orchestrator', role: 'Coordinates all agents and manages task delegation', roleGroup: 'orchestrator', status: 'active', model: 'gpt-4', temperature: 0.3, skills: JSON.stringify(['planning', 'delegation']), systemPrompt: 'You are the orchestrator agent.' },
+  { name: 'Research Analyst', role: 'Researches topics and synthesizes findings', roleGroup: 'analyst', status: 'active', model: 'gpt-4', temperature: 0.3, skills: JSON.stringify(['web-search', 'summarization']), systemPrompt: 'You are a research analyst.' },
+  { name: 'Code Reviewer', role: 'Reviews code for quality and best practices', roleGroup: 'reviewer', status: 'active', model: 'gpt-4', temperature: 0.2, skills: JSON.stringify(['code-analysis', 'security']), systemPrompt: 'You are a senior code reviewer.' },
+  { name: 'Creative Writer', role: 'Generates creative content and copy', roleGroup: 'creator', status: 'active', model: 'gpt-4', temperature: 0.9, skills: JSON.stringify(['copywriting', 'storytelling']), systemPrompt: 'You are a creative writer.' },
+  { name: 'Data Engineer', role: 'Transforms and processes data pipelines', roleGroup: 'specialist', status: 'active', model: 'gpt-4', temperature: 0.1, skills: JSON.stringify(['sql', 'python', 'data-analysis']), systemPrompt: 'You are a data engineer.' },
+  { name: 'QA Tester', role: 'Writes and executes test plans', roleGroup: 'reviewer', status: 'active', model: 'gpt-4', temperature: 0.2, skills: JSON.stringify(['testing', 'automation']), systemPrompt: 'You are a QA engineer.' },
+  { name: 'DevOps Agent', role: 'Manages CI/CD and infrastructure', roleGroup: 'specialist', status: 'active', model: 'gpt-4', temperature: 0.1, skills: JSON.stringify(['docker', 'kubernetes', 'ci-cd']), systemPrompt: 'You are a DevOps specialist.' },
+  { name: 'Product Manager', role: 'Defines requirements and priorities', roleGroup: 'orchestrator', status: 'active', model: 'gpt-4', temperature: 0.5, skills: JSON.stringify(['planning', 'user-research']), systemPrompt: 'You are a product manager.' },
+  { name: 'UX Writer', role: 'Writes UI microcopy and documentation', roleGroup: 'creator', status: 'draft', model: 'gpt-4', temperature: 0.7, skills: JSON.stringify(['copywriting', 'ux-design']), systemPrompt: 'You are a UX writer.' },
+  { name: 'Security Auditor', role: 'Performs security audits and penetration tests', roleGroup: 'reviewer', status: 'draft', model: 'gpt-4', temperature: 0.1, skills: JSON.stringify(['security', 'pentesting']), systemPrompt: 'You are a security auditor.' },
 ];
 const HIERARCHY: Record<number, number | null> = { // index → parentId index (0-based)
   1: 0, 2: 0, 3: 0,  // Analyst, Reviewer, Creator under Orchestrator

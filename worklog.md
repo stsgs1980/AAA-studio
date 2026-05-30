@@ -900,3 +900,75 @@ Stage Summary:
 - Prisma fallback URL работает — DATABASE_URL не нужен в preview
 - Deep Analysis (evaluate-deep) стабильно работает через z-ai SDK
 - Все 18 UI страниц рендерятся без ошибок
+
+---
+Task ID: 0.2
+Agent: main
+Task: Prisma Schema — дополнить из донора, исправить group→roleGroup
+
+Work Log:
+- Сравнил Prisma schema чистого репо (12 моделей) с донором 3a-studio-mas (35 моделей)
+- Добавил 23 модели из донора: Task, Workflow, PipelineStep, WorkflowExecution, StepExecution, AgentMessage, InteractionLog, PromptHistory, PromptVersion, PromptRegistryEntry, Contradiction, AgentImport, KeyValueStore, TestCase, TestRun, TestResult, CitationCheck, ApprovalRequest, ComparisonSnapshot, AnalysisSession, CostRecord, LatencyAlert, SelfCorrectionSession, FeedbackRecord
+- Обновил Agent model: добавлены roleGroup (вместо group), formula, twinId, avatar
+- Исправил group→roleGroup во всех файлах: API routes, dashboard helpers, seed, types, stores
+- Prisma validate ✅, Prisma db push ✅, Next.js build ✅, ESLint 0 errors ✅
+
+Stage Summary:
+- Prisma schema: 35 моделей, полностью синхронизирована с донором
+- Все ссылки на `group` обновлены на `roleGroup`
+- Проект собирается и линтится без ошибок
+
+---
+Task ID: 0.3
+Agent: main
+Task: API Error Handling — единый wrapper
+
+Work Log:
+- Проверил доноров: нет готового error handler
+- Создал src/lib/api-error.ts: AppError class + convenience constructors (NotFound, BadRequest, Unauthorized, Forbidden, Conflict)
+- Создал helpers: success(), created(), paginate()
+- Создал handleError() — конвертит ZodError, AppError, Prisma errors (P2025, P2002) в NextResponse
+- Build ✅, ESLint ✅
+
+Stage Summary:
+- Единый API error handling готов к использованию в routes
+
+---
+Task ID: 0.4
+Agent: main
+Task: Zod Validation Schemas
+
+Work Log:
+- Проверил доноров: Zod схемы есть только для auth
+- Создал src/lib/validations/agent.ts с schemas для: agentCreate, agentUpdate, agentQuery, flowCreate, flowUpdate, skillCreate, skillUpdate, standardCreate, standardUpdate, knowledgeCreate, documentCreate, promptTemplateCreate, pagination
+- Создал barrel export src/lib/validations/index.ts
+- Build ✅
+
+Stage Summary:
+- Zod schemas готовы для подключения к API routes
+
+---
+Task ID: 0.5
+Agent: main
+Task: Seed Data
+
+Work Log:
+- Создал prisma/seed.ts с демо-данными: 10 агентов, 48 executions, 4 flows, 4 skills, 1 knowledge collection + document, 3 prompt templates
+- Иерархия агентов подключена
+- Запущен успешно: `npx tsx prisma/seed.ts`
+
+Stage Summary:
+- БД заполнена демо-данными
+
+---
+Task ID: 0.6
+Agent: main
+Task: ESLint Plugin — проверка
+
+Work Log:
+- Кастомные правила работают: 3a/max-lines (150), 3a/max-use-state (3), 3a/no-cross-layer, 3a/no-unicode-escapes
+- ESLint: 0 ошибок, 7 предупреждений (только в тестах)
+- Seed route: 149 строк — под лимитом
+
+Stage Summary:
+- ESLint работает корректно, Wave 0 полностью завершена

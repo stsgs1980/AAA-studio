@@ -4,7 +4,10 @@ export interface AgentRecord {
   id: string;
   name: string;
   role: string;
-  group: string;
+  group: string;  // API returns roleGroup as group for backward compat
+  roleGroup?: string;
+  formula?: string;
+  avatar?: string;
   status: 'active' | 'inactive' | 'draft';
   model: string;
   temperature: number;
@@ -37,6 +40,8 @@ export type AgentStatus = 'active' | 'inactive' | 'draft';
 
 export const DEFAULT_FORM = {
   name: '', role: '', group: 'specialist' as RoleGroup,
+  roleGroup: 'specialist' as RoleGroup,
+  formula: '', avatar: '',
   status: 'draft' as AgentStatus, model: 'glm-4', temperature: 0.7,
   maxTokens: 4096, systemPrompt: '', tools: '[]', skills: '[]',
   standards: '[]', parentId: null as string | null, description: '',

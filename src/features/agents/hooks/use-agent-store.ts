@@ -79,7 +79,9 @@ export const useAgentStore = create<AgentState & AgentActions>((set, get) => ({
   openEdit: (agent) => set({
     editing: agent,
     form: {
-      name: agent.name, role: agent.role, group: agent.group as RoleGroup,
+      name: agent.name, role: agent.role, group: (agent.roleGroup || agent.group) as RoleGroup,
+      roleGroup: (agent.roleGroup || agent.group) as RoleGroup,
+      formula: agent.formula || '', avatar: agent.avatar || '',
       status: agent.status, model: agent.model,
       temperature: agent.temperature, maxTokens: agent.maxTokens,
       systemPrompt: agent.systemPrompt, tools: agent.tools,

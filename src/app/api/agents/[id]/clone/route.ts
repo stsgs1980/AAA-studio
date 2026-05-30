@@ -17,7 +17,9 @@ export async function POST(
       data: {
         name: `${original.name} (copy)`,
         role: original.role,
-        group: original.group,
+        roleGroup: original.roleGroup,
+        formula: original.formula,
+        avatar: original.avatar,
         status: 'draft',
         model: original.model,
         temperature: original.temperature,

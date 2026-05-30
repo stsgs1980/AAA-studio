@@ -94,6 +94,8 @@ export const useCreatorStore = create<CreatorState & CreatorActions>((set, get) 
         name: form.name,
         role: form.agentTypeId || form.agentRoleId,
         group: form.group,
+        roleGroup: form.roleGroup || form.group,
+        formula: form.formula,
         status: 'draft',
         model: form.model,
         temperature: form.temperature,

@@ -17,7 +17,7 @@ export interface StatusSegment {
 
 export interface Performer {
   name: string
-  group: string
+  group: string  // roleGroup from API, displayed as group for UI compat
   score: number
   tasks: number
   dotColor: string
@@ -55,10 +55,10 @@ export interface DashboardData {
   }
   avgDuration: number | null
   statusGroups: { label: string; count: number }[]
-  topPerformers: { name: string; group: string; tasks: number; avgDuration: number }[]
+  topPerformers: { name: string; group: string; roleGroup?: string; tasks: number; avgDuration: number }[]
   healthMetrics: HealthMetric[]
   timeline: {
-    id: string; time: string; agent: string; group: string
+    id: string; time: string; agent: string; group: string  // roleGroup
     status: string; duration: number | null; tokensUsed: number | null
   }[]
   networkChart: {
