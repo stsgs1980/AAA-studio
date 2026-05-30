@@ -45,7 +45,9 @@ export const workflowCreateSchema = z.object({
   tags: z.string().max(500).optional().default(''),
 });
 
-export const workflowUpdateSchema = workflowCreateSchema.partial();
+export const workflowUpdateSchema = workflowCreateSchema.partial().extend({
+  status: z.enum(['draft', 'active', 'paused', 'archived']).optional(),
+});
 
 // Pagination
 export const paginationSchema = z.object({

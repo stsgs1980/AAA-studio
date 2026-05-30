@@ -7,7 +7,7 @@ import {
   LayoutDashboard, Workflow, Layers, Bot, Network,
   GitBranch, Sparkles, BookOpen, Wrench, Shield,
   ScrollText, Settings, PanelLeftClose, PanelLeft, FileText,
-  Moon, Sun, Cpu, ClipboardCheck, ListTodo,
+  Moon, Sun, Cpu, ClipboardCheck, ListTodo, ArrowLeftRight,
 } from "lucide-react";
 import { cn } from "@stsgs/ui";
 import { useState, useEffect } from "react";
@@ -19,6 +19,7 @@ const navItems = [
   { title: "Flow Editor", href: "/editor", icon: Workflow },
   { title: "Templates", href: "/templates", icon: Layers },
   { title: "Tasks", href: "/tasks", icon: ListTodo },
+  { title: "Workflows", href: "/workflows", icon: ArrowLeftRight },
   { title: "Agents", href: "/agents", icon: Bot },
   { title: "Agent Creator", href: "/agent-creator", icon: Cpu },
   { title: "Quality Analyzer", href: "/quality-analyzer", icon: ClipboardCheck },
