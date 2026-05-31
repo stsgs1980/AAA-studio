@@ -1,15 +1,16 @@
 "use client";
 
-import { Code2, TestTube2, Shield, Download, Files, FileArchive } from "lucide-react";
+import { Code2, TestTube2, Shield, Download, Files, FileArchive, CheckCircle } from "lucide-react";
 import { cn } from "@stsgs/ui";
 import { CodeBlock } from "@/components/code-block";
 import { useSkillStore } from "../store/skills-store";
 import { StandardsPicker } from "./standards-picker";
 import { SkillFileTree } from "./skill-file-tree";
 import { SkillFileEditor } from "./skill-file-editor";
+import { ValidateTab } from "./validate-tab";
 import { useEffect } from "react";
 
-const TABS = ["info", "code", "tests", "files", "standards"] as const;
+const TABS = ["info", "code", "tests", "files", "standards", "validate"] as const;
 
 export function SkillDetail() {
   const { selected, tab, setTab, saveSkill } = useSkillStore();
@@ -30,6 +31,7 @@ export function SkillDetail() {
                 {t === "tests" && <TestTube2 className="h-3 w-3 inline mr-1" />}
                 {t === "files" && <Files className="h-3 w-3 inline mr-1" />}
                 {t === "standards" && <Shield className="h-3 w-3 inline mr-1" />}
+                {t === "validate" && <CheckCircle className="h-3 w-3 inline mr-1" />}
                 {t}
               </button>
             ))}
@@ -57,7 +59,6 @@ export function SkillDetail() {
 
 function TabContent() {
   const { selected, tab, updateSelected } = useSkillStore();
-
   if (!selected) return null;
 
   if (tab === "info") return <InfoTab skill={selected} />;
@@ -72,20 +73,14 @@ function TabContent() {
       placeholder="Write tests here..." />
   );
   if (tab === "files") return <FilesTab />;
+  if (tab === "validate") return <ValidateTab />;
   return <StandardsPicker />;
 }
 
 function FilesTab() {
   const { selected, fetchFiles, filesLoading } = useSkillStore();
-
-  useEffect(() => {
-    if (selected) fetchFiles(selected.id);
-  }, [selected?.id]);
-
-  if (filesLoading) {
-    return <div className="flex items-center justify-center h-full text-muted-foreground text-sm">Loading files...</div>;
-  }
-
+  useEffect(() => { if (selected) fetchFiles(selected.id); }, [selected?.id]);
+  if (filesLoading) return <div className="flex items-center justify-center h-full text-muted-foreground text-sm">Loading files...</div>;
   return (
     <div className="flex h-full min-h-[400px]">
       <div className="w-56 shrink-0 border-r border-border bg-background/30 overflow-y-auto">
