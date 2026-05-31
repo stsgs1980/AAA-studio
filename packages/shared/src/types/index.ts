@@ -21,7 +21,8 @@ export type {
   EvaluationCriterion,
   TeamMember,
 } from "./prompt";
-export type { Skill } from "./skill";
+export type { Skill, SkillFile, SkillFileLanguage, SkillFileRole } from "./skill";
+export { SKILL_FILE_ROLES, SKILL_FILE_LANGUAGES, detectLanguage, detectRole } from "./skill";
 export type { Standard, StandardRule, StandardSeverity, StandardCategory } from "./standard";
 export { SEVERITY_OPTIONS, STANDARD_CATEGORIES, SKILL_CATEGORIES, generateRuleId } from "./standard";
 export type { KpiMetric, NavItem } from "./dashboard";

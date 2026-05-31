@@ -1,12 +1,15 @@
 "use client";
 
-import { Code2, TestTube2, Shield, Download } from "lucide-react";
+import { Code2, TestTube2, Shield, Download, Files } from "lucide-react";
 import { cn } from "@stsgs/ui";
 import { CodeBlock } from "@/components/code-block";
 import { useSkillStore } from "../store/skills-store";
 import { StandardsPicker } from "./standards-picker";
+import { SkillFileTree } from "./skill-file-tree";
+import { SkillFileEditor } from "./skill-file-editor";
+import { useEffect } from "react";
 
-const TABS = ["info", "code", "tests", "standards"] as const;
+const TABS = ["info", "code", "tests", "files", "standards"] as const;
 
 export function SkillDetail() {
   const { selected, tab, setTab, saveSkill } = useSkillStore();
@@ -25,6 +28,7 @@ export function SkillDetail() {
                   tab === t ? "bg-brand-accent text-white" : "text-muted-foreground hover:text-muted-foreground hover:bg-muted")}>
                 {t === "code" && <Code2 className="h-3 w-3 inline mr-1" />}
                 {t === "tests" && <TestTube2 className="h-3 w-3 inline mr-1" />}
+                {t === "files" && <Files className="h-3 w-3 inline mr-1" />}
                 {t === "standards" && <Shield className="h-3 w-3 inline mr-1" />}
                 {t}
               </button>
@@ -38,7 +42,7 @@ export function SkillDetail() {
           </div>
         )}
       </div>
-      <div className="flex-1 p-4">
+      <div className="flex-1 overflow-hidden">
         {selected ? <TabContent /> : (
           <div className="flex items-center justify-center h-full text-muted-foreground text-sm">Select a skill to view</div>
         )}
@@ -49,6 +53,7 @@ export function SkillDetail() {
 
 function TabContent() {
   const { selected, tab, updateSelected } = useSkillStore();
+
   if (!selected) return null;
 
   if (tab === "info") return <InfoTab skill={selected} />;
@@ -62,12 +67,36 @@ function TabContent() {
       className="w-full h-full min-h-[300px] p-3 rounded-lg border border-border bg-background text-sm font-mono text-foreground resize-none focus:outline-none focus:ring-2 focus:ring-brand-accent/30"
       placeholder="Write tests here..." />
   );
+  if (tab === "files") return <FilesTab />;
   return <StandardsPicker />;
+}
+
+function FilesTab() {
+  const { selected, fetchFiles, filesLoading } = useSkillStore();
+
+  useEffect(() => {
+    if (selected) fetchFiles(selected.id);
+  }, [selected?.id]);
+
+  if (filesLoading) {
+    return <div className="flex items-center justify-center h-full text-muted-foreground text-sm">Loading files...</div>;
+  }
+
+  return (
+    <div className="flex h-full min-h-[400px]">
+      <div className="w-56 shrink-0 border-r border-border bg-background/30 overflow-y-auto">
+        <SkillFileTree />
+      </div>
+      <div className="flex-1 overflow-y-auto p-3">
+        <SkillFileEditor />
+      </div>
+    </div>
+  );
 }
 
 function InfoTab({ skill }: { skill: { category: string; description: string; tags: string[]; inputSchema: Record<string, unknown>; outputSchema: Record<string, unknown> } }) {
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 p-4">
       <div>
         <span className="text-xs text-muted-foreground">Category</span>
         <p className="text-sm text-foreground mt-0.5">{skill.category}</p>

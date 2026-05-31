@@ -671,7 +671,26 @@ model Skill {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
+  files SkillFile[]
+
   @@index([category])
+}
+
+model SkillFile {
+  id        String   @id @default(cuid())
+  skillId   String
+  path      String                          // e.g. "src/index.ts", "tests/main.test.ts"
+  content   String   @default("")
+  language  String   @default("typescript")   // typescript | python | json | yaml | markdown | text
+  role      String   @default("code")         // entry | code | test | config | doc | schema
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  skill Skill @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([skillId, path])
+  @@index([skillId])
 }
 
 model Standard {

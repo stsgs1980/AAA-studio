@@ -86,7 +86,7 @@ Zai-agent-toolkit (скомпилированные скиллы для Z.ai san
 | Syntax Highlighting | ✅ Полный | Общий CodeBlock (shiki github-dark), 9 языков, compact/full режимы |
 | Agents | ✅ Работает | CRUD, executions, systemPrompt, **Skills/Standards picker (EntityPicker)** |
 | Flow Editor | ✅ Работает | 18 nodes, ReactFlow, live execution, per-node model, usage tracking |
-| Skill Forge | ✅ Rebuild | CRUD, code/tests, **StandardsPicker**, SKILL.md export, **midnight palette** |
+| Skill Forge | ✅ Rebuild | CRUD, **SkillFile (multi-file)**, **file tree + editor**, StandardsPicker, SKILL.md export, midnight palette |
 | Standards | ✅ Rebuild | CRUD, rules editor, **cross-ref validation**, unified types (@stsgs/shared), store-driven, 0 useState in detail |
 | Knowledge | ✅ Работает | Upload, **TF-IDF semantic search** |
 | Pipelines | ✅ Работает | **Real flow execution**, node-level drill-down |
