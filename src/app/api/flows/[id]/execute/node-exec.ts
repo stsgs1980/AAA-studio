@@ -4,6 +4,7 @@ import { callLLM, type ProviderConfig, type LLMResponse } from "@/lib/llm/client
 import type { LLMSettings } from "@/lib/llm";
 import { getProviders } from "@/lib/llm/settings";
 import { estimateCost } from "@/lib/cost";
+import { db } from "@/lib/db";
 import { extractText, type FlowNode } from "./flow-utils";
 import { safeEvalCondition } from "@/features/flow-editor/lib/node-utils";
 import { execRouter } from "./node-router";
@@ -35,6 +36,7 @@ async function resolveProvider(
 export async function execNode(
   node: FlowNode, inputs: Record<string, unknown>,
   active: { provider: ProviderConfig; model: string; settings: LLMSettings },
+  flowId?: string,
 ): Promise<ExecOutput> {
   const d = node.data;
   const resolved = await resolveProvider(node, active);
@@ -42,8 +44,8 @@ export async function execNode(
   switch (node.type) {
     case "start": return { data: { started: true, timestamp: Date.now() } };
     case "end": return { data: { ...inputs, finished: true } };
-    case "llm": return execLLM(d, inputs, resolved);
-    case "agent": return execAgent(d, inputs, resolved);
+    case "llm": return execLLM(d, inputs, resolved, flowId);
+    case "agent": return execAgent(d, inputs, resolved, flowId);
     case "prompt": return execPrompt(d, inputs);
     case "transform": return execTransform(d, inputs);
     case "condition": {
@@ -61,7 +63,7 @@ export async function execNode(
   }
 }
 
-async function execLLM(d: Record<string, unknown>, inputs: Record<string, unknown>, resolved: { provider: ProviderConfig; model: string; settings: LLMSettings }) {
+async function execLLM(d: Record<string, unknown>, inputs: Record<string, unknown>, resolved: { provider: ProviderConfig; model: string; settings: LLMSettings }, flowId?: string) {
   const sys = typeof d.systemPrompt === "string" ? d.systemPrompt : "You are a helpful assistant.";
   const model = (d.model as string) || resolved.model;
   const resp = await callLLM({
@@ -70,10 +72,10 @@ async function execLLM(d: Record<string, unknown>, inputs: Record<string, unknow
     temperature: (d.temperature as number) ?? resolved.settings.temperature,
     maxTokens: resolved.settings.maxTokens,
   });
-  return buildLLMOutput(inputs, resp, model);
+  return buildLLMOutput(inputs, resp, model, flowId);
 }
 
-async function execAgent(d: Record<string, unknown>, inputs: Record<string, unknown>, resolved: { provider: ProviderConfig; model: string; settings: LLMSettings }) {
+async function execAgent(d: Record<string, unknown>, inputs: Record<string, unknown>, resolved: { provider: ProviderConfig; model: string; settings: LLMSettings }, flowId?: string) {
   const role = typeof d.role === "string" ? d.role : "assistant";
   const model = (d.model as string) || resolved.model;
   const resp = await callLLM({
@@ -81,7 +83,7 @@ async function execAgent(d: Record<string, unknown>, inputs: Record<string, unkn
     messages: [{ role: "system", content: `You are ${role}.` }, { role: "user", content: extractText(inputs) }],
     temperature: resolved.settings.temperature, maxTokens: resolved.settings.maxTokens,
   });
-  return { ...buildLLMOutput(inputs, resp, model), data: { ...inputs, agentResponse: resp.content } };
+  return { ...buildLLMOutput(inputs, resp, model, flowId), data: { ...inputs, agentResponse: resp.content } };
 }
 
 function execPrompt(d: Record<string, unknown>, inputs: Record<string, unknown>) {
@@ -100,11 +102,33 @@ function execTransform(d: Record<string, unknown>, inputs: Record<string, unknow
   return { data: { ...inputs, transformed: out } };
 }
 
-function buildLLMOutput(inputs: Record<string, unknown>, resp: LLMResponse, model: string): ExecOutput {
+function buildLLMOutput(inputs: Record<string, unknown>, resp: LLMResponse, model: string, flowId?: string): ExecOutput {
   const usage = resp.usage ? {
     promptTokens: resp.usage.promptTokens, completionTokens: resp.usage.completionTokens,
     totalTokens: resp.usage.totalTokens,
   } : undefined;
   const cost = resp.usage ? estimateCost(resp.usage.promptTokens, resp.usage.completionTokens, model) : undefined;
+  // Persist cost record asynchronously (fire-and-forget)
+  if (usage && cost) persistCost(usage, cost, model, flowId).catch(() => {});
   return { data: { ...inputs, model: resp.model, response: resp.content }, model: resp.model, usage, cost };
+}
+
+/** Write a CostRecord row for analytics (non-blocking) */
+async function persistCost(
+  u: { promptTokens: number; completionTokens: number; totalTokens: number },
+  cost: number, model: string, flowId?: string,
+) {
+  try {
+    await db.costRecord.create({
+      data: {
+        executionType: 'workflow',
+        inputTokens: u.promptTokens,
+        outputTokens: u.completionTokens,
+        totalTokens: u.totalTokens,
+        costUsd: cost,
+        model,
+        ...(flowId ? { executionId: flowId } : {}),
+      },
+    });
+  } catch { /* DB write failure should not break execution */ }
 }

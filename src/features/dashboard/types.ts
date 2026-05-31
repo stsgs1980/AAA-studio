@@ -46,6 +46,12 @@ export interface FormulaRow {
   category: string
 }
 
+export interface CostData {
+  totals: { inputTokens: number; outputTokens: number; totalTokens: number; totalCost: number; callCount: number }
+  byModel: { model: string; cost: number; tokens: number; calls: number }[]
+  dailyTrend: { date: string; cost: number; tokens: number }[]
+}
+
 // --- API response types ---
 export interface DashboardData {
   agents: { total: number; active: number; idle: number; draft: number }
@@ -75,4 +81,5 @@ export interface DashboardData {
   }
   formulaRows: FormulaRow[]
   meta: { skills: number; pipelines: number }
+  cost: CostData
 }

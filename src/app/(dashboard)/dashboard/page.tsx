@@ -10,9 +10,16 @@ import {
   ConnectionHeatmap,
   FormulaGrid,
   QuickActions,
+  CostOverview,
 } from '@/features/dashboard';
+import { useDashboardData } from '@/features/dashboard/hooks/use-dashboard-data';
+import type { CostData } from '@/features/dashboard/types';
+
+const EMPTY_COST: CostData = { totals: { inputTokens: 0, outputTokens: 0, totalTokens: 0, totalCost: 0, callCount: 0 }, byModel: [], dailyTrend: [] };
 
 export default function DashboardPage() {
+  const { data } = useDashboardData();
+
   return (
     <div className="p-4 md:p-6 space-y-6">
       <div className="flex items-end justify-between">
@@ -33,13 +40,15 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <SystemHealth />
-        <ActivityTimeline />
+        <CostOverview data={data?.cost ?? EMPTY_COST} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <ActivityTimeline />
         <ConnectionHeatmap />
-        <FormulaGrid />
       </div>
+
+      <FormulaGrid />
     </div>
   );
 }

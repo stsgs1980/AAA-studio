@@ -42,7 +42,7 @@ export async function POST(request: Request, { params }: Params) {
       data: { flowId: id, status: "running", startedAt: new Date() },
     });
 
-    const result = await runFlow(nodes, edges, active);
+    const result = await runFlow(nodes, edges, active, id);
 
     await db.pipelineExecution.update({
       where: { id: execution.id },
@@ -63,6 +63,7 @@ export async function POST(request: Request, { params }: Params) {
 async function runFlow(
   nodes: FlowNode[], edges: FlowEdge[],
   active: { provider: import('@/lib/llm').ProviderConfig; model: string; settings: import('@/lib/llm').LLMSettings },
+  flowId: string,
 ): Promise<{ success: boolean; results: NodeResult[]; usage: UsageSummary; error?: string }> {
   const sorted = topoSort(nodes, edges);
   const ctx = new Map<string, Record<string, unknown>>();
@@ -96,8 +97,8 @@ async function runFlow(
       // LLM-calling nodes (llm, agent, router) get retry on transient failures
       const isLLMNode = ["llm", "agent", "router"].includes(node.type);
       const { data: output, model, usage: u, cost, selectedHandle } = isLLMNode
-        ? await withRetry(() => execNode(node, inputs, active), { maxRetries: 2, initialDelay: 1500 })
-        : await execNode(node, inputs, active);
+        ? await withRetry(() => execNode(node, inputs, active, flowId), { maxRetries: 2, initialDelay: 1500 })
+        : await execNode(node, inputs, active, flowId);
       ctx.set(nodeId, output);
       results.push({ nodeId, nodeType: node.type, status: "completed", output, duration: Date.now() - start, model, usage: u, cost });
       if (u) {

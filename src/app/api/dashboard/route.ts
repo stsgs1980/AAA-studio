@@ -1,14 +1,16 @@
 import { db } from '@/lib/db';
 import { handleError, success } from '@/lib/api-error';
 import { fetchCoreCounts, resolvePerformers, fetchHourlyExecutions, fetchHeatmap, fetchSkillDistribution } from './helpers';
+import { fetchCostData } from './cost-helpers';
 
 export async function GET() {
   try {
-    const [core, network, heatmap, formulaRows] = await Promise.all([
+    const [core, network, heatmap, formulaRows, cost] = await Promise.all([
       fetchCoreCounts(),
       fetchHourlyExecutions(),
       fetchHeatmap(),
       fetchSkillDistribution(),
+      fetchCostData(),
     ]);
     const performers = await resolvePerformers(core.agentPerformers);
 
@@ -45,6 +47,7 @@ export async function GET() {
       networkChart: network,
       heatmap,
       formulaRows,
+      cost,
       meta: { skills: a.skills, pipelines: a.pipelines },
     });
   } catch (error) {

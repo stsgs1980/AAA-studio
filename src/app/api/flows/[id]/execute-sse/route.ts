@@ -55,8 +55,8 @@ export async function GET(_req: Request, { params }: Params) {
             const inputs = gatherInputs(nodeId, edges, ctx);
             const isLLM = ['llm', 'agent', 'router'].includes(node.type);
             const { data: output, model, usage, cost, selectedHandle } = isLLM
-              ? await withRetry(() => execNode(node, inputs, active), { maxRetries: 2, initialDelay: 1500 })
-              : await execNode(node, inputs, active);
+              ? await withRetry(() => execNode(node, inputs, active, id), { maxRetries: 2, initialDelay: 1500 })
+              : await execNode(node, inputs, active, id);
 
             ctx.set(nodeId, output);
             send('node_done', { nodeId, nodeType: node.type, status: 'completed', duration: Date.now() - start, model, usage, cost });

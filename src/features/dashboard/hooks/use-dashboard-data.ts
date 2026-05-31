@@ -15,6 +15,7 @@ const EMPTY: DashboardData = {
   heatmap: { groups: [], density: [[]], maxDensity: 1 },
   formulaRows: [],
   meta: { skills: 0, pipelines: 0 },
+  cost: { totals: { inputTokens: 0, outputTokens: 0, totalTokens: 0, totalCost: 0, callCount: 0 }, byModel: [], dailyTrend: [] },
 }
 
 export function useDashboardData() {
