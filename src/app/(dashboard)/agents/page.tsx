@@ -41,7 +41,7 @@ export default function AgentManagementPage() {
           </div>
           <div className="p-4">
             {tab === 'executions' && <AgentExecutions agentId={editing.id} />}
-            {tab === 'team' && <TeamTab agentId={editing.id} roleGroup={editing.roleGroup} />}
+            {tab === 'team' && <TeamTab agentId={editing.id} roleGroup={editing.roleGroup ?? ''} />}
           </div>
         </div>
       )}

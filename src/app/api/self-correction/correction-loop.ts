@@ -11,7 +11,7 @@ type ActiveProvider = {
 export function parseJudgeResponse(text: string) {
   const scoreMatch = text.match(/SCORE:\s*([\d.]+)/i);
   const verdictMatch = text.match(/VERDICT:\s*(approved|needs_revision|rejected)/i);
-  const reasoningMatch = text.match(/REASONING:\s*(.+)/is);
+  const reasoningMatch = text.match(/REASONING:\s*([\s\S]+)/i);
   return {
     score: scoreMatch ? parseFloat(scoreMatch[1]) : 5,
     verdict: verdictMatch ? verdictMatch[1] : 'needs_revision',
