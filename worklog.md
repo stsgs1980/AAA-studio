@@ -1015,3 +1015,49 @@ Stage Summary:
 - Commit: 8f301a6 pushed to StsDev-Wiki
 - 125 tests total (was 90), 35 new integration tests
 - Deferred items documented: full API route coverage, E2E tests, coverage reporting, next-intl migration, ESLint code generation
+
+---
+Task ID: P0-2
+Agent: main
+Task: P0-2 SkillFile model — multi-file skills
+
+Work Log:
+- Added SkillFile model to Prisma schema (path, content, language, role, order, unique skillId+path)
+- Added files SkillFile[] relation to Skill model
+- Created @stsgs/shared SkillFile types: SkillFile, SkillFileLanguage, SkillFileRole
+- Added SKILL_FILE_ROLES, SKILL_FILE_LANGUAGES constants, detectLanguage(), detectRole()
+- Created API routes: GET/POST /api/skills/[id]/files, GET/PUT/DELETE /api/skills/[id]/files/[fileId]
+- Auto-migrate legacy code/tests → SkillFile on first files fetch
+- Created SkillFileTree component (folder grouping, role badges, add/delete)
+- Created SkillFileEditor component (content editor, save, role/language header)
+- Updated skill-detail: new "files" tab with tree + editor split layout
+- Split skills-store into store + file-ops (anti-monolith ≤150 lines)
+- Updated SKILL.md export to include multi-file section (legacy compat when no files)
+- Split export route into route + helpers (≤150 lines)
+- All files ≤150 lines, 0 ESLint errors, build clean
+- Commit: a53a1a6
+
+Stage Summary:
+- SkillFile model: skills can now have multiple files with paths, roles, languages
+- UI: file tree + code editor, replacing single code/tests textareas
+- Backward compat: legacy code/tests auto-migrated to SkillFile records
+- 14 files changed, +731/-125
+
+---
+Task ID: P0-3
+Agent: main
+Task: P0-3 Export Pipeline — ZIP export with SKILL.md + package.json
+
+Work Log:
+- Created GET /api/skills/[id]/export-zip using JSZip
+- ZIP includes: SKILL.md manifest, package.json (Z.ai compatible), all SkillFile records
+- package.json auto-detects entry point from role=entry file
+- Updated skill-detail toolbar: Export split into MD + ZIP buttons
+- Added FileArchive icon from lucide-react
+- All files ≤150 lines, 0 ESLint errors, build clean
+- Commit: 06d1391
+
+Stage Summary:
+- Full export pipeline: single-file MD + multi-file ZIP
+- Z.ai sandbox compatible: package.json with main entry, keywords, metadata
+- 2 files changed, +97/-2
