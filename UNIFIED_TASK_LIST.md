@@ -11,12 +11,20 @@
 - [+] Prisma schema: 30 models
 - [+] `npm run build` -- passes
 - [+] `npm run lint` -- 0 errors
-- [+] API routes: 32 endpoints, ALL with unified error handling + Zod
-- [+] 16 features, 3 packages
+- [+] API routes: 45+ route files across 15 feature areas
+- [+] 17 feature modules, 4 packages
 - [+] Auth middleware + API key encryption
 - [+] Multi-provider LLM (Z.ai, OpenAI, Anthropic, OpenRouter, custom)
-- [+] i18n (en/ru)
+- [+] MCP Server (JSON-RPC + SSE transport, 6 methods)
+- [+] i18n (en/ru, 8 namespaces)
 - [+] Dark/light theme
+- [+] Flow Editor: 18 node types, command palette, flow assistant wizard, SSE execution
+- [+] Skill Export: OpenAI, MCP, A2A, Markdown, ZIP formats
+- [+] Resilience: Retry, Circuit Breaker, Fallback, Health Check
+- [+] Self-Correction: Generate → Judge → Revise loop
+- [+] Prompt Templates: 8 built-in + CRUD API
+- [+] Wiki: 11 pages + GitHub export
+- [+] 15 schema-only models without API/UI (see Wave 7.5)
 
 ---
 
@@ -167,6 +175,78 @@
 ### 7.3 Documentation
 - [ ] API docs (OpenAPI)
 - [ ] Wiki content verification
+
+---
+
+## Wave 7.5 -- Donor Features + Dead Models (аудит 2026-06-01)
+
+> Доноры: P-mas-studio, P-MAS-architector, P-MAS_init, Flow-Studio-Pro,
+> MVP-Flow-Studio-Pro, prompting-v0.0, Zai-agent-toolkit, FLOW_STUDIO_PRO_SPECIFICATION
+
+### 7.5.0 [DONE] Аудит доноров vs реализация
+- [+] 8 доноров проинвентаризированы
+- [+] Gap analysis: P0 (3), P1 (6), P2 (4), P3 (4)
+- [+] 15 schema-only моделей без API/UI выявлены
+- [+] Аудит записан в AUDIT-DONORS-vs-IMPLEMENTATION.md
+
+### 7.5.1 [ ] 6 Typed Connections (P0 — из P-MAS_init)
+- [ ] Edge types: Command, Sync, Twin, Delegate, Supervise, Broadcast
+- [ ] Визуальные стили per-type (dash, color, animation)
+- [ ] Connection type picker в edge config
+- Источник: P-MAS_init/hierarchy/agent-edge.tsx (6 typed connections + animated particles)
+
+### 7.5.2 [ ] Version History UI (P0 — из MVP-Flow-Studio-Pro)
+- [ ] FlowVersion list panel в toolbar
+- [ ] Preview diff (nodes/edges changes)
+- [ ] Restore version button
+- Модель FlowVersion уже в Prisma, API для versions уже есть
+
+### 7.5.3 [ ] Data Contract Visualization (P0 — из P-MAS_init)
+- [ ] I/O schema compatibility check между шагами workflow
+- [ ] Visual indicator: Compatible/Incompatible/Unknown
+- [ ] JSON schema preview popover
+- Источник: P-MAS_init/workflows/workflow-pipeline.tsx (DataContractCard)
+
+### 7.5.4 [ ] Cost Monitoring Dashboard (P1)
+- [ ] API: GET /api/costs (aggregate CostRecord)
+- [ ] API: GET /api/latency-alerts (list LatencyAlert)
+- [ ] UI: cost chart + latency alerts panel в /dashboard
+- Модели CostRecord + LatencyAlert уже в Prisma
+
+### 7.5.5 [ ] Testing System (P1)
+- [ ] API: CRUD /api/test-cases, /api/test-runs, /api/test-results
+- [ ] UI: test case editor + run results в /skills-page
+- Модели TestCase + TestRun + TestResult уже в Prisma
+
+### 7.5.6 [ ] HITL Approvals (P1)
+- [ ] API: CRUD /api/approval-requests
+- [ ] UI: approval queue в workflow execution
+- Модель ApprovalRequest уже в Prisma
+
+### 7.5.7 [ ] Feedback Loop Arrows (P1 — из P-MAS_init)
+- [ ] SVG curved arrow для fallbackStepId в workflow
+- [ ] Visual indicator: feedback loop vs normal flow
+- Источник: P-MAS_init/workflows/workflow-pipeline.tsx (FeedbackLoopArrow)
+
+### 7.5.8 [ ] Rich seed data из P-MAS_init (P1)
+- [ ] 26 агентов (8 групп, 20 формул)
+- [ ] 6 typed connections между агентами
+- [ ] 5 sample workflows
+- Источник: P-MAS_init/prisma/seed + /api/seed
+
+### 7.5.9 [ ] Animated Flow Particles (P2 — из P-MAS_init)
+- [ ] SVG animateMotion particles на edges
+- [ ] Glow filters + trailing halos
+- Источник: P-MAS_init/hierarchy/agent-edge.tsx
+
+### 7.5.10 [ ] WebSocket real-time (P2 — из P-MAS_init)
+- [ ] Socket.IO service или SSE upgrade для agent status
+- [ ] Real-time status updates в /hierarchy
+- Источник: P-MAS_init/mini-services/ws-service/
+
+### Schema-only модели без API/UI (будут оживлены по мере надобности)
+- Contradiction, CitationCheck, ComparisonSnapshot, AnalysisSession
+- InteractionLog, PromptHistory, PromptRegistryEntry, KeyValueStore, FeedbackRecord
 
 ---
 

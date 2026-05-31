@@ -997,7 +997,25 @@ PromptTemplate → (используется в Prompt Studio)
 | Wave 5 | ✅ DONE | Agent Intelligence (Tasks, Workflows, Router→Specialist, Self-Correction, Team Builder) |
 | Wave 6 | ✅ DONE | Resilience & Polish (circuit breaker, fallback, undo/redo, import, hierarchy, ESLint bridge, wiki export) |
 | Wave 7 | ✅ В основном | Quality (i18n готово, 90 unit-тестов, API/E2E тесты ожидаются) |
+| Wave 7.5 | 🔨 В процессе | Donor Features + Dead Models (typed connections, version history UI, data contracts, cost dashboard, testing system, HITL approvals) |
 | Wave 8 | ⬜ Запланировано | Production (multi-user auth, rate limiting, versioning, monitoring) |
+
+### Доноры (8 проектов)
+
+| Донор | Что перенесено | Что не перенесено |
+|-------|---------------|-------------------|
+| **P-mas-studio** | Dashboard, hierarchy, workflows, prompt-studio, shadcn/ui | Animated edges, flow particles |
+| **P-MAS-architector** | @stsgs/prompting, skills, standards, model configs | — |
+| **P-MAS_init** | Resilience (retry, circuit breaker, fallback, health-check) | 6 typed connections, animated particles, WebSocket, watchdog, data contracts, rich seed data (26 agents) |
+| **Flow-Studio-Pro** | React Flow v12 паттерны, EventBus, Zustand store | — |
+| **MVP-Flow-Studio-Pro** | NodeExecutor, LLMProvider | Version History UI, Template Gallery preview |
+| **prompting-v0.0** | Формулы, scoring, intent detection | — |
+| **Zai-agent-toolkit** | 19 стандартов, agent templates | — |
+| **FLOW_STUDIO_PRO_SPECIFICATION** | 18 node types, 12-screen architecture | Cron scheduling, vector search |
+
+### Schema-only модели (без API/UI)
+
+15 моделей Prisma не имеют API routes и UI: Contradiction, CitationCheck, ApprovalRequest, AnalysisSession, CostRecord, LatencyAlert, FeedbackRecord, ComparisonSnapshot, TestCase, TestRun, TestResult, InteractionLog, PromptHistory, PromptRegistryEntry, KeyValueStore. План оживления — Wave 7.5 в `UNIFIED_TASK_LIST.md`.
 
 ---
 
