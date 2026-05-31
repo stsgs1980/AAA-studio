@@ -4,10 +4,10 @@ import { callLLM, type ProviderConfig, type LLMResponse } from "@/lib/llm/client
 import type { LLMSettings } from "@/lib/llm";
 import { getProviders } from "@/lib/llm/settings";
 import { estimateCost } from "@/lib/cost";
-import { db } from "@/lib/db";
 import { extractText, type FlowNode } from "./flow-utils";
 import { safeEvalCondition } from "@/features/flow-editor/lib/node-utils";
 import { execRouter } from "./node-router";
+import { execHITL, persistCost } from "./node-helpers";
 
 export interface ExecOutput {
   data: Record<string, unknown>;
@@ -59,6 +59,7 @@ export async function execNode(
       return { data: { ...inputs, passed }, selectedHandle: passed ? "pass" : "fail" };
     }
     case "router": return execRouter(node, inputs, resolved);
+    case "human-in-the-loop": return execHITL(d, inputs, flowId);
     default: return { data: { ...inputs, type: node.type, processed: true } };
   }
 }
@@ -111,24 +112,4 @@ function buildLLMOutput(inputs: Record<string, unknown>, resp: LLMResponse, mode
   // Persist cost record asynchronously (fire-and-forget)
   if (usage && cost) persistCost(usage, cost, model, flowId).catch(() => {});
   return { data: { ...inputs, model: resp.model, response: resp.content }, model: resp.model, usage, cost };
-}
-
-/** Write a CostRecord row for analytics (non-blocking) */
-async function persistCost(
-  u: { promptTokens: number; completionTokens: number; totalTokens: number },
-  cost: number, model: string, flowId?: string,
-) {
-  try {
-    await db.costRecord.create({
-      data: {
-        executionType: 'workflow',
-        inputTokens: u.promptTokens,
-        outputTokens: u.completionTokens,
-        totalTokens: u.totalTokens,
-        costUsd: cost,
-        model,
-        ...(flowId ? { executionId: flowId } : {}),
-      },
-    });
-  } catch { /* DB write failure should not break execution */ }
 }

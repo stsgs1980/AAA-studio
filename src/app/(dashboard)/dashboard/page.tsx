@@ -11,6 +11,7 @@ import {
   FormulaGrid,
   QuickActions,
   CostOverview,
+  ApprovalPanel,
 } from '@/features/dashboard';
 import { useDashboardData } from '@/features/dashboard/hooks/use-dashboard-data';
 import type { CostData } from '@/features/dashboard/types';
@@ -45,10 +46,13 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <ActivityTimeline />
-        <ConnectionHeatmap />
+        <ApprovalPanel />
       </div>
 
-      <FormulaGrid />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <ConnectionHeatmap />
+        <FormulaGrid />
+      </div>
     </div>
   );
 }
