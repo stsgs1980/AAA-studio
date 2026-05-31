@@ -1,5 +1,6 @@
 import { db } from '@/lib/db';
 import { handleError, success, BadRequest } from '@/lib/api-error';
+import { emitApprovalNew } from '@/lib/ws/hooks';
 
 /** GET /api/approvals — list approvals (default: pending) */
 export async function GET(request: Request) {
@@ -27,6 +28,7 @@ export async function POST(request: Request) {
         expiresAt: expiresAt ? new Date(expiresAt) : null,
       },
     });
+    emitApprovalNew(approval.id, action, riskLevel ?? 'medium');
     return success(approval, 201);
   } catch (error) { return handleError(error); }
 }

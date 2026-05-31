@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Check, X, Clock, AlertTriangle } from 'lucide-react';
 import { cn } from '@stsgs/ui';
+import { useRealtimeEvent } from '@/lib/ws/use-realtime';
 
 interface Approval {
   id: string;
@@ -33,7 +34,33 @@ export function ApprovalPanel() {
     } catch { /* ignore */ } finally { setLoading(false); }
   }, []);
 
-  useEffect(() => { fetchApprovals(); const i = setInterval(fetchApprovals, 10000); return () => clearInterval(i); }, [fetchApprovals]);
+  // Initial load + fallback polling (10s)
+  useEffect(() => {
+    fetchApprovals();
+    const i = setInterval(fetchApprovals, 10000);
+    return () => clearInterval(i);
+  }, [fetchApprovals]);
+
+  // Real-time: new approval pushed via WS
+  useRealtimeEvent<{ id: string; action: string; riskLevel: string }>(
+    ['approvals'], 'new',
+    (data) => {
+      setApprovals((prev) => {
+        if (prev.some((a) => a.id === data.id)) return prev;
+        return [...prev, {
+          id: data.id, action: data.action, actionType: 'hitl',
+          riskLevel: data.riskLevel, status: 'pending',
+          payload: {}, createdAt: new Date().toISOString(), expiresAt: null,
+        }];
+      });
+    },
+  );
+
+  // Real-time: approval decided via WS
+  useRealtimeEvent<{ id: string; status: 'approved' | 'rejected' }>(
+    ['approvals'], 'decided',
+    (data) => setApprovals((prev) => prev.filter((a) => a.id !== data.id)),
+  );
 
   const handleAction = useCallback(async (id: string, status: 'approved' | 'rejected') => {
     try {

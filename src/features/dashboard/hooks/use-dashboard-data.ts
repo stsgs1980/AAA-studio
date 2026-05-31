@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import type { DashboardData } from '../types'
+import { useRealtimeEvent } from '@/lib/ws/use-realtime'
 
 const EMPTY: DashboardData = {
   agents: { total: 0, active: 0, idle: 0, draft: 0 },
@@ -35,11 +36,18 @@ export function useDashboardData() {
     }
   }, [])
 
+  // Initial load + 30s polling fallback
   useEffect(() => {
     refetch()
     const interval = setInterval(refetch, 30_000)
     return () => clearInterval(interval)
   }, [refetch])
+
+  // Real-time: WS push triggers immediate refresh
+  useRealtimeEvent<{ reason: string }>(
+    ['dashboard'], 'refresh',
+    () => { refetch() },
+  )
 
   return { data, loading, refetch }
 }

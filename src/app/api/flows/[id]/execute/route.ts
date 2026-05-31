@@ -4,6 +4,7 @@ import { getActiveProvider } from "@/lib/llm";
 import { topoSort, gatherInputs, type FlowNode, type FlowEdge } from "./flow-utils";
 import { execNode } from "./node-exec";
 import { withRetry } from "@/lib/resilience/api-retry";
+import { emitFlowStarted, emitNodeComplete, emitFlowFinished, emitDashboardRefresh } from "@/lib/ws/hooks";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -42,6 +43,8 @@ export async function POST(request: Request, { params }: Params) {
       data: { flowId: id, status: "running", startedAt: new Date() },
     });
 
+    emitFlowStarted(id, execution.id);
+
     const result = await runFlow(nodes, edges, active, id);
 
     await db.pipelineExecution.update({
@@ -53,6 +56,9 @@ export async function POST(request: Request, { params }: Params) {
         completedAt: new Date(),
       },
     });
+
+    emitFlowFinished(id, execution.id, result.success ? 'completed' : 'failed');
+    emitDashboardRefresh('flow-execution');
 
     return success({ executionId: execution.id, ...result });
   } catch (error) {
@@ -101,6 +107,7 @@ async function runFlow(
         : await execNode(node, inputs, active, flowId);
       ctx.set(nodeId, output);
       results.push({ nodeId, nodeType: node.type, status: "completed", output, duration: Date.now() - start, model, usage: u, cost });
+      emitNodeComplete(flowId, nodeId, 'completed', Date.now() - start);
       if (u) {
         usage.totalPromptTokens += u.promptTokens;
         usage.totalCompletionTokens += u.completionTokens;
