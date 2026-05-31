@@ -1,6 +1,7 @@
 import type { NextRequest } from 'next/server';
 import { handleError, success, Forbidden } from '@/lib/api-error';
 import { db } from '@/lib/db';
+import { seedStandards } from './seed-standards';
 
 function requireAdmin(request: NextRequest): boolean {
   const token = request.cookies.get('3a-session')?.value;
@@ -123,6 +124,8 @@ export async function POST(request: NextRequest) {
     ];
     await Promise.all(SKILLS.map((s) => db.skill.create({ data: s })));
 
+    const stdCount = await seedStandards();
+
     const total = await db.agent.count();
     const execCount = await db.agentExecution.count();
 
@@ -132,6 +135,7 @@ export async function POST(request: NextRequest) {
       agents: total,
       executions: execCount,
       flows: FLOWS.length,
+      standards: stdCount,
     });
   } catch (error) {
     return handleError(error);
