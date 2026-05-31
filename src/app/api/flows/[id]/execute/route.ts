@@ -3,6 +3,7 @@ import { handleError, success, NotFound, BadRequest } from "@/lib/api-error";
 import { getActiveProvider } from "@/lib/llm";
 import { topoSort, gatherInputs, type FlowNode, type FlowEdge } from "./flow-utils";
 import { execNode } from "./node-exec";
+import { withRetry } from "@/lib/resilience/api-retry";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -92,7 +93,11 @@ async function runFlow(
     const start = Date.now();
     try {
       const inputs = gatherInputs(nodeId, edges, ctx);
-      const { data: output, model, usage: u, cost, selectedHandle } = await execNode(node, inputs, active);
+      // LLM-calling nodes (llm, agent, router) get retry on transient failures
+      const isLLMNode = ["llm", "agent", "router"].includes(node.type);
+      const { data: output, model, usage: u, cost, selectedHandle } = isLLMNode
+        ? await withRetry(() => execNode(node, inputs, active), { maxRetries: 2, initialDelay: 1500 })
+        : await execNode(node, inputs, active);
       ctx.set(nodeId, output);
       results.push({ nodeId, nodeType: node.type, status: "completed", output, duration: Date.now() - start, model, usage: u, cost });
       if (u) {

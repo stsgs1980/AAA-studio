@@ -3,6 +3,7 @@ import { handleError, success, created, BadRequest } from '@/lib/api-error';
 import { z } from 'zod';
 import { getActiveProvider } from '@/lib/llm';
 import { callLLM } from '@/lib/llm/client';
+import { withRetry } from '@/lib/resilience/api-retry';
 import { parseJudgeResponse, selfCorrect } from './correction-loop';
 
 const startSchema = z.object({
@@ -52,25 +53,25 @@ export async function POST(request: Request) {
     const active = await getActiveProvider();
     if (!active) throw BadRequest('LLM not configured');
 
-    // Step 1: Generate initial output
-    const genResp = await callLLM({
+    // Step 1: Generate initial output (with retry on transient failures)
+    const genResp = await withRetry(() => callLLM({
       provider: active.provider, model: active.model,
       messages: [
         { role: 'system', content: 'You are a helpful assistant. Provide a thorough response.' },
         { role: 'user', content: parsed.input },
       ],
       temperature: active.settings.temperature, maxTokens: active.settings.maxTokens,
-    });
+    }), { maxRetries: 2, initialDelay: 1000 });
 
-    // Step 2: Judge the output
-    const judgeResp = await callLLM({
+    // Step 2: Judge the output (with retry)
+    const judgeResp = await withRetry(() => callLLM({
       provider: active.provider, model: active.model,
       messages: [
         { role: 'system', content: 'Score 0-10, give verdict. Format:\nSCORE: <number>\nVERDICT: <approved|needs_revision|rejected>\nREASONING: <text>' },
         { role: 'user', content: `Input: ${parsed.input}\n\nResponse:\n${genResp.content}` },
       ],
       temperature: 0.1, maxTokens: 200,
-    });
+    }), { maxRetries: 2, initialDelay: 1000 });
 
     const { score, verdict, reasoning } = parseJudgeResponse(judgeResp.content);
 

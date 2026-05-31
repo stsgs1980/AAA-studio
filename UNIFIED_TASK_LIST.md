@@ -98,40 +98,45 @@
 
 ---
 
-## Wave 6 -- Resilience & Polish (CURRENT)
+## Wave 6 -- Resilience & Polish [DONE]
 
-### 6.1 Resilience from donor
-**Donor**: p-mas/src/lib/ -- api-retry, circuit-breaker, fallback-manager, health-check
-- [ ] Port api-retry with exponential backoff
-- [ ] Port circuit-breaker
-- [ ] Port fallback-manager
-- [ ] Port health-check
-- [ ] Apply to /api/llm and /api/flows/[id]/execute
+### 6.1 [DONE] Resilience from donor
+- Ported api-retry with exponential backoff + withRetry generic wrapper
+- Ported circuit-breaker (CLOSED/OPEN/HALF_OPEN states)
+- Ported fallback-manager adapted to our ProviderConfig/callLLM architecture
+- Ported health-check (checkApiHealth, FailureTracker, ResponseTimeMonitor)
+- Applied to /api/llm (retry + fallback), /api/flows/[id]/execute (retry on LLM nodes), /api/self-correction (retry)
+- Added GET /api/health endpoint
 
-### 6.2 Flow Store undo/redo
-- [ ] Implement undo/redo in flow-store.ts
-- [ ] Keyboard shortcuts Ctrl+Z / Ctrl+Shift+Z
+### 6.2 [DONE] Flow Store undo/redo
+- undo/redo already in flow-store.ts (history + _pushHistory)
+- Added useUndoRedoKeys hook: Ctrl+Z / Ctrl+Shift+Z / Ctrl+Y
 
-### 6.3 Agent Import (ZIP)
-**Donor**: 3a-studio-mas -- AgentImport model
-- [ ] ZIP upload endpoint
-- [ ] Parse agents from archive
-- [ ] Import UI
+### 6.3 [DONE] Agent Import (ZIP)
+- POST /api/agents/import -- JSZip, validates against agentCreateSchema
+- AgentImportDialog component: drag-drop file picker, result summary
+- Import button in AgentList toolbar
 
-### 6.4 Hierarchy Visualization
-**Donor**: p-mas -- hierarchy components
-- [ ] Tree view (not just graph)
-- [ ] Drag & drop reparenting
+### 6.4 [DONE] Hierarchy Visualization
+- Tree view with drag & drop reparenting
+- TreeItem extracted to feature component with HTML5 drag/drop
+- onDrop calls PUT /api/agents/[id] with new parentId
+- Visual feedback: ring highlight on drag over
 
-### 6.5 Standards -> ESLint bridge
-- [ ] Generate ESLint rules from Standards DB records
-- [ ] Export as JSON config
+### 6.5 [DONE] Standards -> ESLint bridge
+- GET /api/standards/eslint -- converts Standard records to ESLint rules config
+- Severity mapping: error->error, warning->warn, info->warn
+- Categories metadata in _meta field
 
-### 6.6 Wiki -> GitHub sync
-- [ ] Sync wiki pages to GitHub Wiki
+### 6.6 [DONE] Wiki -> GitHub sync
+- GET /api/wiki/export -- generates markdown files per wiki page
+- Home.md with table of contents, per-page .md with related links
+- Compatible with GitHub Wiki format
 
-### 6.7 Prompt Export
-- [ ] Export prompts in multiple formats (Markdown, YAML, JSON)
+### 6.7 [DONE] Prompt Export
+- GET /api/prompts/export?format=json|yaml|markdown
+- Exports agent system prompts in chosen format
+- Optional agentId filter
 
 ---
 

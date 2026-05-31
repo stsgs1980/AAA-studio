@@ -1,85 +1,55 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { Network, ChevronRight, ChevronDown, User, Bot } from 'lucide-react';
+import { Network, Bot, User } from 'lucide-react';
 import { cn } from '@stsgs/ui';
 import { PageSkeleton } from '@/components/ui';
-
-interface TreeNode {
-  id: string;
-  name: string;
-  role: string;
-  status: string;
-  group: string;
-  children: TreeNode[];
-}
-
-const STATUS_COLORS: Record<string, string> = { active: 'bg-emerald-500', inactive: 'bg-gray-400', draft: 'bg-amber-500' };
-
-function TreeItem({ node, depth = 0 }: { node: TreeNode; depth?: number }) {
-  const [expanded, setExpanded] = useState(depth < 2);
-  const hasChildren = node.children.length > 0;
-
-  return (
-    <div>
-      <div
-        className={cn('flex items-center gap-2 py-1.5 px-2 rounded-md hover:bg-accent/50 cursor-pointer transition-colors', depth > 0 && 'ml-6')}
-        onClick={() => hasChildren && setExpanded(!expanded)}
-      >
-        {hasChildren ? (
-          expanded ? <ChevronDown className="h-3.5 w-3.5 text-muted-foreground shrink-0" /> : <ChevronRight className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-        ) : (
-          <span className="w-3.5" />
-        )}
-        <span className={cn('h-2 w-2 rounded-full shrink-0', STATUS_COLORS[node.status] ?? 'bg-gray-400')} />
-        {node.group === 'orchestrator' ? <Bot className="h-4 w-4 text-primary shrink-0" /> : <User className="h-4 w-4 text-muted-foreground shrink-0" />}
-        <div className="min-w-0">
-          <span className="text-sm font-medium truncate">{node.name}</span>
-          <span className="text-xs text-muted-foreground ml-2">{node.group}</span>
-        </div>
-        {hasChildren && <span className="text-xs text-muted-foreground ml-auto">{node.children.length}</span>}
-      </div>
-      {expanded && hasChildren && (
-        <div className="ml-4 border-l border-border/50 pl-1">
-          {node.children.map((child) => (
-            <TreeItem key={child.id} node={child} depth={depth + 1} />
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
+import { TreeItem, type TreeNode } from '@/features/hierarchy/components/tree-item';
 
 export default function AgentHierarchyPage() {
   const [tree, setTree] = useState<TreeNode[]>([]);
   const [stats, setStats] = useState({ total: 0, roots: 0, maxDepth: 0 });
   const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  const buildTree = useCallback((agents: { id: string; name: string; role: string; status: string; group: string; parentId: string | null }[]) => {
+  const buildTree = useCallback((list: { id: string; name: string; role: string; status: string; group: string; parentId: string | null }[]) => {
     const map = new Map<string, TreeNode>();
-    agents.forEach((a) => map.set(a.id, { ...a, children: [] }));
+    list.forEach((a) => map.set(a.id, { ...a, children: [] }));
     const roots: TreeNode[] = [];
-    agents.forEach((a) => {
+    list.forEach((a) => {
       const node = map.get(a.id)!;
-      if (a.parentId && map.has(a.parentId)) {
-        map.get(a.parentId)!.children.push(node);
-      } else {
-        roots.push(node);
-      }
+      if (a.parentId && map.has(a.parentId)) map.get(a.parentId)!.children.push(node);
+      else roots.push(node);
     });
     const maxDepth = (nodes: TreeNode[], d: number): number =>
       nodes.reduce((max, n) => Math.max(max, n.children.length > 0 ? maxDepth(n.children, d + 1) : d), d);
     setTree(roots);
-    setStats({ total: agents.length, roots: roots.length, maxDepth: maxDepth(roots, 1) });
+    setStats({ total: list.length, roots: roots.length, maxDepth: maxDepth(roots, 1) });
   }, []);
 
-  useEffect(() => {
+  const fetchAgents = useCallback(() => {
     fetch('/api/agents')
       .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
-      .then((data) => buildTree(data))
+      .then((data) => buildTree(data.data?.agents || data.agents || data))
       .catch(console.error)
       .finally(() => setLoading(false));
   }, [buildTree]);
+
+  useEffect(() => { fetchAgents(); }, [fetchAgents]);
+
+  const handleDrop = async (dragId: string, targetId: string) => {
+    if (dragId === targetId) return;
+    try {
+      const res = await fetch(`/api/agents/${dragId}`, {
+        method: 'PUT', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ parentId: targetId }),
+      });
+      if (!res.ok) { const d = await res.json(); setMessage({ type: 'error', text: d.error || 'Failed' }); return; }
+      setMessage({ type: 'success', text: 'Agent reparented' });
+      fetchAgents();
+      setTimeout(() => setMessage(null), 3000);
+    } catch { setMessage({ type: 'error', text: 'Network error' }); }
+  };
 
   return (
     <div className="p-6 space-y-4">
@@ -89,11 +59,17 @@ export default function AgentHierarchyPage() {
           <h1 className="text-2xl font-bold tracking-tight">Agent Hierarchy</h1>
         </div>
         <div className="flex gap-4 text-xs text-muted-foreground">
-          <span>{stats.total} agents</span>
-          <span>{stats.roots} roots</span>
-          <span>depth {stats.maxDepth}</span>
+          <span>{stats.total} agents</span><span>{stats.roots} roots</span><span>depth {stats.maxDepth}</span>
         </div>
       </div>
+
+      {message && (
+        <div className={cn('rounded-lg px-3 py-2 text-xs', message.type === 'success'
+          ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400'
+          : 'bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400')}>
+          {message.text}
+        </div>
+      )}
 
       {loading ? (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -103,39 +79,39 @@ export default function AgentHierarchyPage() {
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="lg:col-span-2 rounded-xl border bg-card shadow-sm p-4">
-            <h2 className="text-sm font-semibold mb-3">Tree View</h2>
+            <h2 className="text-sm font-semibold mb-1">Tree View</h2>
+            <p className="text-[10px] text-muted-foreground mb-3">Drag agents to reparent them</p>
             {tree.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-8 text-center">No agents yet. Create some in the Agents page.</p>
+              <p className="text-sm text-muted-foreground py-8 text-center">No agents yet.</p>
             ) : (
-              <div className="space-y-0.5">
-                {tree.map((node) => (
-                  <TreeItem key={node.id} node={node} />
-                ))}
-              </div>
+              <div className="space-y-0.5">{tree.map((n) => <TreeItem key={n.id} node={n} onDrop={handleDrop} />)}</div>
             )}
           </div>
-
-          <div className="rounded-xl border bg-card shadow-sm p-4 space-y-3">
-            <h2 className="text-sm font-semibold">Legend</h2>
-            <div className="space-y-2 text-sm">
-              <div className="flex items-center gap-2"><Bot className="h-4 w-4 text-primary" /> Orchestrator</div>
-              <div className="flex items-center gap-2"><User className="h-4 w-4 text-muted-foreground" /> Agent</div>
-            </div>
-            <h2 className="text-sm font-semibold pt-2">Status</h2>
-            <div className="space-y-2 text-sm">
-              <div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-emerald-500" /> Active</div>
-              <div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-amber-500" /> Draft</div>
-              <div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-gray-400" /> Inactive</div>
-            </div>
-            <h2 className="text-sm font-semibold pt-2">Stats</h2>
-            <div className="text-sm text-muted-foreground space-y-1">
-              <p>Total agents: {stats.total}</p>
-              <p>Root agents: {stats.roots}</p>
-              <p>Max depth: {stats.maxDepth}</p>
-            </div>
-          </div>
+          <LegendPanel stats={stats} />
         </div>
       )}
+    </div>
+  );
+}
+
+function LegendPanel({ stats }: { stats: { total: number; roots: number; maxDepth: number } }) {
+  return (
+    <div className="rounded-xl border bg-card shadow-sm p-4 space-y-3">
+      <h2 className="text-sm font-semibold">Legend</h2>
+      <div className="space-y-2 text-sm">
+        <div className="flex items-center gap-2"><Bot className="h-4 w-4 text-primary" /> Orchestrator</div>
+        <div className="flex items-center gap-2"><User className="h-4 w-4 text-muted-foreground" /> Agent</div>
+      </div>
+      <h2 className="text-sm font-semibold pt-2">Status</h2>
+      <div className="space-y-2 text-sm">
+        <div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-emerald-500" /> Active</div>
+        <div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-amber-500" /> Draft</div>
+        <div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-gray-400" /> Inactive</div>
+      </div>
+      <h2 className="text-sm font-semibold pt-2">Stats</h2>
+      <div className="text-sm text-muted-foreground space-y-1">
+        <p>Total: {stats.total}</p><p>Roots: {stats.roots}</p><p>Max depth: {stats.maxDepth}</p>
+      </div>
     </div>
   );
 }

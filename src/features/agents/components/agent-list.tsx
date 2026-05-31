@@ -1,15 +1,17 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Search, Plus, Filter } from 'lucide-react';
+import { Search, Plus, Filter, Upload } from 'lucide-react';
 import { cn } from '@stsgs/ui';
 import { useAgentStore } from '../hooks/use-agent-store';
 import { ROLE_GROUPS, STATUS_OPTIONS } from '../types';
 import { AgentTable } from './agent-table';
+import { AgentImportDialog } from './agent-import-dialog';
 
 export function AgentList() {
   const store = useAgentStore();
   const [showFilters, setShowFilters] = useState(false);
+  const [showImport, setShowImport] = useState(false);
 
   // Auto-fetch on mount and when filters change
   const fetchAgents = useAgentStore((s) => s.fetchAgents);
@@ -40,6 +42,13 @@ export function AgentList() {
           title="Filters"
         >
           <Filter className="h-4 w-4" />
+        </button>
+        <button
+          onClick={() => setShowImport(true)}
+          className="flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-medium hover:bg-accent transition-colors"
+          title="Import agents from ZIP"
+        >
+          <Upload className="h-4 w-4" /> Import
         </button>
         <button
           onClick={store.openCreate}
@@ -95,6 +104,13 @@ export function AgentList() {
           onEdit={store.openEdit}
           onClone={store.clone}
           onRemove={store.remove}
+        />
+      )}
+
+      {showImport && (
+        <AgentImportDialog
+          onClose={() => setShowImport(false)}
+          onImported={() => store.fetchAgents()}
         />
       )}
     </div>
