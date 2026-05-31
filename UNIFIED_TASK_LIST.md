@@ -142,12 +142,25 @@
 
 ## Wave 7 -- Quality
 
-### 7.1 i18n -- full translations
-- [ ] Complete RU translations for all pages
-- [ ] Complete EN translations for all pages
+### 7.1 i18n -- full translations [DONE]
+- [+] Split translations.ts into 8 namespace files (nav, common, settings, auth, dashboard, pages, landing, index)
+- [+] Expand TranslationDict from 3 to 7 namespaces
+- [+] Add tKey() interpolation support + dynamic html lang attribute
+- [+] Add missing nav keys: Tasks, Workflows, Self-Correction
+- [+] Complete RU translations for all pages (~310 strings)
+- [+] Complete EN translations for all pages (~310 strings)
+- [+] Update all 47 pages and components to use useLanguage()
 
 ### 7.2 Testing
-- [ ] Unit tests for lib/ (auth, crypto, llm, api-error)
+- [+] Unit tests for lib/api-error (12 tests)
+- [+] Unit tests for resilience/circuit-breaker (7 tests)
+- [+] Unit tests for resilience/health-check (5 tests)
+- [+] Unit tests for resilience/api-retry (4 tests)
+- [+] Unit tests for validations/agent (7 tests)
+- [+] Unit tests for validations/common (6 tests)
+- [+] Unit tests for knowledge/lib/tf-idf (11 tests)
+- [+] Existing tests: auth, crypto, db, llm/types, middleware (38 tests)
+- [+] Total: 12 files, 90 tests -- ALL PASSING
 - [ ] Integration tests for API routes
 - [ ] E2E for key flows (agent CRUD, flow execution)
 
