@@ -7,6 +7,7 @@ import { Toolbar } from './components/toolbar';
 import { NodeConfigPanel } from './components/node-config-panel';
 import { FlowAssistant } from './components/flow-assistant';
 import { CommandPalette } from './components/command-palette';
+import { VersionHistory } from './components/version-history';
 import { useFlowEditorStore } from './store/flow-store';
 import { useLoadFlow } from './hooks/use-load-flow';
 import { useUndoRedoKeys } from './hooks/use-undo-redo-keys';
@@ -18,6 +19,8 @@ import { useKeyboardShortcuts } from './hooks/use-keyboard-shortcuts';
  */
 export function FlowEditor() {
   const selectedNodeId = useFlowEditorStore((s) => s.selectedNodeId);
+  const showVersionHistory = useFlowEditorStore((s) => s.showVersionHistory);
+  const toggleVersionHistory = useFlowEditorStore((s) => s.toggleVersionHistory);
   useLoadFlow();
   useUndoRedoKeys();
   useKeyboardShortcuts();
@@ -30,6 +33,7 @@ export function FlowEditor() {
           <DragPanel />
           <div className="relative flex-1">
             <FlowCanvas />
+            <VersionHistory open={showVersionHistory} onClose={toggleVersionHistory} />
           </div>
           {selectedNodeId && <NodeConfigPanel />}
         </div>

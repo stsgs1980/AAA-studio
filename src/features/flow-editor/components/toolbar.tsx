@@ -3,10 +3,10 @@
 import { useFlowEditorStore } from '../store/flow-store';
 import { useFlowActions } from '../hooks/use-flow-actions';
 import { cn } from '@stsgs/ui';
-import { Undo2, Redo2, Save, Play, Trash2, Sparkles } from 'lucide-react';
+import { Undo2, Redo2, Save, Play, Trash2, Sparkles, History } from 'lucide-react';
 
 export function Toolbar() {
-  const { flowName, isDirty, canUndo, canRedo, undo, redo, clearCanvas, toggleAssistant } = useFlowEditorStore();
+  const { flowName, isDirty, canUndo, canRedo, undo, redo, clearCanvas, toggleAssistant, toggleVersionHistory } = useFlowEditorStore();
   const { saveFlow, runFlow, saving, running, message } = useFlowActions();
 
   return (
@@ -33,6 +33,7 @@ export function Toolbar() {
 
       <div className="w-px h-5 bg-border mx-1" />
 
+      <TButton icon={History} label="Version History" onClick={toggleVersionHistory} />
       <TButton icon={Trash2} label="Clear canvas" variant="danger" onClick={clearCanvas} />
     </div>
   );
