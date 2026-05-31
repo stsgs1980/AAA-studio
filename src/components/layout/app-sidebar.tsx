@@ -7,7 +7,7 @@ import {
   LayoutDashboard, Workflow, Layers, Bot, Network,
   GitBranch, Sparkles, BookOpen, Wrench, Shield,
   ScrollText, Settings, PanelLeftClose, PanelLeft, FileText,
-  Moon, Sun, Cpu, ClipboardCheck, ListTodo, ArrowLeftRight,
+  Moon, Sun, Cpu, ClipboardCheck, ListTodo, ArrowLeftRight, RefreshCw,
 } from "lucide-react";
 import { cn } from "@stsgs/ui";
 import { useState, useEffect } from "react";
@@ -25,6 +25,7 @@ const navItems = [
   { title: "Quality Analyzer", href: "/quality-analyzer", icon: ClipboardCheck },
   { title: "Hierarchy", href: "/hierarchy", icon: Network },
   { title: "Pipelines", href: "/pipelines", icon: GitBranch },
+  { title: "Self-Correction", href: "/self-correction", icon: RefreshCw },
   { title: "Prompt Studio", href: "/prompt-studio", icon: Sparkles },
   { title: "Knowledge Base", href: "/knowledge", icon: BookOpen },
   { title: "Skill Forge", href: "/skills-page", icon: Wrench },
