@@ -993,3 +993,25 @@ Stage Summary:
 - All CRUD routes use Zod validation
 - Commit: bcd9f81 pushed to local-bare
 - GitHub push pending: needs PAT (previous token revoked)
+---
+Task ID: 7.2
+Agent: main
+Task: Wave 7.2 — Critical integration tests + deferred items documentation
+
+Work Log:
+- Read StsDev-Wiki: about.md, ecosystem-map.md, principles/, rules.md, standards.md, session-protocol.md, decisions/, projects/3a-studio/
+- Identified current test coverage: 90 unit tests, 0 integration tests, 37 API routes untested
+- Created 3 integration test files:
+  - auth-chain.test.ts (8 tests): JWT sign→verify round-trip, jose/Web Crypto parity, tampered token rejection, login route handler
+  - cross-ref.test.ts (17 tests): Agent/Skill/Standard validation chain, JSON serialization round-trip, deletion protection logic
+  - api-routes.test.ts (10 tests): Agent CRUD with mocked DB, crypto encrypt/decrypt round-trip
+- All 125 tests passing (90 unit + 35 integration)
+- Updated WORKFLOW.md: test status, ⏸ Explicitly Deferred section
+- Updated StsDev-Wiki progress.md: P0-1 DONE, P1-1 DONE, P1-3 DONE, P1-2 PARTIAL
+- Pushed both repos to GitHub
+
+Stage Summary:
+- Commit: ee325ae pushed to AAA-studio
+- Commit: 8f301a6 pushed to StsDev-Wiki
+- 125 tests total (was 90), 35 new integration tests
+- Deferred items documented: full API route coverage, E2E tests, coverage reporting, next-intl migration, ESLint code generation
