@@ -19,7 +19,11 @@ export function EntityPicker({ entityType, linked, onAdd, onRemove }: EntityPick
     (async () => {
       try {
         const res = await fetch(`/api/${entityType}s`);
-        if (res.ok) setItems(await res.json());
+        if (res.ok) {
+          const data = await res.json();
+          // API returns { items, total, page, pageSize } — extract array
+          setItems(Array.isArray(data) ? data : data.items ?? []);
+        }
       } catch { /* */ }
     })();
   }, [entityType]);

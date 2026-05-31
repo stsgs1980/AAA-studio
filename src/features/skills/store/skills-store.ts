@@ -40,7 +40,7 @@ interface SkillStore {
   setTab: (t: Tab) => void; setLoading: (l: boolean) => void;
   setShowNew: (v: boolean) => void; setNewName: (n: string) => void;
   updateSelected: (patch: Partial<SkillItem>) => void;
-  fetchSkills: () => Promise<void>; createSkill: (name: string, standardIds?: string[]) => Promise<void>;
+  fetchSkills: () => Promise<void>; createSkill: (name: string, opts?: Record<string, unknown>) => Promise<void>;
   deleteSkill: (id: string) => Promise<void>; saveSkill: () => Promise<void>;
   addStandardId: (sid: string) => void; removeStandardId: (sid: string) => void;
   fetchFiles: (skillId: string) => Promise<void>; selectFile: (file: SkillFileItem | null) => void;
@@ -76,7 +76,7 @@ export const useSkillStore = create<SkillStore>((set, get) => ({
     } catch { set({ loading: false }); }
   },
 
-  createSkill: (name, standardIds) => createSkillImpl(name, standardIds, get, set),
+  createSkill: (name, opts) => createSkillImpl(name, opts, get, set),
   deleteSkill: (id) => deleteSkillImpl(id, get, set),
   saveSkill: () => saveSkillImpl(get),
 

@@ -1,18 +1,33 @@
 "use client";
 
-import { useEffect } from "react";
-import { Wrench, Plus } from "lucide-react";
+import { useEffect, useRef } from "react";
+import { Wrench, Plus, Upload } from "lucide-react";
 import { PageSkeleton } from "@/components/ui";
 import { useSkillStore } from "../store/skills-store";
 import { SkillList } from "./skill-list";
 import { SkillDetail } from "./skill-detail";
+import { SkillCreateForm } from "./skill-create-form";
 import { useLanguage } from "@/lib/i18n/language-context";
 
 export default function SkillForgePage() {
-  const { loading, showNew, newName, setShowNew, setNewName, createSkill, fetchSkills } = useSkillStore();
+  const { loading, showNew, setShowNew, fetchSkills } = useSkillStore();
   const { t } = useLanguage();
+  const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => { fetchSkills(); }, [fetchSkills]);
+
+  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const fd = new FormData();
+    fd.append("file", file);
+    try {
+      const res = await fetch("/api/skills/import", { method: "POST", body: fd });
+      if (res.ok) fetchSkills();
+      else alert("Import failed");
+    } catch { alert("Import failed"); }
+    if (fileRef.current) fileRef.current.value = "";
+  };
 
   return (
     <div className="p-6 space-y-4">
@@ -22,26 +37,21 @@ export default function SkillForgePage() {
           <Wrench className="h-6 w-6 text-muted-foreground" />
           <h1 className="text-2xl font-bold tracking-tight text-foreground">{t.pages['Skill Forge']}</h1>
         </div>
-        <button onClick={() => setShowNew(!showNew)}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-brand-accent text-white text-sm font-medium hover:bg-brand-accent/90">
-          <Plus className="h-4 w-4" /> {t.pages['New Skill']}
-        </button>
+        <div className="flex gap-2">
+          <button onClick={() => fileRef.current?.click()}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-muted-foreground text-sm font-medium hover:bg-muted transition-colors">
+            <Upload className="h-4 w-4" /> Import
+          </button>
+          <input ref={fileRef} type="file" accept=".md,.zip" onChange={handleImport} className="hidden" />
+          <button onClick={() => setShowNew(!showNew)}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-brand-accent text-white text-sm font-medium hover:bg-brand-accent/90">
+            <Plus className="h-4 w-4" /> {t.pages['New Skill']}
+          </button>
+        </div>
       </div>
 
       {/* Create form */}
-      {showNew && (
-        <div className="flex items-end gap-2 rounded-xl border border-border bg-card p-3">
-          <input value={newName} onChange={(e) => setNewName(e.target.value)}
-            placeholder={t.pages['Skill name']}
-            className="flex-1 h-9 px-3 rounded-lg border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground"
-            autoFocus
-            onKeyDown={(e) => { if (e.key === "Enter" && newName.trim()) createSkill(newName); }} />
-          <button onClick={() => { if (newName.trim()) createSkill(newName); }}
-            className="h-9 px-4 rounded-lg bg-brand-accent text-white text-sm font-medium hover:bg-brand-accent/90 disabled:opacity-40 disabled:pointer-events-none">{t.common['Create']}</button>
-          <button onClick={() => setShowNew(false)}
-            className="h-9 px-3 rounded-lg border border-border text-muted-foreground hover:bg-muted text-sm">{t.common['Cancel']}</button>
-        </div>
-      )}
+      {showNew && <SkillCreateForm />}
 
       {/* Main layout */}
       {loading ? (

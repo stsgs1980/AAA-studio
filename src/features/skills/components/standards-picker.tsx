@@ -13,7 +13,10 @@ export function StandardsPicker() {
     (async () => {
       try {
         const res = await fetch("/api/standards");
-        if (res.ok) setStandards(await res.json());
+        if (res.ok) {
+          const data = await res.json();
+          setStandards(Array.isArray(data) ? data : data.items ?? []);
+        }
       } catch { /* silent */ }
     })();
   }, []);

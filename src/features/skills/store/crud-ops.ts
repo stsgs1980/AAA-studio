@@ -2,22 +2,28 @@
 
 import type { SkillItem } from "./skills-store";
 
+interface CreateOpts {
+  category?: string; description?: string; compatibility?: string;
+  license?: string; author?: string; tags?: string[]; triggers?: string[];
+}
+
 interface CrudStoreShape {
-  selected: SkillItem | null;
-  newName: string;
-  showNew: boolean;
+  selected: SkillItem | null; newName: string; showNew: boolean;
 }
 type CrudSetFn = (partial: Partial<CrudStoreShape> | ((s: CrudStoreShape) => Partial<CrudStoreShape>)) => void;
 interface CrudGetShape { fetchSkills: () => Promise<void>; selected: SkillItem | null; }
 type CrudGetFn = () => CrudGetShape;
 
 export async function createSkillImpl(
-  name: string, standardIds: string[] | undefined, get: CrudGetFn, set: CrudSetFn,
+  name: string, opts: string[] | CreateOpts | undefined, get: CrudGetFn, set: CrudSetFn,
 ) {
   try {
+    // Backward compat: if opts is string[], it's standardIds
+    const isLegacy = Array.isArray(opts);
+    const extra: Record<string, unknown> = isLegacy ? { standardIds: opts } : { ...opts };
     const res = await fetch("/api/skills", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: name.trim(), description: "", standardIds: standardIds ?? [] }),
+      body: JSON.stringify({ name: name.trim(), description: "", ...extra }),
     });
     if (!res.ok) throw new Error();
     set({ newName: "", showNew: false });
