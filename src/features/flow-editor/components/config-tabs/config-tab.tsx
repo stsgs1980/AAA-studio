@@ -4,17 +4,13 @@ import { useEffect, useState } from 'react';
 import { useFlowEditorStore } from '../../store/flow-store';
 import { getNodeDefinition } from '../../nodes/node-registry';
 import { RouterConfig } from './router-config';
+import { TemplatePicker } from './template-picker';
 import type { LLMModel, ProviderConfig } from '@/lib/llm';
 
-/** AI-capable node types */
 const AI_TYPES = new Set(['llm', 'rag', 'agent', 'orchestrator', 'router']);
 
-/**
- * Configuration tab -- editable node fields.
- * AI nodes get a provider + model dropdown from all configured providers.
- */
 export function ConfigTab() {
-  const { nodes, selectedNodeId, updateNodeData } = useFlowEditorStore();
+  const { nodes, selectedNodeId, updateNodeData, addNode, removeNodes, setSelectedNodeId } = useFlowEditorStore();
   const [providers, setProviders] = useState<ProviderConfig[]>([]);
   const [activeProviderId, setActiveProviderId] = useState('');
 
@@ -36,18 +32,31 @@ export function ConfigTab() {
   const data = node.data as Record<string, unknown>;
   const set = (key: string, value: unknown) => updateNodeData(node.id, { [key]: value });
   const isAI = AI_TYPES.has(node.type ?? '');
-
-  // Resolve provider for model list (per-node override or global)
   const nodeProviderId = (data.providerId as string) || activeProviderId;
   const models: LLMModel[] = providers.find(p => p.id === nodeProviderId)?.models ?? [];
 
   const handleProviderChange = (pid: string) => {
     set('providerId', pid);
-    // Reset model if not available in new provider
     if (data.model) {
       const np = providers.find(p => p.id === pid);
       if (np && !np.models.some(m => m.id === data.model)) set('model', '');
     }
+  };
+
+  const handleDuplicate = () => {
+    const newId = `${node.type}-${Date.now()}`;
+    addNode({
+      id: newId, type: node.type,
+      position: { x: (node.position?.x ?? 0) + 40, y: (node.position?.y ?? 0) + 40 },
+      data: JSON.parse(JSON.stringify(node.data)),
+    });
+    setSelectedNodeId(newId);
+  };
+
+  const handleDelete = () => {
+    const id = node.id;
+    setSelectedNodeId(null);
+    removeNodes([id]);
   };
 
   return (
@@ -61,13 +70,11 @@ export function ConfigTab() {
         <Fld label="Type">
           <span className="text-xs text-muted-foreground">{def?.label ?? node.type}</span>
         </Fld>
-        <Fld label="Category">
-          <span className="text-xs text-muted-foreground capitalize">{def?.category ?? ''}</span>
-        </Fld>
       </Grp>
 
       {isAI && (
         <Grp label="Model">
+          <TemplatePicker />
           <Fld label="Provider">
             {providers.length > 0 ? (
               <select value={nodeProviderId} onChange={(e) => handleProviderChange(e.target.value)}
@@ -105,6 +112,12 @@ export function ConfigTab() {
       )}
 
       {node.type === 'router' && <RouterConfig data={data} set={set} />}
+
+      {/* Actions */}
+      <div className="flex gap-2 pt-1">
+        <button onClick={handleDuplicate} className="flex-1 text-[11px] px-2 py-1.5 rounded border border-border hover:bg-accent transition-colors">Duplicate</button>
+        <button onClick={handleDelete} className="flex-1 text-[11px] px-2 py-1.5 rounded border border-destructive/40 text-destructive hover:bg-destructive/10 transition-colors">Delete</button>
+      </div>
 
       {def?.description && (
         <p className="text-[10px] text-muted-foreground italic px-1">{def.description}</p>

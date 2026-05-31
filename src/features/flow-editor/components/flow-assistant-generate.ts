@@ -4,7 +4,7 @@
  */
 
 import type { Node, Edge } from '@xyflow/react';
-import { resetId, makeNode, makeEdge, buildLinear, buildBranching, buildParallel, buildRouter } from './flow-assistant-builders';
+import { resetId, makeNode, buildLinear, buildBranching, buildParallel, buildRouter } from './flow-assistant-builders';
 
 export interface FlowAnswers {
   goal: string;

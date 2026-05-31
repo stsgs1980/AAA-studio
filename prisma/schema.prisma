@@ -264,17 +264,24 @@ model PromptHistory {
 // ============================================================================
 
 model PromptTemplate {
-  id        String   @id @default(cuid())
-  name      String
-  category  String   @default("general")
-  content   String
-  variables String   @default("[]") // JSON string[]
-  framework String?
-  tags      String   @default("[]") // JSON string[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(cuid())
+  name        String
+  description String   @default("")
+  category    String   @default("general") // general | reasoning | creative | analysis | coding | conversation
+  content     String
+  systemPrompt String  @default("")
+  temperature Float    @default(0.7)
+  maxTokens   Int      @default(4096)
+  nodeType    String   @default("llm")     // llm | agent | router
+  variables   String   @default("[]")      // JSON string[]
+  framework   String?
+  tags        String   @default("[]")      // JSON array
+  isBuiltin   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@index([category])
+  @@index([nodeType])
 }
 
 // ============================================================================
