@@ -8,6 +8,7 @@ import {
   GitBranch, Sparkles, BookOpen, Wrench, Shield,
   ScrollText, Settings, PanelLeftClose, PanelLeft, FileText,
   Moon, Sun, Cpu, ClipboardCheck, ListTodo, ArrowLeftRight, RefreshCw,
+  FlaskConical,
 } from "lucide-react";
 import { cn } from "@stsgs/ui";
 import { useState, useEffect } from "react";
@@ -29,6 +30,7 @@ const navItems = [
   { title: "Knowledge Base", href: "/knowledge", icon: BookOpen },
   { title: "Skill Forge", href: "/skills-page", icon: Wrench },
   { title: "Standards", href: "/standards", icon: Shield },
+  { title: "Testing", href: "/testing", icon: FlaskConical },
   { title: "Audit Log", href: "/audit", icon: ScrollText },
   { title: "Settings", href: "/settings", icon: Settings },
 ];
