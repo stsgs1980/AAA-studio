@@ -3,10 +3,11 @@
 import { useEffect, useState } from 'react';
 import { useFlowEditorStore } from '../../store/flow-store';
 import { getNodeDefinition } from '../../nodes/node-registry';
+import { RouterConfig } from './router-config';
 import type { LLMModel, ProviderConfig } from '@/lib/llm';
 
 /** AI-capable node types */
-const AI_TYPES = new Set(['llm', 'rag', 'agent', 'orchestrator']);
+const AI_TYPES = new Set(['llm', 'rag', 'agent', 'orchestrator', 'router']);
 
 /**
  * Configuration tab -- editable node fields.
@@ -102,6 +103,8 @@ export function ConfigTab() {
           </Fld>
         </Grp>
       )}
+
+      {node.type === 'router' && <RouterConfig data={data} set={set} />}
 
       {def?.description && (
         <p className="text-[10px] text-muted-foreground italic px-1">{def.description}</p>

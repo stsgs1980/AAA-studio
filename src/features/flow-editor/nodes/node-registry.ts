@@ -32,7 +32,7 @@ export const NODE_REGISTRY: NodeTypeDefinition[] = [
     inputs: [{ id: 'in', label: 'Input', type: 'input' }],
     outputs: [{ id: 'out', label: 'Output', type: 'output' }] },
   { type: 'router', category: AI, label: 'Router', description: 'Conditional routing logic', icon: 'GitBranch', colorClass: 'bg-blue-600',
-    defaultData: { routes: [] },
+    defaultData: { routes: [{ id: 'out-0', label: 'Route 0', keywords: [] }, { id: 'out-1', label: 'Route 1', keywords: [] }], routingStrategy: 'keyword', classificationPrompt: '', fallbackRouteId: 'out-0' },
     inputs: [{ id: 'in', label: 'Input', type: 'input' }],
     outputs: [{ id: 'out-0', label: 'Route 0', type: 'output' }, { id: 'out-1', label: 'Route 1', type: 'output' }] },
   { type: 'rag', category: AI, label: 'RAG', description: 'Retrieval-augmented generation', icon: 'Database', colorClass: 'bg-blue-600',

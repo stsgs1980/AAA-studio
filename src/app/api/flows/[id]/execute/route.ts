@@ -71,13 +71,28 @@ async function runFlow(
     totalTokens: 0, totalCost: 0, modelsUsed: [],
   };
 
+  // Branch-aware: track which edges are active.
+  // Start nodes (no incoming edges) are always reachable.
+  // After Router/Condition, only the selected branch stays active.
+  const activeEdges = new Set(edges.map((e) => e.id));
+  const reachable = new Set<string>();
+
+  // Mark start nodes as reachable
+  for (const node of nodes) {
+    const hasIncoming = edges.some((e) => e.target === node.id);
+    if (!hasIncoming) reachable.add(node.id);
+  }
+
   for (const nodeId of sorted) {
+    // Skip nodes on inactive branches
+    if (!reachable.has(nodeId)) continue;
+
     const node = nodes.find((n) => n.id === nodeId);
     if (!node) continue;
     const start = Date.now();
     try {
       const inputs = gatherInputs(nodeId, edges, ctx);
-      const { data: output, model, usage: u, cost } = await execNode(node, inputs, active);
+      const { data: output, model, usage: u, cost, selectedHandle } = await execNode(node, inputs, active);
       ctx.set(nodeId, output);
       results.push({ nodeId, nodeType: node.type, status: "completed", output, duration: Date.now() - start, model, usage: u, cost });
       if (u) {
@@ -87,6 +102,24 @@ async function runFlow(
       }
       if (cost) usage.totalCost += cost;
       if (model && !usage.modelsUsed.includes(model)) usage.modelsUsed.push(model);
+
+      // Branch-aware: if node selected a specific output handle,
+      // deactivate edges from other handles and mark only reachable downstream nodes
+      if (selectedHandle !== undefined) {
+        for (const edge of edges.filter((e) => e.source === nodeId)) {
+          if (edge.sourceHandle !== selectedHandle) {
+            activeEdges.delete(edge.id);
+          } else {
+            // Mark target as reachable
+            reachable.add(edge.target);
+          }
+        }
+      } else {
+        // No routing decision — all downstream edges stay active
+        for (const edge of edges.filter((e) => e.source === nodeId && activeEdges.has(e.id))) {
+          reachable.add(edge.target);
+        }
+      }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       results.push({ nodeId, nodeType: node.type, status: "failed", error: msg, duration: Date.now() - start });
