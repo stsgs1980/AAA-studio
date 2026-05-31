@@ -1206,3 +1206,50 @@ Stage Summary:
 - Testing page at /testing with sidebar entry
 - All P2 features complete and pushed to origin/main
 >>>>>>> af78228 (chore: update worklog with P2 progress (Cost Dashboard, HITL, Testing))
+
+---
+Task ID: P3
+Agent: main
+Task: P3 Wave — Animated Particles, WebSocket Real-time, Standards Seed, Agent Templates UI
+
+Work Log:
+- Dropped GUID commit (1ff55a1) from history via interactive rebase, force-push clean
+- P3-1: Animated Flow Particles (commit 2fd7fc2)
+  - Created edge-particles.tsx: 3 staggered SVG particles with trailing halos via feGaussianBlur
+  - Per-connection-type duration (command 3s, sync 5s, twin 4s, delegate 3.5s, feedback 3s, supervise 6s, broadcast 2.5s)
+  - Execution path: 2× speed, cyan color, brighter glow
+  - Upgraded TypedEdge: particles + exec glow + smart labels (EXECUTING/CONFLICT/WARNING)
+  - Extracted edge-helpers.ts (anti-monolith compliance)
+  - Donor: P-MAS_init/3a-studio-mas agent-edge system
+- P3-2: WebSocket Real-time (commit ab008d9)
+  - lib/ws/events.ts: 5 channels (approvals, dashboard, flow-execution, agent-status, cost-update) with typed payloads
+  - lib/ws/server.ts: Socket.IO server with channel subscriptions, type-safe broadcast
+  - lib/ws/hooks.ts: server-side emit helpers (emitApprovalNew, emitFlowStarted, etc.)
+  - lib/ws/use-realtime.ts: useRealtime + useRealtimeEvent hooks with auto-reconnect + polling fallback
+  - ApprovalPanel: WS push replaces 10s polling (useRealtimeEvent for new/decided)
+  - useDashboardData: WS push triggers immediate refresh on flow execution
+  - /api/flows/:id/execute: emits started/nodeComplete/finished/dashboardRefresh
+  - /api/approvals: emits new/decided events
+  - Graceful degradation: WS in dev/self-hosted, polling fallback on Vercel
+- P3-3: Standards Seed (commit 5425dfc)
+  - seed-standards.ts: 17 standards (STD-FE-001 through STD-AGENT-002) with descriptions
+  - Categories: architecture(2), general(4), security(3), quality(3), agent(2)
+  - Severities: error(12), warning(5) — matching donor severity levels
+  - Integrated into /api/dashboard/seed — standards seeded alongside agents/flows/skills
+  - Enhanced seed-standards.ts script with rule extraction from MUST/SHALL requirements
+  - Copied Zai-agent-toolkit/standards/ into project for script reference
+- P3-4: Agent Templates UI (commit 5e50017)
+  - StepAgentType: added dynamic TemplateVarsForm with variable inputs per template
+  - Template variables auto-generate system prompt via buildSystemPrompt()
+  - 5 agent type cards with icons: Tool-Calling, Router, Specialist, Orchestrator, Evaluator
+  - Added templateVars to WizardForm type + CREATOR_DEFAULTS
+  - AgentList: 'From Template' button links to /agent-creator wizard
+  - All files ≤150 lines, build clean
+
+Stage Summary:
+- 4 commits pushed: 2fd7fc2, ab008d9, 5425dfc, 5e50017
+- P3-1: Edge particles with SVG animateMotion, glow filters, execution path awareness
+- P3-2: Socket.IO real-time with typed events, 5 channels, polling fallback
+- P3-3: 17 real standards from Zai-agent-toolkit seeded into DB
+- P3-4: Agent template wizard with dynamic variable forms and system prompt generation
+- Build: passing, all files ≤150 lines, 0 errors
