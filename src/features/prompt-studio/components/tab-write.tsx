@@ -34,9 +34,9 @@ export function TabWrite() {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[1fr_260px] gap-4 h-full">
+    <div className="flex flex-col lg:flex-row gap-4 h-full">
       {/* Editor panel */}
-      <div className="flex flex-col gap-3 min-h-0">
+      <div className="flex-1 min-w-0 flex flex-col gap-3">
         {/* Intent badge + formula picker + actions */}
         <div className="flex items-center gap-2 flex-wrap">
           <IntentBadge intent={intent} />
@@ -98,7 +98,7 @@ export function TabWrite() {
       </div>
 
       {/* Score panel */}
-      <div>
+      <div className="w-full lg:w-64 shrink-0">
         <ScorePanel score={score} />
       </div>
     </div>

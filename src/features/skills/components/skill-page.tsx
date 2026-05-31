@@ -45,14 +45,16 @@ export default function SkillForgePage() {
 
       {/* Main layout */}
       {loading ? (
-        <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-4 min-h-[60vh]">
-          <div className="rounded-xl border border-border bg-card p-4"><PageSkeleton rows={4} /></div>
-          <div className="rounded-xl border border-border bg-card p-4"><PageSkeleton rows={3} /></div>
+        <div className="flex flex-col lg:flex-row gap-4 min-h-[60vh]">
+          <div className="w-full lg:w-56 shrink-0 rounded-xl border border-border bg-card p-4"><PageSkeleton rows={4} /></div>
+          <div className="flex-1 min-w-0 rounded-xl border border-border bg-card p-4"><PageSkeleton rows={3} /></div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-4 min-h-[60vh]">
-          <SkillList />
-          <div>
+        <div className="flex flex-col lg:flex-row gap-4 min-h-[60vh]">
+          <div className="w-full lg:w-56 shrink-0">
+            <SkillList />
+          </div>
+          <div className="flex-1 min-w-0">
             <SkillDetail />
           </div>
         </div>
