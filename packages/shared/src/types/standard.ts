@@ -46,18 +46,35 @@ export function generateRuleId(): string {
   return `rule-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
 }
 
-/** Skill definition -- linked to Standards via standardIds */
+/** Skill file roles -- matches Prisma SkillFile.role comment */
+export const SKILL_FILE_ROLES = [
+  'entry', 'code', 'test', 'config', 'doc', 'schema',
+  'script', 'reference', 'eval',
+] as const;
+export type SkillFileRole = (typeof SKILL_FILE_ROLES)[number];
+
+/** Skill definition -- full model synced with Prisma schema */
 export interface Skill {
   id: string;
   name: string;
+  slug: string;
+  version: string;
+  skillId: string;
   category: string;
   description: string;
+  longDescription: string;
   inputSchema: Record<string, unknown>;
   outputSchema: Record<string, unknown>;
   code: string;
   tests?: string;
   tags: string[];
-  standardIds: string[]; // linked Standard IDs
+  triggers: string[];
+  standardIds: string[];
+  compatibility: string;
+  dependencies: { skillId: string; version: string }[];
+  annotations: Record<string, boolean>;
+  author: string;
+  license: string;
   createdAt: Date;
   updatedAt: Date;
 }

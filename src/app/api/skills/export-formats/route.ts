@@ -1,12 +1,12 @@
 /**
  * GET /api/skills/export-formats?format=openai|mcp|a2a
  * Export all skills in industry-standard formats.
+ * A2A now produces per-agent cards (one card per agent with its skills).
  */
 
 import { db } from "@/lib/db";
 import { handleError, BadRequest } from "@/lib/api-error";
-import { toOpenAIToolsArray, toMCPToolsArray, parseSkillToData } from "@/lib/skill-export/format-adapters";
-import type { A2ACard } from "@/lib/skill-export/format-adapters";
+import { toOpenAIToolsArray, toMCPToolsArray, parseSkillToData, toA2ACard } from "@/lib/skill-export/format-adapters";
 
 export async function GET(request: Request) {
   try {
@@ -21,15 +21,17 @@ export async function GET(request: Request) {
       case "mcp":
         return Response.json({ tools: toMCPToolsArray(data) });
       case "a2a": {
-        // A2A exports per-agent cards; here we create a single card with all skills
-        const card: A2ACard = {
-          name: "3A Studio", description: "All skills from 3A Studio",
-          url: "", version: "1.0.0",
-          capabilities: { streaming: false, pushNotifications: false, stateTransitionHistory: false },
-          skills: data.map((s) => ({ id: s.slug, name: s.name, description: s.description, tags: [...s.tags, ...s.triggers] })),
-          provider: { organization: "3A Studio", url: "https://github.com/stsgs1980/AAA-studio" },
-        };
-        return Response.json(card);
+        const agents = await db.agent.findMany({ orderBy: { name: "asc" } });
+        if (agents.length === 0) {
+          // No agents yet -- single umbrella card
+          return Response.json(toA2ACard({ name: "3A Studio", role: "orchestrator", description: "All skills from 3A Studio", skills: data }));
+        }
+        const cards = agents.map((agent) => {
+          const skillIds: string[] = JSON.parse(agent.skills);
+          const agentSkills = data.filter((s) => skillIds.includes(s.skillId) || skillIds.includes(s.slug));
+          return toA2ACard({ name: agent.name, role: agent.role, description: agent.description || agent.role, skills: agentSkills.length > 0 ? agentSkills : data });
+        });
+        return Response.json({ agents: cards });
       }
       default:
         throw BadRequest(`Unknown format: ${format}. Use: openai, mcp, a2a`);

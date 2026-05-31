@@ -1,6 +1,7 @@
 import { db } from '@/lib/db';
 import { handleError, success, Conflict } from '@/lib/api-error';
 import { skillUpdateSchema } from '@/lib/validations';
+import { parseSkillFields } from '@/lib/skill-export/parse-skill';
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -12,19 +13,6 @@ function buildUpdateData(body: Record<string, unknown>): Record<string, unknown>
   for (const f of stringFields) { if (body[f] != null) data[f] = body[f]; }
   for (const f of jsonFields) { if (body[f] != null) data[f] = JSON.stringify(body[f]); }
   return data;
-}
-
-function parseSkillFields(s: Record<string, unknown>) {
-  return {
-    ...s,
-    inputSchema: JSON.parse(s.inputSchema as string),
-    outputSchema: JSON.parse(s.outputSchema as string),
-    tags: JSON.parse(s.tags as string),
-    triggers: JSON.parse(s.triggers as string),
-    standardIds: JSON.parse(s.standardIds as string),
-    dependencies: JSON.parse(s.dependencies as string),
-    annotations: JSON.parse(s.annotations as string),
-  };
 }
 
 export async function PUT(request: Request, { params }: Params) {

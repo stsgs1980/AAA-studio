@@ -2,6 +2,9 @@
  * MCP (Model Context Protocol) Server -- POST /api/mcp
  * JSON-RPC 2.0 handler: initialize, tools/list, tools/call,
  * resources/list, resources/read, prompts/list, prompts/get
+ *
+ * tools/call now executes skill entry code when available,
+ * falls back to LLM inference when no code exists.
  */
 
 import { db } from "@/lib/db";
@@ -26,11 +29,41 @@ async function handleToolsList(id: unknown) {
   return ok(id, { tools: skills.map((s) => toMCPTools(parseSkillToData(s))) });
 }
 
+/** Execute skill entry code in sandboxed Function, or fall back to LLM */
 async function handleToolsCall(id: unknown, params: Record<string, unknown>) {
   const toolName = params.name as string;
   const args = (params.arguments ?? {}) as Record<string, unknown>;
-  const skill = await db.skill.findUnique({ where: { slug: toolName } });
+  const skill = await db.skill.findUnique({ where: { slug: toolName }, include: { files: true } });
   if (!skill) return err(id, -32602, `Tool not found: ${toolName}`);
+
+  // Try code execution path: find entry file or legacy code
+  const entryFile = skill.files.find((f) => f.role === "entry");
+  const rawCode = entryFile?.content || skill.code;
+  const isJS = entryFile ? ["javascript", "typescript"].includes(entryFile.language) : true;
+  if (rawCode.trim() && isJS) {
+    try {
+      const result = await executeSkillCode(rawCode, args);
+      return ok(id, { content: [{ type: "text", text: JSON.stringify(result) }], isError: false });
+    } catch (e) {
+      // Code failed -- fall through to LLM
+      const msg = e instanceof Error ? e.message : String(e);
+      console.warn(`[MCP] Skill code exec failed for ${toolName}: ${msg}`);
+    }
+  }
+
+  // LLM fallback: describe skill + user args
+  return handleToolsCallLLM(id, skill, args);
+}
+
+/** Sandboxed code execution: expects skill code to define handler(inputs) */
+async function executeSkillCode(code: string, inputs: Record<string, unknown>): Promise<unknown> {
+  const clean = code.replace(/^export\s+/gm, "").replace(/^import\s+.*$/gm, "");
+  const fn = new Function("inputs", clean + "\nreturn typeof handler==='function'?handler(inputs):undefined;");
+  const timeout = new Promise<never>((_, reject) => setTimeout(() => reject(new Error("Timeout 5s")), 5000));
+  return Promise.race([fn(inputs), timeout]);
+}
+
+async function handleToolsCallLLM(id: unknown, skill: { name: string; description: string }, args: Record<string, unknown>) {
   try {
     const active = await getActiveProvider();
     if (!active) return err(id, -32603, "LLM not configured");

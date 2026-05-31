@@ -1,6 +1,7 @@
 import { db } from '@/lib/db';
 import { handleError, created, paginate } from '@/lib/api-error';
 import { skillCreateSchema, paginationSchema } from '@/lib/validations';
+import { parseSkillFields } from '@/lib/skill-export/parse-skill';
 
 /** Generate URL-safe slug from name with uniqueness check */
 async function generateSlug(name: string): Promise<string> {
@@ -11,20 +12,6 @@ async function generateSlug(name: string): Promise<string> {
     slug = `${base}-${suffix++}`;
   }
   return slug;
-}
-
-/** Parse JSON string fields for API response */
-function parseSkillFields(s: Record<string, unknown>) {
-  return {
-    ...s,
-    inputSchema: JSON.parse(s.inputSchema as string),
-    outputSchema: JSON.parse(s.outputSchema as string),
-    tags: JSON.parse(s.tags as string),
-    triggers: JSON.parse(s.triggers as string),
-    standardIds: JSON.parse(s.standardIds as string),
-    dependencies: JSON.parse(s.dependencies as string),
-    annotations: JSON.parse(s.annotations as string),
-  };
 }
 
 export async function GET(request: Request) {

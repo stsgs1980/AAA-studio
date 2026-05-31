@@ -13,6 +13,7 @@ const fileCreateSchema = z.object({
   ]).optional(),
   role: z.enum([
     'entry', 'code', 'test', 'config', 'doc', 'schema',
+    'script', 'reference', 'eval',
   ]).optional(),
 });
 

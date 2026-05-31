@@ -7,11 +7,14 @@ export {
 export {
   flowCreateSchema,
   flowUpdateSchema,
-  skillCreateSchema,
-  skillUpdateSchema,
   standardCreateSchema,
   standardUpdateSchema,
 } from './flow';
+
+export {
+  skillCreateSchema,
+  skillUpdateSchema,
+} from './skill';
 
 export {
   knowledgeCreateSchema,
