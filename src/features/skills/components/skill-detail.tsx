@@ -1,6 +1,6 @@
 "use client";
 
-import { Code2, TestTube2, Shield, Download, Files } from "lucide-react";
+import { Code2, TestTube2, Shield, Download, Files, FileArchive } from "lucide-react";
 import { cn } from "@stsgs/ui";
 import { CodeBlock } from "@/components/code-block";
 import { useSkillStore } from "../store/skills-store";
@@ -37,7 +37,11 @@ export function SkillDetail() {
               className="px-2 py-1 rounded bg-brand-accent text-white text-xs font-medium ml-2 hover:bg-brand-accent/90">Save</button>
             <a href={`/api/skills/${selected.id}/export`} download
               className="px-2 py-1 rounded border border-border text-xs font-medium ml-1 text-muted-foreground hover:bg-muted transition-colors inline-flex items-center gap-1">
-              <Download className="h-3 w-3" /> Export
+              <Download className="h-3 w-3" /> MD
+            </a>
+            <a href={`/api/skills/${selected.id}/export-zip`} download
+              className="px-2 py-1 rounded border border-border text-xs font-medium ml-1 text-muted-foreground hover:bg-muted transition-colors inline-flex items-center gap-1">
+              <FileArchive className="h-3 w-3" /> ZIP
             </a>
           </div>
         )}
