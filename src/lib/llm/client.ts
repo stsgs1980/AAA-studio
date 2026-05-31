@@ -13,10 +13,13 @@ export interface CallParams {
 
 // ---- Z.ai SDK (sandbox-only, uses SDK directly without API key) ----
 let _zaiSDK: unknown = null;
+let _zaiSDKAvailable: boolean | null = null;
+
 async function getZaiSDK() {
-  if (!_zaiSDK) {
+  if (!_zaiSDKAvailable) {
     const mod = await import('z-ai-web-dev-sdk');
     _zaiSDK = await (mod.default ?? mod).create();
+    _zaiSDKAvailable = true;
   }
   return _zaiSDK as { chat: { completions: { create: (b: unknown) => Promise<unknown> } } };
 }
@@ -51,7 +54,23 @@ export async function callLLM(params: CallParams): Promise<LLMResponse> {
   const { provider } = params;
 
   if (provider.id === 'zai') {
-    return callZaiSDK(params);
+    // Z.ai with API key → use OpenAI-compatible endpoint (works on Vercel)
+    if (provider.apiKey) {
+      const { callOpenAI } = await import('./openai');
+      return callOpenAI(params);
+    }
+    // No API key → try SDK (sandbox mode), fall back to OpenAI format if SDK unavailable
+    try {
+      return await callZaiSDK(params);
+    } catch (sdkError) {
+      _zaiSDKAvailable = false;
+      const msg = sdkError instanceof Error ? sdkError.message : String(sdkError);
+      throw new Error(
+        `Z.ai SDK unavailable (${msg}). ` +
+        'Go to Settings → LLM Provider to add a Z.ai API key for production use.',
+        { cause: sdkError },
+      );
+    }
   }
 
   if (!provider.apiKey) {
