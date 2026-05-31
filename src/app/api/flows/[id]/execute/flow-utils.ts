@@ -34,16 +34,6 @@ export function gatherInputs(
   return inputs;
 }
 
-export function extractText(inputs: Record<string, unknown>): string {
-  const parts: string[] = [];
-  for (const val of Object.values(inputs)) {
-    if (typeof val === "string") parts.push(val);
-    else if (typeof val === "object" && val !== null) {
-      const r = (val as Record<string, unknown>).response;
-      if (typeof r === "string") parts.push(r);
-    }
-  }
-  return parts.join("\n") || JSON.stringify(inputs);
-}
+export { extractText } from "@/lib/skill-export/text-utils";
 
 export type { FlowNode, FlowEdge };
