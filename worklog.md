@@ -1134,3 +1134,75 @@ Stage Summary:
 - All P0 complete: Typed Connections, Version History UI, Data Contract Visualization
 - All P1 complete: Seed Data, Feedback Loop Arrows, API Tests
 - TypeScript: 0 errors, ESLint: 0 errors, all files <= 150 lines
+
+---
+Task ID: P2-1
+Agent: main
+Task: P2-1 Cost Dashboard — persist + aggregate + visualize LLM costs
+
+Work Log:
+- Added persistCost() in node-helpers.ts: writes CostRecord on every LLM call (fire-and-forget)
+- Updated node-exec.ts: buildLLMOutput → persistCost, added flowId param throughout
+- Updated execute/route.ts and execute-sse/route.ts: pass flowId to execNode
+- Created GET /api/cost: aggregated analytics by model/type/daily trend with range param
+- Created cost-helpers.ts: fetchCostData() for dashboard API (7-day aggregation)
+- Created CostOverview component: total spend, tokens, calls, model breakdown bars, daily sparkline
+- Added cost field to DashboardData type + useDashboardData EMPTY defaults
+- Split helpers.ts (166→111 lines): cost-helpers.ts for cost queries
+- Added CostOverview to dashboard page (next to SystemHealth)
+
+Stage Summary:
+- 12 files changed, +281/-15
+- Commit: bf910bf pushed
+- CostRecord now written on every LLM call during flow execution
+- Dashboard shows real-time cost analytics
+
+---
+Task ID: P2-2
+Agent: main
+Task: P2-2 HITL Approvals — pause/resume execution, approval API, dashboard panel
+
+Work Log:
+- Created GET/POST /api/approvals: list (with status filter) + create approval requests
+- Created PATCH /api/approvals/:id: approve/reject/cancel with response + respondedBy
+- Created node-helpers.ts: execHITL + persistCost
+  - execHITL: creates ApprovalRequest, polls every 5s until approved/rejected/expired/timeout
+  - Routes to 'approved' or 'rejected' handle based on decision
+  - Default timeout: 300000ms (5 min), configurable via node.data.timeoutMs
+- Created ApprovalPanel: dashboard component with pending list, approve/reject buttons, auto-refresh 10s
+- Risk level color coding: low=emerald, medium=amber, high=red, critical=red-600
+- Updated node-exec.ts: imports from node-helpers, added human-in-the-loop case
+- Added ApprovalPanel to dashboard page (next to ActivityTimeline)
+
+Stage Summary:
+- 8 files changed, +225/-23
+- Commit: 622080f pushed
+- HITL node now pauses execution and waits for human approval
+- Approval UI in dashboard with real-time polling
+
+---
+Task ID: P2-3
+Agent: main
+Task: P2-3 Testing System — test case CRUD, LLM-as-judge runner, UI page
+
+Work Log:
+- Created GET/POST /api/test-cases: list (filter by agentId/category) + create
+- Created PUT/DELETE /api/test-cases/:id: update + delete (cascades results)
+- Created POST/GET /api/test-runs: execute test suite + list runs
+  - Runner: iterates test cases, calls LLM with input, compares actual vs expected
+  - LLM-as-judge: scores 0-100, pass/partial/fail labels, reasoning
+  - Fallback: simple string match when judge fails
+  - TestResult persisted with judgeScore, judgeLabel, judgeReasoning, duration
+- Created /testing page: case list, run all, results with pass/fail/error counts
+  - Create test case inline: name + input JSON + expected output JSON
+  - Tabs: Cases vs Runs
+  - Auto-refresh on run completion
+- Added Testing to sidebar navigation (FlaskConical icon)
+
+Stage Summary:
+- 5 files changed, +337 lines
+- Commit: 2a43643 pushed
+- Full test management: create cases, run against LLM, judge results
+- Testing page at /testing with sidebar entry
+- All P2 features complete and pushed to origin/main
+>>>>>>> af78228 (chore: update worklog with P2 progress (Cost Dashboard, HITL, Testing))
