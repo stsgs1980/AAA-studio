@@ -5,6 +5,7 @@ import { DragPanel } from './components/drag-panel';
 import { FlowCanvas } from './components/flow-canvas';
 import { Toolbar } from './components/toolbar';
 import { NodeConfigPanel } from './components/node-config-panel';
+import { FlowAssistant } from './components/flow-assistant';
 import { useFlowEditorStore } from './store/flow-store';
 import { useLoadFlow } from './hooks/use-load-flow';
 import { useUndoRedoKeys } from './hooks/use-undo-redo-keys';
@@ -30,6 +31,7 @@ export function FlowEditor() {
           {selectedNodeId && <NodeConfigPanel />}
         </div>
       </div>
+      <FlowAssistant />
     </ReactFlowProvider>
   );
 }

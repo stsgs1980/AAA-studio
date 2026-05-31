@@ -10,6 +10,7 @@ import {
   type Node,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
+import { Sparkles } from 'lucide-react';
 
 import { useFlowEditorStore } from '../store/flow-store';
 import { getReactFlowNodeTypes, getNodeDefinition } from '../nodes/node-registry';
@@ -99,6 +100,17 @@ export function FlowCanvas() {
         pannable
         zoomable
       />
+      {store.nodes.length === 0 && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="text-center space-y-3 pointer-events-auto">
+            <p className="text-sm text-muted-foreground">Drag nodes from the left panel or</p>
+            <button onClick={store.toggleAssistant}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90">
+              <Sparkles className="h-4 w-4" /> Use Flow Assistant
+            </button>
+          </div>
+        </div>
+      )}
     </ReactFlow>
   );
 }

@@ -23,6 +23,7 @@ interface FlowEditorState {
   canUndo: boolean; canRedo: boolean;
   executionResults: ExecutionResult[];
   isRunning: boolean;
+  showAssistant: boolean;
 }
 
 interface FlowEditorActions {
@@ -38,6 +39,7 @@ interface FlowEditorActions {
   undo: () => void;
   redo: () => void;
   setExecutionResults: (results: ExecutionResult[]) => void;
+  toggleAssistant: () => void;
   _pushHistory: () => void;
 }
 
@@ -53,6 +55,7 @@ export const useFlowEditorStore = create<FlowEditorState & FlowEditorActions>((s
     history: [{ ...EMPTY }], historyIndex: 0,
     canUndo: false, canRedo: false,
     executionResults: [], isRunning: false,
+    showAssistant: false,
 
     _pushHistory: () => {
       const { history, historyIndex } = get();
@@ -100,6 +103,7 @@ export const useFlowEditorStore = create<FlowEditorState & FlowEditorActions>((s
     }),
 
     setExecutionResults: (results) => set({ executionResults: results, isRunning: false }),
+    toggleAssistant: () => set((s) => ({ showAssistant: !s.showAssistant })),
 
     undo: () => {
       const { historyIndex: hi, history: h } = get();
