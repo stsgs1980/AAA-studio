@@ -30,7 +30,7 @@ export function WikiDrawer() {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 30, stiffness: 300 }}
-            className="fixed right-0 top-0 z-50 flex h-full w-[420px] flex-col border-l border-border bg-card"
+            className="fixed right-0 top-0 z-50 flex h-full w-[640px] flex-col border-l border-border bg-card"
           >
             {/* Header */}
             <div className="flex h-14 items-center gap-3 border-b border-border px-4">
