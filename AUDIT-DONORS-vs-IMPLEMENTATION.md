@@ -104,27 +104,27 @@
 
 | Фича | Из донора | Почему критично | Оценка |
 |------|-----------|-----------------|--------|
-| **6 Typed Connections** | P-MAS_init | Сейчас edges без типа. P-MAS_init имеет Command/Sync/Twin/Delegate/Supervise/Broadcast с уникальными визуальными стилями. Без этого hierarchy плоская | 1-2 дня |
-| **Version History UI** | MVP-Flow-Studio-Pro | Модель FlowVersion есть в Prisma, API для версий есть, но нет UI для просмотра/восстановления предыдущих версий flow | 1 день |
-| **Data Contract Visualization** | P-MAS_init | I/O schema совместимость между шагами workflow. Показывает Compatible/Incompatible/Unknown + JSON schema preview. Критично для debugging | 1 день |
+| **6 Typed Connections** | P-MAS_init | ✅ DONE — реализовано (Command/Sync/Twin/Delegate/Supervise/Broadcast) | 1-2 дня |
+| **Version History UI** | MVP-Flow-Studio-Pro | ✅ DONE — FlowVersion list panel + preview diff + restore | 1 день |
+| **Data Contract Visualization** | P-MAS_init | ✅ DONE — I/O schema совместимость, Compatible/Incompatible/Unknown | 1 день |
 
 ### Важные (P1)
 
 | Фича | Из донора | Почему важно | Оценка |
 |------|-----------|--------------|--------|
-| **Cost Monitoring Dashboard** | Модель CostRecord/LatencyAlert | Модели в Prisma лежат мёртвые — нет ни API, ни UI. LLM стоит денег — мониторинг обязателен | 1-2 дня |
-| **Testing System UI** | Модель TestCase/TestRun/TestResult | Модели есть, нет API/UI. Навыки нужно тестировать | 2-3 дня |
-| **HITL Approvals** | Модель ApprovalRequest | Human-in-the-loopApproval модель лежит. Важно для безопасных операций | 1 день |
-| **Feedback Loop Arrows** | P-MAS_init | Визуализация fallback-петель в workflow. Визуально критично для понимания flow | 4 часа |
-| **26-agent seed data** | P-MAS_init | P-MAS_init имеет богатую сид-дату: 26 агентов, 8 групп, 20 формул, 6 типов связей, 5 workflow. У нас — минимальный сид | 2 часа |
-| **API Integration Tests** | Wave 7.2 | 0 route-тестов — хрупкость. Любой change может сломать API | 2 дня |
+| **Cost Monitoring Dashboard** | Модель CostRecord/LatencyAlert | ✅ DONE — API + UI реализованы | 1-2 дня |
+| **Testing System UI** | Модель TestCase/TestRun/TestResult | ✅ DONE — API + UI реализованы | 2-3 дня |
+| **HITL Approvals** | Модель ApprovalRequest | ✅ DONE — API + UI реализованы | 1 день |
+| **Feedback Loop Arrows** | P-MAS_init | ✅ DONE — SVG curved arrows реализованы | 4 часа |
+| **26-agent seed data** | P-MAS_init | ✅ DONE — Rich seed data из P-MAS_init | 2 часа |
+| **API Integration Tests** | Wave 7.2 | ❌ Не начато — хрупкость. Любой change может сломать API | 2 дня |
 
 ### Желательные (P2)
 
 | Фича | Из донора | Оценка |
 |------|-----------|--------|
-| **Animated Flow Particles** (SVG animateMotion на edges) | P-MAS_init | 1 день |
-| **WebSocket Socket.IO** | P-MAS_init | 1-2 дня (SSE уже работает) |
+| **Animated Flow Particles** (SVG animateMotion на edges) | P-MAS_init | ✅ DONE | 1 день |
+| **WebSocket Socket.IO** | P-MAS_init | ✅ DONE | 1-2 дня (SSE уже работает) |
 | **Cron Scheduling** (triggerType=schedule в модели, но нет runner) | Spec | 1 день |
 | **Vector Search backend** (ноды Embedding/VectorStore есть, pgvector нет) | Spec | 3-5 дней |
 
@@ -145,15 +145,15 @@
 |--------|-----------|------|-----|
 | Contradiction | Обнаружение конфликтов в агентах | ❌ | ❌ |
 | CitationCheck | Проверка цитат | ❌ | ❌ |
-| ApprovalRequest | Human-in-the-loop | ❌ | ❌ |
+| ApprovalRequest | Human-in-the-loop | ✅ | ✅ |
 | AnalysisSession | Мультиагентный анализ | ❌ | ❌ |
-| CostRecord | Мониторинг стоимости | ❌ | ❌ |
-| LatencyAlert | Предупреждения о задержке | ❌ | ❌ |
+| CostRecord | Мониторинг стоимости | ✅ | ✅ |
+| LatencyAlert | Предупреждения о задержке | ✅ | ✅ |
 | FeedbackRecord | Обратная связь | ❌ | ❌ |
 | ComparisonSnapshot | A/B сравнение | ❌ | ❌ |
-| TestCase | Тестовые случаи | ❌ | ❌ |
-| TestRun | Прогоны тестов | ❌ | ❌ |
-| TestResult | Результаты тестов | ❌ | ❌ |
+| TestCase | Тестовые случаи | ✅ | ✅ |
+| TestRun | Прогоны тестов | ✅ | ✅ |
+| TestResult | Результаты тестов | ✅ | ✅ |
 | InteractionLog | Лог взаимодействий | ❌ | ❌ |
 | PromptHistory | История промптов | ❌ | ❌ |
 | PromptRegistryEntry | Реестр промптов | ❌ | ❌ |
@@ -174,7 +174,7 @@
 | Wave 6 | Resilience & Polish | ✅ DONE |
 | Wave 7 | Quality | ⚠️ Частично (i18n DONE, тесты частично, docs нет) |
 | Wave 8 | Production | ❌ Не начат |
-| **Wave 9** | **Donor Features + Dead Models** | 🆕 Предложение |
+| **Wave 7.5** | **Donor Features + Dead Models** | ✅ DONE |
 
 ---
 
@@ -217,3 +217,15 @@
 - Flow Editor получает typed connections + version history + data contracts
 - P-MAS_init донорные фичи перенесены
 - Monitoring (cost + latency) работает
+
+---
+
+## Quality Audit of Zai-agent-toolkit Standards (2026-06-01)
+
+19 стандартов проанализированы через heuristic scoring (average 7.9/10) и LLM deep analysis:
+
+- **16/18 PASS** (8/10): стандарты хорошего качества
+- **2/18 WARN** (7/10): MARKDOWN_STANDARD, README_TEMPLATE — нужно улучшение
+- **Critical**: GITHUB_STANDARD содержит противоречие между §3.1 (запрещает force push) и §5.4 (разрешает --lease)
+- **FRONTEND_STANDARD** §10.4 обрывается на середине предложения
+- **Decision**: стандарты НЕ сидированы в БД — нужен ручной quality review перед seeding

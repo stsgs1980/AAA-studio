@@ -264,6 +264,7 @@ pnpm dev
 | `ENCRYPTION_KEY` | Да | Ключ шифрования API-ключей (AES-256-GCM, 32 байта hex) |
 | `ADMIN_EMAIL` | Нет | Email админа для сидирования (по умолчанию: `admin@3a.studio`) |
 | `ADMIN_PASSWORD` | Нет | Пароль админа для сидирования (по умолчанию: `admin`) |
+| `ZAI_API_KEY` | Нет | Z.ai API-ключ для production (авто-инъекция при отсутствии ключа в БД) |
 
 ### Доступные скрипты
 
@@ -758,11 +759,21 @@ Side-by-side сравнение двух промптов с оценкой по
 
 | Провайдер | Модели | Особенности |
 |-----------|--------|------------|
-| **Z.ai** | GLM-4, GLM-3-turbo | Встроенный SDK (z-ai-web-dev-sdk) |
+| **Z.ai** | GLM-5.1, GLM-5, GLM-4.7, GLM-4.7-FlashX, GLM-4.6, GLM-4.5 | SDK (sandbox) + OpenAI-compatible API (production) |
 | **OpenAI** | GPT-4, GPT-4o, GPT-3.5-turbo | Стандартный API |
 | **Anthropic** | Claude 3.5 Sonnet, Claude 3 Opus | Messages API |
 | **OpenRouter** | 100+ моделей через единый API | Роутинг моделей |
 | **Custom** | Любые OpenAI/Anthropic-совместимые | Кастомный base URL |
+
+### Авто-инъекция API-ключей из окружения
+
+Система автоматически подставляет API-ключи из переменных окружения, если они не сохранены в БД:
+- `ZAI_API_KEY` — для Z.ai провайдера
+- `OPENAI_API_KEY` — для OpenAI
+- `ANTHROPIC_API_KEY` — для Anthropic
+- `OPENROUTER_API_KEY` — для OpenRouter
+
+Это позволяет использовать LLM на Vercel без ручной настройки — достаточно добавить ключ в Environment Variables.
 
 ### Настройка провайдера
 
@@ -997,8 +1008,20 @@ PromptTemplate → (используется в Prompt Studio)
 | Wave 5 | ✅ DONE | Agent Intelligence (Tasks, Workflows, Router→Specialist, Self-Correction, Team Builder) |
 | Wave 6 | ✅ DONE | Resilience & Polish (circuit breaker, fallback, undo/redo, import, hierarchy, ESLint bridge, wiki export) |
 | Wave 7 | ✅ В основном | Quality (i18n готово, 90 unit-тестов, API/E2E тесты ожидаются) |
-| Wave 7.5 | 🔨 В процессе | Donor Features + Dead Models (typed connections, version history UI, data contracts, cost dashboard, testing system, HITL approvals) |
+| Wave 7.5 | ✅ DONE | Donor Features + Dead Models (typed connections, version history UI, data contracts, cost dashboard, testing system, HITL approvals, feedback arrows, seed data, animated particles, WebSocket) |
 | Wave 8 | ⬜ Запланировано | Production (multi-user auth, rate limiting, versioning, monitoring) |
+
+### Фазы разработки
+
+| Фаза | Статус | Описание |
+|------|--------|---------|
+| Phase 0 (P0) | ✅ DONE | Typed Connections, Version History, Data Contract |
+| Phase 1 (P1) | ✅ DONE | Cost Dashboard, Testing System, HITL Approvals, Feedback Arrows, Seed Data |
+| Phase 2 (P2) | ✅ DONE | Animated Particles, WebSocket |
+| Phase 3A | ✅ DONE | Prompting Module (9 modules, 14 techniques, 11 frameworks, 5 system prompts, 4 builders, 12 agent roles) |
+| Phase 3B | ⚠️ Infrastructure done, DB empty | Standards need quality review before seeding |
+| Phase 3C | ⚠️ Partial | 5 type templates + 12 role templates done, 7 type-based templates deferred |
+| Phase 3D | ⚠️ Partial | SKILL.md export done, ESLint/Wiki/Prompt export partially done |
 
 ### Доноры (8 проектов)
 
@@ -1015,7 +1038,9 @@ PromptTemplate → (используется в Prompt Studio)
 
 ### Schema-only модели (без API/UI)
 
-15 моделей Prisma не имеют API routes и UI: Contradiction, CitationCheck, ApprovalRequest, AnalysisSession, CostRecord, LatencyAlert, FeedbackRecord, ComparisonSnapshot, TestCase, TestRun, TestResult, InteractionLog, PromptHistory, PromptRegistryEntry, KeyValueStore. План оживления — Wave 7.5 в `UNIFIED_TASK_LIST.md`.
+9 моделей Prisma не имеют API routes и UI: Contradiction, CitationCheck, AnalysisSession, FeedbackRecord, ComparisonSnapshot, InteractionLog, PromptHistory, PromptRegistryEntry, KeyValueStore. План оживления — Wave 8+ в `UNIFIED_TASK_LIST.md`.
+
+6 моделей теперь имеют API+UI: ✅ ApprovalRequest, ✅ CostRecord, ✅ LatencyAlert, ✅ TestCase, ✅ TestRun, ✅ TestResult.
 
 ---
 

@@ -1253,3 +1253,27 @@ Stage Summary:
 - P3-3: 17 real standards from Zai-agent-toolkit seeded into DB
 - P3-4: Agent template wizard with dynamic variable forms and system prompt generation
 - Build: passing, all files ≤150 lines, 0 errors
+---
+Task ID: LLM-FIX
+Agent: main
+Task: Fix Z.ai LLM provider for Vercel deployment + Quality Analyzer testing
+
+Work Log:
+- Diagnosed: Z.ai SDK (z-ai-web-dev-sdk) only works in sandbox (/etc/.z-ai-config), fails on Vercel
+- Fixed client.ts: Z.ai with API key → callOpenAI() with https://api.z.ai/api/paas/v4, no key → SDK fallback
+- Created env-key.ts: auto-injects ZAI_API_KEY/OPENAI_API_KEY/etc from env vars when no key in DB
+- Updated getActiveProvider() to call injectEnvKey() for zero-config on Vercel
+- Tested: LLM calls work correctly through both SDK and API key paths
+- Analyzed Quality Analyzer: heuristic scoring works, Deep Analysis returns 500 on Vercel (no LLM provider)
+- After fix: user needs ZAI_API_KEY in Vercel Environment Variables or Settings UI
+- Discovered DB is completely empty (36 tables, 0 records) — all features coded but no data
+- Analyzed 19 toolkit standards via heuristic + LLM deep analysis
+- Result: 16/18 PASS, 2 WARN, 1 critical contradiction (GITHUB_STANDARD)
+- Decision: standards NOT seeded — need quality review first
+
+Stage Summary:
+- Commit: 3a873ef fix(llm): Z.ai provider uses OpenAI format with API key, SDK as sandbox fallback
+- Commit: 55ea7c4 feat(llm): auto-inject ZAI_API_KEY env var for Vercel deployment
+- DB state: 36 tables, 0 records
+- Quality Analyzer: scoring works, Deep Analysis needs LLM provider config on Vercel
+- Standards: 19 analyzed, NOT seeded (quality review pending)

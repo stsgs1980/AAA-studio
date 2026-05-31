@@ -12,7 +12,7 @@
 - [+] `npm run build` -- passes
 - [+] `npm run lint` -- 0 errors
 - [+] API routes: 45+ route files across 15 feature areas
-- [+] 17 feature modules, 4 packages
+- [+] 17 feature modules + Quality Analyzer, 4 packages
 - [+] Auth middleware + API key encryption
 - [+] Multi-provider LLM (Z.ai, OpenAI, Anthropic, OpenRouter, custom)
 - [+] MCP Server (JSON-RPC + SSE transport, 6 methods)
@@ -25,6 +25,8 @@
 - [+] Prompt Templates: 8 built-in + CRUD API
 - [+] Wiki: 11 pages + GitHub export
 - [+] 15 schema-only models without API/UI (see Wave 7.5)
+- [+] Quality Analyzer: heuristic scoring, LLM deep analysis (8 criteria), standards check, rubric evaluation, GitHub repo integration
+- [+] LLM env-key injection: ZAI_API_KEY, OPENAI_API_KEY, etc. auto-injected from env vars
 
 ---
 
@@ -189,64 +191,72 @@
 - [+] 15 schema-only моделей без API/UI выявлены
 - [+] Аудит записан в AUDIT-DONORS-vs-IMPLEMENTATION.md
 
-### 7.5.1 [ ] 6 Typed Connections (P0 — из P-MAS_init)
-- [ ] Edge types: Command, Sync, Twin, Delegate, Supervise, Broadcast
-- [ ] Визуальные стили per-type (dash, color, animation)
-- [ ] Connection type picker в edge config
+### 7.5.1 [DONE] 6 Typed Connections (P0 — из P-MAS_init)
+- [x] Edge types: Command, Sync, Twin, Delegate, Supervise, Broadcast
+- [x] Визуальные стили per-type (dash, color, animation)
+- [x] Connection type picker в edge config
 - Источник: P-MAS_init/hierarchy/agent-edge.tsx (6 typed connections + animated particles)
 
-### 7.5.2 [ ] Version History UI (P0 — из MVP-Flow-Studio-Pro)
-- [ ] FlowVersion list panel в toolbar
-- [ ] Preview diff (nodes/edges changes)
-- [ ] Restore version button
+### 7.5.2 [DONE] Version History UI (P0 — из MVP-Flow-Studio-Pro)
+- [x] FlowVersion list panel в toolbar
+- [x] Preview diff (nodes/edges changes)
+- [x] Restore version button
 - Модель FlowVersion уже в Prisma, API для versions уже есть
 
-### 7.5.3 [ ] Data Contract Visualization (P0 — из P-MAS_init)
-- [ ] I/O schema compatibility check между шагами workflow
-- [ ] Visual indicator: Compatible/Incompatible/Unknown
-- [ ] JSON schema preview popover
+### 7.5.3 [DONE] Data Contract Visualization (P0 — из P-MAS_init)
+- [x] I/O schema compatibility check между шагами workflow
+- [x] Visual indicator: Compatible/Incompatible/Unknown
+- [x] JSON schema preview popover
 - Источник: P-MAS_init/workflows/workflow-pipeline.tsx (DataContractCard)
 
-### 7.5.4 [ ] Cost Monitoring Dashboard (P1)
-- [ ] API: GET /api/costs (aggregate CostRecord)
-- [ ] API: GET /api/latency-alerts (list LatencyAlert)
-- [ ] UI: cost chart + latency alerts panel в /dashboard
+### 7.5.4 [DONE] Cost Monitoring Dashboard (P1)
+- [x] API: GET /api/costs (aggregate CostRecord)
+- [x] API: GET /api/latency-alerts (list LatencyAlert)
+- [x] UI: cost chart + latency alerts panel в /dashboard
 - Модели CostRecord + LatencyAlert уже в Prisma
 
-### 7.5.5 [ ] Testing System (P1)
-- [ ] API: CRUD /api/test-cases, /api/test-runs, /api/test-results
-- [ ] UI: test case editor + run results в /skills-page
+### 7.5.5 [DONE] Testing System (P1)
+- [x] API: CRUD /api/test-cases, /api/test-runs, /api/test-results
+- [x] UI: test case editor + run results в /skills-page
 - Модели TestCase + TestRun + TestResult уже в Prisma
 
-### 7.5.6 [ ] HITL Approvals (P1)
-- [ ] API: CRUD /api/approval-requests
-- [ ] UI: approval queue в workflow execution
+### 7.5.6 [DONE] HITL Approvals (P1)
+- [x] API: CRUD /api/approval-requests
+- [x] UI: approval queue в workflow execution
 - Модель ApprovalRequest уже в Prisma
 
-### 7.5.7 [ ] Feedback Loop Arrows (P1 — из P-MAS_init)
-- [ ] SVG curved arrow для fallbackStepId в workflow
-- [ ] Visual indicator: feedback loop vs normal flow
+### 7.5.7 [DONE] Feedback Loop Arrows (P1 — из P-MAS_init)
+- [x] SVG curved arrow для fallbackStepId в workflow
+- [x] Visual indicator: feedback loop vs normal flow
 - Источник: P-MAS_init/workflows/workflow-pipeline.tsx (FeedbackLoopArrow)
 
-### 7.5.8 [ ] Rich seed data из P-MAS_init (P1)
-- [ ] 26 агентов (8 групп, 20 формул)
-- [ ] 6 typed connections между агентами
-- [ ] 5 sample workflows
+### 7.5.8 [DONE] Rich seed data из P-MAS_init (P1)
+- [x] 26 агентов (8 групп, 20 формул)
+- [x] 6 typed connections между агентами
+- [x] 5 sample workflows
 - Источник: P-MAS_init/prisma/seed + /api/seed
 
-### 7.5.9 [ ] Animated Flow Particles (P2 — из P-MAS_init)
-- [ ] SVG animateMotion particles на edges
-- [ ] Glow filters + trailing halos
+### 7.5.9 [DONE] Animated Flow Particles (P2 — из P-MAS_init)
+- [x] SVG animateMotion particles на edges
+- [x] Glow filters + trailing halos
 - Источник: P-MAS_init/hierarchy/agent-edge.tsx
 
-### 7.5.10 [ ] WebSocket real-time (P2 — из P-MAS_init)
-- [ ] Socket.IO service или SSE upgrade для agent status
-- [ ] Real-time status updates в /hierarchy
+### 7.5.10 [DONE] WebSocket real-time (P2 — из P-MAS_init)
+- [x] Socket.IO service или SSE upgrade для agent status
+- [x] Real-time status updates в /hierarchy
 - Источник: P-MAS_init/mini-services/ws-service/
+
+### 7.5.11 [DONE] Standards Seed infrastructure
+- [+] parse-md.ts, seed-standards.ts, import API, UI button
+- [+] 19 MD files from Zai-agent-toolkit/standards/ available
+- NOTE: 0 standards actually in DB — need quality review before seeding
+- NOTE: LLM Deep Analysis scored 16/18 as PASS, 2 as WARN (MARKDOWN_STANDARD, README_TEMPLATE)
+- NOTE: 1 critical contradiction found in GITHUB_STANDARD (§3.1 vs §5.4)
 
 ### Schema-only модели без API/UI (будут оживлены по мере надобности)
 - Contradiction, CitationCheck, ComparisonSnapshot, AnalysisSession
 - InteractionLog, PromptHistory, PromptRegistryEntry, KeyValueStore, FeedbackRecord
+- ✅ ApprovalRequest, CostRecord, LatencyAlert, TestCase, TestRun, TestResult — NOW HAVE API+UI
 
 ---
 

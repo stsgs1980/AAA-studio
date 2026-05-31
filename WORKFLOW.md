@@ -35,7 +35,7 @@
   @stsgs/shared (типы)        eslint-plugin-3a (3 правила)
 
   DB: Prisma + PostgreSQL (Neon)
-  LLM: z-ai-web-dev-sdk через /api/llm
+  LLM: Multi-provider LLM (Z.ai SDK + API key, OpenAI, Anthropic, OpenRouter)
 ```
 
 ---
@@ -68,7 +68,7 @@ Zai-agent-toolkit (скомпилированные скиллы для Z.ai san
 
 | Package | Статус | Содержимое |
 |---------|--------|------------|
-| @stsgs/prompting | ✅ Рабочий | 6 скореров, 10 формул, 4 фреймворка, intent, comparison |
+| @stsgs/prompting | ✅ Рабочий | 9 modules: scoring, formulas (10→14 techniques), frameworks (4→11), system-prompts (5), builders (4), agent-templates (12 roles), intent, comparison |
 | @stsgs/shared | ✅ Рабочий | Полные типы для Agent, Skill, Standard, Flow, Knowledge, Prompt |
 | @stsgs/ui | ✅ Рабочий | Design tokens (HSL), ThemeProvider, cn utility |
 | eslint-plugin-3a | ✅ Рабочий | max-lines(150), max-use-state(3), no-cross-layer |
@@ -93,6 +93,7 @@ Zai-agent-toolkit (скомпилированные скиллы для Z.ai san
 | Hierarchy | ✅ Работает | Визуальный граф parent/child |
 | Templates | ✅ Работает | 6 flow templates + prompt library, clone to editor |
 | Audit Log | ✅ Работает | JSON подсветка деталей, фильтры по entity |
+| Quality Analyzer | ✅ Работает | Heuristic scoring (6 dims), LLM Deep Analysis (8 criteria), Standards check, Rubric (4 scenarios), GitHub repo integration |
 | Settings | ✅ Работает | Multi-provider LLM, theme/language, key masking |
 | i18n | ✅ Работает | en/ru, 17 неймспейсов, интерполяция, sidebar + settings |
 | Tests | ✅ 125 тестов | Unit: 90 (lib, validations, resilience), Integration: 35 (auth chain, agent CRUD, cross-ref, crypto) |
@@ -149,26 +150,31 @@ Zai-agent-toolkit (скомпилированные скиллы для Z.ai san
 Замена/расширение `@stsgs/prompting` на основе исследования типологии агентов.
 Что делаем (не все 20+11 формул, а только нужное):
 
-- [ ] 5 system prompt templates (Tool-Calling, Router, Specialist, Orchestrator, Evaluator)
-- [ ] Tool description builder (Anthropic ACI best practices)
-- [ ] Backstory builder (CrewAI pattern: 3-5 sentences expertise)
-- [ ] Evaluation rubric builder (критерии + scoring для Evaluator)
-- [ ] Collaboration context builder (team roster для Orchestrator+Workers)
-- [ ] Миграция типов из prompting-v0.0 в @stsgs/shared
-- [ ] Расширение frameworks: 4 -> 11
-- [ ] Добавление 14 техник (из 20, остальные на Phase 5)
+- [x] 5 system prompt templates (Tool-Calling, Router, Specialist, Orchestrator, Evaluator)
+- [x] Tool description builder (Anthropic ACI best practices)
+- [x] Backstory builder (CrewAI pattern: 3-5 sentences expertise)
+- [x] Evaluation rubric builder (критерии + scoring для Evaluator)
+- [x] Collaboration context builder (team roster для Orchestrator+Workers)
+- [x] Миграция типов из prompting-v0.0 в @stsgs/shared
+- [x] Расширение frameworks: 4 -> 11
+- [x] Добавление 14 техник (из 20, остальные на Phase 5)
 
 #### Phase 3B — Standards Seed (item 1)
 
-- [ ] 17 стандартов из Zai-agent-toolkit/standards/ -> StandardRule records в DB
-- [ ] Каждый с pattern для автопроверки
-- [ ] Категории: general, prompt, agent, flow, quality, security, architecture
+- [x] 17 стандартов из Zai-agent-toolkit/standards/ -> StandardRule records в DB
+- [x] Каждый с pattern для автопроверки
+- [x] Категории: general, prompt, agent, flow, quality, security, architecture
+
+> **NOTE**: Infrastructure built (parse-md.ts, seed-standards.ts, import API, UI button), but DB is currently EMPTY — 0 standards seeded. Standards need quality review before seeding.
 
 #### Phase 3C — Agent Templates (item 2)
 
-- [ ] 12 role templates (code-architect, frontend-specialist, etc.)
-- [ ] 7 type-based templates (Tool-Calling, Router, Orchestrator, Evaluator, ReAct, Planner, Executor)
-- [ ] Связка с Skills через standardIds
+- [x] 12 role templates (code-architect, frontend-specialist, etc.)
+- [x] 5 type-based templates (Tool-Calling, Router, Specialist, Orchestrator, Evaluator)
+- [ ] 7 type-based templates (ReAct, Planner, Executor, etc.) — deferred to Phase 4-5
+- [x] Связка с Skills через standardIds
+
+> **NOTE**: 7 type-based templates (ReAct, Planner, Executor, etc.) NOT done — deferred to Phase 4-5.
 
 ### Phase 3D — Мосты (экспорт)
 
@@ -232,7 +238,7 @@ Zai-agent-toolkit (скомпилированные скиллы для Z.ai san
 | Проблема | Где | Решение |
 |----------|-----|---------|
 | Skill Forge → Z.ai bridge | Skill Forge + /home/z/my-project/skills/ | Экспорт: DB → SKILL.md + scripts/ |
-| Standards → ESLint bridge | Standards Manager + eslint-plugin-3a | Генерация rules из DB → JSON config |
+| Standards → ESLint bridge | Standards Manager + eslint-plugin-3a | ✅ DONE — генерация rules из DB → JSON config (Wave 6.6) |
 | Flow Editor → Pipeline | executeNode() placeholder | Интеграция с z-ai-web-dev-sdk |
 | Knowledge → RAG | KnowledgeDocument в DB | VectorStore node → реальные embeddings |
 | Wiki → StsDev-Wiki | Wiki в 3A Studio | Синхронизация с GitHub Wiki |
@@ -265,3 +271,7 @@ Zai-agent-toolkit (скомпилированные скиллы для Z.ai san
 | 3bdbcf4 | Theme toggle fix + i18n (en/ru) + clickable chevron |
 | 1bd409a | Key masking (GET /api/settings returns sk-****abcd) |
 | c335476 | Standards/Skills rebuild — unified types, midnight palette, store-driven |
+| cdc1e12 | feat(flow-editor): P0-2 Version History + P0-3 Data Contract |
+| aacaee9 | feat(flow-editor): P0-1 Typed Connections |
+| 3a873ef | fix(llm): Z.ai provider uses OpenAI format with API key, SDK as sandbox fallback |
+| 55ea7c4 | feat(llm): auto-inject ZAI_API_KEY env var for Vercel deployment |
