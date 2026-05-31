@@ -77,68 +77,28 @@
 
 ---
 
-## Wave 5 -- Agent Intelligence (CURRENT)
+## Wave 5 -- Agent Intelligence [DONE]
 
 > This wave makes agents ACTUALLY WORK together, not just exist as data.
 
-### 5.1 Task API + UI
-**Donor**: 3a-studio-mas/src/app/api/tasks/
-**Why**: Agents need tasks. Without Task API, agents are just configs in DB.
-**Prisma**: Task model already exists (id, title, description, status, priority, agentId, etc.)
-- [ ] Check donor for working Task API code
-- [ ] Create /api/tasks -- CRUD with Zod validation
-- [ ] Create /api/tasks/[id] -- GET/PUT/DELETE
-- [ ] Create Task store (Zustand)
-- [ ] Create Task UI: task list, create form, assign to agent
-- [ ] Verify build + lint
-
-### 5.2 Workflow Engine
-**Donor**: 3a-studio-mas/src/app/api/workflows/ (if exists)
-**Why**: Orchestrate multi-step agent workflows. Different from Flow (visual canvas) -- Workflow is programmatic step-by-step execution.
-**Prisma**: Workflow, WorkflowExecution, StepExecution, AgentMessage already exist
-- [ ] Check donor for Workflow API code
-- [ ] Create /api/workflows -- CRUD
-- [ ] Create /api/workflows/[id]/execute -- run workflow steps
-- [ ] Step execution: sequential, parallel, conditional
-- [ ] AgentMessage logging per step
-- [ ] Workflow UI: list, create, monitor execution
-- [ ] Verify build + lint
-
-### 5.3 Executions API (unified)
-**Donor**: 3a-studio-mas/src/app/api/executions/
-**Why**: Single endpoint to query all execution types (agent, flow, workflow)
-- [ ] Check donor for executions code
-- [ ] Create /api/executions -- unified list with filters (type, status, agentId)
-- [ ] Verify build + lint
-
-### 5.4 Router -> Specialist Routing
-**Why**: Router agent type exists as template but doesn't actually route. This makes the Router pattern functional.
-**How**: When a Router agent classifies input, it should forward to the matching Specialist agent.
-- [ ] Extend /api/flows/[id]/execute: if Router node, classify then forward to linked agent
-- [ ] Add "routing map" to Router node config: category -> agentId
-- [ ] Flow Editor: config panel for Router node shows agent dropdown per category
-- [ ] Verify build + lint
-
-### 5.5 Self-Correction Loop
-**Donor**: 3a-studio-mas -- SelfCorrectionSession model
-**Why**: Agent generates, Evaluator scores, if below threshold -> self-correct and retry.
-**Prisma**: SelfCorrectionSession already exists
-- [ ] Check donor for self-correction code
-- [ ] Create /api/self-correction -- start session, get session, list sessions
-- [ ] Logic: agent output -> evaluate -> if below threshold -> re-prompt with feedback -> repeat
-- [ ] UI: self-correction panel in agent detail
-- [ ] Verify build + lint
-
-### 5.6 Team Builder (for Orchestrator)
-**Why**: Orchestrator template exists but no way to assign team members.
-- [ ] Add teamMembers field to Agent model or use existing Flow nodes
-- [ ] Agent detail page: "Team" tab showing child agents + their roles
-- [ ] Orchestrator node in Flow Editor: auto-populate team from agent's children
-- [ ] Verify build + lint
+### 5.1 [DONE] Task API + UI
+### 5.2 [DONE] Workflow Engine
+### 5.3 [DONE] Executions API (unified)
+### 5.4 [DONE] Router -> Specialist Routing
+- execNode: router case with keyword/LLM classification strategies
+- runFlow: branch-aware execution (reachable tracking, active edges)
+- RouterConfig panel: strategy picker, routes editor, keywords, fallback
+### 5.5 [DONE] Self-Correction Loop
+- POST /api/self-correction: generate -> judge -> self-correct loop
+- GET /api/self-correction: list sessions with status counts
+- UI: self-correction panel with input, session list, score comparison
+### 5.6 [DONE] Team Builder (for Orchestrator)
+- TeamTab component: shows child agents as team members
+- Add/remove agents to/from team via parentId relationship
 
 ---
 
-## Wave 6 -- Resilience & Polish
+## Wave 6 -- Resilience & Polish (CURRENT)
 
 ### 6.1 Resilience from donor
 **Donor**: p-mas/src/lib/ -- api-retry, circuit-breaker, fallback-manager, health-check
