@@ -3,6 +3,7 @@
 import { useCallback } from 'react';
 import { cn } from '@stsgs/ui';
 import { Database, Download, RotateCcw } from 'lucide-react';
+import { useLanguage } from '@/lib/i18n/language-context';
 
 interface Action {
   icon: React.ElementType;
@@ -13,6 +14,8 @@ interface Action {
 }
 
 export function QuickActions() {
+  const { t } = useLanguage();
+
   const seedDb = useCallback(async () => {
     try {
       const res = await fetch('/api/dashboard/seed', { method: 'POST' });
@@ -37,22 +40,22 @@ export function QuickActions() {
   }, []);
 
   const resetData = useCallback(async () => {
-    if (!confirm('Reset all data? This cannot be undone.')) return;
+    if (!confirm(t.dashboard['Reset all data? This cannot be undone.'])) return;
     try {
       await fetch('/api/dashboard/reset', { method: 'POST' });
       window.location.reload();
     } catch { /* silent */ }
-  }, []);
+  }, [t]);
 
   const actions: Action[] = [
-    { icon: Database, label: 'Seed Database', description: 'Populate with sample data', onClick: seedDb, variant: 'primary' },
-    { icon: Download, label: 'Export Config', description: 'Download agents and flows', onClick: exportConfig },
-    { icon: RotateCcw, label: 'Reset Data', description: 'Clear all data and start fresh', onClick: resetData },
+    { icon: Database, label: t.dashboard['Seed Database'], description: t.dashboard['Populate with sample data'], onClick: seedDb, variant: 'primary' },
+    { icon: Download, label: t.dashboard['Export Config'], description: t.dashboard['Download agents and flows'], onClick: exportConfig },
+    { icon: RotateCcw, label: t.dashboard['Reset Data'], description: t.dashboard['Clear all data and start fresh'], onClick: resetData },
   ];
 
   return (
     <div className="rounded-xl border bg-card p-4 shadow-sm">
-      <h3 className="text-sm font-semibold mb-3">Quick Actions</h3>
+      <h3 className="text-sm font-semibold mb-3">{t.dashboard['Quick Actions']}</h3>
       <div className="grid grid-cols-3 gap-3">
         {actions.map(({ icon: Icon, label, description, onClick, variant = 'default' }) => (
           <button

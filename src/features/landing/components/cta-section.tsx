@@ -4,10 +4,12 @@ import Link from "next/link";
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { BookOpen } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export function CtaSection() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
+  const { t } = useLanguage();
 
   return (
     <section id="pricing" className="bg-background py-20 sm:py-28">
@@ -20,24 +22,24 @@ export function CtaSection() {
       >
         <div className="rounded-xl border border-dashed border-brand-accent/30 bg-card/50 p-8 text-center sm:p-12">
           <h2 className="text-2xl font-bold text-foreground sm:text-3xl">
-            Ready to build intelligent systems?
+            {t.landing['Ready to build intelligent systems?']}
           </h2>
           <p className="mx-auto mt-4 max-w-md text-muted-foreground">
-            Start designing multi-agent workflows today with our open-source visual IDE.
+            {t.landing['Start designing multi-agent workflows today with our open-source visual IDE.']}
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link
               href="/signup"
               className="h-11 rounded-lg bg-brand-accent px-6 text-sm font-medium text-white transition-colors hover:bg-brand-accent-dim"
             >
-              Get Started
+              {t.landing['Get Started']}
             </Link>
             <a
               href="#"
               className="flex h-11 items-center gap-2 rounded-lg border border-border px-6 text-sm font-medium text-muted-foreground transition-colors hover:bg-card hover:text-foreground"
             >
               <BookOpen className="h-4 w-4" />
-              Read Documentation
+              {t.landing['Read Documentation']}
             </a>
           </div>
         </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@stsgs/ui";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export type UserRole = "admin" | "operator" | "viewer";
 
@@ -9,13 +10,15 @@ interface RoleSelectorProps {
   onChange: (role: UserRole) => void;
 }
 
-const roles: { value: UserRole; label: string }[] = [
-  { value: "admin", label: "Admin" },
-  { value: "operator", label: "Operator" },
-  { value: "viewer", label: "Viewer" },
-];
-
 export function RoleSelector({ value, onChange }: RoleSelectorProps) {
+  const { t } = useLanguage();
+
+  const roles: { value: UserRole; label: string }[] = [
+    { value: "admin", label: t.auth.Admin },
+    { value: "operator", label: t.auth.Operator },
+    { value: "viewer", label: t.auth.Viewer },
+  ];
+
   return (
     <div className="flex gap-2">
       {roles.map((role) => (

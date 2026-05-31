@@ -15,6 +15,7 @@ import { AuthFooter } from "@/features/auth/components/auth-footer";
 import { GitHubButton } from "@/features/auth/components/github-button";
 import { GoogleButton } from "@/features/auth/components/google-button";
 import { Logo } from "@/features/auth/components/logo";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 async function apiLogin(username: string, password: string) {
   const res = await fetch('/api/auth/login', {
@@ -32,6 +33,7 @@ async function apiLogin(username: string, password: string) {
 export default function LoginPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const { t } = useLanguage();
   const {
     register,
     handleSubmit,
@@ -41,20 +43,20 @@ export default function LoginPage() {
   async function onSubmit(data: LoginFormData) {
     try {
       await apiLogin(data.email, data.password);
-      toast.success('Signed in successfully');
+      toast.success(t.auth['Signed in successfully']);
       router.push('/dashboard');
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Invalid credentials');
+      toast.error(err instanceof Error ? err.message : t.auth['Invalid credentials']);
     }
   }
 
   async function quickLogin() {
     try {
       await apiLogin('admin', 'admin');
-      toast.success('Signed in as admin');
+      toast.success(t.auth['Signed in as admin']);
       router.push('/dashboard');
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Login failed');
+      toast.error(err instanceof Error ? err.message : t.auth['Login failed']);
     }
   }
 
@@ -62,9 +64,9 @@ export default function LoginPage() {
     <div className="space-y-6">
       <Logo />
       <div className="space-y-1 text-center">
-        <h1 className="text-2xl font-bold text-foreground">Welcome Back</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t.auth['Welcome Back']}</h1>
         <p className="text-sm text-muted-foreground">
-          Sign in to your 3A Studio dashboard
+          {t.auth['Sign in to your 3A Studio dashboard']}
         </p>
       </div>
 
@@ -77,7 +79,7 @@ export default function LoginPage() {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <AuthInput
           icon={<Mail className="h-4 w-4" />}
-          placeholder="Username or email"
+          placeholder={t.auth['Username or email']}
           error={errors.email?.message}
           {...register("email")}
         />
@@ -89,32 +91,32 @@ export default function LoginPage() {
             </button>
           }
           type={showPassword ? "text" : "password"}
-          placeholder="Password"
+          placeholder={t.auth.Password}
           error={errors.password?.message}
           {...register("password")}
         />
         <div className="flex items-center justify-between">
           <label className="flex items-center gap-2 text-sm text-muted-foreground">
             <input type="checkbox" className="rounded border-border" />
-            Remember me
+            {t.auth['Remember me']}
           </label>
           <Link href="/forgot-password" className="text-sm text-brand-accent hover:underline">
-            Forgot password?
+            {t.auth['Forgot password?']}
           </Link>
         </div>
         <AuthButton type="submit" loading={isSubmitting}>
-          Sign In
+          {t.auth['Sign In']}
         </AuthButton>
       </form>
       <p className="text-center text-xs text-muted-foreground">
-        Demo: admin / admin
+        {t.auth['Demo: admin / admin']}
       </p>
       <button
         type="button"
         onClick={quickLogin}
         className="w-full rounded-lg border border-border bg-muted py-2 text-sm text-muted-foreground transition-colors hover:border-brand-accent hover:text-foreground"
       >
-        Quick Login as Admin
+        {t.auth['Quick Login as Admin']}
       </button>
       <AuthFooter mode="login" />
     </div>

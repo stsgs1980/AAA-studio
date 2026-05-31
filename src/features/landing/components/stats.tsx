@@ -2,15 +2,10 @@
 
 import { useRef, useEffect, useState } from "react";
 import { motion, useInView } from "framer-motion";
-
-const stats = [
-  { value: 1000, suffix: "+", label: "Agents Deployed" },
-  { value: 50, suffix: "+", label: "Templates" },
-  { value: 99.9, suffix: "%", label: "Uptime" },
-  { value: null, suffix: "", label: "Open Source" },
-];
+import { useLanguage } from "@/lib/i18n/language-context";
 
 function AnimatedCounter({ target, suffix, inView }: { target: number | null; suffix: string; inView: boolean }) {
+  const { t } = useLanguage();
   const [count, setCount] = useState(0);
 
   useEffect(() => {
@@ -32,7 +27,7 @@ function AnimatedCounter({ target, suffix, inView }: { target: number | null; su
   }, [inView, target]);
 
   if (target === null) {
-    return <span className="text-3xl font-bold text-foreground">Free</span>;
+    return <span className="text-3xl font-bold text-foreground">{t.landing.Free}</span>;
   }
 
   const display = target % 1 !== 0 ? count.toFixed(1) : Math.round(count);
@@ -46,6 +41,14 @@ function AnimatedCounter({ target, suffix, inView }: { target: number | null; su
 export function Stats() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
+  const { t } = useLanguage();
+
+  const stats = [
+    { value: 1000, suffix: "+", label: t.landing['Agents Deployed'] },
+    { value: 50, suffix: "+", label: t.landing.Templates },
+    { value: 99.9, suffix: "%", label: t.landing.Uptime },
+    { value: null, suffix: "", label: t.landing['Open Source'] },
+  ];
 
   return (
     <section className="border-y border-border/40 bg-card/50 py-16">

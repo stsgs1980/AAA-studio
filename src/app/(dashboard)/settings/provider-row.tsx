@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import type { ProviderConfig, LLMProviderFormat } from '@/lib/llm';
 import { LLM_PROVIDERS } from '@/lib/llm';
+import { useLanguage } from '@/lib/i18n/language-context';
 
 const IC = 'h-8 px-2 rounded-md border bg-background text-sm';
 
@@ -23,6 +24,7 @@ export function ProviderRow({ provider, isActive, activeModel, expanded, isBuilt
 }) {
   const [showKey, setShowKey] = useState(false);
   const [newModel, setNewModel] = useState('');
+  const { t } = useLanguage();
 
   const badge = testResult ? (testResult.ok
     ? <span className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400"><CheckCircle className="h-3 w-3" />{testResult.msg}</span>
@@ -39,12 +41,12 @@ export function ProviderRow({ provider, isActive, activeModel, expanded, isBuilt
         </button>
         <button onClick={onToggle} className="flex-1 text-left">
           <span className="text-sm font-medium">{provider.name}</span>
-          {isActive && <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded bg-primary/20 text-primary font-medium">Active</span>}
-          {!provider.enabled && <span className="ml-2 text-[10px] text-muted-foreground">Disabled</span>}
+          {isActive && <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded bg-primary/20 text-primary font-medium">{t.common.Active}</span>}
+          {!provider.enabled && <span className="ml-2 text-[10px] text-muted-foreground">{t.common.Disabled}</span>}
         </button>
         <button onClick={onTest} disabled={testing || !provider.apiKey || !provider.baseUrl}
           className="h-7 px-2 rounded border text-xs hover:bg-accent disabled:opacity-40 flex items-center gap-1">
-          {testing ? <Loader2 className="h-3 w-3 animate-spin" /> : null}Test
+          {testing ? <Loader2 className="h-3 w-3 animate-spin" /> : null}{t.common.Test}
         </button>
         {badge}
         <button onClick={onToggle} className="p-0.5 rounded hover:bg-accent text-muted-foreground">
@@ -56,12 +58,12 @@ export function ProviderRow({ provider, isActive, activeModel, expanded, isBuilt
       {expanded && (
         <div className="px-3 pb-3 pt-1 border-t space-y-2">
           {!isBuiltin && (
-            <Row label="Name">
+            <Row label={t.common.Name}>
               <input value={provider.name} onChange={e => onUpdate({ name: e.target.value })}
                 className={`${IC} flex-1`} placeholder="e.g. Groq, Together AI" />
             </Row>
           )}
-          <Row label="Endpoint">
+          <Row label={t.settings.Endpoint}>
             <div className="flex items-center gap-1 flex-1">
               <input value={provider.baseUrl} onChange={e => onUpdate({ baseUrl: e.target.value })}
                 className={`${IC} flex-1 font-mono text-xs`}
@@ -73,11 +75,11 @@ export function ProviderRow({ provider, isActive, activeModel, expanded, isBuilt
               )}
             </div>
           </Row>
-          <Row label="API Key">
+          <Row label={t.settings['API Key']}>
             <div className="relative flex-1">
               <input type={showKey ? 'text' : 'password'} value={provider.apiKey}
                 onChange={e => onUpdate({ apiKey: e.target.value })}
-                placeholder="Enter API key..." className={`${IC} pr-7 w-full font-mono text-xs`} />
+                placeholder={t.settings['Enter API key...']} className={`${IC} pr-7 w-full font-mono text-xs`} />
               <button onClick={() => setShowKey(!showKey)}
                 className="absolute right-1.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
                 {showKey ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
@@ -85,15 +87,15 @@ export function ProviderRow({ provider, isActive, activeModel, expanded, isBuilt
             </div>
           </Row>
           {!isBuiltin && (
-            <Row label="Format">
+            <Row label={t.settings.Format}>
               <select value={provider.format} onChange={e => onUpdate({ format: e.target.value as LLMProviderFormat })}
                 className={`${IC} flex-1`}>
-                <option value="openai">OpenAI-compatible</option>
+                <option value="openai">{t.settings['OpenAI-compatible']}</option>
                 <option value="anthropic">Anthropic</option>
               </select>
             </Row>
           )}
-          <Row label="Models">
+          <Row label={t.settings.Models}>
             <div className="flex-1 space-y-1.5">
               {provider.models.length > 0 && (
                 <div className="flex flex-wrap gap-1">
@@ -119,7 +121,7 @@ export function ProviderRow({ provider, isActive, activeModel, expanded, isBuilt
               <div className="flex gap-1">
                 <input value={newModel} onChange={e => setNewModel(e.target.value)}
                   onKeyDown={e => { if (e.key === 'Enter' && newModel.trim()) { onAddModel(newModel.trim()); setNewModel(''); } }}
-                  placeholder="Add model ID..." className={`${IC} flex-1 font-mono text-xs`} />
+                  placeholder={t.settings['Add model ID...']} className={`${IC} flex-1 font-mono text-xs`} />
                 <button onClick={() => { if (newModel.trim()) { onAddModel(newModel.trim()); setNewModel(''); } }}
                   disabled={!newModel.trim()}
                   className="h-8 px-2 rounded-md border text-xs text-muted-foreground hover:bg-accent disabled:opacity-40">
@@ -131,7 +133,7 @@ export function ProviderRow({ provider, isActive, activeModel, expanded, isBuilt
           <div className="flex justify-end">
             <button onClick={onRemove}
               className="h-7 px-2 rounded border text-xs text-red-500 hover:bg-red-500/10 flex items-center gap-1">
-              <Trash2 className="h-3 w-3" /> Remove
+              <Trash2 className="h-3 w-3" /> {t.common.Remove}
             </button>
           </div>
         </div>

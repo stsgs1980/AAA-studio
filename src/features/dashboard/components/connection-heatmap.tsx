@@ -1,6 +1,7 @@
 'use client'
 
 import { useDashboardData } from '../hooks/use-dashboard-data'
+import { useLanguage } from '@/lib/i18n/language-context'
 
 const GROUP_COLORS = [
   'var(--chart-cyan-300)', 'var(--chart-cyan-400)', 'var(--chart-cyan-500)', 'var(--chart-cyan-600)',
@@ -20,17 +21,18 @@ function abbreviate(label: string): string {
 export function ConnectionHeatmap() {
   const { data } = useDashboardData()
   const { groups, density, maxDensity } = data.heatmap
+  const { t } = useLanguage()
 
   if (groups.length === 0) {
     return (
       <div className="rounded-[10px] bg-card border border-border p-5">
         <h3 className="text-xs font-semibold uppercase tracking-wider mb-1 text-muted-foreground">
-          Connection Heatmap
+          {t.dashboard['Connection Heatmap']}
         </h3>
         <p className="text-[11px] mb-4 text-muted-foreground">
-          Parent-child connections by agent group
+          {t.dashboard['Parent-child connections by agent group']}
         </p>
-        <p className="text-sm text-muted-foreground py-8 text-center">No connections yet</p>
+        <p className="text-sm text-muted-foreground py-8 text-center">{t.dashboard['No connections yet']}</p>
       </div>
     )
   }
@@ -40,10 +42,10 @@ export function ConnectionHeatmap() {
   return (
     <div className="rounded-[10px] bg-card border border-border p-5 transition-colors duration-200">
       <h3 className="text-xs font-semibold uppercase tracking-wider mb-1 text-muted-foreground">
-        Connection Heatmap
+        {t.dashboard['Connection Heatmap']}
       </h3>
       <p className="text-[11px] mb-4 text-muted-foreground">
-        Parent-child connections by agent group
+        {t.dashboard['Parent-child connections by agent group']}
       </p>
 
       <div className="grid gap-[2px] w-full max-w-[400px]"
@@ -79,7 +81,7 @@ export function ConnectionHeatmap() {
                     border: isDiag ? '1px solid var(--border)' : 'none',
                   }}
                   title={isDiag
-                    ? `${groups[ri]} (self)`
+                    ? `${groups[ri]} ${t.dashboard['(self)']}`
                     : `${groups[ri]} -> ${groups[ci]}: ${val}`}
                   onMouseEnter={(e) => {
                     if (!isDiag) {

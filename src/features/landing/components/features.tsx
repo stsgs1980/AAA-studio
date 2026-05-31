@@ -11,21 +11,13 @@ import {
   Activity,
   type LucideIcon,
 } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 interface FeatureCard {
   icon: LucideIcon;
   title: string;
   description: string;
 }
-
-const features: FeatureCard[] = [
-  { icon: Workflow, title: "Visual Flow Editor", description: "Drag-and-drop canvas for designing complex agent orchestration pipelines with conditional routing and error handling." },
-  { icon: Bot, title: "Agent Runtime", description: "Deploy and manage AI agents with built-in retry logic, circuit breakers, and real-time execution tracking." },
-  { icon: Network, title: "Multi-Agent Orchestration", description: "Coordinate agent hierarchies with supervisor patterns, fan-out/fan-in, and dynamic task delegation." },
-  { icon: Sparkles, title: "Prompt Studio", description: "20 engineering techniques, 11 structured frameworks, and 6-dimension scoring for optimal prompt design." },
-  { icon: Database, title: "Knowledge Base", description: "RAG-powered document management with vector search, automatic chunking, and semantic retrieval." },
-  { icon: Activity, title: "Real-time Monitoring", description: "Live execution tracking with latency metrics, error rate dashboards, and cost monitoring." },
-];
 
 const containerVariants = {
   hidden: {},
@@ -40,6 +32,16 @@ const itemVariants = {
 export function Features() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
+  const { t } = useLanguage();
+
+  const features: FeatureCard[] = [
+    { icon: Workflow, title: t.landing['Visual Flow Editor'], description: t.landing['Drag-and-drop canvas for designing complex agent orchestration pipelines with conditional routing and error handling.'] },
+    { icon: Bot, title: t.landing['Agent Runtime'], description: t.landing['Deploy and manage AI agents with built-in retry logic, circuit breakers, and real-time execution tracking.'] },
+    { icon: Network, title: t.landing['Multi-Agent Orchestration'], description: t.landing['Coordinate agent hierarchies with supervisor patterns, fan-out/fan-in, and dynamic task delegation.'] },
+    { icon: Sparkles, title: t.landing['Prompt Studio'], description: t.landing['20 engineering techniques, 11 structured frameworks, and 6-dimension scoring for optimal prompt design.'] },
+    { icon: Database, title: t.landing['Knowledge Base'], description: t.landing['RAG-powered document management with vector search, automatic chunking, and semantic retrieval.'] },
+    { icon: Activity, title: t.landing['Real-time Monitoring'], description: t.landing['Live execution tracking with latency metrics, error rate dashboards, and cost monitoring.'] },
+  ];
 
   return (
     <section id="features" className="bg-background py-20 sm:py-28">
@@ -52,10 +54,10 @@ export function Features() {
           className="mb-14 text-center"
         >
           <h2 className="text-3xl font-bold text-foreground sm:text-4xl">
-            Everything you need to build intelligent systems
+            {t.landing['Everything you need to build intelligent systems']}
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
-            A comprehensive toolkit for designing, deploying, and managing AI agent pipelines at scale.
+            {t.landing['A comprehensive toolkit for designing, deploying, and managing AI agent pipelines at scale.']}
           </p>
         </motion.div>
 

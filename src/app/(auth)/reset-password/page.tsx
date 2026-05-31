@@ -11,10 +11,12 @@ import { AuthInput } from "@/features/auth/components/auth-input";
 import { AuthButton } from "@/features/auth/components/auth-button";
 import { PasswordStrength } from "@/features/auth/components/password-strength";
 import { Logo } from "@/features/auth/components/logo";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export default function ResetPasswordPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const { t } = useLanguage();
   const {
     register,
     handleSubmit,
@@ -27,19 +29,19 @@ export default function ResetPasswordPage() {
 
   async function onSubmit(_data: NewPasswordFormData) {
     await new Promise((r) => setTimeout(r, 1000));
-    toast.success("Password reset successfully");
+    toast.success(t.auth['Password reset successfully']);
   }
 
   return (
     <div className="space-y-6">
       <Link href="/login" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
-        <ArrowLeft className="h-4 w-4" /> Back to Sign In
+        <ArrowLeft className="h-4 w-4" /> {t.auth['Back to Sign In']}
       </Link>
       <Logo />
       <div className="space-y-1 text-center">
-        <h1 className="text-2xl font-bold text-foreground">Set New Password</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t.auth['Set New Password']}</h1>
         <p className="text-sm text-muted-foreground">
-          Create a new password for your account
+          {t.auth['Create a new password for your account']}
         </p>
       </div>
 
@@ -53,7 +55,7 @@ export default function ResetPasswordPage() {
               </button>
             }
             type={showPassword ? "text" : "password"}
-            placeholder="New Password"
+            placeholder={t.auth['New Password']}
             error={errors.password?.message}
             {...register("password")}
           />
@@ -67,12 +69,12 @@ export default function ResetPasswordPage() {
             </button>
           }
           type={showConfirm ? "text" : "password"}
-          placeholder="Confirm New Password"
+          placeholder={t.auth['Confirm New Password']}
           error={errors.confirmPassword?.message}
           {...register("confirmPassword")}
         />
         <AuthButton type="submit" loading={isSubmitting}>
-          Reset Password
+          {t.auth['Reset Password']}
         </AuthButton>
       </form>
     </div>

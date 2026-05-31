@@ -9,8 +9,10 @@ import { forgotPasswordSchema, type ForgotPasswordFormData } from "@/features/au
 import { AuthInput } from "@/features/auth/components/auth-input";
 import { AuthButton } from "@/features/auth/components/auth-button";
 import { Logo } from "@/features/auth/components/logo";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export default function ForgotPasswordPage() {
+  const { t } = useLanguage();
   const {
     register,
     handleSubmit,
@@ -21,31 +23,31 @@ export default function ForgotPasswordPage() {
 
   async function onSubmit(_data: ForgotPasswordFormData) {
     await new Promise((r) => setTimeout(r, 1000));
-    toast.success("Reset link sent to your email");
+    toast.success(t.auth['Reset link sent to your email']);
   }
 
   return (
     <div className="space-y-6">
       <Link href="/login" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
-        <ArrowLeft className="h-4 w-4" /> Back to Sign In
+        <ArrowLeft className="h-4 w-4" /> {t.auth['Back to Sign In']}
       </Link>
       <Logo />
       <div className="space-y-1 text-center">
-        <h1 className="text-2xl font-bold text-foreground">Reset Password</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t.auth['Reset Password']}</h1>
         <p className="text-sm text-muted-foreground">
-          Enter your email and we&apos;ll send you a reset link
+          {t.auth['Reset link sent to your email']}
         </p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <AuthInput
           icon={<Mail className="h-4 w-4" />}
-          placeholder="Email address"
+          placeholder={t.auth['Email address']}
           error={errors.email?.message}
           {...register("email")}
         />
         <AuthButton type="submit" loading={isSubmitting}>
-          Send Reset Link
+          {t.auth['Send Reset Link']}
         </AuthButton>
       </form>
     </div>

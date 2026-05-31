@@ -2,11 +2,13 @@
 
 import { useEffect, useState } from 'react'
 import { useDashboardData } from '../hooks/use-dashboard-data'
+import { useLanguage } from '@/lib/i18n/language-context'
 import type { HealthMetric } from '../types'
 
 export function SystemHealth() {
   const { data } = useDashboardData()
   const metrics: HealthMetric[] = data.healthMetrics
+  const { t } = useLanguage()
 
   const [widths, setWidths] = useState<number[]>([])
 
@@ -28,9 +30,9 @@ export function SystemHealth() {
     return (
       <div className="rounded-[10px] bg-card border border-border p-5">
         <h3 className="text-xs font-semibold uppercase tracking-wider mb-4 text-muted-foreground">
-          System Health
+          {t.dashboard['System Health']}
         </h3>
-        <p className="text-sm text-muted-foreground py-8 text-center">No data yet</p>
+        <p className="text-sm text-muted-foreground py-8 text-center">{t.dashboard['No data yet']}</p>
       </div>
     )
   }
@@ -38,7 +40,7 @@ export function SystemHealth() {
   return (
     <div className="rounded-[10px] bg-card border border-border p-5 transition-colors duration-200">
       <h3 className="text-xs font-semibold uppercase tracking-wider mb-4 text-muted-foreground">
-        System Health
+        {t.dashboard['System Health']}
       </h3>
 
       <div className="flex flex-col gap-4">

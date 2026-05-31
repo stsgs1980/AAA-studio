@@ -2,32 +2,34 @@
 
 import { KpiCard } from './kpi-card';
 import { useDashboardData } from '../hooks/use-dashboard-data';
+import { useLanguage } from '@/lib/i18n/language-context';
 import type { KpiData } from '../types';
 
-function toKpis(data: NonNullable<ReturnType<typeof useDashboardData>['data']>): KpiData[] {
+function useKpis(data: NonNullable<ReturnType<typeof useDashboardData>['data']>): KpiData[] {
+  const { t } = useLanguage();
   const a = data.agents;
   const e = data.executions;
   const dur = data.avgDuration;
   return [
     {
-      label: 'Active Agents',
+      label: t.dashboard['Active Agents'],
       value: String(a.active),
       suffix: `/${a.total}`,
     },
     {
-      label: 'Tasks Running',
+      label: t.dashboard['Tasks Running'],
       value: String(e.running),
       trend: { value: String(e.completed), direction: e.completed > 0 ? 'up' : 'neutral' },
-      trendSub: `${e.completed} completed`,
+      trendSub: `${e.completed} ${t.dashboard.completed}`,
     },
     {
-      label: 'Success Rate',
+      label: t.dashboard['Success Rate'],
       value: String(e.successRate),
       suffix: '%',
-      badge: e.successRate >= 80 ? 'Healthy' : e.successRate >= 50 ? 'Warning' : 'Critical',
+      badge: e.successRate >= 80 ? t.dashboard.Healthy : e.successRate >= 50 ? t.dashboard.Warning : t.dashboard.Critical,
     },
     {
-      label: 'Avg Response',
+      label: t.dashboard['Avg Response'],
       value: dur ? String(Math.round(dur / 100) / 10) : '--',
       suffix: dur ? 's' : '',
       mono: true,
@@ -37,7 +39,7 @@ function toKpis(data: NonNullable<ReturnType<typeof useDashboardData>['data']>):
 
 export function LiveKpiStrip() {
   const { data } = useDashboardData();
-  const kpis = toKpis(data);
+  const kpis = useKpis(data);
 
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

@@ -2,6 +2,7 @@
 
 import { AnimatedCounter } from './animated-counter'
 import { useDashboardData } from '../hooks/use-dashboard-data'
+import { useLanguage } from '@/lib/i18n/language-context'
 import { useState } from 'react'
 
 const STATUS_COLORS: Record<string, string> = {
@@ -23,15 +24,16 @@ function statusColor(label: string): string {
 export function StatusDistribution() {
   const { data } = useDashboardData()
   const [hovered, setHovered] = useState<string | null>(null)
+  const { t } = useLanguage()
 
   const groups = data.statusGroups
   if (groups.length === 0) {
     return (
       <div className="rounded-[10px] bg-card border border-border p-5">
         <h3 className="text-xs font-semibold uppercase tracking-wider mb-4 text-muted-foreground">
-          Status Distribution
+          {t.dashboard['Status Distribution']}
         </h3>
-        <p className="text-sm text-muted-foreground py-8 text-center">No agents yet</p>
+        <p className="text-sm text-muted-foreground py-8 text-center">{t.dashboard['No agents yet']}</p>
       </div>
     )
   }
@@ -59,7 +61,7 @@ export function StatusDistribution() {
   return (
     <div className="rounded-[10px] bg-card border border-border p-5 transition-colors duration-200">
       <h3 className="text-xs font-semibold uppercase tracking-wider mb-4 text-muted-foreground">
-        Agent Groups
+        {t.dashboard['Agent Groups']}
       </h3>
 
       <div className="flex flex-col items-center">
@@ -88,7 +90,7 @@ export function StatusDistribution() {
             <span className="text-[28px] font-bold text-foreground">
               <AnimatedCounter target={total} />
             </span>
-            <span className="text-[11px] text-muted-foreground">Total</span>
+            <span className="text-[11px] text-muted-foreground">{t.common.Total}</span>
           </div>
         </div>
 

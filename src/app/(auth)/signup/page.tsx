@@ -15,10 +15,12 @@ import { GoogleButton } from "@/features/auth/components/google-button";
 import { PasswordStrength } from "@/features/auth/components/password-strength";
 import { RoleSelector } from "@/features/auth/components/role-selector";
 import { Logo } from "@/features/auth/components/logo";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const { t } = useLanguage();
   const {
     register,
     handleSubmit,
@@ -33,15 +35,15 @@ export default function SignupPage() {
 
   async function onSubmit(_data: SignupFormData) {
     await new Promise((r) => setTimeout(r, 1000));
-    toast.success("Account created successfully");
+    toast.success(t.auth['Account created successfully']);
   }
 
   return (
     <div className="space-y-6">
       <Logo />
       <div className="space-y-1 text-center">
-        <h1 className="text-2xl font-bold text-foreground">Create Account</h1>
-        <p className="text-sm text-muted-foreground">Get started with 3A Studio</p>
+        <h1 className="text-2xl font-bold text-foreground">{t.auth['Create Account']}</h1>
+        <p className="text-sm text-muted-foreground">{t.auth['Get started with 3A Studio']}</p>
       </div>
 
       <div className="space-y-3">
@@ -53,13 +55,13 @@ export default function SignupPage() {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <AuthInput
           icon={<User className="h-4 w-4" />}
-          placeholder="Full Name"
+          placeholder={t.auth['Full Name']}
           error={errors.name?.message}
           {...register("name")}
         />
         <AuthInput
           icon={<Mail className="h-4 w-4" />}
-          placeholder="Email address"
+          placeholder={t.auth['Email address']}
           error={errors.email?.message}
           {...register("email")}
         />
@@ -72,7 +74,7 @@ export default function SignupPage() {
               </button>
             }
             type={showPassword ? "text" : "password"}
-            placeholder="Password"
+            placeholder={t.auth.Password}
             error={errors.password?.message}
             {...register("password")}
           />
@@ -86,12 +88,12 @@ export default function SignupPage() {
             </button>
           }
           type={showConfirm ? "text" : "password"}
-          placeholder="Confirm Password"
+          placeholder={t.auth['Confirm Password']}
           error={errors.confirmPassword?.message}
           {...register("confirmPassword")}
         />
         <div>
-          <label className="mb-1.5 block text-sm text-muted-foreground">Role</label>
+          <label className="mb-1.5 block text-sm text-muted-foreground">{t.auth.Role}</label>
           <Controller
             control={control}
             name="role"
@@ -105,13 +107,13 @@ export default function SignupPage() {
         </div>
         <label className="flex items-center gap-2 text-sm text-muted-foreground">
           <input type="checkbox" {...register("agreeTerms")} className="rounded border-border" />
-          I agree to the{" "}
-          <a href="#" className="text-brand-accent hover:underline">Terms of Service</a>
+          {t.auth['I agree to the']}{" "}
+          <a href="#" className="text-brand-accent hover:underline">{t.auth['Terms of Service']}</a>
         </label>
         {errors.agreeTerms && (
           <p className="text-xs text-brand-red">{errors.agreeTerms.message}</p>
         )}
-        <AuthButton type="submit" loading={isSubmitting}>Create Account</AuthButton>
+        <AuthButton type="submit" loading={isSubmitting}>{t.auth['Create Account']}</AuthButton>
       </form>
       <AuthFooter mode="signup" />
     </div>

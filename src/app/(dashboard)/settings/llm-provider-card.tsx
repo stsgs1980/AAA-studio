@@ -6,6 +6,7 @@ import { LLM_PROVIDERS, builtinToConfig, blankCustomProvider } from '@/lib/llm';
 import type { LLMProviderId } from '@/lib/llm';
 import { AddMenu } from './add-provider-menu';
 import { ProviderRow } from './provider-row';
+import { useLanguage } from '@/lib/i18n/language-context';
 
 interface Props {
   providers: ProviderConfig[];
@@ -23,6 +24,7 @@ export function LLMProviderCard({
   const [menuOpen, setMenuOpen] = useState(false);
   const [testingId, setTestingId] = useState<string | null>(null);
   const [testResults, setTestResults] = useState<Record<string, { ok: boolean; msg: string }>>({});
+  const { t } = useLanguage();
 
   const setTestResult = (id: string, r: { ok: boolean; msg: string }) =>
     setTestResults(prev => ({ ...prev, [id]: r }));
@@ -67,7 +69,7 @@ export function LLMProviderCard({
 
   const testProvider = async (p: ProviderConfig) => {
     setTestingId(p.id);
-    setTestResult(p.id, { ok: false, msg: 'Testing...' });
+    setTestResult(p.id, { ok: false, msg: t.settings['Testing...'] });
     try {
       await fetch('/api/settings', {
         method: 'PUT', headers: { 'Content-Type': 'application/json' },
@@ -85,8 +87,8 @@ export function LLMProviderCard({
       const d = await res.json();
       setTestResult(p.id, d.ok
         ? { ok: true, msg: `${d.model} -- ${d.latencyMs}ms` }
-        : { ok: false, msg: d.error?.slice(0, 120) ?? 'Failed' });
-    } catch { setTestResult(p.id, { ok: false, msg: 'Network error' }); }
+        : { ok: false, msg: d.error?.slice(0, 120) ?? t.common.Failed });
+    } catch { setTestResult(p.id, { ok: false, msg: t.common['Network error'] }); }
     finally { setTestingId(null); }
   };
 
@@ -95,9 +97,9 @@ export function LLMProviderCard({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Zap className="h-5 w-5 text-amber-500" />
-          <h2 className="text-sm font-semibold">LLM Providers</h2>
+          <h2 className="text-sm font-semibold">{t.settings['LLM Providers']}</h2>
           <span className="text-xs text-muted-foreground">
-            ({providers.filter(p => p.enabled).length} active)
+            ({providers.filter(p => p.enabled).length} {t.settings.active})
           </span>
         </div>
         <AddMenu providers={providers} open={menuOpen} setOpen={setMenuOpen}

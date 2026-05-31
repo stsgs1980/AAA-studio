@@ -5,6 +5,7 @@ import { BookOpen } from 'lucide-react';
 import { PageSkeleton } from '@/components/ui';
 import { CollectionForm, CollectionList, DocumentList, SearchBar } from '@/features/knowledge/components';
 import type { KnowledgeCollection, KnowledgeDocument } from '@/features/knowledge/types';
+import { useLanguage } from '@/lib/i18n/language-context';
 
 export default function KnowledgeBasePage() {
   const [collections, setCollections] = useState<KnowledgeCollection[]>([]);
@@ -12,6 +13,7 @@ export default function KnowledgeBasePage() {
   const [documents, setDocuments] = useState<KnowledgeDocument[]>([]);
   const [collectionName, setCollectionName] = useState('');
   const [loading, setLoading] = useState(true);
+  const { t } = useLanguage();
 
   const fetchCollections = useCallback(async () => {
     try {
@@ -49,14 +51,14 @@ export default function KnowledgeBasePage() {
   }, [fetchCollections]);
 
   const handleDeleteCollection = useCallback(async (id: string) => {
-    if (!confirm('Delete this collection and all its documents?')) return;
+    if (!confirm(t.pages['Delete this collection and all its documents?'])) return;
     try {
       const res = await fetch(`/api/knowledge/${id}`, { method: 'DELETE' });
       if (!res.ok) throw new Error();
       if (selectedId === id) setSelectedId(null);
       fetchCollections();
     } catch { /* silent */ }
-  }, [selectedId, fetchCollections]);
+  }, [selectedId, fetchCollections, t]);
 
   const handleDeleteDoc = useCallback(async (docId: string) => {
     if (!selectedId) return;
@@ -83,7 +85,7 @@ export default function KnowledgeBasePage() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <BookOpen className="h-6 w-6 text-muted-foreground" />
-          <h1 className="text-2xl font-bold tracking-tight">Knowledge Base</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{t.pages['Knowledge Base']}</h1>
         </div>
         <CollectionForm onCreate={handleCreate} />
       </div>
@@ -99,7 +101,7 @@ export default function KnowledgeBasePage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 min-h-[60vh]">
           <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
             <div className="px-3 py-2 border-b bg-muted/30">
-              <h2 className="text-sm font-semibold">Collections ({collections.length})</h2>
+              <h2 className="text-sm font-semibold">{t.pages['Collections']} ({collections.length})</h2>
             </div>
             <div className="overflow-y-auto max-h-[55vh]">
               <CollectionList collections={collections} selectedId={selectedId} onSelect={setSelectedId} onDelete={handleDeleteCollection} />
@@ -108,13 +110,13 @@ export default function KnowledgeBasePage() {
 
           <div className="lg:col-span-2 rounded-xl border bg-card shadow-sm overflow-hidden">
             <div className="px-4 py-2 border-b bg-muted/30">
-              <h2 className="text-sm font-semibold">{collectionName || 'Select a collection'}</h2>
+              <h2 className="text-sm font-semibold">{collectionName || t.pages['Select a collection']}</h2>
             </div>
             <div className="p-4 overflow-y-auto max-h-[55vh]">
               {selectedId ? (
                 <DocumentList documents={documents} collectionId={selectedId} onDelete={handleDeleteDoc} onUpload={handleUpload} />
               ) : (
-                <div className="flex items-center justify-center h-40 text-muted-foreground text-sm">Select a collection to view documents</div>
+                <div className="flex items-center justify-center h-40 text-muted-foreground text-sm">{t.pages['Select a collection to view documents']}</div>
               )}
             </div>
           </div>

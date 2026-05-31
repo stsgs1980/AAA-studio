@@ -5,6 +5,7 @@ import { ScrollText, RefreshCw } from 'lucide-react';
 import { cn } from '@stsgs/ui';
 import { PageSkeleton } from '@/components/ui';
 import { CodeBlock } from '@/components/code-block';
+import { useLanguage } from '@/lib/i18n/language-context';
 
 interface AuditEntry {
   id: string; action: string; entityType: string; entityId: string;
@@ -24,6 +25,17 @@ export default function AuditLogPage() {
   const [logs, setLogs] = useState<AuditEntry[]>([]);
   const [filter, setFilter] = useState('');
   const [loading, setLoading] = useState(true);
+  const { t } = useLanguage();
+
+  const entityOptions = [
+    { value: '', label: t.pages['All entities'] },
+    { value: 'agent', label: t.pages['Agent'] },
+    { value: 'flow', label: t.pages['Flow'] },
+    { value: 'execution', label: t.pages['Execution'] },
+    { value: 'prompt', label: t.pages['Prompt'] },
+    { value: 'standard', label: t.pages['Standard'] },
+    { value: 'skill', label: t.pages['Skill'] },
+  ];
 
   const fetchLogs = useCallback(async () => {
     try {
@@ -44,19 +56,15 @@ export default function AuditLogPage() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <ScrollText className="h-6 w-6 text-muted-foreground" />
-          <h1 className="text-2xl font-bold tracking-tight">Audit Log</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{t.nav['Audit Log']}</h1>
         </div>
         <div className="flex items-center gap-2">
           <select value={filter} onChange={(e) => setFilter(e.target.value)} className="h-9 px-3 rounded-md border bg-input text-foreground text-sm">
-            <option value="">All entities</option>
-            <option value="agent">Agent</option>
-            <option value="flow">Flow</option>
-            <option value="execution">Execution</option>
-            <option value="prompt">Prompt</option>
-            <option value="standard">Standard</option>
-            <option value="skill">Skill</option>
+            {entityOptions.map((opt) => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
           </select>
-          <button onClick={fetchLogs} className="p-2 rounded-md border hover:bg-accent" title="Refresh">
+          <button onClick={fetchLogs} className="p-2 rounded-md border hover:bg-accent" title={t.common['Refresh']}>
             <RefreshCw className={cn('h-4 w-4', loading && 'animate-spin')} />
           </button>
         </div>
@@ -66,7 +74,7 @@ export default function AuditLogPage() {
         {loading ? (
           <div className="p-8"><PageSkeleton rows={6} /></div>
         ) : filtered.length === 0 ? (
-          <p className="text-sm text-muted-foreground p-8 text-center">No audit logs found.</p>
+          <p className="text-sm text-muted-foreground p-8 text-center">{t.pages['No audit logs found.']}</p>
         ) : (
           <div className="divide-y max-h-[70vh] overflow-y-auto">
             {filtered.map((log) => (

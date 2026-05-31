@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { cn } from "@stsgs/ui";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 function getScore(password: string): number {
   let score = 0;
@@ -13,20 +14,21 @@ function getScore(password: string): number {
   return score;
 }
 
-const levels = [
-  { label: "Weak", color: "bg-brand-red", width: "w-1/4" },
-  { label: "Fair", color: "bg-brand-amber", width: "w-2/4" },
-  { label: "Strong", color: "bg-yellow-400", width: "w-3/4" },
-  { label: "Very Strong", color: "bg-brand-green", width: "w-full" },
-] as const;
-
 interface PasswordStrengthProps {
   password?: string;
   className?: string;
 }
 
 export function PasswordStrength({ password, className }: PasswordStrengthProps) {
+  const { t } = useLanguage();
   const score = useMemo(() => (password ? getScore(password) : 0), [password]);
+
+  const levels = [
+    { label: t.auth.Weak, color: "bg-brand-red", width: "w-1/4" },
+    { label: t.auth.Fair, color: "bg-brand-amber", width: "w-2/4" },
+    { label: t.auth.Strong, color: "bg-yellow-400", width: "w-3/4" },
+    { label: t.auth['Very Strong'], color: "bg-brand-green", width: "w-full" },
+  ] as const;
 
   if (!password) return null;
 

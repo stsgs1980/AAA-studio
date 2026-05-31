@@ -7,6 +7,7 @@ import {
   useQualityStore,
 } from "@/features/quality-analyzer";
 import { useAgentLoader } from "@/features/quality-analyzer/hooks/use-agent-loader";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 type Tab = "scores" | "deep" | "standards" | "rubric";
 const TABS: Tab[] = ["scores", "deep", "standards", "rubric"];
@@ -20,20 +21,28 @@ export default function QualityAnalyzerPage() {
   const deepAnalyze = useQualityStore((s) => s.deepAnalyze);
   const reset = useQualityStore((s) => s.reset);
   const { agents, repoFiles, fetching, handleFetchUrl, handleRepoFileSelect, handleLoadAll, handleAgentSelect } = useAgentLoader();
+  const { t } = useLanguage();
 
   const hasText = input.text.trim().length > 0;
+
+  const tabLabels: Record<Tab, string> = {
+    scores: t.pages['Scores'],
+    deep: t.pages['Deep'],
+    standards: t.pages['Standards'],
+    rubric: t.pages['Rubric'],
+  };
 
   return (
     <div className="flex h-full flex-col gap-4 p-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-lg font-semibold">Quality Analyzer</h1>
+          <h1 className="text-lg font-semibold">{t.pages['Quality Analyzer']}</h1>
           <p className="text-xs text-muted-foreground">
-            Evaluate prompts, agents, and configurations
+            {t.pages['Evaluate prompts, agents, and configurations']}
           </p>
         </div>
         <button onClick={reset} className="flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs text-muted-foreground hover:bg-accent">
-          <RotateCcw className="h-3.5 w-3.5" /> Reset
+          <RotateCcw className="h-3.5 w-3.5" /> {t.common['Reset']}
         </button>
       </div>
 
@@ -43,7 +52,7 @@ export default function QualityAnalyzerPage() {
           {input.mode === "agent" && (
             <select value={input.agentId} onChange={(e) => handleAgentSelect(e.target.value)}
               className="w-full rounded-lg border bg-input text-foreground px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary">
-              <option value="">Select an agent to evaluate...</option>
+              <option value="">{t.pages['Select an agent to evaluate...']}</option>
               {agents.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
             </select>
           )}
@@ -51,19 +60,19 @@ export default function QualityAnalyzerPage() {
             <button onClick={handleFetchUrl} disabled={!input.sourceUrl.trim() || fetching}
               className="flex items-center justify-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm text-primary-foreground disabled:opacity-50">
               {fetching ? <Loader2 className="h-4 w-4 animate-spin" /> : <FolderGit2 className="h-4 w-4" />}
-              {fetching ? "Fetching..." : "Fetch Content"}
+              {fetching ? t.pages['Fetching...'] : t.pages['Fetch Content']}
             </button>
           )}
           {input.mode === "url" && repoFiles.length > 0 && (
             <div className="max-h-[200px] overflow-y-auto rounded-lg border bg-muted/20 p-2">
               <div className="mb-1 flex items-center justify-between">
                 <p className="text-xs font-medium text-muted-foreground">
-                  {repoFiles.length} files found -- click to load:
+                  {repoFiles.length} {t.pages['files found -- click to load:']}
                 </p>
                 <button onClick={handleLoadAll} disabled={fetching}
                   className="flex items-center gap-1 rounded-md bg-accent px-2 py-0.5 text-xs font-medium hover:bg-accent/80 disabled:opacity-50">
                   {fetching ? <Loader2 className="h-3 w-3 animate-spin" /> : <FolderGit2 className="h-3 w-3" />}
-                  Load All
+                  {t.pages['Load All']}
                 </button>
               </div>
               {repoFiles.map((f) => (
@@ -79,17 +88,17 @@ export default function QualityAnalyzerPage() {
           {fetching && (
             <div className="flex items-center gap-2 rounded-lg border border-primary/30 bg-primary/5 px-3 py-2">
               <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" />
-              <span className="text-xs text-primary">Loading files...</span>
+              <span className="text-xs text-primary">{t.pages['Loading files...']}</span>
             </div>
           )}
           {/* Loaded content info */}
           {!fetching && hasText && (
             <div className="flex items-center justify-between rounded-md bg-muted/30 px-3 py-1.5">
               <span className="text-xs text-muted-foreground">
-                Loaded: {input.text.length.toLocaleString()} chars
+                {t.pages['Loaded:']} {input.text.length.toLocaleString()} {t.pages['chars']}
               </span>
               <span className="text-xs text-primary">
-                Ready to Analyze / Deep
+                {t.pages['Ready to Analyze']} / {t.pages['Deep']}
               </span>
             </div>
           )}
@@ -98,12 +107,12 @@ export default function QualityAnalyzerPage() {
             <button onClick={analyze} disabled={!hasText || isAnalyzing}
               className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground disabled:opacity-50">
               {isAnalyzing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Zap className="h-4 w-4" />}
-              {isAnalyzing ? "Analyzing..." : "Analyze"}
+              {isAnalyzing ? t.pages['Analyzing...'] : t.pages['Analyze']}
             </button>
             <button onClick={() => { setTab("deep"); deepAnalyze(); }} disabled={!hasText || isDeepAnalyzing}
               className="flex items-center gap-2 rounded-lg border border-primary px-4 py-2.5 text-sm font-medium text-primary disabled:opacity-50 hover:bg-primary/10">
               {isDeepAnalyzing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Brain className="h-4 w-4" />}
-              Deep
+              {t.pages['Deep']}
             </button>
           </div>
         </div>
@@ -111,10 +120,10 @@ export default function QualityAnalyzerPage() {
         {/* Results */}
         <div className="flex w-1/2 flex-col gap-3 min-h-0">
           <div className="flex gap-1 rounded-lg bg-muted/50 p-1">
-            {TABS.map((t) => (
-              <button key={t} onClick={() => setTab(t)}
-                className={`flex-1 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${tab === t ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
-                {t.charAt(0).toUpperCase() + t.slice(1)}
+            {TABS.map((tabKey) => (
+              <button key={tabKey} onClick={() => setTab(tabKey)}
+                className={`flex-1 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${tab === tabKey ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
+                {tabLabels[tabKey]}
               </button>
             ))}
           </div>

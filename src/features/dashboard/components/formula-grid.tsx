@@ -1,19 +1,21 @@
 'use client'
 
 import { useDashboardData } from '../hooks/use-dashboard-data'
+import { useLanguage } from '@/lib/i18n/language-context'
 
 export function FormulaGrid() {
   const { data } = useDashboardData()
   const rows = data.formulaRows
+  const { t } = useLanguage()
 
   if (rows.length === 0) {
     return (
       <div className="rounded-[10px] bg-card border border-border p-5">
         <h3 className="text-xs font-semibold uppercase tracking-wider mb-4 text-muted-foreground">
-          Skills Distribution
+          {t.dashboard['Skills Distribution']}
         </h3>
         <p className="text-sm text-muted-foreground py-8 text-center">
-          No skills assigned to agents yet
+          {t.dashboard['No skills assigned to agents yet']}
         </p>
       </div>
     )
@@ -22,7 +24,7 @@ export function FormulaGrid() {
   return (
     <div className="rounded-[10px] bg-card border border-border p-5 transition-colors duration-200">
       <h3 className="text-xs font-semibold uppercase tracking-wider mb-4 text-muted-foreground">
-        Skills Distribution
+        {t.dashboard['Skills Distribution']}
       </h3>
 
       <div className="max-h-[360px] overflow-y-auto"
@@ -31,13 +33,13 @@ export function FormulaGrid() {
           <thead className="sticky top-0 bg-card z-10">
             <tr>
               <th className="text-[11px] font-semibold text-left py-2 px-3 uppercase tracking-wide text-muted-foreground border-b border-border">
-                Skill
+                {t.dashboard.Skill}
               </th>
               <th className="text-[11px] font-semibold text-left py-2 px-3 uppercase tracking-wide text-muted-foreground border-b border-border">
-                Agents
+                {t.dashboard.Agents}
               </th>
               <th className="text-[11px] font-semibold text-left py-2 px-3 uppercase tracking-wide text-muted-foreground border-b border-border">
-                Category
+                {t.dashboard.Category}
               </th>
             </tr>
           </thead>

@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from 'react'
 import { useDashboardData } from '../hooks/use-dashboard-data'
+import { useLanguage } from '@/lib/i18n/language-context'
 
 const DOT_COLORS = ['var(--chart-cyan-300)', 'var(--chart-cyan-500)', 'var(--chart-cyan-400)', 'var(--chart-cyan-600)', 'var(--chart-cyan-700)']
 
 export function TopPerformers() {
   const { data } = useDashboardData()
   const performers = data.topPerformers
+  const { t } = useLanguage()
 
   const [barWidths, setBarWidths] = useState<number[]>([])
 
@@ -30,9 +32,9 @@ export function TopPerformers() {
     return (
       <div className="rounded-[10px] bg-card border border-border p-5">
         <h3 className="text-xs font-semibold uppercase tracking-wider mb-4 text-muted-foreground">
-          Top Performers
+          {t.dashboard['Top Performers']}
         </h3>
-        <p className="text-sm text-muted-foreground py-8 text-center">No executions yet</p>
+        <p className="text-sm text-muted-foreground py-8 text-center">{t.dashboard['No executions yet']}</p>
       </div>
     )
   }
@@ -40,7 +42,7 @@ export function TopPerformers() {
   return (
     <div className="rounded-[10px] bg-card border border-border p-5 transition-colors duration-200">
       <h3 className="text-xs font-semibold uppercase tracking-wider mb-4 text-muted-foreground">
-        Top Performers
+        {t.dashboard['Top Performers']}
       </h3>
 
       <div className="flex flex-col">
@@ -61,7 +63,7 @@ export function TopPerformers() {
                   {agent.name}
                 </div>
                 <div className="text-[11px] text-muted-foreground">
-                  {agent.group} &middot; {agent.avgDuration}s avg
+                  {agent.group} &middot; {agent.avgDuration}{t.dashboard['s avg']}
                 </div>
               </div>
             </div>
@@ -78,7 +80,7 @@ export function TopPerformers() {
                 {agent.tasks}
               </span>
               <span className="text-[11px] min-w-[42px] text-right text-muted-foreground">
-                tasks
+                {t.dashboard.tasks}
               </span>
             </div>
           </div>

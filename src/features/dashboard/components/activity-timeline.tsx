@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { ChevronRight } from 'lucide-react'
 import { useDashboardData } from '../hooks/use-dashboard-data'
+import { useLanguage } from '@/lib/i18n/language-context'
 
 const STATUS_ICON: Record<string, { bg: string }> = {
   completed: { bg: 'bg-emerald-500' },
@@ -15,6 +16,7 @@ export function ActivityTimeline() {
   const { data } = useDashboardData()
   const events = data.timeline
   const [expanded, setExpanded] = useState<number | null>(null)
+  const { t } = useLanguage()
 
   const toggle = (index: number) => {
     setExpanded((prev) => (prev === index ? null : index))
@@ -24,9 +26,9 @@ export function ActivityTimeline() {
     return (
       <div className="rounded-[10px] bg-card border border-border p-5">
         <h3 className="text-xs font-semibold uppercase tracking-wider mb-4 text-muted-foreground">
-          Activity Timeline
+          {t.dashboard['Activity Timeline']}
         </h3>
-        <p className="text-sm text-muted-foreground py-8 text-center">No activity yet</p>
+        <p className="text-sm text-muted-foreground py-8 text-center">{t.dashboard['No activity yet']}</p>
       </div>
     )
   }
@@ -39,7 +41,7 @@ export function ActivityTimeline() {
   return (
     <div className="rounded-[10px] bg-card border border-border p-5 transition-colors duration-200">
       <h3 className="text-xs font-semibold uppercase tracking-wider mb-4 text-muted-foreground">
-        Recent Executions
+        {t.dashboard['Recent Executions']}
       </h3>
 
       <div className="flex flex-col max-h-[360px] overflow-y-auto"
@@ -48,7 +50,7 @@ export function ActivityTimeline() {
           const isExpanded = expanded === i
           const icon = STATUS_ICON[event.status] ?? STATUS_ICON.pending
           const dur = event.duration ? `${(event.duration / 1000).toFixed(1)}s` : null
-          const tokens = event.tokensUsed ? `${event.tokensUsed} tokens` : null
+          const tokens = event.tokensUsed ? `${event.tokensUsed} ${t.dashboard.tokens}` : null
 
           return (
             <div key={event.id}
@@ -65,7 +67,7 @@ export function ActivityTimeline() {
               <div className="flex-1 min-w-0">
                 <p className="text-[13px] leading-relaxed text-muted-foreground">
                   <span className="font-semibold text-primary">{event.agent}</span>
-                  {' '}execution{' '}
+                  {' '}{t.dashboard.execution}{' '}
                   <span className={`font-medium ${
                     event.status === 'completed' ? 'text-emerald-500'
                     : event.status === 'failed' ? 'text-red-500'
@@ -82,9 +84,9 @@ export function ActivityTimeline() {
                     marginTop: isExpanded ? '8px' : '0',
                   }}>
                   <div className="text-[12px] leading-relaxed p-2 px-3 rounded-md bg-muted border-l-2 border-cyan-500 text-muted-foreground">
-                    Group: {event.group}
-                    {dur && <span className="ml-2">Duration: {dur}</span>}
-                    {tokens && <span className="ml-2">Tokens: {tokens}</span>}
+                    {t.dashboard['Group:']} {event.group}
+                    {dur && <span className="ml-2">{t.dashboard['Duration:']} {dur}</span>}
+                    {tokens && <span className="ml-2">{t.dashboard['Tokens:']} {tokens}</span>}
                   </div>
                 </div>
               </div>

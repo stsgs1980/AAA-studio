@@ -67,7 +67,7 @@ export default function SettingsPage() {
   }, [settings, providers, activeId, activeModel, locale, put]);
 
   const reset = useCallback(async () => {
-    if (!confirm('Reset all settings to defaults?')) return;
+    if (!confirm(t.settings['Reset all settings to defaults?'])) return;
     const d = defaults();
     const p: Record<string, string> = { theme: 'dark', language: 'en',
       llm_providers: JSON.stringify(d),
@@ -80,7 +80,7 @@ export default function SettingsPage() {
       setActiveId(DEFAULT_LLM_SETTINGS.activeProviderId);
       setActiveModel(DEFAULT_LLM_SETTINGS.activeModel); setLocale('en');
     } catch { /* */ }
-  }, [put, setLocale]);
+  }, [put, setLocale, t]);
 
   const up = (k: string, v: string) => setSettings(prev => ({ ...prev, [k]: v })); if (loading) return (
     <div className="p-6 space-y-4">

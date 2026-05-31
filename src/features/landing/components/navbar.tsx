@@ -4,14 +4,17 @@ import Link from "next/link";
 import { Cpu } from "lucide-react";
 import { cn } from "@stsgs/ui";
 import { motion } from "framer-motion";
-
-const navLinks = [
-  { label: "Features", href: "#features" },
-  { label: "Architecture", href: "#architecture" },
-  { label: "Pricing", href: "#pricing" },
-];
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export function Navbar() {
+  const { t } = useLanguage();
+
+  const navLinks = [
+    { label: t.landing.Features, href: "#features" },
+    { label: t.landing.Architecture, href: "#architecture" },
+    { label: t.landing.Pricing, href: "#pricing" },
+  ];
+
   return (
     <motion.header
       initial={{ y: -20, opacity: 0 }}
@@ -24,7 +27,7 @@ export function Navbar() {
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-accent">
             <Cpu className="h-4 w-4 text-white" />
           </div>
-          <span className="text-lg font-bold text-foreground">3A Studio</span>
+          <span className="text-lg font-bold text-foreground">{t.landing['3A Studio']}</span>
         </Link>
 
         <nav className="hidden items-center gap-6 md:flex">
@@ -47,13 +50,13 @@ export function Navbar() {
               "transition-colors hover:text-foreground sm:inline-block"
             )}
           >
-            Sign In
+            {t.landing['Sign In']}
           </Link>
           <Link
             href="/signup"
             className="rounded-lg bg-brand-accent px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-accent-dim"
           >
-            Get Started
+            {t.landing['Get Started']}
           </Link>
         </div>
       </div>

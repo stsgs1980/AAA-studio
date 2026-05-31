@@ -1,8 +1,11 @@
 "use client";
 
 import { cn } from "@stsgs/ui";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export function GoogleButton() {
+  const { t } = useLanguage();
+
   return (
     <button
       type="button"
@@ -30,7 +33,7 @@ export function GoogleButton() {
           fill="#EA4335"
         />
       </svg>
-      Continue with Google
+      {t.auth['Continue with Google']}
     </button>
   );
 }

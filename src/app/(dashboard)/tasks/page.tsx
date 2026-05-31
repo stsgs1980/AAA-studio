@@ -2,9 +2,11 @@
 
 import { useEffect } from "react";
 import { TaskList, TaskCreateForm, useTaskStore } from "@/features/tasks";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export default function TasksPage() {
   const { fetchTasks } = useTaskStore();
+  const { t } = useLanguage();
 
   useEffect(() => {
     fetchTasks();
@@ -13,9 +15,9 @@ export default function TasksPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Tasks</h1>
+        <h1 className="text-2xl font-bold">{t.pages['Tasks']}</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Manage tasks for your agents
+          {t.pages['Manage tasks for your agents']}
         </p>
       </div>
 

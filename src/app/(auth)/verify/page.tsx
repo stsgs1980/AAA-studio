@@ -8,10 +8,12 @@ import { verifySchema, type VerifyFormData } from "@/features/auth/lib/verify-sc
 import { OtpInput } from "@/features/auth/components/otp-input";
 import { AuthButton } from "@/features/auth/components/auth-button";
 import { Logo } from "@/features/auth/components/logo";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export default function VerifyPage() {
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
+  const { t } = useLanguage();
   const { handleSubmit, setValue } = useForm<VerifyFormData>({
     resolver: zodResolver(verifySchema),
     defaultValues: { code: "" },
@@ -26,7 +28,7 @@ export default function VerifyPage() {
     setLoading(true);
     await new Promise((r) => setTimeout(r, 1000));
     setLoading(false);
-    toast.success("Verification successful");
+    toast.success(t.auth['Verification successful']);
   }
 
   return (
@@ -34,10 +36,10 @@ export default function VerifyPage() {
       <Logo />
       <div className="space-y-1 text-center">
         <h1 className="text-2xl font-bold text-foreground">
-          Two-Factor Authentication
+          {t.auth['Two-Factor Authentication']}
         </h1>
         <p className="text-sm text-muted-foreground">
-          Enter the 6-digit code from your authenticator app
+          {t.auth['Enter the 6-digit code from your authenticator app']}
         </p>
       </div>
 
@@ -46,17 +48,17 @@ export default function VerifyPage() {
           <OtpInput value={code} onChange={handleCodeChange} />
         </div>
         <AuthButton type="submit" loading={loading}>
-          Verify
+          {t.auth.Verify}
         </AuthButton>
       </form>
 
       <div className="flex justify-center gap-4 text-sm text-muted-foreground">
-        <button type="button" onClick={() => toast.info("Code resent")} className="hover:text-foreground">
-          Resend code
+        <button type="button" onClick={() => toast.info(t.auth['Code resent'])} className="hover:text-foreground">
+          {t.auth['Resend code']}
         </button>
         <span className="text-muted-foreground">|</span>
         <button type="button" onClick={() => toast.info("Backup code flow")} className="hover:text-foreground">
-          Use backup code
+          {t.auth['Use backup code']}
         </button>
       </div>
     </div>

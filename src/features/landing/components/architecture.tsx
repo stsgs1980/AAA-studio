@@ -3,16 +3,18 @@
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { Monitor, Cpu, Network } from "lucide-react";
-
-const endpoints = [
-  { icon: Monitor, title: "Visual IDE", description: "Drag-and-drop flow designer with real-time preview and validation." },
-  { icon: Cpu, title: "Agent Runtime", description: "Scalable execution engine with retry, fallback, and circuit breaker patterns." },
-  { icon: Network, title: "Orchestration", description: "Multi-agent coordination with supervisor and map-reduce patterns." },
-];
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export function Architecture() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
+  const { t } = useLanguage();
+
+  const endpoints = [
+    { icon: Monitor, title: t.landing['Visual IDE'], description: t.landing['Drag-and-drop flow designer with real-time preview and validation.'] },
+    { icon: Cpu, title: t.landing['Agent Runtime'], description: t.landing['Scalable execution engine with retry, fallback, and circuit breaker patterns.'] },
+    { icon: Network, title: t.landing.Orchestration, description: t.landing['Multi-agent coordination with supervisor and map-reduce patterns.'] },
+  ];
 
   return (
     <section id="architecture" className="bg-background py-20 sm:py-28">
@@ -25,10 +27,10 @@ export function Architecture() {
           className="mb-14 text-center"
         >
           <h2 className="text-3xl font-bold text-foreground sm:text-4xl">
-            Powered by a structured orchestration engine
+            {t.landing['Powered by a structured orchestration engine']}
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
-            A modular architecture designed for reliability, scalability, and extensibility.
+            {t.landing['A modular architecture designed for reliability, scalability, and extensibility.']}
           </p>
         </motion.div>
 
@@ -47,8 +49,8 @@ export function Architecture() {
               <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-brand-accent/10 mx-auto">
                 <Cpu className="h-6 w-6 text-brand-accent" />
               </div>
-              <h3 className="text-lg font-semibold text-foreground">Orchestrator Core</h3>
-              <p className="mt-1 text-sm text-muted-foreground">Central coordination engine</p>
+              <h3 className="text-lg font-semibold text-foreground">{t.landing['Orchestrator Core']}</h3>
+              <p className="mt-1 text-sm text-muted-foreground">{t.landing['Central coordination engine']}</p>
             </div>
           </div>
 

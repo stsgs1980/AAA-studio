@@ -11,12 +11,13 @@ import { TabWrite } from "@/features/prompt-studio/components/tab-write";
 import { TabFormulas } from "@/features/prompt-studio/components/tab-formulas";
 import { TabFrameworks } from "@/features/prompt-studio/components/tab-frameworks";
 import { TabCompare } from "@/features/prompt-studio/components/tab-compare";
+import { useLanguage } from "@/lib/i18n/language-context";
 
-const TABS: { id: StudioTab; label: string; icon: typeof PenLine }[] = [
-  { id: "write", label: "Write", icon: PenLine },
-  { id: "formulas", label: "Formulas", icon: Braces },
-  { id: "frameworks", label: "Frameworks", icon: LayoutGrid },
-  { id: "compare", label: "Compare", icon: GitCompareArrows },
+const TAB_DEFS: { id: StudioTab; icon: typeof PenLine }[] = [
+  { id: "write", icon: PenLine },
+  { id: "formulas", icon: Braces },
+  { id: "frameworks", icon: LayoutGrid },
+  { id: "compare", icon: GitCompareArrows },
 ];
 
 const TAB_COMPONENTS: Record<StudioTab, React.ComponentType> = {
@@ -34,6 +35,14 @@ export default function PromptStudioPage() {
   const setActiveTab = usePromptStudioStore((s) => s.setActiveTab);
   const viewMode = usePromptStudioStore((s) => s.viewMode);
   const setViewMode = usePromptStudioStore((s) => s.setViewMode);
+  const { t } = useLanguage();
+
+  const tabLabels: Record<StudioTab, string> = {
+    write: t.pages['Write'],
+    formulas: t.pages['Formulas'],
+    frameworks: t.pages['Frameworks'],
+    compare: t.pages['Compare'],
+  };
 
   const ActiveComponent = TAB_COMPONENTS[activeTab];
 
@@ -43,7 +52,7 @@ export default function PromptStudioPage() {
       <div className="flex items-center gap-3 px-6 pt-6 pb-2">
         <Sparkles className="h-6 w-6 text-brand-accent" />
         <h1 className="text-2xl font-bold tracking-tight text-foreground">
-          Prompt Studio
+          {t.pages['Prompt Studio']}
         </h1>
         {GRID_TABS.has(activeTab) && (
           <div className="ml-auto flex items-center gap-1 bg-muted rounded-lg p-0.5">
@@ -55,7 +64,7 @@ export default function PromptStudioPage() {
                   ? "bg-brand-accent text-white"
                   : "text-muted-foreground hover:text-muted-foreground",
               )}
-              title="Grid view"
+              title={t.pages['Grid view']}
             >
               <Grid2x2 className="h-4 w-4" />
             </button>
@@ -67,7 +76,7 @@ export default function PromptStudioPage() {
                   ? "bg-brand-accent text-white"
                   : "text-muted-foreground hover:text-muted-foreground",
               )}
-              title="List view"
+              title={t.pages['List view']}
             >
               <Rows3 className="h-4 w-4" />
             </button>
@@ -78,7 +87,7 @@ export default function PromptStudioPage() {
       {/* Tab bar */}
       <div className="px-6 border-b border-border">
         <nav className="flex gap-1 -mb-px">
-          {TABS.map(({ id, label, icon: Icon }) => (
+          {TAB_DEFS.map(({ id, icon: Icon }) => (
             <button
               key={id}
               onClick={() => setActiveTab(id)}
@@ -90,7 +99,7 @@ export default function PromptStudioPage() {
               )}
             >
               <Icon className="h-4 w-4" />
-              {label}
+              {tabLabels[id]}
             </button>
           ))}
         </nav>

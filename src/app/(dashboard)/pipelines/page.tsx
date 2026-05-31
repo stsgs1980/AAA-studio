@@ -7,6 +7,7 @@ import {
   usePipelines, ExecutionList, ExecutionDetail,
 } from '@/features/pipelines';
 import type { Execution, NodeResult, UsageSummary } from '@/features/pipelines';
+import { useLanguage } from '@/lib/i18n/language-context';
 
 function parseExecData(exec: Execution): { results: NodeResult[]; usage?: UsageSummary } {
   if (!exec.result) return { results: [] };
@@ -21,6 +22,7 @@ export default function PipelinesPage() {
     flows, executions, selectedFlow, selectedExec,
     loading, running, selectFlow, selectExec, executeFlow, deleteFlow,
   } = usePipelines();
+  const { t } = useLanguage();
 
   const activeExec = selectedExec ? executions.find((e) => e.id === selectedExec) : null;
   const activeData = activeExec ? parseExecData(activeExec) : null;
@@ -29,7 +31,7 @@ export default function PipelinesPage() {
     <div className="p-6 space-y-4">
       <div className="flex items-center gap-3">
         <GitBranch className="h-6 w-6 text-muted-foreground" />
-        <h1 className="text-2xl font-bold tracking-tight">Pipelines</h1>
+        <h1 className="text-2xl font-bold tracking-tight">{t.nav['Pipelines']}</h1>
       </div>
 
       {loading ? (
@@ -42,12 +44,12 @@ export default function PipelinesPage() {
           {/* Left: Flow list */}
           <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
             <div className="px-3 py-2 border-b bg-muted/30">
-              <h2 className="text-sm font-semibold">Flows ({flows.length})</h2>
+              <h2 className="text-sm font-semibold">{t.pages['Flows']} ({flows.length})</h2>
             </div>
             <div className="divide-y overflow-y-auto max-h-[55vh]">
               {flows.length === 0 ? (
                 <p className="text-sm text-muted-foreground p-4">
-                  No flows yet. Create one in the Flow Editor.
+                  {t.pages['No flows yet. Create one in the Flow Editor.']}
                 </p>
               ) : flows.map((f) => (
                 <div
@@ -66,7 +68,7 @@ export default function PipelinesPage() {
                   <button
                     onClick={(e) => { e.stopPropagation(); executeFlow(f.id); }}
                     className="p-1 rounded hover:bg-primary/10 hover:text-primary opacity-0 group-hover:opacity-100 transition-all"
-                    title="Execute"
+                    title={t.pages['Execute']}
                     disabled={running}
                   >
                     {running && selectedFlow === f.id
@@ -77,7 +79,7 @@ export default function PipelinesPage() {
                   <button
                     onClick={(e) => { e.stopPropagation(); deleteFlow(f.id); }}
                     className="p-1 rounded hover:bg-destructive/10 hover:text-destructive opacity-0 group-hover:opacity-100 transition-all"
-                    title="Delete"
+                    title={t.common['Delete']}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
@@ -90,13 +92,13 @@ export default function PipelinesPage() {
           <div className="lg:col-span-2 rounded-xl border bg-card shadow-sm overflow-hidden">
             <div className="px-4 py-2 border-b bg-muted/30">
               <h2 className="text-sm font-semibold">
-                {selectedFlow ? flows.find((f) => f.id === selectedFlow)?.name ?? 'Flow' : 'Select a flow'}
+                {selectedFlow ? flows.find((f) => f.id === selectedFlow)?.name ?? t.pages['Flow'] : t.pages['Select a flow']}
               </h2>
             </div>
             <div className="p-4">
               {!selectedFlow ? (
                 <div className="flex items-center justify-center h-40 text-muted-foreground text-sm">
-                  Select a flow to view executions
+                  {t.pages['Select a flow to view executions']}
                 </div>
               ) : activeExec && selectedExec ? (
                 <ExecutionDetail

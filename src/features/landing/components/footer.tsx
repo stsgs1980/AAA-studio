@@ -1,12 +1,17 @@
-import { Cpu } from "lucide-react";
+'use client';
 
-const footerLinks = [
-  { label: "Documentation", href: "#" },
-  { label: "GitHub", href: "#" },
-  { label: "Discord", href: "#" },
-];
+import { Cpu } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export function Footer() {
+  const { t } = useLanguage();
+
+  const footerLinks = [
+    { label: t.landing.Documentation, href: "#" },
+    { label: t.landing.GitHub, href: "#" },
+    { label: t.landing.Discord, href: "#" },
+  ];
+
   return (
     <footer className="border-t border-border/40 bg-background py-10">
       <div className="mx-auto flex max-w-[1200px] flex-col items-center gap-6 px-4 sm:flex-row sm:justify-between sm:px-6">
@@ -14,7 +19,7 @@ export function Footer() {
           <div className="flex h-7 w-7 items-center justify-center rounded-md bg-brand-accent">
             <Cpu className="h-3.5 w-3.5 text-white" />
           </div>
-          <span className="text-sm font-semibold text-foreground">3A Studio</span>
+          <span className="text-sm font-semibold text-foreground">{t.landing['3A Studio']}</span>
         </div>
 
         <nav className="flex items-center gap-6">
@@ -30,7 +35,7 @@ export function Footer() {
         </nav>
 
         <p className="text-xs text-muted-foreground">
-          &copy; 2025 3A Studio. All rights reserved.
+          &copy; 2025 3A Studio. {t.landing['All rights reserved.']}
         </p>
       </div>
     </footer>

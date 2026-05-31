@@ -2,15 +2,17 @@
 
 import { useState, useEffect } from 'react'
 import { useDashboardData } from '../hooks/use-dashboard-data'
+import { useLanguage } from '@/lib/i18n/language-context'
 
 export function NetworkChart() {
   const { data } = useDashboardData()
   const chart = data.networkChart
   const [animated, setAnimated] = useState(false)
+  const { t } = useLanguage()
 
   useEffect(() => {
-    const t = setTimeout(() => setAnimated(true), 300)
-    return () => clearTimeout(t)
+    const timer = setTimeout(() => setAnimated(true), 300)
+    return () => clearTimeout(timer)
   }, [])
 
   const { hourlyLabels, apiCalls, failures, peak, avg } = chart
@@ -19,9 +21,9 @@ export function NetworkChart() {
     return (
       <div className="rounded-[10px] bg-card border border-border p-5">
         <h3 className="text-xs font-semibold uppercase tracking-wider mb-4 text-muted-foreground">
-          Execution Activity
+          {t.dashboard['Execution Activity']}
         </h3>
-        <p className="text-sm text-muted-foreground py-8 text-center">No data yet</p>
+        <p className="text-sm text-muted-foreground py-8 text-center">{t.dashboard['No data yet']}</p>
       </div>
     )
   }
@@ -48,29 +50,28 @@ export function NetworkChart() {
   )
 
   const apiPoints = apiCalls.map((v, i) => `${toX(i)},${toY(v)}`).join(' ')
-
   const failPoints = failures.map((v, i) => `${toX(i)},${toY(v)}`).join(' ')
 
   return (
     <div className="rounded-[10px] bg-card border border-border p-5 transition-colors duration-200">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-          Execution Activity (24h)
+          {t.dashboard['Execution Activity (24h)']}
         </h3>
         <div className="flex gap-4 text-[11px] text-muted-foreground">
-          <span>Peak: {peak}</span>
-          <span>Avg: {avg}/h</span>
+          <span>{t.dashboard['Peak:']} {peak}</span>
+          <span>{t.dashboard['Avg:']} {avg}/h</span>
         </div>
       </div>
 
       <div className="flex gap-6 mb-3">
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
           <span className="w-2.5 h-[3px] rounded-sm bg-emerald-500" />
-          Total Executions
+          {t.dashboard['Total Executions']}
         </div>
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
           <span className="w-2.5 h-[3px] rounded-sm bg-red-500" />
-          Failures
+          {t.dashboard.Failures}
         </div>
       </div>
 

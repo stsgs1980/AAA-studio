@@ -2,8 +2,11 @@
 
 import { cn } from "@stsgs/ui";
 import { Github } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export function GitHubButton() {
+  const { t } = useLanguage();
+
   return (
     <button
       type="button"
@@ -14,7 +17,7 @@ export function GitHubButton() {
       )}
     >
       <Github className="h-4 w-4" />
-      Continue with GitHub
+      {t.auth['Continue with GitHub']}
     </button>
   );
 }
