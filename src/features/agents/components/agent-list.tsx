@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Search, Plus, Filter, Upload } from 'lucide-react';
+import { Search, Plus, Filter, Upload, Wand2 } from 'lucide-react';
 import { cn } from '@stsgs/ui';
 import { useAgentStore } from '../hooks/use-agent-store';
 import { ROLE_GROUPS, STATUS_OPTIONS } from '../types';
@@ -56,6 +56,12 @@ export function AgentList() {
         >
           <Plus className="h-4 w-4" /> New Agent
         </button>
+        <a
+          href="/agent-creator"
+          className="flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-medium hover:bg-accent transition-colors"
+        >
+          <Wand2 className="h-4 w-4" /> From Template
+        </a>
       </div>
 
       {/* Filters */}

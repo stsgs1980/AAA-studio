@@ -15,6 +15,7 @@ export interface WizardForm {
   // step 1 - type
   agentTypeId: string;
   agentRoleId: string;
+  templateVars: Record<string, string>;
   // step 2 - config
   name: string;
   description: string;
@@ -36,6 +37,7 @@ export interface WizardForm {
 export const CREATOR_DEFAULTS: WizardForm = {
   agentTypeId: '',
   agentRoleId: '',
+  templateVars: {},
   name: '',
   description: '',
   group: 'specialist',
