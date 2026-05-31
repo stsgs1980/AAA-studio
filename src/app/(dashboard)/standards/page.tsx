@@ -65,9 +65,9 @@ export default function StandardsManagerPage() {
         <Shield className="h-6 w-6 text-muted-foreground" />
         <h1 className="text-2xl font-bold tracking-tight text-foreground">{t.pages['Standards Manager']}</h1>
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 min-h-[60vh]">
+      <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-4 min-h-[60vh]">
         <div className="rounded-xl border border-border bg-card p-4"><PageSkeleton rows={4} /></div>
-        <div className="lg:col-span-2 rounded-xl border border-border bg-card p-4"><PageSkeleton rows={3} /></div>
+        <div className="rounded-xl border border-border bg-card p-4"><PageSkeleton rows={3} /></div>
       </div>
     </div>
   );
@@ -118,9 +118,9 @@ export default function StandardsManagerPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 min-h-[60vh]">
+      <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-4 min-h-[60vh]">
         <StandardList />
-        <div className="lg:col-span-2"><StandardDetail /></div>
+        <div><StandardDetail /></div>
       </div>
     </div>
   );

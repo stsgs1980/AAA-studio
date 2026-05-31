@@ -93,12 +93,12 @@ export default function KnowledgeBasePage() {
       <SearchBar collectionId={selectedId} />
 
       {loading ? (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 min-h-[60vh]">
+        <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-4 min-h-[60vh]">
           <div className="rounded-xl border bg-card shadow-sm p-4"><PageSkeleton rows={4} /></div>
-          <div className="lg:col-span-2 rounded-xl border bg-card shadow-sm p-4"><PageSkeleton rows={3} /></div>
+          <div className="rounded-xl border bg-card shadow-sm p-4"><PageSkeleton rows={3} /></div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 min-h-[60vh]">
+        <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-4 min-h-[60vh]">
           <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
             <div className="px-3 py-2 border-b bg-muted/30">
               <h2 className="text-sm font-semibold">{t.pages['Collections']} ({collections.length})</h2>
@@ -108,7 +108,7 @@ export default function KnowledgeBasePage() {
             </div>
           </div>
 
-          <div className="lg:col-span-2 rounded-xl border bg-card shadow-sm overflow-hidden">
+          <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
             <div className="px-4 py-2 border-b bg-muted/30">
               <h2 className="text-sm font-semibold">{collectionName || t.pages['Select a collection']}</h2>
             </div>
