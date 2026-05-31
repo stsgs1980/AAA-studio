@@ -112,18 +112,20 @@ export function executePrompt(
 export function executeCondition(
   inputs: Record<string, unknown>,
   data: Record<string, unknown>,
-): Record<string, unknown> {
-  const expr = typeof data.expression === 'string' ? data.expression : 'true';
-  return { ...inputs, conditionResult: safeEvalCondition(expr, inputs) };
+): { output: Record<string, unknown>; selectedHandle: string } {
+  const expr = typeof data.expression === 'string' ? data.expression : '';
+  const result = safeEvalCondition(expr, inputs);
+  return { output: { ...inputs, conditionResult: result }, selectedHandle: result ? 'true' : 'false' };
 }
 
 /** Filter node -- check condition, mark pass/fail. */
 export function executeFilter(
   inputs: Record<string, unknown>,
   data: Record<string, unknown>,
-): Record<string, unknown> {
-  const cond = typeof data.condition === 'string' ? data.condition : 'true';
-  return { ...inputs, passed: safeEvalCondition(cond, inputs) };
+): { output: Record<string, unknown>; selectedHandle: string } {
+  const cond = typeof data.condition === 'string' ? data.condition : '';
+  const passed = safeEvalCondition(cond, inputs);
+  return { output: { ...inputs, passed }, selectedHandle: passed ? 'pass' : 'fail' };
 }
 
 /** Transform node -- apply string/data transforms. */

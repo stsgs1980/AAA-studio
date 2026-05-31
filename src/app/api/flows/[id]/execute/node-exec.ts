@@ -47,12 +47,14 @@ export async function execNode(
     case "prompt": return execPrompt(d, inputs);
     case "transform": return execTransform(d, inputs);
     case "condition": {
-      const expr = typeof d.expression === "string" ? d.expression : "true";
-      return { data: { ...inputs, conditionResult: safeEvalCondition(expr, inputs) } };
+      const expr = typeof d.expression === "string" ? d.expression : "";
+      const result = safeEvalCondition(expr, inputs);
+      return { data: { ...inputs, conditionResult: result }, selectedHandle: result ? "true" : "false" };
     }
     case "filter": {
-      const cond = typeof d.condition === "string" ? d.condition : "true";
-      return { data: { ...inputs, passed: safeEvalCondition(cond, inputs) } };
+      const cond = typeof d.condition === "string" ? d.condition : "";
+      const passed = safeEvalCondition(cond, inputs);
+      return { data: { ...inputs, passed }, selectedHandle: passed ? "pass" : "fail" };
     }
     case "router": return execRouter(node, inputs, resolved);
     default: return { data: { ...inputs, type: node.type, processed: true } };

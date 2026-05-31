@@ -5,10 +5,11 @@ import { useFlowEditorStore } from '../../store/flow-store';
 import { cn } from '@stsgs/ui';
 import type { ExecutionResult } from '../../lib/node-executor';
 
-const STATUS_COLOR = {
+const STATUS_COLOR: Record<string, string> = {
   completed: 'bg-emerald-500',
   failed: 'bg-red-500',
-} as const;
+  skipped: 'bg-slate-400',
+};
 
 const NODE_TYPE_LABELS: Record<string, string> = {
   start: 'Start', end: 'End', llm: 'LLM', prompt: 'Prompt',
