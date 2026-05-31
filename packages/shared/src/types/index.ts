@@ -6,6 +6,7 @@
 export type { RoleGroup, AgentModel } from "./agent";
 export type {
   NodeCategory, NodeType, FlowNode, FlowEdge, Flow, FlowVersion,
+  ConnectionType, DataType,
 } from "./flow";
 export type { PipelineExecution } from "./pipeline";
 export type { KnowledgeCollection, KnowledgeDocument } from "./knowledge";

@@ -33,6 +33,25 @@ export type NodeType =
   | "end"
   | "error";
 
+/** Semantic connection type between nodes */
+export type ConnectionType =
+  | "command"
+  | "sync"
+  | "twin"
+  | "delegate"
+  | "feedback"
+  | "supervise"
+  | "broadcast";
+
+/** Data type flowing through a handle/port */
+export type DataType =
+  | "text"
+  | "json"
+  | "embedding"
+  | "query"
+  | "results"
+  | "any";
+
 export interface FlowNode {
   id: string;
   type: NodeType;
@@ -49,6 +68,8 @@ export interface FlowEdge {
   sourceHandle?: string;
   targetHandle?: string;
   type?: "smoothstep" | "bezier" | "straight" | "animated";
+  /** Semantic connection type — defines communication pattern */
+  connectionType?: ConnectionType;
   label?: string;
 }
 

@@ -10,6 +10,7 @@ import {
   type Connection,
 } from '@xyflow/react';
 import type { ExecutionResult } from '../lib/node-executor';
+import { isValidConnection, suggestConnectionType, isFeedbackLoop } from '../lib/connection-validation';
 
 const MAX_HISTORY = 50;
 
@@ -24,6 +25,7 @@ interface FlowEditorState {
   executionResults: ExecutionResult[];
   isRunning: boolean;
   showAssistant: boolean;
+  showVersionHistory: boolean;
 }
 
 interface FlowEditorActions {
@@ -40,6 +42,7 @@ interface FlowEditorActions {
   redo: () => void;
   setExecutionResults: (results: ExecutionResult[]) => void;
   toggleAssistant: () => void;
+  toggleVersionHistory: () => void;
   _pushHistory: () => void;
 }
 
@@ -56,6 +59,7 @@ export const useFlowEditorStore = create<FlowEditorState & FlowEditorActions>((s
     canUndo: false, canRedo: false,
     executionResults: [], isRunning: false,
     showAssistant: false,
+    showVersionHistory: false,
 
     _pushHistory: () => {
       const { history, historyIndex } = get();
@@ -64,18 +68,24 @@ export const useFlowEditorStore = create<FlowEditorState & FlowEditorActions>((s
       trimmed.push(snap);
       if (trimmed.length > MAX_HISTORY) trimmed.shift();
       set({
-        history: trimmed,
-        historyIndex: trimmed.length - 1,
-        canUndo: trimmed.length > 1,
-        canRedo: false,
-        isDirty: true,
+        history: trimmed, historyIndex: trimmed.length - 1,
+        canUndo: trimmed.length > 1, canRedo: false, isDirty: true,
       });
     },
 
     onNodesChange: (c) => set({ nodes: applyNodeChanges(c, get().nodes), isDirty: true }),
     onEdgesChange: (c) => set({ edges: applyEdgeChanges(c, get().edges), isDirty: true }),
     onConnect: (conn) => {
-      set({ edges: addEdge({ ...conn, type: 'smoothstep' }, get().edges) });
+      const { nodes, edges } = get();
+      if (!isValidConnection(conn, nodes)) return;
+      const loop = isFeedbackLoop(conn.source, conn.target, edges);
+      const ct = suggestConnectionType(
+        nodes.find((n) => n.id === conn.source)?.type ?? '',
+        nodes.find((n) => n.id === conn.target)?.type ?? '',
+        loop,
+      );
+      const edgeData = ct ? { connectionType: ct } : {};
+      set({ edges: addEdge({ ...conn, type: 'typed', data: edgeData }, get().edges) });
       get()._pushHistory();
     },
     addNode: (node) => { set({ nodes: [...get().nodes, node] }); get()._pushHistory(); },
@@ -104,6 +114,7 @@ export const useFlowEditorStore = create<FlowEditorState & FlowEditorActions>((s
 
     setExecutionResults: (results) => set({ executionResults: results, isRunning: false }),
     toggleAssistant: () => set((s) => ({ showAssistant: !s.showAssistant })),
+    toggleVersionHistory: () => set((s) => ({ showVersionHistory: !s.showVersionHistory })),
 
     undo: () => {
       const { historyIndex: hi, history: h } = get();

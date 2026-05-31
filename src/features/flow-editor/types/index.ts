@@ -1,12 +1,13 @@
 import type { Node, Edge } from '@xyflow/react';
-import type { NodeType, NodeCategory } from '@stsgs/shared';
+import type { NodeType, NodeCategory, DataType } from '@stsgs/shared';
 
 /** Handle configuration for a node port */
 export interface HandleConfig {
   id: string;
   label: string;
   type: 'input' | 'output';
-  dataType?: string;
+  /** Data type that flows through this handle */
+  dataType: DataType;
 }
 
 /** Node type definition for the registry */

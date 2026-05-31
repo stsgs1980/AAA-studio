@@ -2,7 +2,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { agentCreateSchema, agentUpdateSchema } from '@/lib/validations/agent';
-import { skillCreateSchema, skillUpdateSchema } from '@/lib/validations/flow';
+import { skillCreateSchema, skillUpdateSchema } from '@/lib/validations/skill';
 import { standardCreateSchema } from '@/lib/validations/flow';
 
 describe('Cross-reference validation', () => {

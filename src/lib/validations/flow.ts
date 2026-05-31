@@ -1,12 +1,28 @@
 import { z } from 'zod';
 
+// Edge validation
+const connectionTypeSchema = z.enum([
+  'command', 'sync', 'twin', 'delegate', 'feedback', 'supervise', 'broadcast',
+]).optional();
+
+export const flowEdgeSchema = z.object({
+  id: z.string(),
+  source: z.string(),
+  target: z.string(),
+  sourceHandle: z.string().optional(),
+  targetHandle: z.string().optional(),
+  type: z.enum(['smoothstep', 'bezier', 'straight', 'animated', 'typed']).optional(),
+  connectionType: connectionTypeSchema,
+  label: z.string().optional(),
+});
+
 // Flow
 export const flowCreateSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100),
   description: z.string().max(500).optional().default(''),
   status: z.enum(['draft', 'active', 'archived']).optional().default('draft'),
   nodes: z.array(z.unknown()).optional().default([]),
-  edges: z.array(z.unknown()).optional().default([]),
+  edges: z.array(flowEdgeSchema).optional().default([]),
   metadata: z.record(z.unknown()).optional().default({}),
 });
 

@@ -2,7 +2,7 @@
 // @stsgs/shared - Constants
 // ============================================================================
 
-import type { RoleGroup, NodeType, NodeCategory, NavItem } from "../types";
+import type { RoleGroup, NodeType, NodeCategory, NavItem, ConnectionType } from "../types";
 
 /** Role group definitions */
 export const ROLE_GROUPS: Record<RoleGroup, { label: string; color: string }> = {
@@ -89,8 +89,18 @@ export const NAV_ITEMS: NavItem[] = [
   { title: "Settings", href: "/settings", icon: "Settings" },
 ];
 
-/** Edge types */
+/** Edge visual types */
 export const EDGE_TYPES = ["smoothstep", "bezier", "straight", "animated"] as const;
+
+/** Connection type keys */
+export const CONNECTION_TYPES: ConnectionType[] = [
+  "command", "sync", "twin", "delegate", "feedback", "supervise", "broadcast",
+];
+
+export {
+  CONNECTION_TYPE_CONFIG,
+  isDataTypeCompatible,
+} from "./connection-types";
 
 /** Cognitive formulas list */
 export const COGNITIVE_FORMULAS = [
