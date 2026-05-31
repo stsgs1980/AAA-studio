@@ -94,7 +94,8 @@ Zai-agent-toolkit (скомпилированные скиллы для Z.ai san
 | Templates | ✅ Работает | 6 flow templates + prompt library, clone to editor |
 | Audit Log | ✅ Работает | JSON подсветка деталей, фильтры по entity |
 | Settings | ✅ Работает | Multi-provider LLM, theme/language, key masking |
-| i18n | ✅ Работает | en/ru, sidebar + settings |
+| i18n | ✅ Работает | en/ru, 17 неймспейсов, интерполяция, sidebar + settings |
+| Tests | ✅ 125 тестов | Unit: 90 (lib, validations, resilience), Integration: 35 (auth chain, agent CRUD, cross-ref, crypto) |
 
 ---
 
@@ -186,6 +187,18 @@ Zai-agent-toolkit (скомпилированные скиллы для Z.ai san
 - [ ] ReAct agent type (Phase 4)
 - [ ] Plan-and-Execute agent type (Phase 4)
 - [ ] Prompt Chaining agent type (Phase 4)
+
+### ⏸ Explicitly Deferred
+
+> Вещи которые осознанно отложены — не потому что не нужны, а потому что не сейчас.
+
+| Что | Почему отложено | Когда вернуться |
+|-----|----------------|-----------------|
+| Полное покрытие API routes (34/37 без тестов) | Архитектура в flux, тесты будут ломаться при каждом изменении | После стабилизации P0-2, P0-3 |
+| E2E тесты (Playwright) | UI активно меняется, E2E хрупкие и дорогие в поддержке | После Phase 3 |
+| Coverage reporting (@vitest/coverage-v8) | Не установлен, не критично пока тестов мало | После стабилизации тестов |
+| i18n → next-intl миграция | Текущая контекстная система работает, next-intl — Phase 8.2 по master-plan | Phase 8 |
+| Standards → ESLint code generation | Нужна стабильная SkillFile модель (P0-2) | После P0-2, P0-3 |
 
 ### Phase 5 — Advanced Agent Types
 
