@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import { Shield, Plus, Search, Upload } from "lucide-react";
+import { Shield, Plus, Search, Upload, Download } from "lucide-react";
 import { cn } from "@stsgs/ui";
 import { PageSkeleton } from "@/components/ui";
 import { useStandardsStore } from "@/features/standards/store/standards-store";
@@ -85,6 +85,9 @@ export default function StandardsManagerPage() {
           <button onClick={() => fileRef.current?.click()} className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border bg-card text-foreground text-sm font-medium hover:bg-card/80 transition-colors">
             <Upload className="h-4 w-4" /> {t.common['Import']}
           </button>
+          <a href="/api/standards/eslint?format=json" download=".eslintrc.json" className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border bg-card text-foreground text-sm font-medium hover:bg-card/80 transition-colors">
+            <Download className="h-4 w-4" /> ESLint
+          </a>
           <button onClick={() => setShowNew(!showNew)} className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-brand-accent text-white text-sm font-medium hover:bg-brand-accent/90">
             <Plus className="h-4 w-4" /> {t.pages['New Standard']}
           </button>
