@@ -1086,3 +1086,51 @@ Stage Summary:
 - Review step prevents premature generation
 - Per-goal system prompts + memory augmentation
 - Error handling added (try/catch with user-visible error)
+---
+Task ID: 2
+Agent: main
+Task: Node Duplicate, Prompt Templates, Command Palette, SSE Execution
+
+Work Log:
+- Node Duplicate: Ctrl+D shortcut + Duplicate button in ConfigTab + Delete/Backspace key
+- Prompt Templates: extended PromptTemplate model (systemPrompt, temperature, maxTokens, nodeType, description, isBuiltin), seeded 8 built-in templates, CRUD API, template picker dropdown in node config
+- Command Palette: Ctrl+K overlay using cmdk, 19 commands across Flow/Edit/View/Add Node groups
+- SSE Execution: GET /api/flows/:id/execute-sse streams node-by-node progress (start, node_start, node_done, node_error, done events)
+- Created useKeyboardShortcuts hook for Ctrl+D, Delete, Backspace
+- Integrated CommandPalette + useKeyboardShortcuts into flow-editor.tsx
+- Prisma schema migration pushed (PromptTemplate extended)
+- Build clean, pushed da4d1ca
+
+Stage Summary:
+- 4 features implemented and pushed in single commit
+- 10 files changed, +412/-61 lines
+- All files under 150-line lint rule
+---
+Task ID: Wave-9
+Agent: main
+Task: P0/P1 implementation — Typed Connections, Version History UI, Data Contract Viz, Seed Data, Feedback Loops, API Tests
+
+Work Log:
+- Added ConnectionType (7 types) + DataType (6 types) to @stsgs/shared
+- Created connection-types.ts with visual config + isDataTypeCompatible() matrix
+- Updated NODE_REGISTRY: all 18 nodes now have dataType on every handle
+- Created TypedEdge component: per-connectionType color/dash/animation
+- Fixed BaseNode: multi-handle rendering for Router/Condition/Filter/HITL
+- Added isValidConnection validation in flow store onConnect
+- Auto-suggest connectionType on connect (command/sync/twin/delegate/feedback/supervise/broadcast)
+- Created Version History API: GET/POST /api/flows/[id]/versions + GET /api/flows/[id]/versions/[version]
+- Created VersionHistory panel: slide-in drawer, version list, create with description, restore button
+- Updated toolbar: added History button, store toggleVersionHistory
+- Created DataContractOverlay: shows source→target data types on edge click, compatibility check
+- Updated seed.ts: edges use typed connections, initial FlowVersion snapshots created
+- Added isFeedbackLoop() detection: back-edge detection via BFS
+- Feedback loops auto-assigned connectionType: "feedback" with amber visual style
+- Created 2 test files: flow-crud.test.ts + flow-versions.test.ts (9 test cases)
+- Fixed pre-existing bug: cross-ref test importing skillCreateSchema from wrong file
+- Updated Zod validation: flowEdgeSchema with connectionType enum
+
+Stage Summary:
+- 18 files created/modified
+- All P0 complete: Typed Connections, Version History UI, Data Contract Visualization
+- All P1 complete: Seed Data, Feedback Loop Arrows, API Tests
+- TypeScript: 0 errors, ESLint: 0 errors, all files <= 150 lines
