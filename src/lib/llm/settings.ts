@@ -5,11 +5,10 @@ import { db } from '@/lib/db';
 import { decrypt, encrypt } from '@/lib/crypto';
 import type { LLMSettings, ProviderConfig, LLMProviderId } from './types';
 import { DEFAULT_LLM_SETTINGS, LLM_PROVIDERS, builtinToConfig } from './types';
+import { injectEnvKey } from './env-key';
 
-// DB key for provider configs JSON array
 const PROVIDERS_KEY = 'llm_providers';
 
-// Active selection keys
 const SETTINGS_MAP: Record<string, keyof LLMSettings> = {
   llm_active_provider: 'activeProviderId',
   llm_active_model: 'activeModel',
@@ -26,7 +25,6 @@ export async function getProviders(): Promise<ProviderConfig[]> {
     if (!row?.value) return defaultProviders();
     const parsed = JSON.parse(row.value) as ProviderConfig[];
     if (!Array.isArray(parsed)) return defaultProviders();
-    // Decrypt apiKeys that were encrypted in DB
     const decrypted = parsed.map(p => ({
       ...p,
       apiKey: p.apiKey ? decrypt(p.apiKey) : '',
@@ -50,7 +48,7 @@ export async function saveProviders(providers: ProviderConfig[]): Promise<void> 
   });
 }
 
-/** Get the currently active provider config + its selected model */
+/** Get active provider — auto-injects ZAI_API_KEY env var when no key in DB */
 export async function getActiveProvider(): Promise<{
   provider: ProviderConfig;
   model: string;
@@ -60,40 +58,30 @@ export async function getActiveProvider(): Promise<{
   const providers = await getProviders();
   const active = providers.find(p => p.id === settings.activeProviderId && p.enabled);
   if (!active) return null;
+  injectEnvKey(active);
   return { provider: active, model: settings.activeModel, settings };
 }
 
 // ---- Active LLM selection ----
 
-/** Read active LLM settings from DB, merge with defaults */
 export async function getLLMSettings(): Promise<LLMSettings> {
   try {
-    const rows = await db.settings.findMany({
-      where: { key: { startsWith: 'llm_' } },
-    });
-
+    const rows = await db.settings.findMany({ where: { key: { startsWith: 'llm_' } } });
     const map: Partial<LLMSettings> = {};
     for (const row of rows) {
       const field = SETTINGS_MAP[row.key];
       if (!field) continue;
-      if (field === 'temperature') {
-        map[field] = parseFloat(row.value) || DEFAULT_LLM_SETTINGS.temperature;
-      } else if (field === 'maxTokens') {
-        map[field] = parseInt(row.value, 10) || DEFAULT_LLM_SETTINGS.maxTokens;
-      } else {
-        map[field] = row.value;
-      }
+      if (field === 'temperature') map[field] = parseFloat(row.value) || DEFAULT_LLM_SETTINGS.temperature;
+      else if (field === 'maxTokens') map[field] = parseInt(row.value, 10) || DEFAULT_LLM_SETTINGS.maxTokens;
+      else map[field] = row.value;
     }
-
     return { ...DEFAULT_LLM_SETTINGS, ...map };
   } catch (error) {
-    console.error('[LLM Settings] Failed to read settings from DB, using defaults:',
-      error instanceof Error ? error.message : error);
+    console.error('[LLM Settings] Failed to read:', error instanceof Error ? error.message : error);
     return { ...DEFAULT_LLM_SETTINGS };
   }
 }
 
-/** Save active LLM settings (partial update) */
 export async function saveLLMSettings(partial: Partial<LLMSettings>): Promise<void> {
   const ops = Object.entries(partial)
     .filter(([_, v]) => v !== undefined)
@@ -107,21 +95,16 @@ export async function saveLLMSettings(partial: Partial<LLMSettings>): Promise<vo
       });
     })
     .filter(Boolean);
-
   await Promise.all(ops);
 }
 
-/** Check if LLM is fully configured */
 export function isLLMConfigured(settings: LLMSettings): boolean {
   return !!(settings.activeProviderId && settings.activeModel);
 }
 
-/** Get available models for a provider id (legacy compat) */
 export function getAvailableModels(providerId: LLMProviderId) {
   return LLM_PROVIDERS[providerId]?.models ?? [];
 }
-
-// ---- Internal helpers ----
 
 function defaultProviders(): ProviderConfig[] {
   return ['zai', 'openai', 'anthropic', 'openrouter'].map(
@@ -129,7 +112,6 @@ function defaultProviders(): ProviderConfig[] {
   );
 }
 
-/** Merge user saved providers with built-in ones not yet present */
 function mergeWithBuiltins(saved: ProviderConfig[]): ProviderConfig[] {
   const savedIds = new Set(saved.map(p => p.id));
   const builtins = defaultProviders().filter(p => !savedIds.has(p.id));
