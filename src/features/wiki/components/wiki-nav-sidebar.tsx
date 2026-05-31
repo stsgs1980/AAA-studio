@@ -24,7 +24,7 @@ export function WikiNavSidebar({
     : wikiNavItems;
 
   return (
-    <nav className="w-[180px] shrink-0 overflow-y-auto border-r border-border p-3">
+    <nav className="w-56 shrink-0 overflow-y-auto border-r border-border p-3">
       <p className="mb-3 px-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
         Documentation
       </p>

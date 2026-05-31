@@ -11,7 +11,6 @@ import {
 } from "lucide-react";
 import { cn } from "@stsgs/ui";
 import { useState, useEffect } from "react";
-import { useWikiStore } from "@/features/wiki/store/wiki-store";
 import { useLanguage } from "@/lib/i18n/language-context";
 
 const navItems = [
@@ -101,19 +100,19 @@ export function AppSidebar() {
         </ul>
       </nav>
 
-      {/* Wiki Shortcut */}
+      {/* Wiki Link */}
       <div className="border-t px-2 py-2">
-        <button
-          onClick={() => useWikiStore.getState().open()}
+        <Link
+          href="/wiki"
           className={cn(
             "flex w-full items-center gap-3 rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors",
             collapsed && "justify-center"
           )}
-          title="Wiki (Ctrl+K)"
+          title="Wiki"
         >
           <FileText className="h-4 w-4 shrink-0" />
           {!collapsed && <span>{t.nav.Wiki}</span>}
-        </button>
+        </Link>
       </div>
 
       {/* Footer -- Theme toggle */}
