@@ -18,9 +18,14 @@ export interface ValidateSummary {
 }
 
 export interface SkillItem {
-  id: string; name: string; category: string; description: string;
+  id: string; name: string; slug: string; version: string; skillId: string;
+  category: string; description: string; longDescription: string;
   inputSchema: Record<string, unknown>; outputSchema: Record<string, unknown>;
-  code: string; tests: string; tags: string[]; standardIds: string[];
+  code: string; tests: string; tags: string[]; triggers: string[];
+  standardIds: string[]; compatibility: string;
+  dependencies: { skillId: string; version: string }[];
+  annotations: Record<string, boolean>;
+  author: string; license: string;
   createdAt: string; updatedAt: string;
 }
 

@@ -658,22 +658,33 @@ model KnowledgeDocument {
 // ============================================================================
 
 model Skill {
-  id           String   @id @default(cuid())
-  name         String
-  category     String   @default("general")
-  description  String   @default("")
-  inputSchema  String   @default("{}") // JSON
-  outputSchema String   @default("{}") // JSON
-  code         String   @default("")
-  tests        String   @default("")
-  tags         String   @default("[]")  // JSON string[]
-  standardIds  String   @default("[]")  // JSON string[] -- linked Standard IDs
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id              String   @id @default(cuid())
+  name            String
+  slug            String   @unique                    // URL-safe: "api-retry"
+  version         String   @default("1.0.0")          // SemVer
+  skillId         String   @default("")               // ZAI-XXX-NNN human-readable ID
+  category        String   @default("general")
+  description     String   @default("")               // Short (for LLM selection)
+  longDescription String   @default("")               // Full description for SKILL.md body
+  inputSchema     String   @default("{}")             // JSON Schema
+  outputSchema    String   @default("{}")             // JSON Schema
+  code            String   @default("")               // legacy
+  tests           String   @default("")               // legacy
+  tags            String   @default("[]")             // JSON string[]
+  triggers        String   @default("[]")             // JSON string[] -- activation keywords
+  standardIds     String   @default("[]")             // JSON string[] -- linked Standards
+  compatibility   String   @default("both")           // both | sandbox | local
+  dependencies    String   @default("[]")             // JSON [{skillId, version}]
+  annotations     String   @default("{}")             // JSON {readOnly, destructive, idempotent, openWorld}
+  author          String   @default("")
+  license         String   @default("MIT")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   files SkillFile[]
 
   @@index([category])
+  @@index([slug])
 }
 
 model SkillFile {
@@ -682,7 +693,7 @@ model SkillFile {
   path      String                          // e.g. "src/index.ts", "tests/main.test.ts"
   content   String   @default("")
   language  String   @default("typescript")   // typescript | python | json | yaml | markdown | text
-  role      String   @default("code")         // entry | code | test | config | doc | schema
+  role      String   @default("code")         // entry | code | test | config | doc | schema | script | reference | eval
   order     Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

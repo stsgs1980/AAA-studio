@@ -116,10 +116,10 @@ export async function POST(request: NextRequest) {
     }
 
     const SKILLS = [
-      { name: 'Web Search', category: 'integration', description: 'Search the web for real-time information', tags: JSON.stringify(['search', 'web', 'realtime']) },
-      { name: 'Code Analysis', category: 'analysis', description: 'Static analysis of source code', tags: JSON.stringify(['code', 'review', 'static']) },
-      { name: 'SQL Query', category: 'data', description: 'Execute and analyze SQL queries', tags: JSON.stringify(['sql', 'database', 'query']) },
-      { name: 'Prompt Scoring', category: 'evaluation', description: 'Score prompts on 6 quality dimensions', tags: JSON.stringify(['prompt', 'quality', 'scoring']) },
+      { name: 'Web Search', slug: 'web-search', category: 'integration', description: 'Search the web for real-time information', tags: JSON.stringify(['search', 'web', 'realtime']), triggers: JSON.stringify(['search', 'web search', 'lookup']), compatibility: 'both', dependencies: JSON.stringify([]), annotations: JSON.stringify({ readOnlyHint: true, destructiveHint: false, idempotentHint: false, openWorldHint: true }) },
+      { name: 'Code Analysis', slug: 'code-analysis', category: 'analysis', description: 'Static analysis of source code', tags: JSON.stringify(['code', 'review', 'static']), triggers: JSON.stringify(['analyze', 'review', 'lint']), compatibility: 'local', dependencies: JSON.stringify([]), annotations: JSON.stringify({ readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false }) },
+      { name: 'SQL Query', slug: 'sql-query', category: 'data', description: 'Execute and analyze SQL queries', tags: JSON.stringify(['sql', 'database', 'query']), triggers: JSON.stringify(['sql', 'query', 'database']), compatibility: 'sandbox', dependencies: JSON.stringify([]), annotations: JSON.stringify({ readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false }) },
+      { name: 'Prompt Scoring', slug: 'prompt-scoring', category: 'evaluation', description: 'Score prompts on 6 quality dimensions', tags: JSON.stringify(['prompt', 'quality', 'scoring']), triggers: JSON.stringify(['score', 'evaluate', 'quality']), compatibility: 'both', dependencies: JSON.stringify([]), annotations: JSON.stringify({ readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false }) },
     ];
     await Promise.all(SKILLS.map((s) => db.skill.create({ data: s })));
 

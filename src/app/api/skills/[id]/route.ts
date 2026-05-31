@@ -4,28 +4,42 @@ import { skillUpdateSchema } from '@/lib/validations';
 
 type Params = { params: Promise<{ id: string }> };
 
+/** Map Zod-validated body fields to Prisma data, serializing JSON fields */
+function buildUpdateData(body: Record<string, unknown>): Record<string, unknown> {
+  const data: Record<string, unknown> = {};
+  const jsonFields = ['inputSchema', 'outputSchema', 'tags', 'triggers', 'standardIds', 'dependencies', 'annotations'];
+  const stringFields = ['name', 'slug', 'version', 'skillId', 'category', 'description', 'longDescription', 'code', 'tests', 'compatibility', 'author', 'license'];
+  for (const f of stringFields) { if (body[f] != null) data[f] = body[f]; }
+  for (const f of jsonFields) { if (body[f] != null) data[f] = JSON.stringify(body[f]); }
+  return data;
+}
+
+function parseSkillFields(s: Record<string, unknown>) {
+  return {
+    ...s,
+    inputSchema: JSON.parse(s.inputSchema as string),
+    outputSchema: JSON.parse(s.outputSchema as string),
+    tags: JSON.parse(s.tags as string),
+    triggers: JSON.parse(s.triggers as string),
+    standardIds: JSON.parse(s.standardIds as string),
+    dependencies: JSON.parse(s.dependencies as string),
+    annotations: JSON.parse(s.annotations as string),
+  };
+}
+
 export async function PUT(request: Request, { params }: Params) {
   try {
     const { id } = await params;
     const body = skillUpdateSchema.parse(await request.json());
-    const data: Record<string, unknown> = {};
-    if (body.name != null) data.name = body.name;
-    if (body.category != null) data.category = body.category;
-    if (body.description != null) data.description = body.description;
-    if (body.inputSchema != null) data.inputSchema = JSON.stringify(body.inputSchema);
-    if (body.outputSchema != null) data.outputSchema = JSON.stringify(body.outputSchema);
-    if (body.code != null) data.code = body.code;
-    if (body.tests != null) data.tests = body.tests;
-    if (body.tags != null) data.tags = JSON.stringify(body.tags);
-    if (body.standardIds != null) data.standardIds = JSON.stringify(body.standardIds);
+    const data = buildUpdateData(body as Record<string, unknown>);
+    // If name changed but slug not provided, regenerate slug
+    if (data.name && !data.slug) {
+      const base = (data.name as string).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      const existing = await db.skill.findFirst({ where: { slug: { startsWith: base }, id: { not: id } } });
+      data.slug = existing ? `${base}-${Date.now()}` : base;
+    }
     const skill = await db.skill.update({ where: { id }, data });
-    return success({
-      ...skill,
-      inputSchema: JSON.parse(skill.inputSchema),
-      outputSchema: JSON.parse(skill.outputSchema),
-      tags: JSON.parse(skill.tags),
-      standardIds: JSON.parse(skill.standardIds),
-    });
+    return success(parseSkillFields(skill));
   } catch (error) {
     return handleError(error);
   }
@@ -34,12 +48,9 @@ export async function PUT(request: Request, { params }: Params) {
 export async function DELETE(_request: Request, { params }: Params) {
   try {
     const { id } = await params;
-    // Cross-ref check: find Agents that reference this skill
     const agents = await db.agent.findMany({ select: { id: true, name: true, skills: true } });
     const linked = agents.filter(a => JSON.parse(a.skills).includes(id));
-    if (linked.length > 0) {
-      throw Conflict(`Cannot delete: referenced by ${linked.length} agent(s)`);
-    }
+    if (linked.length > 0) throw Conflict(`Cannot delete: referenced by ${linked.length} agent(s)`);
     await db.skill.delete({ where: { id } });
     return success({ success: true });
   } catch (error) {

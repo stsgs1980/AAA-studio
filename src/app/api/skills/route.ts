@@ -2,6 +2,31 @@ import { db } from '@/lib/db';
 import { handleError, created, paginate } from '@/lib/api-error';
 import { skillCreateSchema, paginationSchema } from '@/lib/validations';
 
+/** Generate URL-safe slug from name with uniqueness check */
+async function generateSlug(name: string): Promise<string> {
+  const base = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  let slug = base || 'skill';
+  let suffix = 1;
+  while (await db.skill.findUnique({ where: { slug } })) {
+    slug = `${base}-${suffix++}`;
+  }
+  return slug;
+}
+
+/** Parse JSON string fields for API response */
+function parseSkillFields(s: Record<string, unknown>) {
+  return {
+    ...s,
+    inputSchema: JSON.parse(s.inputSchema as string),
+    outputSchema: JSON.parse(s.outputSchema as string),
+    tags: JSON.parse(s.tags as string),
+    triggers: JSON.parse(s.triggers as string),
+    standardIds: JSON.parse(s.standardIds as string),
+    dependencies: JSON.parse(s.dependencies as string),
+    annotations: JSON.parse(s.annotations as string),
+  };
+}
+
 export async function GET(request: Request) {
   try {
     const url = new URL(request.url);
@@ -12,18 +37,7 @@ export async function GET(request: Request) {
       take: query.pageSize,
       orderBy: { updatedAt: 'desc' },
     });
-    return paginate(
-      skills.map((s) => ({
-        ...s,
-        inputSchema: JSON.parse(s.inputSchema),
-        outputSchema: JSON.parse(s.outputSchema),
-        tags: JSON.parse(s.tags),
-        standardIds: JSON.parse(s.standardIds),
-      })),
-      total,
-      query.page,
-      query.pageSize,
-    );
+    return paginate(skills.map(parseSkillFields), total, query.page, query.pageSize);
   } catch (error) {
     return handleError(error);
   }
@@ -32,26 +46,31 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = skillCreateSchema.parse(await request.json());
+    const slug = body.slug || await generateSlug(body.name);
     const skill = await db.skill.create({
       data: {
         name: body.name,
+        slug,
+        version: body.version ?? '1.0.0',
+        skillId: body.skillId ?? '',
         category: body.category ?? 'general',
         description: body.description ?? '',
+        longDescription: body.longDescription ?? '',
         inputSchema: JSON.stringify(body.inputSchema ?? {}),
         outputSchema: JSON.stringify(body.outputSchema ?? {}),
         code: body.code ?? '',
         tests: body.tests ?? '',
         tags: JSON.stringify(body.tags ?? []),
+        triggers: JSON.stringify(body.triggers ?? []),
         standardIds: JSON.stringify(body.standardIds ?? []),
+        compatibility: body.compatibility ?? 'both',
+        dependencies: JSON.stringify(body.dependencies ?? []),
+        annotations: JSON.stringify(body.annotations ?? {}),
+        author: body.author ?? '',
+        license: body.license ?? 'MIT',
       },
     });
-    return created({
-      ...skill,
-      inputSchema: JSON.parse(skill.inputSchema),
-      outputSchema: JSON.parse(skill.outputSchema),
-      tags: JSON.parse(skill.tags),
-      standardIds: JSON.parse(skill.standardIds),
-    });
+    return created(parseSkillFields(skill));
   } catch (error) {
     return handleError(error);
   }

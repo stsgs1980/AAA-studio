@@ -44,7 +44,13 @@ export async function saveSkillImpl(get: () => { selected: SkillItem | null; fet
   try {
     const res = await fetch(`/api/skills/${sel.id}`, {
       method: "PUT", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code: sel.code, tests: sel.tests, standardIds: sel.standardIds }),
+      body: JSON.stringify({
+        name: sel.name, description: sel.description, longDescription: sel.longDescription,
+        code: sel.code, tests: sel.tests, tags: sel.tags, triggers: sel.triggers,
+        standardIds: sel.standardIds, compatibility: sel.compatibility,
+        dependencies: sel.dependencies, annotations: sel.annotations,
+        author: sel.author, license: sel.license, version: sel.version, skillId: sel.skillId,
+      }),
     });
     if (!res.ok) throw new Error();
     get().fetchSkills();
