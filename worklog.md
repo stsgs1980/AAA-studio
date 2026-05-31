@@ -1061,3 +1061,28 @@ Stage Summary:
 - Full export pipeline: single-file MD + multi-file ZIP
 - Z.ai sandbox compatible: package.json with main entry, keywords, metadata
 - 2 files changed, +97/-2
+---
+Task ID: 1
+Agent: main
+Task: Flow Assistant Wizard — 5-stage guided flow creation
+
+Work Log:
+- Analyzed existing Flow Assistant (4 stages, simplistic generateFlow)
+- Studied Agent Creator 5-step wizard pattern for reference
+- Designed 5-stage wizard: Goal → Architecture → Features → Configuration → Review
+- Implemented 5 files: flow-assistant-data.ts, flow-assistant-generate.ts, flow-assistant-builders.ts, flow-assistant-stages.tsx, flow-assistant.tsx
+- Added 4 architecture types (linear, branching, parallel, router)
+- Added 8 feature toggles (FAQ/RAG, Web Search, API, Memory, Files, Thinking, Transform, Human Approval)
+- Enhanced generateFlow() to produce branching/parallel/router topologies
+- Added configuration stage (name, description, model)
+- Added review stage with summary before generation
+- All files under 150-line lint rule
+- Build successful, pushed f4d7675
+
+Stage Summary:
+- Flow Assistant Wizard upgraded from 4 → 5 stages with much richer flow generation
+- 4 architecture topologies vs previous 1 (linear only)
+- 8 features vs previous 6 (added Transform, Human Approval)
+- Review step prevents premature generation
+- Per-goal system prompts + memory augmentation
+- Error handling added (try/catch with user-visible error)
