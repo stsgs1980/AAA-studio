@@ -1,10 +1,10 @@
 "use client";
 
-import { useCallback, useRef } from "react";
-import { Upload, Link2, Bot, FileText } from "lucide-react";
+import { Link2, Bot, FileText, Upload } from "lucide-react";
 import { cn } from "@stsgs/ui";
 import { useQualityStore } from "../hooks/use-quality-store";
 import type { InputMode } from "../types";
+import { FileUploader } from "./file-uploader";
 
 const MODES: { key: InputMode; icon: typeof FileText; label: string }[] = [
   { key: "text", icon: FileText, label: "Paste Text" },
@@ -14,24 +14,8 @@ const MODES: { key: InputMode; icon: typeof FileText; label: string }[] = [
 ];
 
 export function InputPanel() {
-  const {
-    input, setInputMode, setText, setSourceUrl, setAgentId,
-    loadFile,
-  } = useQualityStore();
-  const fileRef = useRef<HTMLInputElement>(null);
-
-  const handleFile = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        loadFile(reader.result as string, file.name);
-      };
-      reader.readAsText(file);
-    },
-    [loadFile],
-  );
+  const { input, setInputMode, setText, setSourceUrl, setAgentId } =
+    useQualityStore();
 
   return (
     <div className="flex flex-col gap-3">
@@ -65,38 +49,7 @@ export function InputPanel() {
       )}
 
       {/* File mode */}
-      {input.mode === "file" && (
-        <div className="flex flex-col gap-2">
-          <input
-            ref={fileRef}
-            type="file"
-            accept=".txt,.md,.json,.yaml,.yml,.ts,.js,.py,.toml,.cfg"
-            className="hidden"
-            onChange={handleFile}
-          />
-          <button
-            onClick={() => fileRef.current?.click()}
-            className="flex min-h-[280px] w-full flex-col items-center justify-center gap-3 rounded-lg border border-dashed text-muted-foreground transition-colors hover:border-primary hover:text-primary"
-          >
-            <Upload className="h-8 w-8" />
-            <span className="text-sm">
-              {input.fileName
-                ? `Loaded: ${input.fileName}`
-                : "Click to upload a file"}
-            </span>
-            <span className="text-xs text-muted-foreground/60">
-              .txt, .md, .json, .yaml, .ts, .js, .py, .toml
-            </span>
-          </button>
-          {input.text && (
-            <textarea
-              value={input.text}
-              readOnly
-              className="min-h-[200px] w-full resize-none rounded-lg border bg-muted/30 px-3 py-2 text-xs font-mono"
-            />
-          )}
-        </div>
-      )}
+      {input.mode === "file" && <FileUploader />}
 
       {/* URL mode */}
       {input.mode === "url" && (
