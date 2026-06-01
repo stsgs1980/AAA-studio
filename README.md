@@ -115,7 +115,7 @@ The strategic resource inventory that feeds 3A Studio.
 - **Framework**: Next.js 15/16 (App Router), React 19
 - **Language**: TypeScript 5
 - **Styling**: Tailwind CSS 4 + midnight theme (#0D1117 base, #58A6FF accent)
-- **Database**: Prisma ORM + SQLite (local file-based, Neon adapter available but not active)
+- **Database**: Prisma ORM + SQLite (local dev) / PostgreSQL Neon (Vercel deploy)
 - **State**: Zustand
 - **Flow Editor**: @xyflow/react (React Flow v12)
 - **Auth**: jose JWT + Edge middleware + httpOnly cookies
@@ -140,7 +140,8 @@ All cross-entity references validated on delete (409 Conflict if referenced).
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `DATABASE_URL` | Yes | SQLite connection (default: `file:/home/z/my-project/db/custom.db`) |
+| `DATABASE_URL` | Yes | SQLite (local) or PostgreSQL Neon (Vercel) connection |
+| `DIRECT_URL` | Vercel | PostgreSQL direct connection (migrations) |
 | `AUTH_SECRET` | Yes | JWT signing secret (64-char hex) |
 | `ENCRYPTION_KEY` | Yes | AES-256-GCM key for API key encryption (64-char hex) |
 | `ADMIN_USERNAME` | No | Demo login username (default: admin) |
@@ -155,7 +156,7 @@ All cross-entity references validated on delete (409 Conflict if referenced).
 3. No cross-layer imports (`eslint-plugin-3a/no-cross-layer`)
 4. Midnight palette -- consistent dark theme across all screens
 5. Zustand for all shared state
-6. Prisma + SQLite -- single source of truth
+6. Prisma + SQLite/Neon -- single source of truth
 
 ## Documentation
 
