@@ -67,7 +67,7 @@ Additional: Landing page (/), Auth (login/signup/verify/reset/forgot), i18n (EN/
 
 > **Note:** Approvals, Cost Monitor, Analysis, and Comparison screens are planned but not yet implemented (API routes exist for some).
 
-## Monorepo Packages (4)
+## Monorepo Packages (5)
 
 | Package | Purpose |
 |---------|---------|
@@ -75,6 +75,7 @@ Additional: Landing page (/), Auth (login/signup/verify/reset/forgot), i18n (EN/
 | `@stsgs/prompting` | 6-criteria scoring, 10 formulas, 11 frameworks, 14 techniques, intent detection, comparison |
 | `@stsgs/shared` | Core types: Agent, Skill, Standard, Flow, Knowledge, Prompt, Audit |
 | `eslint-plugin-3a` | 4 rules: max-lines (150), max-use-state (3), no-cross-layer, no-unicode-escapes |
+| `verify-docs` | Data-driven README consistency checker with cross-repo validation and plugin system |
 
 ## Agent Typology (10 Patterns)
 

@@ -13,13 +13,14 @@
     "db:migrate": "prisma migrate dev --name init",
     "db:studio": "prisma studio",
     "db:seed": "bun run prisma/seed.ts",
-    "postinstall": "prisma generate",
+    "postinstall": "prisma generate && bun run scripts/install-hooks.ts",
     "vercel-build": "next build",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "type-check": "tsc --noEmit",
-    "verify": "bun run scripts/verify-readme.ts"
+    "verify": "bun run packages/verify-docs/src/cli.ts",
+    "verify:install-hooks": "bun run scripts/install-hooks.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",

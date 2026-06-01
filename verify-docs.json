@@ -1,0 +1,139 @@
+{
+  "readme": "README.md",
+  "checks": [
+    {
+      "name": "Dashboard screens",
+      "source": "custom:screens",
+      "readmePattern": "Screens \\((\\d+)\\)"
+    },
+    {
+      "name": "Prisma models (current)",
+      "source": "file:prisma/schema.prisma",
+      "countPattern": "^model \\w+",
+      "readmePattern": null,
+      "infoOnly": true
+    },
+    {
+      "name": "Formulas",
+      "source": "file:packages/prompting/src/formulas/index.ts",
+      "countPattern": "^\\s+id: \"",
+      "readmePattern": "Formulas \\((\\d+)\\)"
+    },
+    {
+      "name": "Frameworks",
+      "source": "file:packages/prompting/src/frameworks/data.ts",
+      "countPattern": "^\\s+id: \"",
+      "readmePattern": "Frameworks \\((\\d+)\\)"
+    },
+    {
+      "name": "Techniques",
+      "source": "file:packages/prompting/src/techniques/data.ts",
+      "countPattern": "^\\s+id: \"",
+      "readmePattern": "Techniques \\((\\d+)\\)"
+    },
+    {
+      "name": "i18n namespaces",
+      "source": "custom:i18n",
+      "readmePattern": "(\\d+) namespaces"
+    },
+    {
+      "name": "ESLint rules",
+      "source": "file:packages/eslint-plugin/src/index.ts",
+      "countPattern": "\"no-unicode-escapes\"|\"max-lines\"|\"max-use-state\"|\"no-cross-layer\"",
+      "readmePattern": "(\\d+) rules: max-lines"
+    },
+    {
+      "name": "Wiki articles",
+      "source": "glob:src/features/wiki/pages/*.tsx",
+      "readmePattern": "(\\d+) articles"
+    },
+    {
+      "name": "Node types",
+      "source": "file:src/features/flow-editor/nodes/node-registry.ts",
+      "countPattern": "\\{ type: '",
+      "readmePattern": "(\\d+) node types"
+    },
+    {
+      "name": "Edge/connection types",
+      "source": "file:src/lib/validations/flow.ts",
+      "countPattern": "'command'|'sync'|'twin'|'delegate'|'feedback'|'supervise'|'broadcast'",
+      "readmePattern": "(\\d+) edge types"
+    },
+    {
+      "name": "Flow templates",
+      "source": "file:src/features/pipelines/data/flow-templates.ts",
+      "countPattern": "^  id: \"",
+      "readmePattern": "(\\d+) flow templates"
+    },
+    {
+      "name": "Packages",
+      "source": "custom:packages",
+      "readmePattern": "Monorepo Packages \\((\\d+)\\)"
+    },
+    {
+      "name": "Scoring criteria",
+      "source": "file:packages/prompting/src/scoring/index.ts",
+      "countPattern": "^\\s+(\\w+): number;",
+      "countExclude": ["overall"],
+      "readmePattern": "(\\d+)-criteria scoring"
+    },
+    {
+      "name": "Git commits",
+      "source": "git:HEAD",
+      "readmePattern": "AAA-studio \\((\\d+) commits\\)",
+      "tolerance": 5
+    }
+  ],
+  "crossRepo": [
+    {
+      "name": "3a-studio-mas donor models",
+      "repo": "../3a-studio-mas",
+      "source": "file:prisma/schema.prisma",
+      "countPattern": "^model \\w+",
+      "readmePattern": "Prisma Schema \\((\\d+) models\\)",
+      "filePattern": "^model \\w+",
+      "matchAgainst": null
+    },
+    {
+      "name": "StsDev-Wiki formulas",
+      "repo": "../StsDev-Wiki",
+      "source": "file:projects/3a-studio/README.md",
+      "readmePattern": null,
+      "matchAgainst": "Formulas",
+      "filePattern": "extract:Formulas \\((\\d+)\\)"
+    },
+    {
+      "name": "StsDev-Wiki frameworks",
+      "repo": "../StsDev-Wiki",
+      "source": "file:projects/3a-studio/README.md",
+      "readmePattern": null,
+      "matchAgainst": "Frameworks",
+      "filePattern": "extract:Frameworks \\((\\d+)\\)"
+    },
+    {
+      "name": "StsDev-Wiki techniques",
+      "repo": "../StsDev-Wiki",
+      "source": "file:projects/3a-studio/README.md",
+      "readmePattern": null,
+      "matchAgainst": "Techniques",
+      "filePattern": "extract:Techniques \\((\\d+)\\)"
+    },
+    {
+      "name": "StsDev-Wiki donor models",
+      "repo": "../StsDev-Wiki",
+      "source": "file:projects/3a-studio/borrowing-map.md",
+      "readmePattern": null,
+      "matchAgainst": "3a-studio-mas donor models",
+      "filePattern": "extract:Prisma Schema \\((\\d+) модел"
+    },
+    {
+      "name": "StsDev-Wiki commits",
+      "repo": "../StsDev-Wiki",
+      "source": "file:projects/3a-studio/README.md",
+      "readmePattern": null,
+      "matchAgainst": "Git commits",
+      "filePattern": "extract:AAA-studio.*?(\\d+) коммит",
+      "tolerance": 5
+    }
+  ]
+}
