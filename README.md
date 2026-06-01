@@ -4,7 +4,7 @@
 
 IDE for visual multi-agent systems. Build, manage, and monitor AI agent flows with a drag-and-drop editor, prompt evaluation, knowledge base, and standards enforcement -- backed by SQLite (local dev) / PostgreSQL Neon (Vercel deploy).
 
-> **Active repo:** https://github.com/stsgs1980/AAA-studio (214 commits)
+> **Active repo:** https://github.com/stsgs1980/AAA-studio (215 commits)
 > **Canonical source:** https://github.com/stsgs1980/3a-studio-mas (45K LOC, full project)
 > **Frozen repo:** https://github.com/stsgs1980/3a-studio (143 commits, stopped 30.05.2026)
 
