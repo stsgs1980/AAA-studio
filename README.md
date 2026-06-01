@@ -4,7 +4,7 @@
 
 IDE for visual multi-agent systems. Build, manage, and monitor AI agent flows with a drag-and-drop editor, prompt evaluation, knowledge base, and standards enforcement -- all backed by a single PostgreSQL database.
 
-> **Active repo:** https://github.com/stsgs1980/AAA-studio (209+ commits)
+> **Active repo:** https://github.com/stsgs1980/AAA-studio (210 commits)
 > **Canonical source:** https://github.com/stsgs1980/3a-studio-mas (45K LOC, full project)
 > **Frozen repo:** https://github.com/stsgs1980/3a-studio (143 commits, stopped 30.05.2026)
 
@@ -39,7 +39,7 @@ Zai-agent-toolkit (compiled skills export for Z.ai sandbox)
 
 Changed a standard -- reflected everywhere. Created a skill -- assign to agent -- wire into flow -- run pipeline.
 
-## Screens (19+)
+## Screens (19)
 
 | Screen | Route | Description |
 |--------|-------|-------------|
@@ -47,30 +47,32 @@ Changed a standard -- reflected everywhere. Created a skill -- assign to agent -
 | Flow Editor | /editor | 18 node types, ReactFlow, live execution, per-node model + usage tracking |
 | Templates | /templates | 6 flow templates + prompt library, clone to editor |
 | Agents | /agents | CRUD, executions, Skills/Standards EntityPicker, system prompt |
+| Agent Creator | /agent-creator | Guided agent creation wizard |
 | Hierarchy | /hierarchy | Visual parent/child agent graph, 6 edge types |
 | Pipelines | /pipelines | Real flow execution, node-level drill-down |
-| Prompt Studio | /prompt-studio | 5 modules: Write (live scoring) + Formulas (10) + Frameworks (4) + Compare + Intent |
+| Workflows | /workflows | Workflow management and monitoring |
+| Prompt Studio | /prompt-studio | 6 modules: Write (live scoring) + Formulas (11) + Frameworks (11) + Techniques (14) + Compare + Intent |
 | Knowledge Base | /knowledge | Upload, TF-IDF semantic search |
 | Skill Forge | /skills-page | CRUD, code/tests, StandardsPicker, SKILL.md export |
 | Standards Manager | /standards | CRUD, rules editor, cross-ref validation |
 | Audit Log | /audit | JSON-highlighted details, filter by entity |
 | Settings | /settings | Multi-provider LLM, theme/language, key masking |
-| Approvals | /approvals | HITL approval panel, escalation |
+| Tasks | /tasks | Task tracking and management |
 | Testing | /testing | Test runner, judge scoring, metrics |
-| Cost Monitor | /cost | Token/cost tracking |
+| Quality Analyzer | /quality-analyzer | Quality analysis and scoring |
 | Self-Correction | /self-correction | Auto-revision loop |
-| Analysis | /analysis | Multi-agent analysis sessions |
-| Comparison | /comparison | Agent diff, version diff, regression detection |
 | Wiki | /wiki | 14 articles, Ctrl+K drawer |
 
 Additional: Landing page (/), Auth (login/signup/verify/reset/forgot), i18n (EN/RU, 17 namespaces).
+
+> **Note:** Approvals, Cost Monitor, Analysis, and Comparison screens are planned but not yet implemented (API routes exist for some).
 
 ## Monorepo Packages (4)
 
 | Package | Purpose |
 |---------|---------|
 | `@stsgs/ui` | Design tokens (Midnight palette), ThemeProvider, cn utility |
-| `@stsgs/prompting` | 6-criteria scoring, 10 formulas, 4 frameworks, intent detection, comparison |
+| `@stsgs/prompting` | 6-criteria scoring, 11 formulas, 11 frameworks, 14 techniques, intent detection, comparison |
 | `@stsgs/shared` | Core types: Agent, Skill, Standard, Flow, Knowledge, Prompt, Audit |
 | `eslint-plugin-3a` | 4 rules: max-lines (150), max-use-state (3), no-cross-layer, no-unicode-escapes |
 
