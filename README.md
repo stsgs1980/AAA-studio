@@ -2,9 +2,9 @@
 
 **Artificial. Agentic. Architecture.**
 
-IDE for visual multi-agent systems. Build, manage, and monitor AI agent flows with a drag-and-drop editor, prompt evaluation, knowledge base, and standards enforcement -- all backed by a single PostgreSQL database.
+IDE for visual multi-agent systems. Build, manage, and monitor AI agent flows with a drag-and-drop editor, prompt evaluation, knowledge base, and standards enforcement -- backed by SQLite (local dev) / PostgreSQL Neon (Vercel deploy).
 
-> **Active repo:** https://github.com/stsgs1980/AAA-studio (212 commits)
+> **Active repo:** https://github.com/stsgs1980/AAA-studio (214 commits)
 > **Canonical source:** https://github.com/stsgs1980/3a-studio-mas (45K LOC, full project)
 > **Frozen repo:** https://github.com/stsgs1980/3a-studio (143 commits, stopped 30.05.2026)
 
@@ -31,7 +31,7 @@ StsDev-Wiki (solutions, ADR)
   Skill Forge       = skill registry (was 110 folders)
   Prompt Studio     = prompt engineering (was prompting_sts/)
   Flow Editor       = visual orchestration (20 node types, ReactFlow)
-  Knowledge Base    = document search (was ChromaDB, now PostgreSQL)
+  Knowledge Base    = document search (was ChromaDB, now SQLite/PostgreSQL)
   Audit Log         = activity tracking (was session-log)
         |
 Zai-agent-toolkit (compiled skills export for Z.ai sandbox)
@@ -51,7 +51,7 @@ Changed a standard -- reflected everywhere. Created a skill -- assign to agent -
 | Hierarchy | /hierarchy | Visual parent/child agent graph, 7 edge types (command/sync/twin/delegate/feedback/supervise/broadcast) |
 | Pipelines | /pipelines | Real flow execution, node-level drill-down |
 | Workflows | /workflows | Workflow management and monitoring |
-| Prompt Studio | /prompt-studio | 6 modules: Write (live scoring) + Formulas (11) + Frameworks (11) + Techniques (14) + Compare + Intent |
+| Prompt Studio | /prompt-studio | 6 modules: Write (live scoring) + Formulas (10) + Frameworks (11) + Techniques (14) + Compare + Intent |
 | Knowledge Base | /knowledge | Upload, TF-IDF semantic search |
 | Skill Forge | /skills-page | CRUD, code/tests, StandardsPicker, SKILL.md export |
 | Standards Manager | /standards | CRUD, rules editor, cross-ref validation |
@@ -72,7 +72,7 @@ Additional: Landing page (/), Auth (login/signup/verify/reset/forgot), i18n (EN/
 | Package | Purpose |
 |---------|---------|
 | `@stsgs/ui` | Design tokens (Midnight palette), ThemeProvider, cn utility |
-| `@stsgs/prompting` | 6-criteria scoring, 11 formulas, 11 frameworks, 14 techniques, intent detection, comparison |
+| `@stsgs/prompting` | 6-criteria scoring, 10 formulas, 11 frameworks, 14 techniques, intent detection, comparison |
 | `@stsgs/shared` | Core types: Agent, Skill, Standard, Flow, Knowledge, Prompt, Audit |
 | `eslint-plugin-3a` | 4 rules: max-lines (150), max-use-state (3), no-cross-layer, no-unicode-escapes |
 
@@ -101,7 +101,7 @@ The strategic resource inventory that feeds 3A Studio.
 
 | # | Donor | LOC | Status | What to borrow |
 |---|-------|-----|--------|---------------|
-| 1 | [3a-studio-mas](https://github.com/stsgs1980/3a-studio-mas) | 45,249 | SOURCE | Flow Editor (20 nodes), Prisma Schema (26 models), Prompting System, LLM Client, Diagnostics, Pipeline Middleware, Dashboard, Auth, Monorepo packages |
+| 1 | [3a-studio-mas](https://github.com/stsgs1980/3a-studio-mas) | ~45K | SOURCE | Flow Editor (20 nodes), Prisma Schema (36 models), Prompting System, LLM Client, Diagnostics, Pipeline Middleware, Dashboard, Auth, Monorepo packages |
 | 2 | [P-MAS_init](https://github.com/stsgs1980/P-MAS_init) | 54,798 | ARCHIVED | Workflow execution engine, ReactFlow hierarchy v2, Workflow Pipeline UI, 7 edge types, Resilience layer, WebSocket service |
 | 3 | [MVP-Flow-Studio-Pro](https://github.com/stsgs1980/MVP-Flow-Studio-Pro) | 18,193 | ARCHIVED | 6 advanced nodes (Switch/Merge/Loop/Webhook/Variable/DataSource), 26 multi-agent templates, Template Gallery, i18n |
 | 4 | [P-MAS-architector](https://github.com/stsgs1980/P-MAS-architector) | ~81,000 | ACTIVE | Orchestrator, prompt versioning, citation system, executor pipeline, 67 skills |
