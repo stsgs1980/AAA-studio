@@ -4,7 +4,7 @@
 
 IDE for visual multi-agent systems. Build, manage, and monitor AI agent flows with a drag-and-drop editor, prompt evaluation, knowledge base, and standards enforcement -- all backed by a single PostgreSQL database.
 
-> **Active repo:** https://github.com/stsgs1980/AAA-studio (210 commits)
+> **Active repo:** https://github.com/stsgs1980/AAA-studio (211 commits)
 > **Canonical source:** https://github.com/stsgs1980/3a-studio-mas (45K LOC, full project)
 > **Frozen repo:** https://github.com/stsgs1980/3a-studio (143 commits, stopped 30.05.2026)
 
@@ -30,7 +30,7 @@ StsDev-Wiki (solutions, ADR)
   Standards Manager = coding standards (was FRONTEND_STANDARD.md)
   Skill Forge       = skill registry (was 110 folders)
   Prompt Studio     = prompt engineering (was prompting_sts/)
-  Flow Editor       = visual orchestration (18 node types, ReactFlow)
+  Flow Editor       = visual orchestration (20 node types, ReactFlow)
   Knowledge Base    = document search (was ChromaDB, now PostgreSQL)
   Audit Log         = activity tracking (was session-log)
         |
@@ -44,11 +44,11 @@ Changed a standard -- reflected everywhere. Created a skill -- assign to agent -
 | Screen | Route | Description |
 |--------|-------|-------------|
 | Dashboard | /dashboard | KPIs, sparklines, heatmap, timeline -- live from DB, auto-refresh 30s |
-| Flow Editor | /editor | 18 node types, ReactFlow, live execution, per-node model + usage tracking |
+| Flow Editor | /editor | 20 node types (5 AI + 4 Mgmt + 4 Data + 2 Knowledge + 2 Integration + 3 Special), ReactFlow, live execution, per-node model + usage tracking |
 | Templates | /templates | 6 flow templates + prompt library, clone to editor |
 | Agents | /agents | CRUD, executions, Skills/Standards EntityPicker, system prompt |
 | Agent Creator | /agent-creator | Guided agent creation wizard |
-| Hierarchy | /hierarchy | Visual parent/child agent graph, 6 edge types |
+| Hierarchy | /hierarchy | Visual parent/child agent graph, 7 edge types (command/sync/twin/delegate/feedback/supervise/broadcast) |
 | Pipelines | /pipelines | Real flow execution, node-level drill-down |
 | Workflows | /workflows | Workflow management and monitoring |
 | Prompt Studio | /prompt-studio | 6 modules: Write (live scoring) + Formulas (11) + Frameworks (11) + Techniques (14) + Compare + Intent |
@@ -63,7 +63,7 @@ Changed a standard -- reflected everywhere. Created a skill -- assign to agent -
 | Self-Correction | /self-correction | Auto-revision loop |
 | Wiki | /wiki | 14 articles, Ctrl+K drawer |
 
-Additional: Landing page (/), Auth (login/signup/verify/reset/forgot), i18n (EN/RU, 17 namespaces).
+Additional: Landing page (/), Auth (login/signup/verify/reset/forgot), i18n (EN/RU, 7 namespaces).
 
 > **Note:** Approvals, Cost Monitor, Analysis, and Comparison screens are planned but not yet implemented (API routes exist for some).
 
@@ -97,11 +97,11 @@ Phase 3 focuses on types 1-5. These cover the majority of real-world multi-agent
 
 ## Resource Map (6 Donors)
 
-The strategic resource inventory that feeds 3A Studio. See [docs/ROADMAP.md](docs/ROADMAP.md) for dependencies and phases.
+The strategic resource inventory that feeds 3A Studio.
 
 | # | Donor | LOC | Status | What to borrow |
 |---|-------|-----|--------|---------------|
-| 1 | [3a-studio-mas](https://github.com/stsgs1980/3a-studio-mas) | 45,249 | SOURCE | Flow Editor (18 nodes), Prisma Schema (26 models), Prompting System, LLM Client, Diagnostics, Pipeline Middleware, Dashboard, Auth, Monorepo packages |
+| 1 | [3a-studio-mas](https://github.com/stsgs1980/3a-studio-mas) | 45,249 | SOURCE | Flow Editor (20 nodes), Prisma Schema (26 models), Prompting System, LLM Client, Diagnostics, Pipeline Middleware, Dashboard, Auth, Monorepo packages |
 | 2 | [P-MAS_init](https://github.com/stsgs1980/P-MAS_init) | 54,798 | ARCHIVED | Workflow execution engine, ReactFlow hierarchy v2, Workflow Pipeline UI, 6 edge types, Resilience layer, WebSocket service |
 | 3 | [MVP-Flow-Studio-Pro](https://github.com/stsgs1980/MVP-Flow-Studio-Pro) | 18,193 | ARCHIVED | 6 advanced nodes (Switch/Merge/Loop/Webhook/Variable/DataSource), 26 multi-agent templates, Template Gallery, i18n |
 | 4 | [P-MAS-architector](https://github.com/stsgs1980/P-MAS-architector) | ~81,000 | ACTIVE | Orchestrator, prompt versioning, citation system, executor pipeline, 67 skills |
@@ -163,10 +163,8 @@ All cross-entity references validated on delete (409 Conflict if referenced).
 | Doc | Description |
 |-----|-------------|
 | [WORKFLOW.md](WORKFLOW.md) | Full workflow, architecture diagram, roadmap phases |
-| [docs/AGENT_TYPES.md](docs/AGENT_TYPES.md) | 10 agent patterns with templates, comparative matrix |
-| [docs/ROADMAP.md](docs/ROADMAP.md) | 7-item resource map with build order and dependencies |
-| [docs/PROMPTING_MODULE.md](docs/PROMPTING_MODULE.md) | Prompting module status, gap analysis, migration plan |
-| [docs/research/agent-typology-full.md](docs/research/agent-typology-full.md) | Full 700-line research report (7 frameworks, academic refs) |
+
+> **Note:** docs/AGENT_TYPES.md, docs/ROADMAP.md, docs/PROMPTING_MODULE.md, and docs/research/agent-typology-full.md are referenced but not yet created.
 
 ## Deployment
 
