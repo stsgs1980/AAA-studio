@@ -80,16 +80,22 @@ export async function POST(request: Request) {
       ? `Context: ${context}\n\n---\n\nContent to evaluate:\n${text}`
       : text;
 
-    const response = await callLLM({
-      provider: active.provider,
-      model: active.model,
-      messages: [
-        { role: 'system', content: EVAL_SYSTEM_PROMPT },
-        { role: 'user', content: userMessage.slice(0, 30000) },
-      ],
-      temperature: 0.2,
-      maxTokens: 4096,
-    });
+    let response;
+    try {
+      response = await callLLM({
+        provider: active.provider,
+        model: active.model,
+        messages: [
+          { role: 'system', content: EVAL_SYSTEM_PROMPT },
+          { role: 'user', content: userMessage.slice(0, 30000) },
+        ],
+        temperature: 0.2,
+        maxTokens: 4096,
+      });
+    } catch (llmError) {
+      const msg = llmError instanceof Error ? llmError.message : String(llmError);
+      throw BadRequest(`LLM call failed: ${msg}`);
+    }
 
     const content = response.content ?? 'No response from LLM.';
 
