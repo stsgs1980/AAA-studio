@@ -1,0 +1,3 @@
+[submodule "packages/verify-docs"]
+        path = packages/verify-docs
+        url = https://github.com/stsgs1980/verify.git
