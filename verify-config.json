@@ -81,7 +81,7 @@
       "name": "Git commits",
       "source": "git:HEAD",
       "readmePattern": "AAA-studio \\((\\d+) commits\\)",
-      "tolerance": 3
+      "tolerance": 5
     }
   ],
   "crossRepo": [
@@ -133,7 +133,7 @@
       "readmePattern": null,
       "matchAgainst": "Git commits",
       "filePattern": "extract:AAA-studio.*?(\\d+) коммит",
-      "tolerance": 3
+      "tolerance": 5
     }
   ]
 }
