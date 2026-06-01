@@ -4,7 +4,7 @@
 
 IDE for visual multi-agent systems. Build, manage, and monitor AI agent flows with a drag-and-drop editor, prompt evaluation, knowledge base, and standards enforcement -- all backed by a single PostgreSQL database.
 
-> **Active repo:** https://github.com/stsgs1980/AAA-studio (211 commits)
+> **Active repo:** https://github.com/stsgs1980/AAA-studio (212 commits)
 > **Canonical source:** https://github.com/stsgs1980/3a-studio-mas (45K LOC, full project)
 > **Frozen repo:** https://github.com/stsgs1980/3a-studio (143 commits, stopped 30.05.2026)
 
@@ -78,7 +78,7 @@ Additional: Landing page (/), Auth (login/signup/verify/reset/forgot), i18n (EN/
 
 ## Agent Typology (10 Patterns)
 
-Based on cross-framework research (LangChain, CrewAI, AutoGen, Anthropic, OpenAI Agents SDK, Google ADK, Amazon Bedrock). See [docs/AGENT_TYPES.md](docs/AGENT_TYPES.md) for full details.
+Based on cross-framework research (LangChain, CrewAI, AutoGen, Anthropic, OpenAI Agents SDK, Google ADK, Amazon Bedrock).
 
 | # | Pattern | Core Idea | Phase |
 |---|---------|-----------|-------|
@@ -102,7 +102,7 @@ The strategic resource inventory that feeds 3A Studio.
 | # | Donor | LOC | Status | What to borrow |
 |---|-------|-----|--------|---------------|
 | 1 | [3a-studio-mas](https://github.com/stsgs1980/3a-studio-mas) | 45,249 | SOURCE | Flow Editor (20 nodes), Prisma Schema (26 models), Prompting System, LLM Client, Diagnostics, Pipeline Middleware, Dashboard, Auth, Monorepo packages |
-| 2 | [P-MAS_init](https://github.com/stsgs1980/P-MAS_init) | 54,798 | ARCHIVED | Workflow execution engine, ReactFlow hierarchy v2, Workflow Pipeline UI, 6 edge types, Resilience layer, WebSocket service |
+| 2 | [P-MAS_init](https://github.com/stsgs1980/P-MAS_init) | 54,798 | ARCHIVED | Workflow execution engine, ReactFlow hierarchy v2, Workflow Pipeline UI, 7 edge types, Resilience layer, WebSocket service |
 | 3 | [MVP-Flow-Studio-Pro](https://github.com/stsgs1980/MVP-Flow-Studio-Pro) | 18,193 | ARCHIVED | 6 advanced nodes (Switch/Merge/Loop/Webhook/Variable/DataSource), 26 multi-agent templates, Template Gallery, i18n |
 | 4 | [P-MAS-architector](https://github.com/stsgs1980/P-MAS-architector) | ~81,000 | ACTIVE | Orchestrator, prompt versioning, citation system, executor pipeline, 67 skills |
 | 5 | [prompting-v0.0](https://github.com/stsgs1980/prompting-v0.0) | 4,304 | PACKAGE | Pure TS prompting lib: 20 techniques, 11 frameworks, 6-dim scoring, 20 formulas, 12 orchestration patterns |
@@ -115,7 +115,7 @@ The strategic resource inventory that feeds 3A Studio.
 - **Framework**: Next.js 15/16 (App Router), React 19
 - **Language**: TypeScript 5
 - **Styling**: Tailwind CSS 4 + midnight theme (#0D1117 base, #58A6FF accent)
-- **Database**: Prisma ORM + PostgreSQL (Neon)
+- **Database**: Prisma ORM + SQLite (local file-based, Neon adapter available but not active)
 - **State**: Zustand
 - **Flow Editor**: @xyflow/react (React Flow v12)
 - **Auth**: jose JWT + Edge middleware + httpOnly cookies
@@ -140,8 +140,7 @@ All cross-entity references validated on delete (409 Conflict if referenced).
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `DATABASE_URL` | Yes | PostgreSQL connection (pooler) |
-| `DIRECT_URL` | Yes | PostgreSQL direct connection (migrations) |
+| `DATABASE_URL` | Yes | SQLite connection (default: `file:/home/z/my-project/db/custom.db`) |
 | `AUTH_SECRET` | Yes | JWT signing secret (64-char hex) |
 | `ENCRYPTION_KEY` | Yes | AES-256-GCM key for API key encryption (64-char hex) |
 | `ADMIN_USERNAME` | No | Demo login username (default: admin) |
@@ -156,7 +155,7 @@ All cross-entity references validated on delete (409 Conflict if referenced).
 3. No cross-layer imports (`eslint-plugin-3a/no-cross-layer`)
 4. Midnight palette -- consistent dark theme across all screens
 5. Zustand for all shared state
-6. Prisma + Neon -- single source of truth
+6. Prisma + SQLite -- single source of truth
 
 ## Documentation
 
