@@ -42,10 +42,13 @@ function safeRead(filePath: string): string | null {
 }
 
 function countFromSource(source: string, root: string): number | null {
-  // git:HEAD — count commits
+  // git:HEAD — count commits (skip on shallow clone)
   if (source === "git:HEAD") {
-    try { return parseInt(execSync("git rev-list --count HEAD", { cwd: root }).toString().trim(), 10); }
-    catch { return null; }
+    try {
+      const isShallow = execSync("git rev-parse --is-shallow-repository", { cwd: root }).toString().trim();
+      if (isShallow === "true") return null; // skip — shallow clone has incomplete history
+      return parseInt(execSync("git rev-list --count HEAD", { cwd: root }).toString().trim(), 10);
+    } catch { return null; }
   }
 
   // custom:i18n — count unique namespace keys
