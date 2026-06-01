@@ -1277,3 +1277,24 @@ Stage Summary:
 - DB state: 36 tables, 0 records
 - Quality Analyzer: scoring works, Deep Analysis needs LLM provider config on Vercel
 - Standards: 19 analyzed, NOT seeded (quality review pending)
+
+---
+Task ID: 1
+Agent: main
+Task: Fix 400/500 errors on AAA-studio - LLM SDK configuration and server stability
+
+Work Log:
+- Investigated server 500/400 errors: server process was dead (Turbopack crash from earlier session)
+- Found /etc/.z-ai-config exists and is valid (updated by main.py with chatId, token, userId)
+- Tested z-ai-web-dev-sdk directly from Node.js - works correctly
+- Identified race condition: start.sh creates minimal config (baseUrl+apiKey only), then starts dev server and ZAI service in parallel. If dev server starts before main.py enriches config, SDK reads incomplete config → API returns 403
+- Fixed client.ts: replaced permanent SDK failure cache (_zaiSDKAvailable=false) with proper retry logic - now resets _zaiSDK and _zaiSDKInitPromise on failure so next call retries fresh
+- Fixed health check: Z.ai provider uses SDK (internal config), not the public baseUrl. Health check was doing HEAD to public URL which fails. Added filter to skip HEAD check for zai provider
+- Created .zscripts/dev.sh for proper build+start workflow (build with webpack, not turbopack)
+- Rebuilt and verified: health endpoint now returns "healthy", server responding on port 3000
+
+Stage Summary:
+- Fixed: src/lib/llm/client.ts - SDK retry logic (no more permanent ban on failure)
+- Fixed: src/app/api/health/route.ts - skip HEAD check for zai provider
+- Created: .zscripts/dev.sh - build+start workflow for container restarts
+- Server running on :3000, health check returns healthy, LLM SDK operational

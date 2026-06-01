@@ -15,21 +15,19 @@ export async function GET() {
       getActiveProvider(),
     ]);
 
-    // Check health of enabled providers that have a baseUrl
+    // Check health of enabled providers that have a baseUrl.
+    // Z.ai uses the SDK (reads /etc/.z-ai-config at runtime), so a HEAD
+    // check against the public baseUrl is meaningless — skip it.
     const providerChecks = await Promise.all(
       providers
-        .filter(p => p.enabled && p.baseUrl)
+        .filter(p => p.enabled && p.baseUrl && p.id !== 'zai')
         .map(async (p) => {
           try {
             const health = await checkApiHealth(p.baseUrl, 5000);
             return {
-              id: p.id,
-              name: p.name,
-              enabled: p.enabled,
-              healthy: health.healthy,
-              responseTime: health.responseTime,
-              status: health.status,
-              error: health.error,
+              id: p.id, name: p.name, enabled: p.enabled,
+              healthy: health.healthy, responseTime: health.responseTime,
+              status: health.status, error: health.error,
             };
           } catch {
             return {

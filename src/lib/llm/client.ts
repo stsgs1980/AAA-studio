@@ -13,14 +13,14 @@ export interface CallParams {
 
 // ---- Z.ai SDK (sandbox-only, uses SDK directly without API key) ----
 let _zaiSDK: unknown = null;
-let _zaiSDKAvailable: boolean | null = null;
+let _zaiSDKInitPromise: Promise<unknown> | null = null;
 
 async function getZaiSDK() {
-  if (!_zaiSDKAvailable) {
-    const mod = await import('z-ai-web-dev-sdk');
-    _zaiSDK = await (mod.default ?? mod).create();
-    _zaiSDKAvailable = true;
+  if (_zaiSDK) return _zaiSDK as { chat: { completions: { create: (b: unknown) => Promise<unknown> } } };
+  if (!_zaiSDKInitPromise) {
+    _zaiSDKInitPromise = import('z-ai-web-dev-sdk').then(mod => (mod.default ?? mod).create());
   }
+  _zaiSDK = await _zaiSDKInitPromise;
   return _zaiSDK as { chat: { completions: { create: (b: unknown) => Promise<unknown> } } };
 }
 
@@ -63,7 +63,9 @@ export async function callLLM(params: CallParams): Promise<LLMResponse> {
     try {
       return await callZaiSDK(params);
     } catch (sdkError) {
-      _zaiSDKAvailable = false;
+      // Reset SDK cache so next call retries fresh
+      _zaiSDK = null;
+      _zaiSDKInitPromise = null;
       const msg = sdkError instanceof Error ? sdkError.message : String(sdkError);
       throw new Error(
         `Z.ai SDK unavailable (${msg}). ` +
