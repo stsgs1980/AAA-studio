@@ -164,21 +164,22 @@ console.log("\n=== README Verification ===\n");
 let errors = 0;
 
 for (const check of checks) {
-  const icon = check.readmeValue === null
-    ? "?"
-    : check.readmeValue === check.actual
-      ? "OK"
-      : "ERR";
+  // Commits: tolerate ±3 (each push changes count, can't keep exact sync)
+  const isCommits = check.name === "Git commits";
+  const commitOk = isCommits && check.readmeValue !== null
+    && Math.abs(check.actual - check.readmeValue) <= 3;
 
+  const isOk = check.readmeValue === null || check.readmeValue === check.actual || commitOk;
+  const icon = isOk ? "OK" : "ERR";
   const status = check.readmeValue === null
     ? "(not in README)"
-    : check.readmeValue === check.actual
-      ? "MATCH"
+    : isOk
+      ? (commitOk ? `MATCH (±3: code=${check.actual})` : "MATCH")
       : "MISMATCH";
 
   console.log(`[${icon}] ${check.name}: code=${check.actual} readme=${check.readmeValue ?? "-"} ${status}`);
 
-  if (check.readmeValue !== null && check.readmeValue !== check.actual) {
+  if (!isOk) {
     errors++;
     console.log(`     -> Fix: change ${check.readmeValue} to ${check.actual} in README.md`);
   }
