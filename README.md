@@ -4,6 +4,10 @@
 
 IDE for visual multi-agent systems. Build, manage, and monitor AI agent flows with a drag-and-drop editor, prompt evaluation, knowledge base, and standards enforcement -- all backed by a single PostgreSQL database.
 
+> **Active repo:** https://github.com/stsgs1980/AAA-studio (209+ commits)
+> **Canonical source:** https://github.com/stsgs1980/3a-studio-mas (45K LOC, full project)
+> **Frozen repo:** https://github.com/stsgs1980/3a-studio (143 commits, stopped 30.05.2026)
+
 ## Quick Start
 
 ```bash
@@ -35,7 +39,7 @@ Zai-agent-toolkit (compiled skills export for Z.ai sandbox)
 
 Changed a standard -- reflected everywhere. Created a skill -- assign to agent -- wire into flow -- run pipeline.
 
-## Screens (12)
+## Screens (19+)
 
 | Screen | Route | Description |
 |--------|-------|-------------|
@@ -43,7 +47,7 @@ Changed a standard -- reflected everywhere. Created a skill -- assign to agent -
 | Flow Editor | /editor | 18 node types, ReactFlow, live execution, per-node model + usage tracking |
 | Templates | /templates | 6 flow templates + prompt library, clone to editor |
 | Agents | /agents | CRUD, executions, Skills/Standards EntityPicker, system prompt |
-| Hierarchy | /hierarchy | Visual parent/child agent graph |
+| Hierarchy | /hierarchy | Visual parent/child agent graph, 6 edge types |
 | Pipelines | /pipelines | Real flow execution, node-level drill-down |
 | Prompt Studio | /prompt-studio | 5 modules: Write (live scoring) + Formulas (10) + Frameworks (4) + Compare + Intent |
 | Knowledge Base | /knowledge | Upload, TF-IDF semantic search |
@@ -51,8 +55,15 @@ Changed a standard -- reflected everywhere. Created a skill -- assign to agent -
 | Standards Manager | /standards | CRUD, rules editor, cross-ref validation |
 | Audit Log | /audit | JSON-highlighted details, filter by entity |
 | Settings | /settings | Multi-provider LLM, theme/language, key masking |
+| Approvals | /approvals | HITL approval panel, escalation |
+| Testing | /testing | Test runner, judge scoring, metrics |
+| Cost Monitor | /cost | Token/cost tracking |
+| Self-Correction | /self-correction | Auto-revision loop |
+| Analysis | /analysis | Multi-agent analysis sessions |
+| Comparison | /comparison | Agent diff, version diff, regression detection |
+| Wiki | /wiki | 14 articles, Ctrl+K drawer |
 
-Additional: Landing page (/), Auth (login/signup/verify/reset), Wiki (14 articles, Ctrl+K drawer).
+Additional: Landing page (/), Auth (login/signup/verify/reset/forgot), i18n (EN/RU, 17 namespaces).
 
 ## Monorepo Packages (4)
 
@@ -82,21 +93,20 @@ Based on cross-framework research (LangChain, CrewAI, AutoGen, Anthropic, OpenAI
 
 Phase 3 focuses on types 1-5. These cover the majority of real-world multi-agent scenarios.
 
-## Resource Map (7 Items)
+## Resource Map (6 Donors)
 
 The strategic resource inventory that feeds 3A Studio. See [docs/ROADMAP.md](docs/ROADMAP.md) for dependencies and phases.
 
-| # | Resource | Source | Status |
-|---|----------|--------|--------|
-| 1 | 17 coding standards | Zai-agent-toolkit/standards/ | Pending -- Phase 3A (after prompting) |
-| 2 | 12 agent role templates | Zai-agent-toolkit + new type-based | Pending -- Phase 3A |
-| 3 | 20 techniques + 11 frameworks | prompting-v0.0/ | Pending -- Phase 3A (current task) |
-| 4 | WebSocket service | New build | Later -- Phase 2.5 |
-| 5 | Circuit breaker + retry | prompting-v0.0/ + New | Later -- Phase 2.5 |
-| 6 | 110+ skills seed | Zai-agent-toolkit/skills/ | Later -- Phase 3 |
-| 7 | Anti-monolith CLI scanner | New build | Later -- Phase 4 |
+| # | Donor | LOC | Status | What to borrow |
+|---|-------|-----|--------|---------------|
+| 1 | [3a-studio-mas](https://github.com/stsgs1980/3a-studio-mas) | 45,249 | SOURCE | Flow Editor (18 nodes), Prisma Schema (26 models), Prompting System, LLM Client, Diagnostics, Pipeline Middleware, Dashboard, Auth, Monorepo packages |
+| 2 | [P-MAS_init](https://github.com/stsgs1980/P-MAS_init) | 54,798 | ARCHIVED | Workflow execution engine, ReactFlow hierarchy v2, Workflow Pipeline UI, 6 edge types, Resilience layer, WebSocket service |
+| 3 | [MVP-Flow-Studio-Pro](https://github.com/stsgs1980/MVP-Flow-Studio-Pro) | 18,193 | ARCHIVED | 6 advanced nodes (Switch/Merge/Loop/Webhook/Variable/DataSource), 26 multi-agent templates, Template Gallery, i18n |
+| 4 | [P-MAS-architector](https://github.com/stsgs1980/P-MAS-architector) | ~81,000 | ACTIVE | Orchestrator, prompt versioning, citation system, executor pipeline, 67 skills |
+| 5 | [prompting-v0.0](https://github.com/stsgs1980/prompting-v0.0) | 4,304 | PACKAGE | Pure TS prompting lib: 20 techniques, 11 frameworks, 6-dim scoring, 20 formulas, 12 orchestration patterns |
+| 6 | [Flow-Studio-Pro](https://github.com/stsgs1980/Flow-Studio-Pro) | ~750 | ACTIVE | 5 unique nodes (Loop, Delay, Merge, SubAgent, Search) |
 
-**Build order (dependency chain):** 3 (prompting) -> 1 (standards) -> 2 (agent templates) -> 6 (skills) -> rest
+**Warning:** In 3a-studio-mas, `src/lib/prompting/` contains **stubs** (random scoring). Always use `packages/prompting/` which has real heuristic implementations.
 
 ## Tech Stack
 
