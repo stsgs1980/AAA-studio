@@ -110,7 +110,7 @@ The strategic resource inventory that feeds 3A Studio. See [docs/ROADMAP.md](doc
 
 ## Tech Stack
 
-- **Framework**: Next.js 15 (App Router), React 19
+- **Framework**: Next.js 15/16 (App Router), React 19
 - **Language**: TypeScript 5
 - **Styling**: Tailwind CSS 4 + midnight theme (#0D1117 base, #58A6FF accent)
 - **Database**: Prisma ORM + PostgreSQL (Neon)
