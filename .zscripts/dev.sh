@@ -1,7 +1,6 @@
 #!/bin/bash
 # AAA-studio dev script — build with webpack (turbopack can't handle 26K+ LOC),
 # then run production server with auto-restart on crash.
-set -e
 cd /home/z/my-project
 
 LOG="/home/z/my-project/.zscripts/dev.log"
@@ -21,6 +20,7 @@ echo "$(date) [DEV] Starting production server on :3000 with auto-restart..." >>
 echo "$$" > /home/z/my-project/.zscripts/dev.pid
 
 # Auto-restart loop: if next start dies, restart after 3s
+# CRITICAL: no set -e here — the while loop must survive non-zero exits
 while true; do
   npx next start -p 3000 -H 0.0.0.0 >> "$LOG" 2>&1
   EXIT_CODE=$?
