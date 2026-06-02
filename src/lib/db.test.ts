@@ -19,7 +19,7 @@ describe('db module', () => {
       DATABASE_URL: 'file:/tmp/test.db',
     };
     // Dynamic import to pick up new env
-    const mod = vi.importActual<typeof import('@/lib/db')>('@/lib/db');
+    const _mod = vi.importActual<typeof import('@/lib/db')>('@/lib/db');
     // The module creates PrismaClient with the provided URL
     expect(process.env.DATABASE_URL).toBe('file:/tmp/test.db');
   });

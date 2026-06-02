@@ -1,8 +1,8 @@
 // Integration test: Cross-reference validation — Zod schemas + JSON serialization
 
 import { describe, it, expect } from 'vitest';
-import { agentCreateSchema, agentUpdateSchema } from '@/lib/validations/agent';
-import { skillCreateSchema, skillUpdateSchema } from '@/lib/validations/skill';
+import { agentCreateSchema } from '@/lib/validations/agent';
+import { skillCreateSchema } from '@/lib/validations/skill';
 import { standardCreateSchema } from '@/lib/validations/flow';
 
 describe('Cross-reference validation', () => {

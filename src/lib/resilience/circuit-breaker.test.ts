@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from 'vitest';
-import { CircuitBreaker, defaultCircuitBreakerConfig } from './circuit-breaker';
+import { describe, it, expect } from 'vitest';
+import { CircuitBreaker } from './circuit-breaker';
 
 describe('CircuitBreaker', () => {
   it('starts CLOSED', () => {

@@ -108,7 +108,7 @@ Score 0-100 how well the actual output matches the expected. Reply ONLY with JSO
     };
   } catch {
     // Fallback: simple string includes check
-    const expectedStr = JSON.stringify(expected).toLowerCase();
+    const _expectedStr = JSON.stringify(expected).toLowerCase();
     const actualLower = actual.toLowerCase();
     const hasMatch = Object.values(expected).some((v) => actualLower.includes(String(v).toLowerCase()));
     return { score: hasMatch ? 50 : 0, label: hasMatch ? 'partial' : 'fail', reasoning: 'Simple string match fallback', passed: hasMatch };

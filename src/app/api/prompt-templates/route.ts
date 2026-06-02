@@ -1,6 +1,6 @@
 /** Prompt Template API — CRUD + built-in seeding. */
 import { db } from '@/lib/db';
-import { handleError, success, NotFound, BadRequest } from '@/lib/api-error';
+import { handleError, success, BadRequest } from '@/lib/api-error';
 
 const BUILTINS = [
   { name: 'Summarizer', description: 'Condense text into key points', category: 'analysis', content: 'Summarize the following text concisely:', systemPrompt: 'You are a summarization expert. Extract key points and present them clearly.', temperature: 0.3, maxTokens: 2048, nodeType: 'llm', tags: '["summary","condense"]', isBuiltin: true },
@@ -17,7 +17,7 @@ export async function GET() {
   try {
     let templates = await db.promptTemplate.findMany({ orderBy: [{ isBuiltin: 'desc' }, { name: 'asc' }] });
     if (templates.length === 0) {
-      await db.promptTemplate.createMany({ data: BUILTINS as any });
+      await db.promptTemplate.createMany({ data: BUILTINS as Record<string, unknown>[] });
       templates = await db.promptTemplate.findMany({ orderBy: [{ isBuiltin: 'desc' }, { name: 'asc' }] });
     }
     return success(templates.map((t) => ({ ...t, tags: JSON.parse(t.tags), variables: JSON.parse(t.variables ?? '[]') })));

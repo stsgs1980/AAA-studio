@@ -1,7 +1,6 @@
 // Tests for src/middleware.ts -- Auth middleware logic
 
-import { describe, it, expect, vi } from 'vitest';
-import { NextRequest } from 'next/server';
+import { describe, it, expect } from 'vitest';
 
 // We test the middleware logic by checking URL patterns
 // since we can't easily mock Edge runtime crypto

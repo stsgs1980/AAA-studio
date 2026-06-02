@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { tokenize, computeTF, computeIDF, cosineSimilarity, buildSearchIndex, searchIndex } from './tf-idf';
+import { tokenize, computeTF, cosineSimilarity, buildSearchIndex, searchIndex } from './tf-idf';
 
 describe('tokenize', () => {
   it('tokenizes English text', () => {

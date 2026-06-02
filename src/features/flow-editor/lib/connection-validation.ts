@@ -56,7 +56,7 @@ function isFeedbackLoop(
 export function isValidConnection(
   connection: Connection | Edge,
   nodes: Node[],
-  edges?: Array<{ source: string; target: string }>,
+  _edges?: Array<{ source: string; target: string }>,
 ): boolean {
   const sourceId = connection.source;
   const targetId = connection.target;

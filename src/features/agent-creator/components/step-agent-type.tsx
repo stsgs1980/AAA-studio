@@ -3,7 +3,7 @@
 import { useCreatorStore } from "../hooks/use-creator-store";
 import { getSystemPromptTemplates, getAgentRoles } from "@stsgs/prompting";
 import { cn } from "@stsgs/ui";
-import type { AgentType, AgentRole } from "@stsgs/shared";
+import type { AgentType } from "@stsgs/shared";
 
 const templates = getSystemPromptTemplates();
 const roles = getAgentRoles();
@@ -15,7 +15,7 @@ const TYPE_ICONS: Record<string, string> = {
 };
 
 export function StepAgentType() {
-  const { form, setField, applyRole, applyTemplate } = useCreatorStore();
+  const { form, setField, applyRole, applyTemplate: _applyTemplate } = useCreatorStore();
   const selected = templates.find((t) => t.id === form.agentTypeId);
 
   return (

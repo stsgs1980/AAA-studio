@@ -1,6 +1,6 @@
 // Tests for src/lib/crypto.ts -- AES-256-GCM encryption/decryption
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 
 describe('crypto module', () => {
   const TEST_KEY = 'a'.repeat(64); // 64-char hex string = 32 bytes
@@ -47,7 +47,7 @@ describe('crypto module', () => {
   });
 
   it('should handle empty string', async () => {
-    const { encrypt, decrypt } = await import('@/lib/crypto');
+    const { encrypt, decrypt: _decrypt } = await import('@/lib/crypto');
     // AES-GCM on empty string produces IV + tag + empty ciphertext
     // The decrypt fallback returns input as-is if data < IV_LEN + TAG_LEN + 1
     // For empty string encrypt, the output is IV+tag (28 bytes base64) which

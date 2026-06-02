@@ -50,7 +50,7 @@ describe('LLM Types', () => {
     });
 
     it('each provider should have at least one model', () => {
-      for (const [key, provider] of Object.entries(LLM_PROVIDERS)) {
+      for (const [_key, provider] of Object.entries(LLM_PROVIDERS)) {
         expect(provider.models.length).toBeGreaterThan(0);
       }
     });
@@ -68,7 +68,7 @@ describe('LLM Types', () => {
 
   describe('builtinToConfig', () => {
     it('should throw for unknown provider', () => {
-      expect(() => builtinToConfig('nonexistent' as any)).toThrow();
+      expect(() => builtinToConfig('nonexistent' as never)).toThrow();
     });
 
     it('should map provider fields correctly', () => {
