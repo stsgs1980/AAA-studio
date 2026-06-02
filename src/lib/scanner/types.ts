@@ -22,6 +22,8 @@ export interface ParsedSkill {
   hasCodeBlocks: boolean;
   wordCount: number;
   completeness: number;
+  matchedCriteria: string[];
+  missedCriteria: string[];
 }
 
 export interface ParsedStandard {

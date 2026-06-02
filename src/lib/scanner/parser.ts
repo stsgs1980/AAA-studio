@@ -4,6 +4,7 @@
 // ============================================================================
 
 import type { ScannerFile, ParsedSkill, ParsedStandard, ReferenceCheck } from './types';
+import { scoreCompleteness } from './completeness';
 
 // ---- YAML frontmatter ----
 
@@ -50,33 +51,26 @@ export function classifyFile(path: string, content: string): ScannerFile['type']
   return 'other';
 }
 
-// ---- Skill parser ----
-
-const RECOMMENDED_SECTIONS = ['description', 'trigger', 'steps', 'output', 'examples', 'constraints'];
-
 export function parseSkillMarkdown(path: string, content: string): ParsedSkill {
   const fm = parseYamlFrontmatter(content);
   const body = content.replace(/^---\n[\s\S]*?\n---\n?/, '');
   const headings = body.match(/^#{2,3}\s+(.+)$/gm) ?? [];
   const sections = headings.map(h => h.replace(/^#{2,3}\s+/, '').trim());
   const wordCount = body.split(/\s+/).filter(Boolean).length;
-  const found = new Set(sections.map(s => s.toLowerCase()));
-  const completeness = Math.round(
-    (RECOMMENDED_SECTIONS.filter(s => found.has(s)).length / RECOMMENDED_SECTIONS.length) * 100,
-  );
+  const sectionSet = new Set(sections.map(s => s.toLowerCase()));
+  const ctx = { sections: sectionSet, frontmatter: fm, body };
+  const { score: completeness, matched, missed } = scoreCompleteness(ctx);
 
   return {
-    path,
-    name: fm.name ?? null,
-    version: fm.version ?? null,
-    id: fm.id ?? null,
+    path, name: fm.name ?? null, version: fm.version ?? null, id: fm.id ?? null,
     trigger: (fm.trigger?.split(',') ?? []).map(t => t.trim()).filter(Boolean),
-    sections,
-    hasExamples: body.toLowerCase().includes('example'),
-    hasConstraints: body.toLowerCase().includes('constraint') || body.toLowerCase().includes('rule'),
-    hasCodeBlocks: /```/.test(body),
-    wordCount,
-    completeness,
+    sections, completeness, matchedCriteria: matched, missedCriteria: missed,
+    hasExamples: sectionSet.has('examples') || sectionSet.has('example')
+      || sectionSet.has('sample output') || sectionSet.has('demo') || body.includes('```'),
+    hasConstraints: sectionSet.has('constraints') || sectionSet.has('rules')
+      || sectionSet.has('warnings') || sectionSet.has('limitations')
+      || /(?:warning|caution|must|should not|do not)\b/i.test(body),
+    hasCodeBlocks: /```/.test(body), wordCount,
   };
 }
 
