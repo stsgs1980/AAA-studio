@@ -10,7 +10,7 @@ next-env.d.ts
 dev.log
 
 # Sandbox system dirs (not part of repo)
-.zscripts/
+# .zscripts/ is needed in repo for container startup
 /skills/
 upload/
 download/
