@@ -8,6 +8,7 @@ import type {
 } from '@/lib/scanner/types';
 import { classifyFile, parseSkillMarkdown, parseStandardMarkdown, extractReferences, checkReferences } from '@/lib/scanner/parser';
 import { heuristicEvaluation } from '@/lib/scanner/heuristic';
+import { detectAntiPatterns } from '@/lib/scanner/anti-patterns';
 
 const schema = z.object({
   files: z.array(z.object({
@@ -45,7 +46,6 @@ function parseFiles(files: ScannerFile[]): {
   }
   return { skills, standards };
 }
-
 /** Strip markdown fences (```json ... ```) and extract JSON object */
 function extractJSON(raw: string): string {
   const text = raw.trim();
@@ -115,7 +115,6 @@ async function evaluateWithLLM(
     return heuristicEvaluation(structure, skills, standards, references);
   }
 }
-
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -130,6 +129,7 @@ export async function POST(request: Request) {
     const { skills, standards } = parseFiles(typedFiles);
     const rawRefs = extractReferences(typedFiles);
     const references = checkReferences(rawRefs, typedFiles);
+    const antiPatterns = detectAntiPatterns(skills, standards, references);
 
     let evaluation: ScannerEvaluation | null = null;
     if (parsed.data.evaluate) {
@@ -137,7 +137,7 @@ export async function POST(request: Request) {
     }
 
     const report: ScannerReport = {
-      structure, skills, standards, references, evaluation,
+      structure, skills, standards, references, antiPatterns, evaluation,
       timestamp: new Date().toISOString(),
     };
 

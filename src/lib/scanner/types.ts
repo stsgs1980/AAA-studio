@@ -46,6 +46,13 @@ export interface ReferenceCheck {
   targetPath: string | null;
 }
 
+export interface AntiPattern {
+  type: 'inline_dup' | 'unregistered_std' | 'version_drift' | 'missing_examples';
+  severity: 'critical' | 'warning' | 'info';
+  message: string;
+  sources: string[];
+}
+
 export interface StructureSummary {
   totalFiles: number;
   totalSize: number;
@@ -74,6 +81,7 @@ export interface ScannerReport {
   skills: ParsedSkill[];
   standards: ParsedStandard[];
   references: ReferenceCheck[];
+  antiPatterns: AntiPattern[];
   evaluation: ScannerEvaluation | null;
   timestamp: string;
 }

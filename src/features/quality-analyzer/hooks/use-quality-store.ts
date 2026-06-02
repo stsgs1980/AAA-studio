@@ -129,7 +129,7 @@ export const useQualityStore = create<QualityState>((set, get) => ({
       .catch((err) => set((s) => ({
         scannerReport: {
           structure: s.scannerReport?.structure ?? { totalFiles: 0, totalSize: 0, skillsCount: 0, standardsCount: 0, fileTypes: {}, largestFiles: [] },
-          skills: [], standards: [], references: [],
+          skills: [], standards: [], references: [], antiPatterns: [],
           evaluation: {
             overall: 0, grade: 'F',
             dimensions: { completeness: 0, references: 0, consistency: 0, examples: 0, constraints: 0 },

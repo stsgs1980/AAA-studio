@@ -5,6 +5,7 @@ import { Loader2, Scan } from "lucide-react";
 import { useQualityStore } from "../hooks/use-quality-store";
 import { ScannerSkillTable } from "./scanner-skill-table";
 import { ScannerRefList } from "./scanner-ref-list";
+import { ScannerIssues } from "./scanner-issues";
 
 const GRADE_COLORS: Record<string, string> = {
   A: "text-green-500", B: "text-cyan-500", C: "text-amber-500",
@@ -16,10 +17,10 @@ const DIM_LABELS: Record<string, string> = {
   consistency: "Consistency", examples: "Examples", constraints: "Constraints",
 };
 
-type Section = "summary" | "skills" | "references" | "recommendations";
+type Section = "summary" | "skills" | "references" | "issues" | "recommendations";
 
 const SECTION_LABELS: Record<Section, string> = {
-  summary: "Summary", skills: "Skills", references: "References", recommendations: "Recommendations",
+  summary: "Summary", skills: "Skills", references: "References", issues: "Issues", recommendations: "Recommendations",
 };
 
 export function ScannerPanel() {
@@ -50,8 +51,10 @@ export function ScannerPanel() {
   const ev = report.evaluation;
   const gradeColor = ev ? (GRADE_COLORS[ev.grade] ?? "text-muted-foreground") : "";
   const refBroken = report.references.filter((r) => !r.resolved);
+  const apCount = report.antiPatterns?.length ?? 0;
 
   const sections: Section[] = ["summary", "skills", "references"];
+  if (apCount > 0) sections.push("issues");
   if (ev?.recommendations && ev.recommendations.length > 0) sections.push("recommendations");
 
   return (
@@ -72,6 +75,9 @@ export function ScannerPanel() {
             {s === "skills" && <span className="ml-1 text-muted-foreground">({report.skills.length})</span>}
             {s === "references" && refBroken.length > 0 && (
               <span className="ml-1 text-red-400">({refBroken.length})</span>
+            )}
+            {s === "issues" && apCount > 0 && (
+              <span className="ml-1 text-red-400">({apCount})</span>
             )}
           </button>
         ))}
@@ -122,6 +128,9 @@ export function ScannerPanel() {
 
       {/* References */}
       {activeSection === "references" && <ScannerRefList references={report.references} />}
+      {activeSection === "issues" && apCount > 0 && (
+        <ScannerIssues antiPatterns={report.antiPatterns!} />
+      )}
 
       {/* Recommendations */}
       {activeSection === "recommendations" && ev?.recommendations && (
