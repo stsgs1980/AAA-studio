@@ -6,10 +6,8 @@ import type {
   ScannerFile, ScannerReport, ScannerEvaluation,
   StructureSummary, ParsedSkill, ParsedStandard, ReferenceCheck,
 } from '@/lib/scanner/types';
-import {
-  classifyFile, parseSkillMarkdown, parseStandardMarkdown,
-  extractReferences, checkReferences,
-} from '@/lib/scanner/parser';
+import { classifyFile, parseSkillMarkdown, parseStandardMarkdown, extractReferences, checkReferences } from '@/lib/scanner/parser';
+import { heuristicEvaluation } from '@/lib/scanner/heuristic';
 
 const schema = z.object({
   files: z.array(z.object({
@@ -48,22 +46,27 @@ function parseFiles(files: ScannerFile[]): {
   return { skills, standards };
 }
 
+/** Strip markdown fences (```json ... ```) and extract JSON object */
+function extractJSON(raw: string): string {
+  const text = raw.trim();
+  const fenceMatch = text.match(/^```(?:json|JSON)?\s*\n([\s\S]*?)\n```\s*$/);
+  if (fenceMatch) return fenceMatch[1].trim();
+  const first = text.indexOf('{');
+  const last = text.lastIndexOf('}');
+  return (first !== -1 && last > first) ? text.slice(first, last + 1) : text;
+}
+
 async function evaluateWithLLM(
   structure: StructureSummary,
   skills: ParsedSkill[],
   standards: ParsedStandard[],
   references: ReferenceCheck[],
 ): Promise<ScannerEvaluation> {
+  // No LLM configured — use heuristic fallback
   const active = await getActiveProvider();
-  if (!active) throw BadRequest('No LLM provider configured');
-
-  const dataSummary = JSON.stringify({
-    structure, skillsCount: skills.length, standardsCount: standards.length,
-    skills: skills.map(s => ({ name: s.name, completeness: s.completeness, wordCount: s.wordCount })),
-    standards: standards.map(s => ({ name: s.name, id: s.id, severity: s.severity, wordCount: s.wordCount })),
-    references: references.map(r => ({ id: r.id, resolved: r.resolved })),
-    unresolvedCount: references.filter(r => !r.resolved).length,
-  }, null, 2);
+  if (!active) {
+    return heuristicEvaluation(structure, skills, standards, references);
+  }
 
   const systemPrompt = [
     'You are a toolkit quality auditor. Analyze the scanner data and return ONLY valid JSON.',
@@ -73,39 +76,43 @@ async function evaluateWithLLM(
     '"examples":0-100,"constraints":0-100}',
     ',"criticalIssues":["..."],"recommendations":["..."]}',
   ].join('\n');
-
-  const response = await callLLM({
-    provider: active.provider, model: active.model,
-    messages: [
-      { role: 'system', content: systemPrompt },
-      { role: 'user', content: `Scanner data:\n${dataSummary.slice(0, 15000)}` },
-    ],
-    temperature: 0.1,
-    maxTokens: 2048,
-  });
+  const summary = JSON.stringify({
+    structure, skillsCount: skills.length, standardsCount: standards.length,
+    skills: skills.map(s => ({ name: s.name, completeness: s.completeness, wordCount: s.wordCount })),
+    standards: standards.map(s => ({ name: s.name, id: s.id, severity: s.severity, wordCount: s.wordCount })),
+    references: references.map(r => ({ id: r.id, resolved: r.resolved })),
+    unresolvedCount: references.filter(r => !r.resolved).length,
+  }, null, 2);
 
   try {
-    const json = JSON.parse(response.content ?? '{}');
+    const response = await callLLM({
+      provider: active.provider, model: active.model,
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: `Scanner data:\n${summary.slice(0, 15000)}` },
+      ],
+      temperature: 0.1,
+      maxTokens: 2048,
+    });
+
+    const json = JSON.parse(extractJSON(response.content ?? '{}'));
+    const dims = json.dimensions ?? {};
     return {
       overall: Number(json.overall) || 0,
       grade: (['A', 'B', 'C', 'D', 'F'] as const).includes(json.grade) ? json.grade : 'F',
       dimensions: {
-        completeness: Number(json.dimensions?.completeness) || 0,
-        references: Number(json.dimensions?.references) || 0,
-        consistency: Number(json.dimensions?.consistency) || 0,
-        examples: Number(json.dimensions?.examples) || 0,
-        constraints: Number(json.dimensions?.constraints) || 0,
+        completeness: Number(dims.completeness) || 0,
+        references: Number(dims.references) || 0,
+        consistency: Number(dims.consistency) || 0,
+        examples: Number(dims.examples) || 0,
+        constraints: Number(dims.constraints) || 0,
       },
       criticalIssues: Array.isArray(json.criticalIssues) ? json.criticalIssues : [],
       recommendations: Array.isArray(json.recommendations) ? json.recommendations : [],
     };
   } catch {
-    return {
-      overall: 0, grade: 'F',
-      dimensions: { completeness: 0, references: 0, consistency: 0, examples: 0, constraints: 0 },
-      criticalIssues: ['Failed to parse LLM response'],
-      recommendations: [],
-    };
+    // LLM call failed or returned unparseable JSON — fall back to heuristic
+    return heuristicEvaluation(structure, skills, standards, references);
   }
 }
 

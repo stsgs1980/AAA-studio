@@ -22,10 +22,28 @@ function parseYamlFrontmatter(content: string): Record<string, string> {
 
 // ---- File classification ----
 
-export function classifyFile(path: string, _content: string): ScannerFile['type'] {
+export function classifyFile(path: string, content: string): ScannerFile['type'] {
   const lower = path.toLowerCase();
-  if (lower.includes('skill') && lower.endsWith('.md')) return 'skill';
+
+  // --- Standard detection (higher priority) ---
+  // Path-based
   if (lower.includes('std-') || lower.includes('standard')) return 'standard';
+  // Content-based: STD-XXX-NNN pattern anywhere in content
+  if (/STD-[A-Z]+-\d{3}/.test(content)) return 'standard';
+  // Content-based: blockquote header pattern "> ID: STD-"
+  if (/^>\s*ID:\s*STD-/mi.test(content)) return 'standard';
+
+  // --- Skill detection ---
+  // Path-based: must have .md extension
+  if (lower.includes('skill') && lower.endsWith('.md')) return 'skill';
+  // Content-based: YAML frontmatter with common skill fields
+  const fm = parseYamlFrontmatter(content);
+  if (fm && (fm.id || fm.name || fm.trigger) && lower.endsWith('.md')) {
+    // Has frontmatter with skill-like metadata — classify as skill
+    if (fm.trigger || fm.description || fm.steps) return 'skill';
+  }
+
+  // --- Code / Config / Doc / Other ---
   if (/\.(json|yaml|yml|toml|env)$/i.test(lower)) return 'config';
   if (/\.(ts|tsx|js|jsx|py|rs|go)$/i.test(lower)) return 'code';
   if (/\.(md|mdx|txt|rst)$/i.test(lower)) return 'doc';

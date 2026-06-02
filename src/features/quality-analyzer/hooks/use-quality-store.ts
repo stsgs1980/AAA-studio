@@ -126,7 +126,20 @@ export const useQualityStore = create<QualityState>((set, get) => ({
     })
       .then(async (r) => { if (!r.ok) throw new Error(`Scanner ${r.status}`); return r.json(); })
       .then((report) => set({ scannerReport: report, isScanning: false }))
-      .catch(() => set({ isScanning: false }));
+      .catch((err) => set((s) => ({
+        scannerReport: {
+          structure: s.scannerReport?.structure ?? { totalFiles: 0, totalSize: 0, skillsCount: 0, standardsCount: 0, fileTypes: {}, largestFiles: [] },
+          skills: [], standards: [], references: [],
+          evaluation: {
+            overall: 0, grade: 'F',
+            dimensions: { completeness: 0, references: 0, consistency: 0, examples: 0, constraints: 0 },
+            criticalIssues: [`Scanner error: ${err.message}`],
+            recommendations: [],
+          },
+          timestamp: new Date().toISOString(),
+        },
+        isScanning: false,
+      })));
   },
 
   reset: () => set({ input: { ...EVAL_DEFAULTS }, result: null, scannerReport: null }),
