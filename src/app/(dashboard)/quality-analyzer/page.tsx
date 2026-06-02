@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Zap, RotateCcw, Loader2, FileCode, FolderGit2, Brain } from "lucide-react";
+import { Zap, RotateCcw, Loader2, FileCode, FolderGit2, Brain, Trash2 } from "lucide-react";
 import {
   InputPanel, ScorePanel, StandardsPanel, RubricPanel, DeepAnalysisPanel,
   useQualityStore,
@@ -20,6 +20,8 @@ export default function QualityAnalyzerPage() {
   const analyze = useQualityStore((s) => s.analyze);
   const deepAnalyze = useQualityStore((s) => s.deepAnalyze);
   const reset = useQualityStore((s) => s.reset);
+  const clearResults = useQualityStore((s) => s.clearResults);
+  const hasResult = useQualityStore((s) => s.result !== null);
   const { agents, repoFiles, fetching, handleFetchUrl, handleRepoFileSelect, handleLoadAll, handleAgentSelect } = useAgentLoader();
   const { t } = useLanguage();
 
@@ -41,9 +43,16 @@ export default function QualityAnalyzerPage() {
             {t.pages['Evaluate prompts, agents, and configurations']}
           </p>
         </div>
-        <button onClick={reset} className="flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs text-muted-foreground hover:bg-accent">
-          <RotateCcw className="h-3.5 w-3.5" /> {t.common['Reset']}
-        </button>
+        <div className="flex items-center gap-2">
+          {hasResult && (
+            <button onClick={clearResults} className="flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20">
+              <Trash2 className="h-3.5 w-3.5" /> {t.pages['Clear Results']}
+            </button>
+          )}
+          <button onClick={reset} className="flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs text-muted-foreground hover:bg-accent">
+            <RotateCcw className="h-3.5 w-3.5" /> {t.common['Reset']}
+          </button>
+        </div>
       </div>
 
       <div className="flex flex-1 gap-4 min-h-0">

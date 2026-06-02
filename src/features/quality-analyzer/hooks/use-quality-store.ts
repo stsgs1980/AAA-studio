@@ -30,6 +30,7 @@ interface QualityState {
   analyze: () => void;
   deepAnalyze: () => void;
   reset: () => void;
+  clearResults: () => void;
 }
 
 export const useQualityStore = create<QualityState>((set, get) => ({
@@ -72,7 +73,7 @@ export const useQualityStore = create<QualityState>((set, get) => ({
   },
 
   deepAnalyze: () => {
-    const { input } = get();
+    const { input, rubricScenario } = get();
     const text = input.text.trim();
     if (!text) return;
     set({ isDeepAnalyzing: true });
@@ -87,7 +88,7 @@ export const useQualityStore = create<QualityState>((set, get) => ({
 
     fetch('/api/evaluate-deep', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text, context: ctx }),
+      body: JSON.stringify({ text, context: ctx, scenario: rubricScenario }),
     })
       .then(async (r) => { if (!r.ok) throw new Error(`Server ${r.status}: ${(await r.text().catch(() => '')).slice(0, 200)}`); return r.json(); })
       .then((data) => { if (data.analysis) setDeepResult(data.analysis); else if (data.error) setDeepResult(`Error: ${data.error}`); else setDeepResult('Error: Unexpected response from server'); })
@@ -95,4 +96,6 @@ export const useQualityStore = create<QualityState>((set, get) => ({
   },
 
   reset: () => set({ input: { ...EVAL_DEFAULTS }, result: null }),
+
+  clearResults: () => set({ result: null }),
 }));
