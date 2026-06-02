@@ -6,6 +6,7 @@ import {
   EVAL_DEFAULTS,
 } from '../types';
 import { generateSuggestions, checkStandards, evaluateRubric } from '../lib/eval-helpers';
+import type { ScannerReport } from '@/lib/scanner/types';
 
 function fallbackResult(text: string): EvaluationResult {
   const s = scorePrompt(text);
@@ -17,6 +18,8 @@ interface QualityState {
   result: EvaluationResult | null;
   isAnalyzing: boolean;
   isDeepAnalyzing: boolean;
+  isScanning: boolean;
+  scannerReport: ScannerReport | null;
   rubricScenario: RubricScenario;
   rubricThreshold: number;
   setInputMode: (mode: EvaluationInput['mode']) => void;
@@ -26,9 +29,11 @@ interface QualityState {
   setRubricScenario: (s: RubricScenario) => void;
   setRubricThreshold: (t: number) => void;
   loadFile: (content: string, fileName: string) => void;
+  loadFiles: (files: { name: string; content: string; size: number }[]) => void;
   loadAgent: (systemPrompt: string) => void;
   analyze: () => void;
   deepAnalyze: () => void;
+  scannerAnalyze: () => void;
   reset: () => void;
   clearResults: () => void;
 }
@@ -38,6 +43,8 @@ export const useQualityStore = create<QualityState>((set, get) => ({
   result: null,
   isAnalyzing: false,
   isDeepAnalyzing: false,
+  isScanning: false,
+  scannerReport: null,
   rubricScenario: 'prompt',
   rubricThreshold: 6,
 
@@ -50,6 +57,14 @@ export const useQualityStore = create<QualityState>((set, get) => ({
 
   loadFile: (content, fileName) =>
     set((s) => ({ input: { ...s.input, mode: 'file', text: content, fileName } })),
+
+  loadFiles: (files) => {
+    const text = files.map((f) => `=== ${f.name} ===\n${f.content}`).join('\n\n');
+    set((s) => ({
+      input: { ...s.input, mode: 'file', text, fileName: `${files.length} files` },
+    }));
+  },
+
   loadAgent: (systemPrompt) =>
     set((s) => ({ input: { ...s.input, mode: 'agent', text: systemPrompt } })),
 
@@ -80,22 +95,40 @@ export const useQualityStore = create<QualityState>((set, get) => ({
     const ctx = input.mode === 'url' ? `Source: ${input.sourceUrl}`
       : input.mode === 'agent' ? `Agent ID: ${input.agentId}`
       : input.mode === 'file' ? `File: ${input.fileName}` : undefined;
-
     const setDeepResult = (llmAnalysis: string) => set((s) => ({
       result: { ...(s.result ?? fallbackResult(text)), llmAnalysis },
       isDeepAnalyzing: false,
     }));
-
     fetch('/api/evaluate-deep', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text, context: ctx, scenario: rubricScenario }),
     })
-      .then(async (r) => { if (!r.ok) throw new Error(`Server ${r.status}: ${(await r.text().catch(() => '')).slice(0, 200)}`); return r.json(); })
-      .then((data) => { if (data.analysis) setDeepResult(data.analysis); else if (data.error) setDeepResult(`Error: ${data.error}`); else setDeepResult('Error: Unexpected response from server'); })
+      .then(async (r) => { if (!r.ok) throw new Error(`Server ${r.status}`); return r.json(); })
+      .then((data) => setDeepResult(data.analysis ?? 'No analysis returned'))
       .catch((err) => setDeepResult(`Error: ${err.message}`));
   },
 
-  reset: () => set({ input: { ...EVAL_DEFAULTS }, result: null }),
+  scannerAnalyze: () => {
+    const { input } = get();
+    const text = input.text.trim();
+    if (!text) return;
+    set({ isScanning: true, scannerReport: null });
+    const parts = text.split(/^=== (.+) ===$/m).filter((_, i) => i % 2 === 1);
+    const scannerFiles = parts.map((name) => {
+      const idx = text.indexOf(`=== ${name} ===`);
+      const nextIdx = text.indexOf('\n=== ', idx + 1);
+      const content = text.slice(idx + name.length + 6, nextIdx === -1 ? undefined : nextIdx).trim();
+      return { path: name, content, size: new TextEncoder().encode(content).length };
+    });
+    fetch('/api/scanner/analyze', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ files: scannerFiles, evaluate: true }),
+    })
+      .then(async (r) => { if (!r.ok) throw new Error(`Scanner ${r.status}`); return r.json(); })
+      .then((report) => set({ scannerReport: report, isScanning: false }))
+      .catch(() => set({ isScanning: false }));
+  },
 
-  clearResults: () => set({ result: null }),
+  reset: () => set({ input: { ...EVAL_DEFAULTS }, result: null, scannerReport: null }),
+  clearResults: () => set({ result: null, scannerReport: null }),
 }));

@@ -4,4 +4,5 @@ export { ScorePanel } from "./components/score-panel";
 export { StandardsPanel } from "./components/standards-panel";
 export { RubricPanel } from "./components/rubric-panel";
 export { DeepAnalysisPanel } from "./components/deep-analysis-panel";
+export { ScannerPanel } from "./components/scanner-panel";
 export { useQualityStore } from "./hooks/use-quality-store";
