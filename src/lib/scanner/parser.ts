@@ -1,6 +1,11 @@
 import type { ScannerFile, ParsedSkill, ParsedStandard, ReferenceCheck } from './types';
 import { scoreCompleteness } from './completeness';
 
+// ---- Path normalization ----
+function normPath(p: string): string {
+  return p.replace(/^\.\//g, '').replace(/\/+$/g, '').replace(/\\/g, '/');
+}
+
 // ---- YAML frontmatter ----
 function parseYamlFrontmatter(content: string): Record<string, string> {
   const match = content.match(/^---\n([\s\S]*?)\n---/);
@@ -111,11 +116,12 @@ export function extractReferences(files: ScannerFile[]): { id: string; source: s
   const seen = new Set<string>();
   const refs: { id: string; source: string }[] = [];
   for (const file of files) {
+    const src = normPath(file.path);
     let m: RegExpExecArray | null;
     const re = new RegExp(REF_RE.source, REF_RE.flags);
     while ((m = re.exec(file.content)) !== null) {
-      const key = `${m[0]}::${file.path}`;
-      if (!seen.has(key)) { seen.add(key); refs.push({ id: m[0], source: file.path }); }
+      const key = `${m[0]}::${src}`;
+      if (!seen.has(key)) { seen.add(key); refs.push({ id: m[0], source: src }); }
     }
   }
   return refs;
@@ -126,18 +132,24 @@ export function checkReferences(
 ): ReferenceCheck[] {
   const stdMap = new Map<string, string>(), fallback = new Map<string, string>();
   for (const file of allFiles) {
+    const fp = normPath(file.path);
     let m: RegExpExecArray | null;
     const re = new RegExp(REF_RE.source, REF_RE.flags);
     while ((m = re.exec(file.content)) !== null) {
-      if (!fallback.has(m[0])) fallback.set(m[0], file.path);
-      const isStd = file.type === 'standard' || file.path.toLowerCase().includes('/standards/');
-      if (isStd && !stdMap.has(m[0])) stdMap.set(m[0], file.path);
+      if (!fallback.has(m[0])) fallback.set(m[0], fp);
+      const isStd = file.type === 'standard' || fp.toLowerCase().includes('/standards/');
+      if (isStd && !stdMap.has(m[0])) stdMap.set(m[0], fp);
     }
   }
   const tgt = (id: string) => stdMap.get(id) ?? fallback.get(id) ?? null;
+  const seen = new Set<string>();
   return refs.map(r => {
     const tp = tgt(r.id);
-    if (tp === r.source) return null;
-    return { id: r.id, source: r.source, resolved: tp !== null, targetPath: tp };
+    const target = tp ? normPath(tp) : null;
+    if (target === r.source) return null;
+    const key = `${r.id}|${r.source}|${target}`;
+    if (seen.has(key)) return null;
+    seen.add(key);
+    return { id: r.id, source: r.source, resolved: target !== null, targetPath: target };
   }).filter(Boolean) as ReferenceCheck[];
 }
