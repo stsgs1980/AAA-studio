@@ -64,7 +64,9 @@ async function verifyJWT(
 }
 
 export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+  // Normalize: strip trailing slash for consistent matching (trailingSlash: true)
+  let { pathname } = request.nextUrl;
+  pathname = pathname.replace(/\/+$/, '') || '/';
 
   if (isPublic(pathname)) return NextResponse.next();
 
@@ -75,7 +77,7 @@ export async function middleware(request: NextRequest) {
     }
     // Build redirect URL with ONLY the pathname (strip query params from proxy)
     const loginUrl = request.nextUrl.clone();
-    loginUrl.pathname = '/login';
+    loginUrl.pathname = '/login/';
     loginUrl.search = '';
     return NextResponse.redirect(loginUrl);
   }
@@ -86,7 +88,7 @@ export async function middleware(request: NextRequest) {
       return NextResponse.json({ error: 'Session expired' }, { status: 401 });
     }
     const loginUrl = request.nextUrl.clone();
-    loginUrl.pathname = '/login';
+    loginUrl.pathname = '/login/';
     loginUrl.search = '';
     return NextResponse.redirect(loginUrl);
   }
