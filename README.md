@@ -61,7 +61,7 @@ Changed a standard -- reflected everywhere. Created a skill -- assign to agent -
 | Testing | /testing | Test runner, judge scoring, metrics |
 | Quality Analyzer | /quality-analyzer | Quality analysis and scoring |
 | Self-Correction | /self-correction | Auto-revision loop |
-| Wiki | /wiki | 14 articles, Ctrl+K drawer |
+| Wiki | /wiki | 15 articles, Ctrl+K drawer |
 
 Additional: Landing page (/), Auth (login/signup/verify/reset/forgot), i18n (EN/RU, 7 namespaces).
 
