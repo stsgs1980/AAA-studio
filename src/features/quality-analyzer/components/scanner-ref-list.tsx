@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, ChevronRight, Link2, Unlink } from "lucide-react";
+import { ChevronDown, ChevronRight, Link2, Unlink, Copy } from "lucide-react";
 import type { ReferenceCheck } from "@/lib/scanner/types";
 
 export function ScannerRefList({ references }: { references: ReferenceCheck[] }) {
@@ -13,9 +13,11 @@ export function ScannerRefList({ references }: { references: ReferenceCheck[] })
     : references;
   const resolvedCount = references.filter((r) => r.resolved).length;
   const brokenCount = references.length - resolvedCount;
+  const fn = (p: string) => p.split("/").pop() ?? p;
 
-  function fileName(path: string) {
-    return path.split("/").pop() ?? path;
+  function copyRefs() {
+    const lines = filtered.map(r => `${r.id} | ${r.resolved ? 'OK' : 'BROKEN'} | ${r.source}${r.targetPath ? ' -> ' + r.targetPath : ''}`);
+    navigator.clipboard.writeText(`References (${filtered.length})\n${'='.repeat(40)}\n` + lines.join('\n'));
   }
 
   return (
@@ -24,15 +26,24 @@ export function ScannerRefList({ references }: { references: ReferenceCheck[] })
         <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           References ({resolvedCount}/{references.length} resolved)
         </p>
-        <div className="flex gap-1">
+        <div className="flex items-center gap-2">
           <button
-            onClick={() => setFilter("all")}
-            className={`px-2 py-0.5 rounded text-[10px] ${filter === "all" ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground"}`}
-          >All</button>
-          <button
-            onClick={() => setFilter("broken")}
-            className={`px-2 py-0.5 rounded text-[10px] ${filter === "broken" ? "bg-red-500/20 text-red-400" : "text-muted-foreground hover:text-foreground"}`}
-          >Broken ({brokenCount})</button>
+            onClick={copyRefs}
+            className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] text-muted-foreground hover:text-foreground hover:bg-muted/50"
+            title="Copy reference list"
+          >
+            <Copy className="h-3 w-3" />Copy
+          </button>
+          {brokenCount > 0 && (<>
+            <button
+              onClick={() => setFilter("all")}
+              className={`px-2 py-0.5 rounded text-[10px] ${filter === "all" ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+            >All</button>
+            <button
+              onClick={() => setFilter("broken")}
+              className={`px-2 py-0.5 rounded text-[10px] ${filter === "broken" ? "bg-red-500/20 text-red-400" : "text-muted-foreground hover:text-foreground"}`}
+            >Broken ({brokenCount})</button>
+          </>)}
         </div>
       </div>
 
@@ -52,7 +63,7 @@ export function ScannerRefList({ references }: { references: ReferenceCheck[] })
                 <span className={ref.resolved ? "text-foreground" : "text-red-400 font-medium"}>
                   {ref.id}
                 </span>
-                <span className="text-muted-foreground truncate ml-1">in {fileName(ref.source)}</span>
+                <span className="text-muted-foreground truncate ml-1">in {fn(ref.source)}</span>
               </button>
               {isExpanded && (
                 <div className="ml-6 mb-1 rounded bg-muted/30 px-2 py-1 text-[10px] text-muted-foreground space-y-0.5">

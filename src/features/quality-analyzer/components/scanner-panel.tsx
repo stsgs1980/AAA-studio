@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Loader2, Scan } from "lucide-react";
+import { Loader2, Scan, Copy } from "lucide-react";
 import { useQualityStore } from "../hooks/use-quality-store";
 import { ScannerSkillTable } from "./scanner-skill-table";
 import { ScannerRefList } from "./scanner-ref-list";
@@ -27,6 +27,7 @@ export function ScannerPanel() {
   const report = useQualityStore((s) => s.scannerReport);
   const isScanning = useQualityStore((s) => s.isScanning);
   const [activeSection, setActiveSection] = useState<Section>("summary");
+  const [copiedRecs, setCopiedRecs] = useState(false);
 
   if (isScanning) {
     return (
@@ -52,14 +53,12 @@ export function ScannerPanel() {
   const gradeColor = ev ? (GRADE_COLORS[ev.grade] ?? "text-muted-foreground") : "";
   const refBroken = report.references.filter((r) => !r.resolved);
   const apCount = report.antiPatterns?.length ?? 0;
-
   const sections: Section[] = ["summary", "skills", "references"];
   if (apCount > 0) sections.push("issues");
   if (ev?.recommendations && ev.recommendations.length > 0) sections.push("recommendations");
 
   return (
     <div className="flex flex-col gap-3">
-      {/* Section tabs */}
       <div className="flex gap-1 border-b pb-1">
         {sections.map((s) => (
           <button
@@ -84,8 +83,7 @@ export function ScannerPanel() {
       </div>
 
       {/* Summary */}
-      {activeSection === "summary" && (
-        <>
+      {activeSection === "summary" && (<>
           <div className="rounded-lg border bg-muted/20 px-4 py-3">
             <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
               Scanner Report
@@ -123,19 +121,22 @@ export function ScannerPanel() {
         </>
       )}
 
-      {/* Skills table */}
       {activeSection === "skills" && <ScannerSkillTable skills={report.skills} />}
-
-      {/* References */}
       {activeSection === "references" && <ScannerRefList references={report.references} />}
-      {activeSection === "issues" && apCount > 0 && (
-        <ScannerIssues antiPatterns={report.antiPatterns!} />
-      )}
+      {activeSection === "issues" && apCount > 0 && <ScannerIssues antiPatterns={report.antiPatterns!} />}
 
       {/* Recommendations */}
       {activeSection === "recommendations" && ev?.recommendations && (
         <div className="rounded-lg border bg-background px-4 py-3">
-          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Recommendations</p>
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Recommendations</p>
+            <button onClick={() => {
+              navigator.clipboard.writeText("Recommendations\n" + "=".repeat(30) + "\n" + ev.recommendations!.map((r, i) => `${i + 1}. ${r}`).join("\n"));
+              setCopiedRecs(true); setTimeout(() => setCopiedRecs(false), 2000);
+            }} className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] text-muted-foreground hover:text-foreground hover:bg-muted/50">
+              <Copy className="h-3 w-3" />{copiedRecs ? "Copied!" : "Copy"}
+            </button>
+          </div>
           <ul className="space-y-1">
             {ev.recommendations.map((r, i) => (
               <li key={i} className="text-xs text-muted-foreground">• {r}</li>
