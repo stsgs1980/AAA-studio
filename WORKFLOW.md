@@ -111,18 +111,26 @@ Zai-agent-toolkit (скомпилированные скиллы для Z.ai san
 | ZIP Archive #2 | 8.4 | PASS | 9 | 9 | 9 | 4 |
 | Project Folder | 8.4 | PASS | 9 | 9 | 9 | 6 |
 
-**Pattern:** Examples consistently lowest (4-6/10). All other dimensions score 9+. QA performs static text analysis only — no execution testing.
+**Pattern:** Examples consistently lowest (4-6/10). All other dimensions 9+. QA performs static text analysis only — format-dependent parsing.
+
+**Next step:** Epic 4 (Agent-Scanner) — QA evolves into agent with tools, decoupled from format. Test on zai-agent-toolkit (110+ skills) before building more metrics.
+
+### Key Decisions (June 2026)
+
+1. **No separate wireframe build** — P-MAS-architector wireframe = target spec for AAA-studio QA, NOT a separate project
+2. **QA becomes agent with tools** — instead of hardcoding parsers, use agent with read_file/grep/compare tools (format-agnostic)
+3. **Real data first** — test on real toolkit (110+ skills) BEFORE building Epic 5 metrics
 
 ### P-MAS Extraction (from 5 architecture documents)
 
 Extracted and documented in `docs/P-MAS-EXTRACTION-FOR-AAA-STUDIO.md`:
 
-- **9 quality metrics + A-F scoring** — enhance Deep Analysis rubric
-- **7 anti-pattern detectors** — new analysis module
-- **VRS (verifier + rubric dual scoring)** — deterministic + LLM layers
-- **Skill Classification (5 axes)** — for agent analysis mode
-- **Standard Classification (4 types)** — TECHNICAL/MANAGEMENT/COMPLIANCE/GUIDANCE
-- **3-phase roadmap** — Monolith -> Separation -> Full MAS
+- **9 quality metrics + A-F scoring** — Epic 5 (SonarMAS)
+- **7 anti-pattern detectors** — Epic 5
+- **VRS (verifier + rubric dual scoring)** — Epic 4 (agent-scanner)
+- **Skill Classification (5 axes)** — Epic 5
+- **Standard Classification (4 types)** — Epic 5
+- **Agent-Scanner approach** — Epic 4 (replaces static parsing with tool-using agent)
 
 Discarded: "Правила генерации каталога" (project-specific).
 
@@ -212,16 +220,33 @@ Discarded: "Правила генерации каталога" (project-specifi
 - [ ] Wiki -> синхронизация с GitHub Wiki
 - [ ] Prompt Studio -> экспорт промптов в разные форматы
 
-### Phase 4 — Production + Deferred Agent Types
+### Phase 4 — Agent-Scanner (Epic 4) 🔥 CURRENT
+
+> **Key insight:** QA is format-dependent (static text parsing). Agent with tools (read_file, grep, compare) works on ANY toolkit, agent, or format.
+
+- [ ] 4.1 Smoke test: QA on zai-agent-toolkit (110+ skills) — see what breaks
+- [ ] 4.2 Define agent tools for scanner (read_file, list_dir, grep, compare)
+- [ ] 4.3 Build scanner agent — flow with tools in Flow Editor
+- [ ] 4.4 Wire scanner into Quality Analyzer UI (replaces evaluate-deep)
+- [ ] 4.5 Add cross-reference checking (skill mentions standard -> exists?)
+- [ ] 4.6 Re-test on toolkit: static QA vs agent-scanner — data drives Epic 5
+
+### Phase 5 — SonarMAS: 9-Metric Quality Engine (Epic 5)
+
+> **Depends on Epic 4 findings.** From P-MAS wireframe Tab Quality.
+
+- [ ] 5.1 9-metric weighted scoring engine (Skill Completeness, Standard Coverage, Cross-Ref Integrity, Anti-Pattern Score, Version Consistency, Doc Freshness, Test Coverage, Registry Alignment, Conflict Resolution)
+- [ ] 5.2 Grade A-F badge + Radar chart
+- [ ] 5.3 7 anti-pattern detectors (Tab Issues)
+- [ ] 5.4 Skill Classification (5 axes) + Standard Classification (4 types)
+
+### Phase 6 — Production + Advanced Agent Types
 
 - [ ] Multi-user auth (не demo admin/admin)
 - [ ] RBAC (roles/permissions)
 - [ ] Versioning для standards + skills
 - [ ] API rate limiting
-- [ ] Monitoring/logging
-- [ ] ReAct agent type (Phase 4)
-- [ ] Plan-and-Execute agent type (Phase 4)
-- [ ] Prompt Chaining agent type (Phase 4)
+- [ ] ReAct, Plan-and-Execute, Prompt Chaining agent types
 
 ### ⏸ Explicitly Deferred
 

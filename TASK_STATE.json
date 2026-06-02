@@ -3,10 +3,12 @@
     "project": "AAA-studio",
     "repo": "https://github.com/stsgs1980/AAA-studio",
     "branch": "main",
-    "lastCommit": "99f7ec4",
-    "lastUpdated": "2026-06-03T12:00:00Z",
-    "sessionCount": 5
+    "lastCommit": "56007c8",
+    "lastUpdated": "2026-06-03T14:30:00Z",
+    "sessionCount": 6
   },
+
+  "strategy": "Agent-Scanner: Quality Analyzer evolves from static text analysis into an agent with tools (read_file, list_dir, grep, compare). This decouples QA from format — works on any toolkit, any agent, any structure. Wireframe (P-MAS-architector v3) = end-state spec, NOT a separate project. AAA-studio IS the wireframe, built in phases.",
 
   "roadmap": [
     {
@@ -48,54 +50,40 @@
     },
     {
       "id": "epic-4",
-      "name": "Flow Assistant — Cross-functional Connections",
+      "name": "Agent-Scanner — QA becomes an agent with tools",
       "status": "PENDING",
+      "vision": "Quality Analyzer evolves from static text analysis into an agent with tools (read_file, list_dir, grep, compare, exec). This decouples QA from input format — works on any toolkit, any agent, any structure. Not format-dependent, but context-aware.",
       "tasks": [
-        { "id": "4.1", "title": "Fix Human-in-Loop handle bug", "status": "PENDING" },
-        { "id": "4.2", "title": "LLM Provider from DB to StageConfig", "status": "PENDING", "depends": ["4.1"] },
-        { "id": "4.3", "title": "System Prompts from @stsgs/prompting", "status": "PENDING", "depends": ["4.2"] },
-        { "id": "4.4", "title": "Skills -> tools integration", "status": "PENDING", "depends": ["4.3"] },
-        { "id": "4.5", "title": "Knowledge -> RAG collections", "status": "PENDING", "depends": ["4.3"] },
-        { "id": "4.6", "title": "Agents -> reuse in Flow Editor", "status": "PENDING", "depends": ["4.3"] }
+        { "id": "4.1", "title": "Smoke test: run current QA on zai-agent-toolkit (110+ skills)", "status": "PENDING", "notes": "Clone toolkit, feed to QA via ZIP/GitHub, see what breaks. Real data > roadmap fantasy." },
+        { "id": "4.2", "title": "Define agent tools for scanner (read_file, list_dir, grep, compare)", "status": "PENDING", "depends": ["4.1"], "notes": "Tool definitions for the scanning agent. Based on 4.1 findings." },
+        { "id": "4.3", "title": "Build scanner agent — flow with tools in Flow Editor", "status": "PENDING", "depends": ["4.2"], "notes": "Flow: Input -> read_file x N -> grep patterns -> LLM analysis -> output. Executed via existing Flow Engine." },
+        { "id": "4.4", "title": "Wire scanner flow into Quality Analyzer UI", "status": "PENDING", "depends": ["4.3"], "notes": "QA page triggers scanner flow instead of /api/evaluate-deep. Shows results in existing panels." },
+        { "id": "4.5", "title": "Add cross-reference checking (files reference each other)", "status": "PENDING", "depends": ["4.4"], "notes": "Agent compares: skill mentions standard X -> does standard X exist? -> is it registered?" },
+        { "id": "4.6", "title": "Re-test on zai-agent-toolkit — compare static QA vs agent-scanner", "status": "PENDING", "depends": ["4.5"], "notes": "Side-by-side: current QA score vs agent-scanner score on same toolkit. Data drives next steps." }
       ]
     },
     {
       "id": "epic-5",
-      "name": "Enhanced QA — Anti-Patterns & Verifier Layer",
+      "name": "SonarMAS — 9-Metric Quality Engine (wireframe Tab Quality)",
       "status": "PENDING",
+      "notes": "Depends on Epic 4 findings. Data from 4.6 determines what to build. From P-MAS wireframe: 9 metrics, A-F grade, radar chart.",
       "tasks": [
-        { "id": "5.1", "title": "Add Verifier Layer (5 deterministic checks) to evaluate-deep", "status": "PENDING", "notes": "hasSections, hasExamples, hasConstraints, hasSpecificCommands, meetsLengthStandards" },
-        { "id": "5.2", "title": "Show Verifier Rate next to LLM Score in DeepAnalysisPanel", "status": "PENDING", "depends": ["5.1"] },
-        { "id": "5.3", "title": "Add Grade A-F badge in DeepAnalysisPanel", "status": "PENDING", "depends": ["5.1"] },
-        { "id": "5.4", "title": "Implement 7 anti-pattern detectors", "status": "PENDING", "notes": "Inline Duplication, Unregistered Reference, Version Mismatch, Inconsistent Status, Missing Conflict, Template Without Refs, Rule Parameter Differs" },
-        { "id": "5.5", "title": "Standard Type classification (TECHNICAL/MANAGEMENT/COMPLIANCE/GUIDANCE)", "status": "PENDING" }
-      ]
-    },
-    {
-      "id": "epic-6",
-      "name": "Advanced QA — 9-Metric Scoring & Radar Chart",
-      "status": "PENDING",
-      "tasks": [
-        { "id": "6.1", "title": "Implement 9-metric weighted scoring engine", "status": "PENDING", "notes": "Reference Integrity, Registry Accuracy, Version Consistency, SSoT Coverage, etc." },
-        { "id": "6.2", "title": "Add Radar chart visualization (recharts)", "status": "PENDING", "depends": ["6.1"] },
-        { "id": "6.3", "title": "Skill Classification (5 axes) for agent analysis", "status": "PENDING", "notes": "Interaction Type, Functional Role, Safety Level, Activation Mode, I/O Type" },
-        { "id": "6.4", "title": "Guardian as separate /api/audit endpoint", "status": "PENDING", "notes": "Evidence chain: input hash + timestamp + result" }
+        { "id": "5.1", "title": "Implement 9-metric weighted scoring engine", "status": "PENDING", "notes": "Skill Completeness, Standard Coverage, Cross-Ref Integrity, Anti-Pattern Score, Version Consistency, Doc Freshness, Test Coverage, Registry Alignment, Conflict Resolution" },
+        { "id": "5.2", "title": "Add Grade A-F badge + Radar chart", "status": "PENDING", "depends": ["5.1"] },
+        { "id": "5.3", "title": "Implement 7 anti-pattern detectors (from wireframe Tab Issues)", "status": "PENDING" },
+        { "id": "5.4", "title": "Skill Classification (5 axes) + Standard Classification (4 types)", "status": "PENDING" }
       ]
     }
   ],
 
   "currentFocus": "epic-4",
   "nextTask": "4.1",
-  "blockers": [
-    {
-      "id": "B1",
-      "description": "Sandbox server process dies between tool calls — cannot do browser testing",
-      "workaround": "Test on Vercel instead."
-    }
-  ],
-  "knownIssues": [
-    "QA Examples dimension consistently low (4-6/10) across all test inputs",
-    "StsDev-Wiki is external repo (stsgs1980 org), not in sandbox — manual sync needed"
+  "blockers": [],
+
+  "keyDecisions": [
+    { "id": "KD-1", "date": "2026-06-03", "title": "No separate wireframe build", "decision": "P-MAS-architector wireframe = target spec for AAA-studio QA, NOT a separate project. Build in phases inside AAA-studio." },
+    { "id": "KD-2", "date": "2026-06-03", "title": "QA becomes agent with tools", "decision": "Instead of hardcoding parsers per format, QA evolves into an agent that uses tools (read_file, grep, compare). Format-agnostic." },
+    { "id": "KD-3", "date": "2026-06-03", "title": "Real data first, roadmap second", "decision": "Test on zai-agent-toolkit (110+ skills) BEFORE building Epic 5. Data drives what metrics/detectors to implement." }
   ],
 
   "qaTestResults": {
@@ -107,26 +95,8 @@
       { "input": "ZIP Archive #2", "score": 8.4, "status": "PASS", "details": "Specificity 9, Structure 9, Constraints 9, Examples 4" },
       { "input": "Project Folder", "score": 8.4, "status": "PASS", "details": "Specificity 9, Structure 9, Constraints 9, Examples 6" }
     ],
-    "pattern": "Examples is the consistently lowest dimension (4-6/10). All other dimensions score 9+.",
-    "conclusion": "Static text analysis works well. Execution testing (Epic 4+) needed for workflow validation."
-  },
-
-  "pMasExtraction": {
-    "source": "TOOLKIT_QUALITY_STANDARD.md, Архитектура MAS, Wiki-структура, P-MAS-architector-v3-wireframe.html",
-    "doc": "docs/P-MAS-EXTRACTION-FOR-AAA-STUDIO.md",
-    "usefulPatterns": [
-      "9 quality metrics + A-F scoring system",
-      "7 anti-pattern detectors (adapted from 10)",
-      "VRS (Verifier-Rubric Score) dual-level evaluation",
-      "Skill Classification (5 axes)",
-      "Standard Classification (4 types)",
-      "3-phase roadmap (Monolith -> Separation -> Full MAS)",
-      "Execution Protocol (evidence chain + HITL trigger)"
-    ],
-    "discarded": [
-      "Правила генерации каталога — project-specific, not reusable",
-      "Full 7-tab dashboard restructure — deferred to Phase 6"
-    ]
+    "pattern": "Examples consistently lowest (4-6/10). All other dimensions 9+. Static text analysis works but limited to format-dependent parsing.",
+    "conclusion": "Next step: agent-scanner approach (Epic 4) to decouple from format. Test on real toolkit (110+ skills) before building more metrics."
   },
 
   "gates": {
@@ -136,17 +106,7 @@
   },
 
   "environment": {
-    "sandbox": {
-      "node": "v22.x",
-      "bun": "1.3.14",
-      "next": "15.5.18",
-      "ram": "8GB",
-      "cpu": "4 cores",
-      "llm": "Z.ai SDK (internal-api.z.ai)"
-    },
-    "vercel": {
-      "llm": "ZAI_API_KEY configured",
-      "build": "Passing"
-    }
+    "sandbox": { "node": "v22.x", "bun": "1.3.14", "next": "15.5.18", "ram": "8GB", "cpu": "4 cores", "llm": "Z.ai SDK (internal-api.z.ai)" },
+    "vercel": { "llm": "ZAI_API_KEY configured", "build": "Passing" }
   }
 }
