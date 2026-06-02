@@ -15,6 +15,7 @@ const pages: Record<string, ComponentType> = {
   "orchestration": lazy(() => import("../pages/orchestration").then((m) => ({ default: m.OrchestrationPage }))),
   "export-formats": lazy(() => import("../pages/export-formats").then((m) => ({ default: m.ExportFormatsPage }))),
   "rest-api": lazy(() => import("../pages/rest-api").then((m) => ({ default: m.RestApiPage }))),
+  "quality-analyzer": lazy(() => import("../pages/quality-analyzer").then((m) => ({ default: m.QualityAnalyzerPage }))),
 };
 
 export function getWikiPage(id: string): ComponentType | null {

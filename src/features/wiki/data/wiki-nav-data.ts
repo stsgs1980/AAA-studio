@@ -28,4 +28,5 @@ export const wikiNavItems: WikiNavItem[] = [
   { id: "orchestration", title: "Orchestration", category: "Workflow Design", keywords: ["coordination", "multi-agent", "error handling", "retry", "governance"] },
   { id: "export-formats", title: "Export Formats", category: "Export & Integration", keywords: ["json", "yaml", "markdown", "download", "export"] },
   { id: "rest-api", title: "REST API", category: "Export & Integration", keywords: ["endpoints", "http", "requests", "authentication", "integration"] },
+  { id: "quality-analyzer", title: "Quality Analyzer", category: "Workflow Design", keywords: ["qa", "testing", "analysis", "scoring", "deep analysis", "rubric", "evaluation"] },
 ];

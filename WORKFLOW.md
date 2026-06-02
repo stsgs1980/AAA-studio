@@ -80,7 +80,7 @@ Zai-agent-toolkit (скомпилированные скиллы для Z.ai san
 | Dashboard | ✅ Живые данные | KPI, sparklines, heatmap, timeline — всё из DB, auto-refresh 30s |
 | Landing | ✅ Полный | Hero, Features, Architecture, Stats, CTA, Footer, Framer Motion |
 | Auth | ✅ Полный | Login/Signup/Verify/Forgot/Reset + Quick Admin button |
-| Wiki | ✅ Полный | 14 статей с реальным контентом, drawer (Ctrl+K), shiki подсветка |
+| Wiki | ✅ Полный | 15 статей с реальным контентом, drawer (Ctrl+K), shiki подсветка |
 | Prompt Studio | ✅ Полный | 5 модулей: Write (live scoring) + Formulas (10) + Frameworks (4) + Compare (A/B) + Intent |
 | Prompt Library | ✅ Полный | 15 шаблонов, 6 категорий, favorites (localStorage), Copy/Clear/Use in Studio |
 | Syntax Highlighting | ✅ Полный | Общий CodeBlock (shiki github-dark), 9 языков, compact/full режимы |
@@ -93,10 +93,38 @@ Zai-agent-toolkit (скомпилированные скиллы для Z.ai san
 | Hierarchy | ✅ Работает | Визуальный граф parent/child |
 | Templates | ✅ Работает | 6 flow templates + prompt library, clone to editor |
 | Audit Log | ✅ Работает | JSON подсветка деталей, фильтры по entity |
-| Quality Analyzer | ✅ Работает | Heuristic scoring (6 dims), LLM Deep Analysis (8 criteria), Standards check, Rubric (4 scenarios), GitHub repo integration |
+| Quality Analyzer | ✅ Работает | Heuristic scoring (6 dims), LLM Deep Analysis (4 rubric criteria), Standards check, GitHub/ZIP/Folder/Text input, Clear Results, 4/4 PASS on Vercel |
 | Settings | ✅ Работает | Multi-provider LLM, theme/language, key masking |
 | i18n | ✅ Работает | en/ru, 17 неймспейсов, интерполяция, sidebar + settings |
 | Tests | ✅ 125 тестов | Unit: 90 (lib, validations, resilience), Integration: 35 (auth chain, agent CRUD, cross-ref, crypto) |
+
+---
+
+## QA Test Results (June 2026)
+
+### Vercel Production — 4/4 PASS
+
+| Input Method | Score | Status | Specificity | Structure | Constraints | Examples |
+|-------------|-------|--------|-------------|-----------|-------------|----------|
+| GitHub URL | 9.2 | PASS | 9 | 9 | 9 | 10 |
+| ZIP Archive #1 | 9.2 | PASS | 9 | 9 | 9 | 10 |
+| ZIP Archive #2 | 8.4 | PASS | 9 | 9 | 9 | 4 |
+| Project Folder | 8.4 | PASS | 9 | 9 | 9 | 6 |
+
+**Pattern:** Examples consistently lowest (4-6/10). All other dimensions score 9+. QA performs static text analysis only — no execution testing.
+
+### P-MAS Extraction (from 5 architecture documents)
+
+Extracted and documented in `docs/P-MAS-EXTRACTION-FOR-AAA-STUDIO.md`:
+
+- **9 quality metrics + A-F scoring** — enhance Deep Analysis rubric
+- **7 anti-pattern detectors** — new analysis module
+- **VRS (verifier + rubric dual scoring)** — deterministic + LLM layers
+- **Skill Classification (5 axes)** — for agent analysis mode
+- **Standard Classification (4 types)** — TECHNICAL/MANAGEMENT/COMPLIANCE/GUIDANCE
+- **3-phase roadmap** — Monolith -> Separation -> Full MAS
+
+Discarded: "Правила генерации каталога" (project-specific).
 
 ---
 

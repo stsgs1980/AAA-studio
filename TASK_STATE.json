@@ -4,8 +4,8 @@
     "repo": "https://github.com/stsgs1980/AAA-studio",
     "branch": "main",
     "lastCommit": "99f7ec4",
-    "lastUpdated": "2026-06-02T15:40:00Z",
-    "sessionCount": 1
+    "lastUpdated": "2026-06-03T12:00:00Z",
+    "sessionCount": 5
   },
 
   "roadmap": [
@@ -14,11 +14,11 @@
       "name": "Production Stability",
       "status": "COMPLETED",
       "tasks": [
-        { "id": "1.1", "title": "Fix Secure cookie flag for proxy", "status": "COMPLETED", "commit": "310a1c2", "evidence": "curl login works through Caddy proxy" },
-        { "id": "1.2", "title": "Include dev.sh in repo", "status": "COMPLETED", "commit": "ea5cde5", "evidence": ".zscripts/dev.sh tracked in git" },
-        { "id": "1.3", "title": "Fix dev.sh auto-restart (remove set -e)", "status": "COMPLETED", "commit": "99f7ec4", "evidence": "while loop survives next start crash" },
-        { "id": "1.4", "title": "Fix Vercel build failure", "status": "COMPLETED", "commit": "78691e2", "evidence": "vercel build passes, 2 fixes: barrel export + line count" },
-        { "id": "1.5", "title": "Fix redirect loop (trailingSlash)", "status": "COMPLETED", "commit": "d68a62a", "evidence": "curl -L --max-redirs 5 returns 200 in 2 redirects" }
+        { "id": "1.1", "title": "Fix Secure cookie flag for proxy", "status": "COMPLETED", "commit": "310a1c2" },
+        { "id": "1.2", "title": "Include dev.sh in repo", "status": "COMPLETED", "commit": "ea5cde5" },
+        { "id": "1.3", "title": "Fix dev.sh auto-restart (remove set -e)", "status": "COMPLETED", "commit": "99f7ec4" },
+        { "id": "1.4", "title": "Fix Vercel build failure", "status": "COMPLETED", "commit": "78691e2" },
+        { "id": "1.5", "title": "Fix redirect loop (trailingSlash)", "status": "COMPLETED", "commit": "d68a62a" }
       ]
     },
     {
@@ -26,20 +26,24 @@
       "name": "Quality Analyzer — Connect to Prompting",
       "status": "COMPLETED",
       "tasks": [
-        { "id": "2.1", "title": "Rewrite evaluate-deep to use @stsgs/prompting rubrics", "status": "COMPLETED", "commit": "ce7bc69", "evidence": "route.ts imports buildEvaluationRubric, supports 4 scenarios" },
-        { "id": "2.2", "title": "Add export UI buttons (3 screens)", "status": "COMPLETED", "commit": "ce7bc69", "evidence": "export-dropdown.tsx, ExportFormatsButton, wiki export" },
-        { "id": "2.3", "title": "QA end-to-end test through browser", "status": "BLOCKED", "blocker": "sandbox server dies between tool calls; Vercel needs ZAI_API_KEY env var" }
+        { "id": "2.1", "title": "Rewrite evaluate-deep to use @stsgs/prompting rubrics", "status": "COMPLETED", "commit": "ce7bc69" },
+        { "id": "2.2", "title": "Add export UI buttons (3 screens)", "status": "COMPLETED", "commit": "ce7bc69" },
+        { "id": "2.3", "title": "QA end-to-end test through browser", "status": "COMPLETED", "evidence": "4/4 input methods PASS on Vercel (GitHub URL 9.2, ZIP 9.2/8.4, Folder 8.4)" },
+        { "id": "2.4", "title": "Add Clear Results button", "status": "COMPLETED", "evidence": "Red trash icon, clears analysis but keeps input" },
+        { "id": "2.5", "title": "Add ZIP archive upload support", "status": "COMPLETED", "evidence": "JSZip client-side extraction, filters node_modules/__pycache__/vendor" },
+        { "id": "2.6", "title": "Fix deepAnalyze scenario pass-through", "status": "COMPLETED", "evidence": "Was hardcoded to 'prompt', now passes store.scenario" }
       ]
     },
     {
       "id": "epic-3",
-      "name": "Quality Analyzer — Verify Analysis Quality",
-      "status": "PENDING",
+      "name": "Quality Analyzer — Verify & Document",
+      "status": "COMPLETED",
       "tasks": [
-        { "id": "3.1", "title": "Configure ZAI_API_KEY on Vercel", "status": "PENDING", "depends": ["2.3"], "notes": "Settings > Environment Variables > ZAI_API_KEY > Redeploy" },
-        { "id": "3.2", "title": "Test evaluate-deep on Vercel with real LLM", "status": "PENDING", "depends": ["3.1"], "notes": "Login > QA > Deep Analysis > verify rubric output format" },
-        { "id": "3.3", "title": "Validate rubric scoring accuracy", "status": "PENDING", "depends": ["3.2"], "notes": "Test all 4 scenarios (prompt/code/content/design), check scores make sense" },
-        { "id": "3.4", "title": "Fix frontend deepAnalyze — pass scenario param", "status": "PENDING", "depends": ["3.2"], "notes": "use-quality-store.ts line 90: body missing scenario field" }
+        { "id": "3.1", "title": "Configure ZAI_API_KEY on Vercel", "status": "COMPLETED", "evidence": "LLM calls working on production" },
+        { "id": "3.2", "title": "Test evaluate-deep on Vercel with real LLM", "status": "COMPLETED", "evidence": "4 tests: 9.2, 9.2, 8.4, 8.4 — all PASS" },
+        { "id": "3.3", "title": "Document QA findings (Examples consistently 4-6/10)", "status": "COMPLETED", "evidence": "docs/P-MAS-EXTRACTION-FOR-AAA-STUDIO.md" },
+        { "id": "3.4", "title": "Extract P-MAS patterns for AAA-studio roadmap", "status": "COMPLETED", "evidence": "9 metrics, 7 anti-patterns, VRS, Skill classification, Grade A-F" },
+        { "id": "3.5", "title": "Add Quality Analyzer page to in-app Wiki", "status": "COMPLETED", "evidence": "wiki-nav-data.ts + page-registry.ts + quality-analyzer.tsx (15th page)" }
       ]
     },
     {
@@ -47,42 +51,88 @@
       "name": "Flow Assistant — Cross-functional Connections",
       "status": "PENDING",
       "tasks": [
-        { "id": "4.1", "title": "Fix Human-in-Loop handle bug", "status": "PENDING", "depends": ["3.4"] },
+        { "id": "4.1", "title": "Fix Human-in-Loop handle bug", "status": "PENDING" },
         { "id": "4.2", "title": "LLM Provider from DB to StageConfig", "status": "PENDING", "depends": ["4.1"] },
         { "id": "4.3", "title": "System Prompts from @stsgs/prompting", "status": "PENDING", "depends": ["4.2"] },
         { "id": "4.4", "title": "Skills -> tools integration", "status": "PENDING", "depends": ["4.3"] },
         { "id": "4.5", "title": "Knowledge -> RAG collections", "status": "PENDING", "depends": ["4.3"] },
         { "id": "4.6", "title": "Agents -> reuse in Flow Editor", "status": "PENDING", "depends": ["4.3"] }
       ]
+    },
+    {
+      "id": "epic-5",
+      "name": "Enhanced QA — Anti-Patterns & Verifier Layer",
+      "status": "PENDING",
+      "tasks": [
+        { "id": "5.1", "title": "Add Verifier Layer (5 deterministic checks) to evaluate-deep", "status": "PENDING", "notes": "hasSections, hasExamples, hasConstraints, hasSpecificCommands, meetsLengthStandards" },
+        { "id": "5.2", "title": "Show Verifier Rate next to LLM Score in DeepAnalysisPanel", "status": "PENDING", "depends": ["5.1"] },
+        { "id": "5.3", "title": "Add Grade A-F badge in DeepAnalysisPanel", "status": "PENDING", "depends": ["5.1"] },
+        { "id": "5.4", "title": "Implement 7 anti-pattern detectors", "status": "PENDING", "notes": "Inline Duplication, Unregistered Reference, Version Mismatch, Inconsistent Status, Missing Conflict, Template Without Refs, Rule Parameter Differs" },
+        { "id": "5.5", "title": "Standard Type classification (TECHNICAL/MANAGEMENT/COMPLIANCE/GUIDANCE)", "status": "PENDING" }
+      ]
+    },
+    {
+      "id": "epic-6",
+      "name": "Advanced QA — 9-Metric Scoring & Radar Chart",
+      "status": "PENDING",
+      "tasks": [
+        { "id": "6.1", "title": "Implement 9-metric weighted scoring engine", "status": "PENDING", "notes": "Reference Integrity, Registry Accuracy, Version Consistency, SSoT Coverage, etc." },
+        { "id": "6.2", "title": "Add Radar chart visualization (recharts)", "status": "PENDING", "depends": ["6.1"] },
+        { "id": "6.3", "title": "Skill Classification (5 axes) for agent analysis", "status": "PENDING", "notes": "Interaction Type, Functional Role, Safety Level, Activation Mode, I/O Type" },
+        { "id": "6.4", "title": "Guardian as separate /api/audit endpoint", "status": "PENDING", "notes": "Evidence chain: input hash + timestamp + result" }
+      ]
     }
   ],
 
-  "currentFocus": "epic-3",
-  "nextTask": "3.1",
+  "currentFocus": "epic-4",
+  "nextTask": "4.1",
   "blockers": [
     {
       "id": "B1",
       "description": "Sandbox server process dies between tool calls — cannot do browser testing",
-      "workaround": "Test on Vercel instead. Add ZAI_API_KEY env var to Vercel project."
-    },
-    {
-      "id": "B2",
-      "description": "Frontend deepAnalyze() doesn't send scenario param to backend",
-      "workaround": "Backend defaults to 'prompt' scenario. Fix in 3.4."
+      "workaround": "Test on Vercel instead."
     }
   ],
-
   "knownIssues": [
-    "Sandbox: background processes from bash tool don't survive between tool calls",
-    "Sandbox: start.sh runs dev.sh but process may be killed by sandbox cleanup",
-    "Vercel: Z.ai SDK unavailable — needs ZAI_API_KEY in environment variables",
-    "QA: deepAnalyze frontend doesn't pass scenario to backend (minor, defaults to prompt)"
+    "QA Examples dimension consistently low (4-6/10) across all test inputs",
+    "StsDev-Wiki is external repo (stsgs1980 org), not in sandbox — manual sync needed"
   ],
+
+  "qaTestResults": {
+    "date": "2026-06-02",
+    "environment": "Vercel Production",
+    "results": [
+      { "input": "GitHub URL", "score": 9.2, "status": "PASS", "details": "Specificity 9, Structure 9, Constraints 9, Examples 10" },
+      { "input": "ZIP Archive #1", "score": 9.2, "status": "PASS", "details": "Specificity 9, Structure 9, Constraints 9, Examples 10" },
+      { "input": "ZIP Archive #2", "score": 8.4, "status": "PASS", "details": "Specificity 9, Structure 9, Constraints 9, Examples 4" },
+      { "input": "Project Folder", "score": 8.4, "status": "PASS", "details": "Specificity 9, Structure 9, Constraints 9, Examples 6" }
+    ],
+    "pattern": "Examples is the consistently lowest dimension (4-6/10). All other dimensions score 9+.",
+    "conclusion": "Static text analysis works well. Execution testing (Epic 4+) needed for workflow validation."
+  },
+
+  "pMasExtraction": {
+    "source": "TOOLKIT_QUALITY_STANDARD.md, Архитектура MAS, Wiki-структура, P-MAS-architector-v3-wireframe.html",
+    "doc": "docs/P-MAS-EXTRACTION-FOR-AAA-STUDIO.md",
+    "usefulPatterns": [
+      "9 quality metrics + A-F scoring system",
+      "7 anti-pattern detectors (adapted from 10)",
+      "VRS (Verifier-Rubric Score) dual-level evaluation",
+      "Skill Classification (5 axes)",
+      "Standard Classification (4 types)",
+      "3-phase roadmap (Monolith -> Separation -> Full MAS)",
+      "Execution Protocol (evidence chain + HITL trigger)"
+    ],
+    "discarded": [
+      "Правила генерации каталога — project-specific, not reusable",
+      "Full 7-tab dashboard restructure — deferred to Phase 6"
+    ]
+  },
 
   "gates": {
     "prePush": "verify-docs (consistency check) + eslint",
     "epicGate": "npx tsc --noEmit && bun run build && bunx verify-docs --ci",
-    "lastPassed": "epic-1"
+    "lastPassed": "epic-3"
   },
 
   "environment": {
@@ -95,7 +145,7 @@
       "llm": "Z.ai SDK (internal-api.z.ai)"
     },
     "vercel": {
-      "llm": "Needs ZAI_API_KEY env var",
+      "llm": "ZAI_API_KEY configured",
       "build": "Passing"
     }
   }
