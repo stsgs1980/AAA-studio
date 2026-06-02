@@ -1,8 +1,3 @@
-// ============================================================================
-// AAA Studio -- Scanner Parser
-// Parses toolkit files: classify, extract skills/standards, check references.
-// ============================================================================
-
 import type { ScannerFile, ParsedSkill, ParsedStandard, ReferenceCheck } from './types';
 import { scoreCompleteness } from './completeness';
 
@@ -87,8 +82,6 @@ export function parseSkillMarkdown(path: string, content: string): ParsedSkill {
   };
 }
 
-// ---- Standard parser ----
-
 const STD_ID_RE = /STD-[A-Z]+-\d{3}/g;
 
 export function parseStandardMarkdown(path: string, content: string): ParsedStandard {
@@ -112,38 +105,39 @@ export function parseStandardMarkdown(path: string, content: string): ParsedStan
   };
 }
 
-// ---- Reference extraction & checking ----
-
-const REF_PATTERN = /\b(STD-[A-Z]+-\d{3}|ZAI-[A-Z]+-\d{3})\b/g;
+const REF_RE = /\b(STD-[A-Z]+-\d{3}|ZAI-[A-Z]+-\d{3})\b/g;
 
 export function extractReferences(files: ScannerFile[]): { id: string; source: string }[] {
+  const seen = new Set<string>();
   const refs: { id: string; source: string }[] = [];
   for (const file of files) {
-    let match: RegExpExecArray | null;
-    const re = new RegExp(REF_PATTERN.source, REF_PATTERN.flags);
-    while ((match = re.exec(file.content)) !== null) {
-      refs.push({ id: match[0], source: file.path });
+    let m: RegExpExecArray | null;
+    const re = new RegExp(REF_RE.source, REF_RE.flags);
+    while ((m = re.exec(file.content)) !== null) {
+      const key = `${m[0]}::${file.path}`;
+      if (!seen.has(key)) { seen.add(key); refs.push({ id: m[0], source: file.path }); }
     }
   }
   return refs;
 }
 
 export function checkReferences(
-  refs: { id: string; source: string }[],
-  allFiles: ScannerFile[],
+  refs: { id: string; source: string }[], allFiles: ScannerFile[],
 ): ReferenceCheck[] {
-  const idToPath = new Map<string, string>();
+  const stdMap = new Map<string, string>(), fallback = new Map<string, string>();
   for (const file of allFiles) {
-    let match: RegExpExecArray | null;
-    const re = new RegExp(REF_PATTERN.source, REF_PATTERN.flags);
-    while ((match = re.exec(file.content)) !== null) {
-      if (!idToPath.has(match[0])) idToPath.set(match[0], file.path);
+    let m: RegExpExecArray | null;
+    const re = new RegExp(REF_RE.source, REF_RE.flags);
+    while ((m = re.exec(file.content)) !== null) {
+      if (!fallback.has(m[0])) fallback.set(m[0], file.path);
+      const isStd = file.type === 'standard' || file.path.toLowerCase().includes('/standards/');
+      if (isStd && !stdMap.has(m[0])) stdMap.set(m[0], file.path);
     }
   }
-  return refs.map(r => ({
-    id: r.id,
-    source: r.source,
-    resolved: idToPath.has(r.id),
-    targetPath: idToPath.get(r.id) ?? null,
-  }));
+  const tgt = (id: string) => stdMap.get(id) ?? fallback.get(id) ?? null;
+  return refs.map(r => {
+    const tp = tgt(r.id);
+    if (tp === r.source) return null;
+    return { id: r.id, source: r.source, resolved: tp !== null, targetPath: tp };
+  }).filter(Boolean) as ReferenceCheck[];
 }
