@@ -65,19 +65,19 @@ export function ScannerSkillTable({ skills }: { skills: ParsedSkill[] }) {
           Skills ({skills.length})
         </p>
         <div className="flex items-center gap-2">
-          {low > 0 && <span className="flex items-center gap-1 text-xs text-amber-500"><AlertTriangle className="h-3 w-3" />{low} low</span>}
-          {noEx > 0 && <span className="text-xs text-muted-foreground">{noEx} no ex</span>}
+          {low > 0 && <span className="flex items-center gap-1 text-xs text-amber-500" title="Skills with completeness < 50%"><AlertTriangle className="h-3 w-3" />{low} low comp</span>}
+          {noEx > 0 && <span className="text-xs text-muted-foreground" title="Skills without examples or code blocks">{noEx} no examples</span>}
           <button onClick={handleCopyAll} className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] text-muted-foreground hover:text-foreground hover:bg-muted/50">
             <Copy className="h-3 w-3" />{copied ? "Copied!" : "Copy all"}
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-[1fr_40px_44px_48px] gap-1 px-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground border-b pb-1 mb-1">
-        <button onClick={() => toggle("name")} className="text-left hover:text-foreground">Name {sortIcon("name")}</button>
-        <button onClick={() => toggle("completeness")} className="text-right hover:text-foreground">Comp {sortIcon("completeness")}</button>
-        <button onClick={() => toggle("wordCount")} className="text-right hover:text-foreground">Words {sortIcon("wordCount")}</button>
-        <span className="text-right">Flags</span>
+      <div className="grid grid-cols-[1fr_40px_44px_56px] gap-1 px-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground border-b pb-1 mb-1">
+        <button onClick={() => toggle("name")} className="text-left hover:text-foreground" title="Skill name (sortable)">Name {sortIcon("name")}</button>
+        <button onClick={() => toggle("completeness")} className="text-right hover:text-foreground" title="Completeness score 0-100 (sortable)">Comp {sortIcon("completeness")}</button>
+        <button onClick={() => toggle("wordCount")} className="text-right hover:text-foreground" title="Word count (sortable)">Words {sortIcon("wordCount")}</button>
+        <span className="text-right" title="E = Examples, C = Constraints, ` = Code blocks">Flags</span>
       </div>
 
       <div className="max-h-[300px] overflow-y-auto space-y-0.5">
@@ -86,7 +86,7 @@ export function ScannerSkillTable({ skills }: { skills: ParsedSkill[] }) {
           const color = skill.completeness >= 80 ? "text-green-500" : skill.completeness >= 50 ? "text-amber-500" : "text-red-500";
           return (
             <div key={skill.path}>
-              <button onClick={() => setExpanded(isExp ? null : skill.path)} className="w-full grid grid-cols-[1fr_40px_44px_48px] gap-1 px-1 py-0.5 rounded hover:bg-muted/50 text-left text-xs">
+              <button onClick={() => setExpanded(isExp ? null : skill.path)} className="w-full grid grid-cols-[1fr_40px_44px_56px] gap-1 px-1 py-0.5 rounded hover:bg-muted/50 text-left text-xs">
                 <span className="flex items-center gap-1 truncate">
                   {isExp ? <ChevronDown className="h-3 w-3 shrink-0" /> : <ChevronRight className="h-3 w-3 shrink-0" />}
                   <span className="truncate">{displayName(skill.path, skill.name)}</span>
@@ -94,9 +94,9 @@ export function ScannerSkillTable({ skills }: { skills: ParsedSkill[] }) {
                 <span className={`text-right font-medium ${color}`}>{skill.completeness}</span>
                 <span className="text-right text-muted-foreground">{skill.wordCount}</span>
                 <div className="flex items-center justify-end gap-0.5">
-                  {skill.hasExamples && <span className="text-green-500 text-[10px]">E</span>}
-                  {skill.hasConstraints && <span className="text-green-500 text-[10px]">C</span>}
-                  {skill.hasCodeBlocks && <span className="text-cyan-400 text-[10px]">`</span>}
+                  {skill.hasExamples && <span className="text-green-500 text-[10px]" title="Has examples">E</span>}
+                  {skill.hasConstraints && <span className="text-green-500 text-[10px]" title="Has constraints">C</span>}
+                  {skill.hasCodeBlocks && <span className="text-cyan-400 text-[10px]" title="Has code blocks">`</span>}
                 </div>
               </button>
               {isExp && (
