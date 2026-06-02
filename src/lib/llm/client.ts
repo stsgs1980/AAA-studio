@@ -12,13 +12,46 @@ export interface CallParams {
 }
 
 // ---- Z.ai SDK (sandbox-only, uses SDK directly without API key) ----
+// Instead of relying on the SDK's built-in config discovery (which can fail
+// due to race conditions or webpack bundling), we read /etc/.z-ai-config
+// ourselves and pass the parsed config to the SDK constructor.
+import { readFile } from 'fs/promises';
+import path from 'path';
+import os from 'os';
+
+const SDK_CONFIG_PATHS = [
+  path.join(process.cwd(), '.z-ai-config'),
+  path.join(os.homedir(), '.z-ai-config'),
+  '/etc/.z-ai-config',
+];
+
 let _zaiSDK: unknown = null;
 let _zaiSDKInitPromise: Promise<unknown> | null = null;
+
+async function loadZaiConfig(): Promise<Record<string, unknown>> {
+  for (const p of SDK_CONFIG_PATHS) {
+    try {
+      const raw = await readFile(p, 'utf-8');
+      const parsed = JSON.parse(raw);
+      if (parsed.baseUrl && parsed.apiKey) return parsed;
+    } catch { /* next */ }
+  }
+  throw new Error(
+    'Configuration file not found or invalid. Please create .z-ai-config in your project, home directory, or /etc.',
+  );
+}
 
 async function getZaiSDK() {
   if (_zaiSDK) return _zaiSDK as { chat: { completions: { create: (b: unknown) => Promise<unknown> } } };
   if (!_zaiSDKInitPromise) {
-    _zaiSDKInitPromise = import('z-ai-web-dev-sdk').then(mod => (mod.default ?? mod).create());
+    _zaiSDKInitPromise = Promise.all([
+      import('z-ai-web-dev-sdk'),
+      loadZaiConfig(),
+    ]).then(([mod, config]) => {
+      const Ctor = mod.default ?? mod;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return new (Ctor as any)(config);
+    });
   }
   _zaiSDK = await _zaiSDKInitPromise;
   return _zaiSDK as { chat: { completions: { create: (b: unknown) => Promise<unknown> } } };
