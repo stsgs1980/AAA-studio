@@ -21,28 +21,43 @@ export const COMPLETENESS_CRITERIA: CompletenessCriterion[] = [
   // 1. Has a purpose/description
   { label: 'description', test: ({ sections, frontmatter }) =>
     sections.has('description') || sections.has('overview') || sections.has('summary')
-      || sections.has('what this skill does') || !!frontmatter.description },
+      || sections.has('what this skill does') || sections.has('purpose')
+      || sections.has('architecture') || sections.has('about')
+      || !!frontmatter.description || !!frontmatter.purpose
+  },
   // 2. Has trigger/when-to-use
   { label: 'trigger', test: ({ sections, frontmatter }) =>
     sections.has('trigger') || sections.has('when to use') || sections.has('use cases')
-      || sections.has('usage') || !!(frontmatter.trigger && frontmatter.trigger.length > 0) },
+      || sections.has('usage') || sections.has('when to activate')
+      || sections.has('when to use this skill')
+      || !!(frontmatter.trigger && frontmatter.trigger.length > 0) },
   // 3. Has steps/instructions/how-to
   { label: 'steps', test: ({ sections }) =>
     sections.has('steps') || sections.has('instructions') || sections.has('how to')
-      || sections.has('how to use') || sections.has('quick start') || sections.has('getting started')
-      || sections.has('implementation') || sections.has('workflow') },
+      || sections.has('how to use') || sections.has('quick start') || sections.has('quick-start patterns')
+      || sections.has('getting started') || sections.has('implementation') || sections.has('workflow')
+      || sections.has('installation') || sections.has('before you begin')
+      || sections.has('how to save') || sections.has('clone workflow') },
   // 4. Has output/return value specification
   { label: 'output', test: ({ sections }) =>
     sections.has('output') || sections.has('returns') || sections.has('response')
-      || sections.has('result') || sections.has('output format') || sections.has('parameters') },
+      || sections.has('result') || sections.has('output format') || sections.has('parameters')
+      || sections.has('entry types') || sections.has('response format')
+      || sections.has('deliverable') || sections.has('result values') },
   // 5. Has worked examples or code blocks
   { label: 'examples', test: ({ sections, body }) =>
     sections.has('examples') || sections.has('example') || sections.has('sample output')
-      || sections.has('demo') || body.includes('```') },
+      || sections.has('demo') || sections.has('log entry examples')
+      || sections.has('quick start examples') || sections.has('verdict examples')
+      || body.includes('```') },
   // 6. Has constraints/rules/warnings
   { label: 'constraints', test: ({ sections, body }) =>
     sections.has('constraints') || sections.has('rules') || sections.has('warnings')
-      || sections.has('notes') || sections.has('limitations') || sections.has('important')
+      || sections.has('warning') || sections.has('notes') || sections.has('limitations')
+      || sections.has('important') || sections.has('forbidden') || sections.has('red flags')
+      || sections.has('common pitfalls') || sections.has('error handling')
+      || sections.has('error prevention') || sections.has('sandbox rules')
+      || sections.has('hot commands') || sections.has('anti-patterns')
       || /(?:warning|caution|must|should not|do not)\b/i.test(body) },
 ];
 

@@ -147,37 +147,32 @@
           "commit": "1bf0455"
         },
         {
-          "id": "4.3",
-          "title": "Skill detail table",
-          "status": "PENDING",
-          "notes": "UI-only: scanner-panel.tsx adds sortable table of skills with individual scores. API already returns ParsedSkill[]."
+          "id": "4.3a",
+          "title": "Skill detail table + References detail (UI-only)",
+          "status": "COMPLETED",
+          "evidence": "scanner-skill-table.tsx + scanner-ref-list.tsx + scanner-panel.tsx with 4 sub-tabs. Copy all/row buttons.",
+          "commit": "83f7910"
         },
         {
-          "id": "4.4",
-          "title": "References detail",
-          "status": "PENDING",
-          "depends": [
-            "4.3"
-          ],
-          "notes": "UI-only: show all references, highlight broken ones with source/target paths."
+          "id": "4.3b",
+          "title": "Completeness criteria expansion + per-skill recommendations",
+          "status": "COMPLETED",
+          "evidence": "Added Purpose/Architecture/About/Installation aliases. Avg completeness 42→48. Grade C→B (70). Per-skill recs: 'Add ## Purpose — missing in: X, Y, Z'."
         },
         {
-          "id": "4.5",
+          "id": "4.3c",
           "title": "Anti-pattern detectors (3-4)",
           "status": "PENDING",
-          "depends": [
-            "4.4"
-          ],
           "notes": "Inline Dup, Unregistered STD, Version Drift, Missing Examples."
         },
         {
-          "id": "4.6",
-          "title": "Re-test with drill-down",
+          "id": "4.3d",
+          "title": "Re-test with drill-down + export",
           "status": "PENDING",
           "depends": [
-            "4.5"
+            "4.3c"
           ],
-          "notes": "Verify detail tables, broken refs, anti-patterns on zai-agent-toolkit."
+          "notes": "Verify detail tables, per-skill scores, broken refs, anti-patterns on zai-agent-toolkit."
         }
       ]
     },
@@ -215,7 +210,7 @@
     }
   ],
   "currentFocus": "epic-4",
-  "nextTask": "4.3",
+  "nextTask": "4.3c",
   "blockers": [],
   "keyDecisions": [
     {

@@ -1393,3 +1393,34 @@ Stage Summary:
 - Better file classification: content-based detection for standards and skills
 - Errors surface to UI instead of disappearing silently
 - Epic 4 status: IN_PROGRESS, next: 4.3 (Build scanner agent flow)
+---
+Task ID: 4.3b
+Agent: main
+Task: Expand completeness criteria + per-skill recommendations
+
+Work Log:
+- Analyzed completeness=0 bug from previous session — traced through completeness.ts → parser.ts → heuristic.ts → scanner-skill-table.tsx
+- Found that per-skill completeness was NOT actually 0 — 87/88 skills had scores (17-83). Only 1 skill (interview-protocol.md) had true 0.
+- The real issue: criteria in completeness.ts didn't cover common section names used in zai-agent-toolkit
+- Extracted all 160+ unique section headings from SKILL.md files across toolkit
+- Top sections: Purpose (7×), Examples (7×), When to Use (5×), Usage (5×), Troubleshooting (5×), Parameters (3×), Quick Start (2×)
+- Added aliases to completeness.ts:
+  - description: +Purpose, Architecture, About
+  - trigger: +When to Activate, When to Use This Skill
+  - steps: +Quick-Start Patterns, Installation, Before You Begin, How to Save, Clone Workflow
+  - output: +Entry Types, Response Format, Deliverable, Result Values
+  - examples: +Log Entry Examples, Quick Start Examples, Verdict Examples
+  - constraints: +Warning, Forbidden, Red Flags, Common Pitfalls, Error Handling, Error Prevention, Sandbox Rules, Hot Commands, Anti-Patterns
+- Updated heuristic.ts: added per-skill concrete recommendations
+  - Groups skills with completeness < 50 by missed criterion
+  - Shows: "Add ## Purpose or ## Description section — missing in: X, Y, Z +N more"
+  - Each of 6 criteria gets its own recommendation line with specific skill names
+- Results: Avg completeness 42→48, Grade C(64)→B(70)
+- Distribution improved: 83%: 5→14 skills, 67%: 17→17, 50%: 21→17, 33%: 21→18, 17%: 23→20
+- Build clean, dev server running
+
+Stage Summary:
+- completeness.ts expanded with 20+ new section aliases
+- heuristic.ts now generates concrete per-skill recommendations (not abstract)
+- Grade improved C→B, completeness dimension 45→47
+- Next: 4.3c (anti-pattern detectors)

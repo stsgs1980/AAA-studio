@@ -61,6 +61,33 @@ export function heuristicEvaluation(
 
   const issues: string[] = [];
   const recs: string[] = [];
+
+  // --- Per-skill concrete recommendations ---
+  const lowSkills = skills.filter(s => s.completeness < 50);
+  if (lowSkills.length > 0) {
+    const missingByLabel: Record<string, string[]> = {};
+    for (const s of lowSkills) {
+      const name = s.name ?? s.path.split('/').pop() ?? s.path;
+      for (const m of s.missedCriteria) {
+        (missingByLabel[m] ??= []).push(name);
+      }
+    }
+    const LABEL_HINTS: Record<string, string> = {
+      description: 'Add ## Purpose or ## Description section',
+      trigger: 'Add ## When to Use or ## Usage section',
+      steps: 'Add ## Steps, ## Instructions, or ## Quick Start section',
+      output: 'Add ## Output, ## Parameters, or ## Entry Types section',
+      examples: 'Add ## Examples section or code blocks',
+      constraints: 'Add ## Constraints, ## Warnings, or ## Rules section',
+    };
+    for (const [label, names] of Object.entries(missingByLabel)) {
+      const top = names.slice(0, 5).join(', ');
+      const more = names.length > 5 ? ` +${names.length - 5} more` : '';
+      recs.push(`${LABEL_HINTS[label]} — missing in: ${top}${more}`);
+    }
+  }
+
+  // --- Aggregate issues ---
   if (examplesScore < 30) issues.push('Most skills/standards lack worked examples');
   if (constraintsScore < 30) issues.push('Most skills lack constraints or rules');
   if (references.length > 0) {
@@ -73,7 +100,7 @@ export function heuristicEvaluation(
   }
   if (parseCoverage < 50 && structure.totalFiles > 10) {
     recs.push(
-      'Many .md files are not classified as skills or standards — check file naming or add frontmatter IDs',
+      'Many .md files are not classified as skills/standards — check file naming or add frontmatter IDs',
     );
   }
   if (skills.filter(s => s.wordCount < 50).length > skills.length * 0.3) {
