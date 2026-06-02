@@ -3,7 +3,7 @@
     "project": "AAA-studio",
     "repo": "https://github.com/stsgs1980/AAA-studio",
     "branch": "main",
-    "lastCommit": "83f7910",
+    "lastCommit": "ebfa036",
     "lastUpdated": "2026-06-03T20:15:00Z",
     "sessionCount": 8
   },
@@ -167,18 +167,17 @@
         },
         {
           "id": "4.3c",
-          "title": "Anti-pattern detectors (3-4)",
-          "status": "PENDING",
-          "notes": "Inline Dup, Unregistered STD, Version Drift, Missing Examples."
+          "title": "Anti-pattern detectors (4)",
+          "status": "COMPLETED",
+          "commit": "ebfa036",
+          "evidence": "Inline Dup, Unregistered STD, Version Drift, Missing Examples. 4 detectors in anti-patterns.ts, Issues tab in UI."
         },
         {
           "id": "4.3d",
-          "title": "Re-test with drill-down + export",
-          "status": "PENDING",
-          "depends": [
-            "4.3c"
-          ],
-          "notes": "Verify detail tables, per-skill scores, broken refs, anti-patterns on zai-agent-toolkit."
+          "title": "Re-test with drill-down + anti-patterns",
+          "status": "COMPLETED",
+          "commit": "ebfa036",
+          "evidence": "45 skills, 28 standards, 857 refs (0 broken), 1 anti-pattern (3 missing examples). Avg completeness 66, Grade B."
         }
       ]
     },
@@ -216,7 +215,7 @@
     }
   ],
   "currentFocus": "epic-4",
-  "nextTask": "4.3c",
+  "nextTask": "4.3 DONE → epic-5",
   "blockers": [],
   "keyDecisions": [
     {
