@@ -3,9 +3,9 @@
     "project": "AAA-studio",
     "repo": "https://github.com/stsgs1980/AAA-studio",
     "branch": "main",
-    "lastCommit": "56007c8",
-    "lastUpdated": "2026-06-03T14:30:00Z",
-    "sessionCount": 6
+    "lastCommit": "1bf0455",
+    "lastUpdated": "2026-06-03T19:30:00Z",
+    "sessionCount": 7
   },
 
   "strategy": "Agent-Scanner: Quality Analyzer evolves from static text analysis into an agent with tools (read_file, list_dir, grep, compare). This decouples QA from format — works on any toolkit, any agent, any structure. Wireframe (P-MAS-architector v3) = end-state spec, NOT a separate project. AAA-studio IS the wireframe, built in phases.",
@@ -51,11 +51,11 @@
     {
       "id": "epic-4",
       "name": "Agent-Scanner — QA becomes an agent with tools",
-      "status": "PENDING",
+      "status": "IN_PROGRESS",
       "vision": "Quality Analyzer evolves from static text analysis into an agent with tools (read_file, list_dir, grep, compare, exec). This decouples QA from input format — works on any toolkit, any agent, any structure. Not format-dependent, but context-aware.",
       "tasks": [
-        { "id": "4.1", "title": "Smoke test: run current QA on zai-agent-toolkit (110+ skills)", "status": "PENDING", "notes": "Clone toolkit, feed to QA via ZIP/GitHub, see what breaks. Real data > roadmap fantasy." },
-        { "id": "4.2", "title": "Define agent tools for scanner (read_file, list_dir, grep, compare)", "status": "PENDING", "depends": ["4.1"], "notes": "Tool definitions for the scanning agent. Based on 4.1 findings." },
+        { "id": "4.1", "title": "Smoke test: run current QA on zai-agent-toolkit (110+ skills)", "status": "COMPLETED", "evidence": "Scanner found 126 files, 46 skills, 20 standards but scored F/0 (LLM JSON parse bug). Proved format-dependency limitation.", "commit": "08c155f" },
+        { "id": "4.2", "title": "Define agent tools for scanner (read_file, list_dir, grep, compare)", "status": "COMPLETED", "evidence": "P0: read_file, list_dir, grep, stat_file, compare. P1: parse_frontmatter, count_blocks, extract_ids, validate_schema, exec. Plus: fix existing scanner bugs.", "commit": "1bf0455" },
         { "id": "4.3", "title": "Build scanner agent — flow with tools in Flow Editor", "status": "PENDING", "depends": ["4.2"], "notes": "Flow: Input -> read_file x N -> grep patterns -> LLM analysis -> output. Executed via existing Flow Engine." },
         { "id": "4.4", "title": "Wire scanner flow into Quality Analyzer UI", "status": "PENDING", "depends": ["4.3"], "notes": "QA page triggers scanner flow instead of /api/evaluate-deep. Shows results in existing panels." },
         { "id": "4.5", "title": "Add cross-reference checking (files reference each other)", "status": "PENDING", "depends": ["4.4"], "notes": "Agent compares: skill mentions standard X -> does standard X exist? -> is it registered?" },
@@ -77,7 +77,7 @@
   ],
 
   "currentFocus": "epic-4",
-  "nextTask": "4.1",
+  "nextTask": "4.3",
   "blockers": [],
 
   "keyDecisions": [

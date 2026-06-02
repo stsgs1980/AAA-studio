@@ -1369,3 +1369,27 @@ Stage Summary:
 - In-app Wiki: 14 → 15 pages (new "Quality Analyzer" page)
 - TASK_STATE: Epic 1-3 COMPLETED, Epic 4-6 PENDING with clear task breakdown
 - Ready to push to main
+
+---
+Task ID: 4.1-4.2
+Agent: main
+Task: Fix scanner bugs + define agent tools (Epic 4)
+
+Work Log:
+- Analyzed screenshot: Scanner found 126 files/46 skills/20 standards but scored F with all dimensions = 0
+- Root cause 1: evaluateWithLLM() did raw JSON.parse() without stripping markdown fences — LLM responses wrapped in ```json caused parse failure -> all zeros
+- Root cause 2: scannerAnalyze() in store silently swallowed errors via .catch(() => set({ isScanning: false }))
+- Root cause 3: classifyFile() only checked path, not content — missed standards with STD-XXX-NNN in body
+- Created src/lib/scanner/heuristic.ts: standalone heuristic evaluation module computing 5 quality dimensions from parsed structural data when LLM is unavailable or fails
+- Fixed route.ts: added extractJSON() to strip markdown fences + find JSON object boundaries; changed evaluateWithLLM to fall back to heuristicEvaluation on LLM failure or missing provider
+- Fixed parser.ts: classifyFile now detects standards by STD-[A-Z]+-NNN pattern in content + blockquote header "> ID: STD-"; detects skills by YAML frontmatter fields (trigger/description/steps)
+- Fixed use-quality-store.ts: scannerAnalyze now surfaces errors via criticalIssues instead of silently swallowing; also added res.ok check
+- Build: passed (all files ≤150 lines), pushed as 1bf0455
+- Updated TASK_STATE.json: 4.1 COMPLETED, 4.2 COMPLETED, nextTask 4.3
+
+Stage Summary:
+- 4 files changed: route.ts, parser.ts, use-quality-store.ts, heuristic.ts (new)
+- Scanner now always returns real scores: either LLM-evaluated or heuristic-computed
+- Better file classification: content-based detection for standards and skills
+- Errors surface to UI instead of disappearing silently
+- Epic 4 status: IN_PROGRESS, next: 4.3 (Build scanner agent flow)
