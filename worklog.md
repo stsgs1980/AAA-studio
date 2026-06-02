@@ -1298,3 +1298,24 @@ Stage Summary:
 - Fixed: src/app/api/health/route.ts - skip HEAD check for zai provider
 - Created: .zscripts/dev.sh - build+start workflow for container restarts
 - Server running on :3000, health check returns healthy, LLM SDK operational
+
+---
+Task ID: 1
+Agent: main
+Task: Fix Quick Login as Admin crash + update dev.sh + update StsDev-Wiki
+
+Work Log:
+- Investigated Quick Login crash via agent-browser
+- Found root cause: Next.js 15 auto-adds `Secure` flag to cookies in production mode
+- Secure cookie rejected through Caddy proxy → login works but cookie not stored → redirect back to /login
+- Fixed: set `secure: false` explicitly in /api/auth/login/route.ts
+- Rewrote dev.sh with self-restart loop for production mode stability
+- Updated StsDev-Wiki sandbox-workflow.md v4.1 with real-world corrections
+- All changes pushed to both repos
+
+Stage Summary:
+- Cookie fix: committed + pushed (310a1c2)
+- dev.sh self-restart: committed + pushed (e8b726c)
+- Wiki update v4.1: committed + pushed (c5c271a)
+- Server cannot stay alive from AI agent bash tool - needs container restart
+- On restart, start.sh will run new dev.sh (production mode + auto-restart)
