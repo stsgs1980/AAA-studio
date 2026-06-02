@@ -160,6 +160,12 @@
           "evidence": "Added Purpose/Architecture/About/Installation aliases. Avg completeness 42→48. Grade C→B (70). Per-skill recs: 'Add ## Purpose — missing in: X, Y, Z'."
         },
         {
+          "id": "4.3b2",
+          "title": "Fix classifier: exclude references/docs/evals from skills",
+          "status": "COMPLETED",
+          "evidence": "88→45 skills (removed 54 false positives). Avg completeness 48→66. Zero refs/docs/evals classified as skill."
+        },
+        {
           "id": "4.3c",
           "title": "Anti-pattern detectors (3-4)",
           "status": "PENDING",

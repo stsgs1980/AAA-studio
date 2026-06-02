@@ -1424,3 +1424,23 @@ Stage Summary:
 - heuristic.ts now generates concrete per-skill recommendations (not abstract)
 - Grade improved C→B, completeness dimension 45→47
 - Next: 4.3c (anti-pattern detectors)
+---
+Task ID: 4.3b2
+Agent: main
+Task: Fix classifier — exclude references/docs/evals/examples from skill classification
+
+Work Log:
+- Found root cause: classifyFile() checked `path.includes('skill')` BEFORE checking support subdirs
+- All files in `skills/X/references/` matched 'skill' in path → wrongly classified as skills
+- 54 of 88 "skills" were false positives: 22 references, 7 READMEs, 5 docs, 3 evals, 3 examples, 14 misc
+- Added isSupportFile() with SUPPORT_SUBDIRS array: references/, docs/, evals/, examples/, scripts/, assets/, tests/, templates/
+- Moved support check BEFORE skill detection in classifyFile()
+- Also added `/skill.md` explicit path rule
+- Results: 88→45 skills, avg completeness 48→66, 0 false positives
+- Completeness distribution improved: comp=0: 1→0, comp=17: 20→1, comp=50: 17→10, comp=67: 17→16, comp=83: 14→14, comp=100: 1→1
+
+Stage Summary:
+- parser.ts: added isSupportFile(), reordered classification priority (standards > support > skill > content)
+- 149 lines (under 150 limit)
+- Build clean, dev server running
+- Key insight: path `skills/X/references/Y.md` contains 'skill' → must check support dirs first

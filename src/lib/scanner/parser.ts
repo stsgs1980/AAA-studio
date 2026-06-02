@@ -7,7 +7,6 @@ import type { ScannerFile, ParsedSkill, ParsedStandard, ReferenceCheck } from '.
 import { scoreCompleteness } from './completeness';
 
 // ---- YAML frontmatter ----
-
 function parseYamlFrontmatter(content: string): Record<string, string> {
   const match = content.match(/^---\n([\s\S]*?)\n---/);
   if (!match) return {};
@@ -22,25 +21,39 @@ function parseYamlFrontmatter(content: string): Record<string, string> {
 }
 
 // ---- File classification ----
+// Subdirectories with support files, NOT standalone skills
+const SUPPORT_SUBDIRS = [
+  'references/', 'docs/', 'evals/', 'examples/', 'scripts/',
+  'assets/', 'tests/', 'templates/',
+];
+
+function isSupportFile(path: string): boolean {
+  const lower = path.toLowerCase();
+  return SUPPORT_SUBDIRS.some(dir => lower.includes(dir));
+}
 
 export function classifyFile(path: string, content: string): ScannerFile['type'] {
   const lower = path.toLowerCase();
 
-  // --- Standard detection (higher priority) ---
-  // Path-based
+  // --- Standard detection (highest priority) ---
   if (lower.includes('std-') || lower.includes('standard')) return 'standard';
-  // Content-based: STD-XXX-NNN pattern anywhere in content
   if (/STD-[A-Z]+-\d{3}/.test(content)) return 'standard';
-  // Content-based: blockquote header pattern "> ID: STD-"
   if (/^>\s*ID:\s*STD-/mi.test(content)) return 'standard';
 
-  // --- Skill detection ---
-  // Path-based: must have .md extension
+  // --- Support files: exclude BEFORE skill detection ---
+  // references/, docs/, evals/, examples/, scripts/ are never skills
+  if (isSupportFile(lower)) {
+    if (/\.(json|yaml|yml|toml|env)$/i.test(lower)) return 'config';
+    if (/\.(ts|tsx|js|jsx|py|rs|go)$/i.test(lower)) return 'code';
+    return lower.endsWith('.md') || lower.endsWith('.mdx') ? 'doc' : 'other';
+  }
+
+  // --- Skill detection (after support exclusion) ---
   if (lower.includes('skill') && lower.endsWith('.md')) return 'skill';
-  // Content-based: YAML frontmatter with common skill fields
+  if (lower.endsWith('/skill.md')) return 'skill';
+
   const fm = parseYamlFrontmatter(content);
   if (fm && (fm.id || fm.name || fm.trigger) && lower.endsWith('.md')) {
-    // Has frontmatter with skill-like metadata — classify as skill
     if (fm.trigger || fm.description || fm.steps) return 'skill';
   }
 
@@ -79,30 +92,23 @@ export function parseSkillMarkdown(path: string, content: string): ParsedSkill {
 const STD_ID_RE = /STD-[A-Z]+-\d{3}/g;
 
 export function parseStandardMarkdown(path: string, content: string): ParsedStandard {
-  const firstLine = content.split('\n').find(l => l.trim().length > 0) ?? '';
-  const headingMatch = firstLine.match(/^#\s+(.+)$/);
-  const name = headingMatch ? headingMatch[1].trim() : path.split('/').pop() ?? path;
+  const firstLine = content.split('\n').find(l => l.trim()) ?? '';
+  const hMatch = firstLine.match(/^#\s+(.+)$/);
+  const name = hMatch ? hMatch[1].trim() : path.split('/').pop() ?? path;
   const idMatch = content.match(/STD-[A-Z]+-\d{3}/);
   const id = idMatch ? idMatch[0] : null;
-  const severityMatch = content.match(/\[?(critical|warning|info)\]?\s*:/i);
-  const severity = severityMatch
-    ? (severityMatch[1].toLowerCase() as 'critical' | 'warning' | 'info')
-    : null;
-  const versionMatch = content.match(/version[:\s]+(\d+\.\d+)/i);
-  const version = versionMatch ? versionMatch[1] : null;
-  const relatedIds = [...content.matchAll(STD_ID_RE)]
-    .map(m => m[0])
-    .filter(rid => rid !== id);
+  const sevMatch = content.match(/\[?(critical|warning|info)\]?\s*:/i);
+  const severity = sevMatch ? (sevMatch[1].toLowerCase() as 'critical' | 'warning' | 'info') : null;
+  const verMatch = content.match(/version[:\s]+(\d+\.\d+)/i);
+  const version = verMatch ? verMatch[1] : null;
+  const relatedIds = [...content.matchAll(STD_ID_RE)].map(m => m[0]).filter(r => r !== id);
   const headings = content.match(/^#{2,3}\s+(.+)$/gm) ?? [];
   const sections = headings.map(h => h.replace(/^#{2,3}\s+/, '').trim());
   const wordCount = content.split(/\s+/).filter(Boolean).length;
-
   return {
-    path, name, id, severity, version, relatedIds,
-    sections,
+    path, name, id, severity, version, relatedIds, sections,
     hasCodeBlocks: /```/.test(content),
-    hasExamples: content.toLowerCase().includes('example'),
-    wordCount,
+    hasExamples: content.toLowerCase().includes('example'), wordCount,
   };
 }
 
