@@ -6,7 +6,7 @@
  *   DELETE — close session
  */
 
-import { handleInitialize, handleToolsList, handleToolsCall, handleResourcesList, handleResourcesRead, handlePromptsList, handlePromptsGet, ok, err } from "./handlers";
+import { handleInitialize, handleToolsList, handleToolsCall, handleResourcesList, handleResourcesRead, handlePromptsList, handlePromptsGet, err } from "./handlers";
 
 const sessions = new Map<string, { controller: ReadableStreamDefaultController }>();
 
