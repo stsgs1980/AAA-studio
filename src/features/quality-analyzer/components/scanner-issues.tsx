@@ -83,9 +83,11 @@ export function ScannerIssues({ antiPatterns }: { antiPatterns: AntiPattern[] })
                     </button>
                     {isExp && (
                       <div className="ml-5 mb-1 rounded bg-muted/30 px-2 py-1 text-[10px] text-muted-foreground space-y-0.5">
-                        {item.sources.map((src, j) => (
-                          <p key={j} className="truncate">&bull; {src.split("/").pop()}</p>
-                        ))}
+                        {item.sources.map((src, j) => {
+                          const parts = src.split("/");
+                          const short = parts.length > 2 ? parts.slice(-3).join("/") : src;
+                          return <p key={j} className="truncate" title={src}>&bull; {short}</p>;
+                        })}
                       </div>
                     )}
                   </div>
