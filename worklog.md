@@ -1319,3 +1319,31 @@ Stage Summary:
 - Wiki update v4.1: committed + pushed (c5c271a)
 - Server cannot stay alive from AI agent bash tool - needs container restart
 - On restart, start.sh will run new dev.sh (production mode + auto-restart)
+---
+Task ID: 1
+Agent: main
+Task: Add Clear Results button, ZIP upload support, fix scenario pass-through
+
+Work Log:
+- Analyzed QA codebase: page.tsx, input-panel.tsx, file-uploader.tsx, use-quality-store.ts, types.ts, i18n
+- Found Reset button already exists (page.tsx line 44) but user needed "Clear Results" (clear only results, keep input)
+- Added Trash2 "Clear Results" button to page.tsx header (visible only when results exist)
+- Added clearResults() to useQualityStore (sets result to null, preserves input)
+- Fixed deepAnalyze() to pass rubricScenario to /api/evaluate-deep (was missing, always defaulted to 'prompt')
+- Added ZIP archive upload to FileUploader using JSZip (already in dependencies)
+  - Client-side extraction with progress indicator
+  - Filters: skips hidden dirs, node_modules, __pycache__, vendor
+  - Only extracts files with accepted extensions (txt, md, json, yaml, yml, ts, js, py, toml, cfg)
+  - Sorts entries by path for consistent output
+- Added 6 new i18n keys to both pages-en.ts and pages-ru.ts
+- Refactored file-uploader to stay under 150 lines (ESLint max-lines rule)
+- TypeScript: 0 errors, ESLint: 0 warnings/errors
+- Pushed to main as commit 0d94fbe
+
+Stage Summary:
+- Clear Results button ✅ (red, trash icon, clears only analysis results)
+- ZIP upload ✅ (JSZip client-side, progress indicator, smart filtering)
+- Folder upload ✅ (already existed via webkitdirectory)
+- GitHub URL ✅ (already existed via /api/fetch-url)
+- deepAnalyze scenario fix ✅ (now passes rubricScenario from store)
+- Build clean: tsc --noEmit ✅, eslint ✅
