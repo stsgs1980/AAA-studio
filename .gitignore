@@ -48,3 +48,5 @@ prisma/*.db-shm
 .env.production
 Zai-agent-toolkit/standards/
 .zscripts/dev.pid
+
+# Task state (volatile)

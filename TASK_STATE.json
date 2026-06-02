@@ -1,0 +1,102 @@
+{
+  "meta": {
+    "project": "AAA-studio",
+    "repo": "https://github.com/stsgs1980/AAA-studio",
+    "branch": "main",
+    "lastCommit": "99f7ec4",
+    "lastUpdated": "2026-06-02T15:40:00Z",
+    "sessionCount": 1
+  },
+
+  "roadmap": [
+    {
+      "id": "epic-1",
+      "name": "Production Stability",
+      "status": "COMPLETED",
+      "tasks": [
+        { "id": "1.1", "title": "Fix Secure cookie flag for proxy", "status": "COMPLETED", "commit": "310a1c2", "evidence": "curl login works through Caddy proxy" },
+        { "id": "1.2", "title": "Include dev.sh in repo", "status": "COMPLETED", "commit": "ea5cde5", "evidence": ".zscripts/dev.sh tracked in git" },
+        { "id": "1.3", "title": "Fix dev.sh auto-restart (remove set -e)", "status": "COMPLETED", "commit": "99f7ec4", "evidence": "while loop survives next start crash" },
+        { "id": "1.4", "title": "Fix Vercel build failure", "status": "COMPLETED", "commit": "78691e2", "evidence": "vercel build passes, 2 fixes: barrel export + line count" },
+        { "id": "1.5", "title": "Fix redirect loop (trailingSlash)", "status": "COMPLETED", "commit": "d68a62a", "evidence": "curl -L --max-redirs 5 returns 200 in 2 redirects" }
+      ]
+    },
+    {
+      "id": "epic-2",
+      "name": "Quality Analyzer — Connect to Prompting",
+      "status": "COMPLETED",
+      "tasks": [
+        { "id": "2.1", "title": "Rewrite evaluate-deep to use @stsgs/prompting rubrics", "status": "COMPLETED", "commit": "ce7bc69", "evidence": "route.ts imports buildEvaluationRubric, supports 4 scenarios" },
+        { "id": "2.2", "title": "Add export UI buttons (3 screens)", "status": "COMPLETED", "commit": "ce7bc69", "evidence": "export-dropdown.tsx, ExportFormatsButton, wiki export" },
+        { "id": "2.3", "title": "QA end-to-end test through browser", "status": "BLOCKED", "blocker": "sandbox server dies between tool calls; Vercel needs ZAI_API_KEY env var" }
+      ]
+    },
+    {
+      "id": "epic-3",
+      "name": "Quality Analyzer — Verify Analysis Quality",
+      "status": "PENDING",
+      "tasks": [
+        { "id": "3.1", "title": "Configure ZAI_API_KEY on Vercel", "status": "PENDING", "depends": ["2.3"], "notes": "Settings > Environment Variables > ZAI_API_KEY > Redeploy" },
+        { "id": "3.2", "title": "Test evaluate-deep on Vercel with real LLM", "status": "PENDING", "depends": ["3.1"], "notes": "Login > QA > Deep Analysis > verify rubric output format" },
+        { "id": "3.3", "title": "Validate rubric scoring accuracy", "status": "PENDING", "depends": ["3.2"], "notes": "Test all 4 scenarios (prompt/code/content/design), check scores make sense" },
+        { "id": "3.4", "title": "Fix frontend deepAnalyze — pass scenario param", "status": "PENDING", "depends": ["3.2"], "notes": "use-quality-store.ts line 90: body missing scenario field" }
+      ]
+    },
+    {
+      "id": "epic-4",
+      "name": "Flow Assistant — Cross-functional Connections",
+      "status": "PENDING",
+      "tasks": [
+        { "id": "4.1", "title": "Fix Human-in-Loop handle bug", "status": "PENDING", "depends": ["3.4"] },
+        { "id": "4.2", "title": "LLM Provider from DB to StageConfig", "status": "PENDING", "depends": ["4.1"] },
+        { "id": "4.3", "title": "System Prompts from @stsgs/prompting", "status": "PENDING", "depends": ["4.2"] },
+        { "id": "4.4", "title": "Skills -> tools integration", "status": "PENDING", "depends": ["4.3"] },
+        { "id": "4.5", "title": "Knowledge -> RAG collections", "status": "PENDING", "depends": ["4.3"] },
+        { "id": "4.6", "title": "Agents -> reuse in Flow Editor", "status": "PENDING", "depends": ["4.3"] }
+      ]
+    }
+  ],
+
+  "currentFocus": "epic-3",
+  "nextTask": "3.1",
+  "blockers": [
+    {
+      "id": "B1",
+      "description": "Sandbox server process dies between tool calls — cannot do browser testing",
+      "workaround": "Test on Vercel instead. Add ZAI_API_KEY env var to Vercel project."
+    },
+    {
+      "id": "B2",
+      "description": "Frontend deepAnalyze() doesn't send scenario param to backend",
+      "workaround": "Backend defaults to 'prompt' scenario. Fix in 3.4."
+    }
+  ],
+
+  "knownIssues": [
+    "Sandbox: background processes from bash tool don't survive between tool calls",
+    "Sandbox: start.sh runs dev.sh but process may be killed by sandbox cleanup",
+    "Vercel: Z.ai SDK unavailable — needs ZAI_API_KEY in environment variables",
+    "QA: deepAnalyze frontend doesn't pass scenario to backend (minor, defaults to prompt)"
+  ],
+
+  "gates": {
+    "prePush": "verify-docs (consistency check) + eslint",
+    "epicGate": "npx tsc --noEmit && bun run build && bunx verify-docs --ci",
+    "lastPassed": "epic-1"
+  },
+
+  "environment": {
+    "sandbox": {
+      "node": "v22.x",
+      "bun": "1.3.14",
+      "next": "15.5.18",
+      "ram": "8GB",
+      "cpu": "4 cores",
+      "llm": "Z.ai SDK (internal-api.z.ai)"
+    },
+    "vercel": {
+      "llm": "Needs ZAI_API_KEY env var",
+      "build": "Passing"
+    }
+  }
+}
