@@ -17,7 +17,7 @@ export async function GET() {
   try {
     let templates = await db.promptTemplate.findMany({ orderBy: [{ isBuiltin: 'desc' }, { name: 'asc' }] });
     if (templates.length === 0) {
-      await db.promptTemplate.createMany({ data: BUILTINS as Record<string, unknown>[] });
+      await db.promptTemplate.createMany({ data: BUILTINS });
       templates = await db.promptTemplate.findMany({ orderBy: [{ isBuiltin: 'desc' }, { name: 'asc' }] });
     }
     return success(templates.map((t) => ({ ...t, tags: JSON.parse(t.tags), variables: JSON.parse(t.variables ?? '[]') })));
