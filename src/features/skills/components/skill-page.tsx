@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { Wrench, Plus, Upload } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Wrench, Plus, Upload, Download, ChevronDown } from "lucide-react";
 import { PageSkeleton } from "@/components/ui";
 import { useSkillStore } from "../store/skills-store";
 import { SkillList } from "./skill-list";
@@ -38,6 +38,7 @@ export default function SkillForgePage() {
           <h1 className="text-2xl font-bold tracking-tight text-foreground">{t.pages['Skill Forge']}</h1>
         </div>
         <div className="flex gap-2">
+          <ExportFormatsButton />
           <button onClick={() => fileRef.current?.click()}
             className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-muted-foreground text-sm font-medium hover:bg-muted transition-colors">
             <Upload className="h-4 w-4" /> Import
@@ -67,6 +68,64 @@ export default function SkillForgePage() {
           <div className="flex-1 min-w-0">
             <SkillDetail />
           </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** Dropdown button to export all skills in OpenAI / MCP / A2A format */
+function ExportFormatsButton() {
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  // Close on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  const download = async (format: string) => {
+    setLoading(true);
+    setOpen(false);
+    try {
+      const res = await fetch(`/api/skills/export-formats?format=${format}`);
+      if (!res.ok) throw new Error('Export failed');
+      const data = await res.json();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `skills-${format}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      alert('Export failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        onClick={() => setOpen(!open)}
+        disabled={loading}
+        className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-muted-foreground text-sm font-medium hover:bg-muted transition-colors"
+      >
+        <Download className="h-4 w-4" />
+        {loading ? 'Exporting...' : 'Export Formats'}
+        <ChevronDown className="h-3 w-3" />
+      </button>
+      {open && (
+        <div className="absolute right-0 top-full mt-1 z-50 w-40 rounded-lg border border-border bg-card shadow-lg py-1">
+          <button onClick={() => download('openai')} className="w-full text-left px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors">OpenAI Tools</button>
+          <button onClick={() => download('mcp')} className="w-full text-left px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors">MCP Format</button>
+          <button onClick={() => download('a2a')} className="w-full text-left px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors">A2A Cards</button>
         </div>
       )}
     </div>

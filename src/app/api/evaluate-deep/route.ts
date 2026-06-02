@@ -1,60 +1,29 @@
 import { handleError, success, BadRequest } from '@/lib/api-error';
 import { callLLM } from '@/lib/llm/client';
 import { getActiveProvider } from '@/lib/llm';
+import {
+  buildEvaluationRubric,
+  getDefaultRubric,
+} from '@stsgs/prompting';
 
-const EVAL_SYSTEM_PROMPT = `You are a rigorous AI agent quality auditor. Analyze the provided content (agent system prompt, configuration, documentation, or codebase) and produce a structured evaluation report.
+/**
+ * POST /api/evaluate-deep
+ * Deep quality analysis using LLM with rubric from @stsgs/prompting.
+ *
+ * Accepts:
+ *   text     — content to evaluate (required)
+ *   context  — optional context label
+ *   scenario — rubric preset: "code" | "content" | "prompt" | "design" (default: "prompt")
+ *   criteria — optional custom EvaluationCriterion[] overrides the preset
+ */
 
-For each criterion below, give:
-- Score: 0-10
-- Status: PASS if >=7, WARN if 4-6, FAIL if <4
-- Finding: one sentence
-- Action: concrete fix
-
-Output STRICTLY in this format (no markdown code blocks):
+const OUTPUT_FORMAT = `Output STRICTLY in this format (no markdown code blocks):
 
 ## OVERALL: <score>/10 -- <PASS|WARN|FAIL>
 ## Summary
 <2-3 sentences overall assessment>
 
-## 1. Purpose & Scope
-Score: <0-10> -- <PASS|WARN|FAIL>
-Finding: <what you found>
-Action: <what to fix>
-
-## 2. Clarity & Unambiguity
-Score: <0-10> -- <PASS|WARN|FAIL>
-Finding: <what you found>
-Action: <what to fix>
-
-## 3. Completeness
-Score: <0-10> -- <PASS|WARN|FAIL>
-Finding: <what you found>
-Action: <what to fix>
-
-## 4. Consistency
-Score: <0-10> -- <PASS|WARN|FAIL>
-Finding: contradictions, duplicates, or mismatches found
-Action: <what to fix>
-
-## 5. Actionability
-Score: <0-10> -- <PASS|WARN|FAIL>
-Finding: can an agent actually follow these instructions?
-Action: <what to fix>
-
-## 6. Error Handling & Edge Cases
-Score: <0-10> -- <PASS|WARN|FAIL>
-Finding: are failures, ambiguity, and edge cases addressed?
-Action: <what to fix>
-
-## 7. Security & Constraints
-Score: <0-10> -- <PASS|WARN|FAIL>
-Finding: are boundaries, permissions, and safety rules defined?
-Action: <what to fix>
-
-## 8. Documentation Quality
-Score: <0-10> -- <PASS|WARN|FAIL>
-Finding: is documentation sufficient for maintenance?
-Action: <what to fix>
+{CRITERIA_BLOCKS}
 
 ## Critical Issues
 <list any critical/blocker issues or "None">
@@ -66,7 +35,7 @@ Action: <what to fix>
 
 export async function POST(request: Request) {
   try {
-    const { text, context } = await request.json();
+    const { text, context, scenario, criteria } = await request.json();
     if (!text?.trim()) {
       throw BadRequest('Text is required');
     }
@@ -75,6 +44,30 @@ export async function POST(request: Request) {
     if (!active) {
       throw BadRequest('No LLM provider configured. Go to Settings -> LLM Provider to add and activate a provider.');
     }
+
+    // Build rubric from @stsgs/prompting
+    const rubricCriteria = Array.isArray(criteria) && criteria.length > 0
+      ? criteria
+      : getDefaultRubric(scenario ?? 'prompt');
+
+    const rubric = buildEvaluationRubric(rubricCriteria);
+
+    // Build criteria blocks for output format
+    const criteriaBlocks = rubricCriteria.map((c, i) => [
+      `## ${i + 1}. ${c.name}`,
+      `Score: <0-10> -- <PASS|WARN|FAIL>`,
+      `Finding: <${c.description}>`,
+      `Action: <what to fix>`,
+    ].join('\n')).join('\n\n');
+
+    const systemPrompt = [
+      'You are a rigorous AI agent quality auditor. Analyze the provided content ',
+      '(agent system prompt, configuration, documentation, or codebase) and produce a structured evaluation report.',
+      '',
+      rubric,
+      '',
+      OUTPUT_FORMAT.replace('{CRITERIA_BLOCKS}', criteriaBlocks),
+    ].join('\n');
 
     const userMessage = context
       ? `Context: ${context}\n\n---\n\nContent to evaluate:\n${text}`
@@ -86,7 +79,7 @@ export async function POST(request: Request) {
         provider: active.provider,
         model: active.model,
         messages: [
-          { role: 'system', content: EVAL_SYSTEM_PROMPT },
+          { role: 'system', content: systemPrompt },
           { role: 'user', content: userMessage.slice(0, 30000) },
         ],
         temperature: 0.2,
@@ -99,7 +92,11 @@ export async function POST(request: Request) {
 
     const content = response.content ?? 'No response from LLM.';
 
-    return success({ analysis: content });
+    return success({
+      analysis: content,
+      scenario: scenario ?? 'prompt',
+      criteriaCount: rubricCriteria.length,
+    });
   } catch (error) {
     return handleError(error);
   }
