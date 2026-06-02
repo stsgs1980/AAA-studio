@@ -47,3 +47,4 @@ prisma/*.db-shm
 .vercel
 .env.production
 Zai-agent-toolkit/standards/
+.zscripts/dev.pid
