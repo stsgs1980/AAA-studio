@@ -3,24 +3,47 @@
     "project": "AAA-studio",
     "repo": "https://github.com/stsgs1980/AAA-studio",
     "branch": "main",
-    "lastCommit": "1bf0455",
-    "lastUpdated": "2026-06-03T19:30:00Z",
-    "sessionCount": 7
+    "lastCommit": "83f7910",
+    "lastUpdated": "2026-06-03T20:15:00Z",
+    "sessionCount": 8
   },
-
-  "strategy": "Agent-Scanner: Quality Analyzer evolves from static text analysis into an agent with tools (read_file, list_dir, grep, compare). This decouples QA from format — works on any toolkit, any agent, any structure. Wireframe (P-MAS-architector v3) = end-state spec, NOT a separate project. AAA-studio IS the wireframe, built in phases.",
-
+  "strategy": "Upgrade existing Scanner from aggregate scores to drill-down detail. No Flow Editor rewrite. Just make current Scanner useful: per-skill scores, broken references, anti-pattern detectors. Wireframe = end-state spec.",
   "roadmap": [
     {
       "id": "epic-1",
       "name": "Production Stability",
       "status": "COMPLETED",
       "tasks": [
-        { "id": "1.1", "title": "Fix Secure cookie flag for proxy", "status": "COMPLETED", "commit": "310a1c2" },
-        { "id": "1.2", "title": "Include dev.sh in repo", "status": "COMPLETED", "commit": "ea5cde5" },
-        { "id": "1.3", "title": "Fix dev.sh auto-restart (remove set -e)", "status": "COMPLETED", "commit": "99f7ec4" },
-        { "id": "1.4", "title": "Fix Vercel build failure", "status": "COMPLETED", "commit": "78691e2" },
-        { "id": "1.5", "title": "Fix redirect loop (trailingSlash)", "status": "COMPLETED", "commit": "d68a62a" }
+        {
+          "id": "1.1",
+          "title": "Fix Secure cookie flag for proxy",
+          "status": "COMPLETED",
+          "commit": "310a1c2"
+        },
+        {
+          "id": "1.2",
+          "title": "Include dev.sh in repo",
+          "status": "COMPLETED",
+          "commit": "ea5cde5"
+        },
+        {
+          "id": "1.3",
+          "title": "Fix dev.sh auto-restart (remove set -e)",
+          "status": "COMPLETED",
+          "commit": "99f7ec4"
+        },
+        {
+          "id": "1.4",
+          "title": "Fix Vercel build failure",
+          "status": "COMPLETED",
+          "commit": "78691e2"
+        },
+        {
+          "id": "1.5",
+          "title": "Fix redirect loop (trailingSlash)",
+          "status": "COMPLETED",
+          "commit": "d68a62a"
+        }
       ]
     },
     {
@@ -28,12 +51,42 @@
       "name": "Quality Analyzer — Connect to Prompting",
       "status": "COMPLETED",
       "tasks": [
-        { "id": "2.1", "title": "Rewrite evaluate-deep to use @stsgs/prompting rubrics", "status": "COMPLETED", "commit": "ce7bc69" },
-        { "id": "2.2", "title": "Add export UI buttons (3 screens)", "status": "COMPLETED", "commit": "ce7bc69" },
-        { "id": "2.3", "title": "QA end-to-end test through browser", "status": "COMPLETED", "evidence": "4/4 input methods PASS on Vercel (GitHub URL 9.2, ZIP 9.2/8.4, Folder 8.4)" },
-        { "id": "2.4", "title": "Add Clear Results button", "status": "COMPLETED", "evidence": "Red trash icon, clears analysis but keeps input" },
-        { "id": "2.5", "title": "Add ZIP archive upload support", "status": "COMPLETED", "evidence": "JSZip client-side extraction, filters node_modules/__pycache__/vendor" },
-        { "id": "2.6", "title": "Fix deepAnalyze scenario pass-through", "status": "COMPLETED", "evidence": "Was hardcoded to 'prompt', now passes store.scenario" }
+        {
+          "id": "2.1",
+          "title": "Rewrite evaluate-deep to use @stsgs/prompting rubrics",
+          "status": "COMPLETED",
+          "commit": "ce7bc69"
+        },
+        {
+          "id": "2.2",
+          "title": "Add export UI buttons (3 screens)",
+          "status": "COMPLETED",
+          "commit": "ce7bc69"
+        },
+        {
+          "id": "2.3",
+          "title": "QA end-to-end test through browser",
+          "status": "COMPLETED",
+          "evidence": "4/4 input methods PASS on Vercel (GitHub URL 9.2, ZIP 9.2/8.4, Folder 8.4)"
+        },
+        {
+          "id": "2.4",
+          "title": "Add Clear Results button",
+          "status": "COMPLETED",
+          "evidence": "Red trash icon, clears analysis but keeps input"
+        },
+        {
+          "id": "2.5",
+          "title": "Add ZIP archive upload support",
+          "status": "COMPLETED",
+          "evidence": "JSZip client-side extraction, filters node_modules/__pycache__/vendor"
+        },
+        {
+          "id": "2.6",
+          "title": "Fix deepAnalyze scenario pass-through",
+          "status": "COMPLETED",
+          "evidence": "Was hardcoded to 'prompt', now passes store.scenario"
+        }
       ]
     },
     {
@@ -41,25 +94,91 @@
       "name": "Quality Analyzer — Verify & Document",
       "status": "COMPLETED",
       "tasks": [
-        { "id": "3.1", "title": "Configure ZAI_API_KEY on Vercel", "status": "COMPLETED", "evidence": "LLM calls working on production" },
-        { "id": "3.2", "title": "Test evaluate-deep on Vercel with real LLM", "status": "COMPLETED", "evidence": "4 tests: 9.2, 9.2, 8.4, 8.4 — all PASS" },
-        { "id": "3.3", "title": "Document QA findings (Examples consistently 4-6/10)", "status": "COMPLETED", "evidence": "docs/P-MAS-EXTRACTION-FOR-AAA-STUDIO.md" },
-        { "id": "3.4", "title": "Extract P-MAS patterns for AAA-studio roadmap", "status": "COMPLETED", "evidence": "9 metrics, 7 anti-patterns, VRS, Skill classification, Grade A-F" },
-        { "id": "3.5", "title": "Add Quality Analyzer page to in-app Wiki", "status": "COMPLETED", "evidence": "wiki-nav-data.ts + page-registry.ts + quality-analyzer.tsx (15th page)" }
+        {
+          "id": "3.1",
+          "title": "Configure ZAI_API_KEY on Vercel",
+          "status": "COMPLETED",
+          "evidence": "LLM calls working on production"
+        },
+        {
+          "id": "3.2",
+          "title": "Test evaluate-deep on Vercel with real LLM",
+          "status": "COMPLETED",
+          "evidence": "4 tests: 9.2, 9.2, 8.4, 8.4 — all PASS"
+        },
+        {
+          "id": "3.3",
+          "title": "Document QA findings (Examples consistently 4-6/10)",
+          "status": "COMPLETED",
+          "evidence": "docs/P-MAS-EXTRACTION-FOR-AAA-STUDIO.md"
+        },
+        {
+          "id": "3.4",
+          "title": "Extract P-MAS patterns for AAA-studio roadmap",
+          "status": "COMPLETED",
+          "evidence": "9 metrics, 7 anti-patterns, VRS, Skill classification, Grade A-F"
+        },
+        {
+          "id": "3.5",
+          "title": "Add Quality Analyzer page to in-app Wiki",
+          "status": "COMPLETED",
+          "evidence": "wiki-nav-data.ts + page-registry.ts + quality-analyzer.tsx (15th page)"
+        }
       ]
     },
     {
       "id": "epic-4",
       "name": "Agent-Scanner — QA becomes an agent with tools",
       "status": "IN_PROGRESS",
-      "vision": "Quality Analyzer evolves from static text analysis into an agent with tools (read_file, list_dir, grep, compare, exec). This decouples QA from input format — works on any toolkit, any agent, any structure. Not format-dependent, but context-aware.",
+      "vision": "Incrementally upgrade Scanner UI. Steps 1-2 are pure UI. Step 3 adds anti-pattern detectors. No Flow Editor rewrite.",
       "tasks": [
-        { "id": "4.1", "title": "Smoke test: run current QA on zai-agent-toolkit (110+ skills)", "status": "COMPLETED", "evidence": "Scanner found 126 files, 46 skills, 20 standards but scored F/0 (LLM JSON parse bug). Proved format-dependency limitation.", "commit": "08c155f" },
-        { "id": "4.2", "title": "Define agent tools for scanner (read_file, list_dir, grep, compare)", "status": "COMPLETED", "evidence": "P0: read_file, list_dir, grep, stat_file, compare. P1: parse_frontmatter, count_blocks, extract_ids, validate_schema, exec. Plus: fix existing scanner bugs.", "commit": "1bf0455" },
-        { "id": "4.3", "title": "Build scanner agent — flow with tools in Flow Editor", "status": "PENDING", "depends": ["4.2"], "notes": "Flow: Input -> read_file x N -> grep patterns -> LLM analysis -> output. Executed via existing Flow Engine." },
-        { "id": "4.4", "title": "Wire scanner flow into Quality Analyzer UI", "status": "PENDING", "depends": ["4.3"], "notes": "QA page triggers scanner flow instead of /api/evaluate-deep. Shows results in existing panels." },
-        { "id": "4.5", "title": "Add cross-reference checking (files reference each other)", "status": "PENDING", "depends": ["4.4"], "notes": "Agent compares: skill mentions standard X -> does standard X exist? -> is it registered?" },
-        { "id": "4.6", "title": "Re-test on zai-agent-toolkit — compare static QA vs agent-scanner", "status": "PENDING", "depends": ["4.5"], "notes": "Side-by-side: current QA score vs agent-scanner score on same toolkit. Data drives next steps." }
+        {
+          "id": "4.1",
+          "title": "Smoke test: run current QA on zai-agent-toolkit (110+ skills)",
+          "status": "COMPLETED",
+          "evidence": "Scanner found 126 files, 46 skills, 20 standards but scored F/0 (LLM JSON parse bug). Proved format-dependency limitation.",
+          "commit": "08c155f"
+        },
+        {
+          "id": "4.2",
+          "title": "Define agent tools for scanner (read_file, list_dir, grep, compare)",
+          "status": "COMPLETED",
+          "evidence": "P0: read_file, list_dir, grep, stat_file, compare. P1: parse_frontmatter, count_blocks, extract_ids, validate_schema, exec. Plus: fix existing scanner bugs.",
+          "commit": "1bf0455"
+        },
+        {
+          "id": "4.3",
+          "title": "Skill detail table",
+          "status": "PENDING",
+          "notes": "UI-only: scanner-panel.tsx adds sortable table of skills with individual scores. API already returns ParsedSkill[]."
+        },
+        {
+          "id": "4.4",
+          "title": "References detail",
+          "status": "PENDING",
+          "depends": [
+            "4.3"
+          ],
+          "notes": "UI-only: show all references, highlight broken ones with source/target paths."
+        },
+        {
+          "id": "4.5",
+          "title": "Anti-pattern detectors (3-4)",
+          "status": "PENDING",
+          "depends": [
+            "4.4"
+          ],
+          "notes": "Inline Dup, Unregistered STD, Version Drift, Missing Examples."
+        },
+        {
+          "id": "4.6",
+          "title": "Re-test with drill-down",
+          "status": "PENDING",
+          "depends": [
+            "4.5"
+          ],
+          "notes": "Verify detail tables, broken refs, anti-patterns on zai-agent-toolkit."
+        }
       ]
     },
     {
@@ -68,45 +187,111 @@
       "status": "PENDING",
       "notes": "Depends on Epic 4 findings. Data from 4.6 determines what to build. From P-MAS wireframe: 9 metrics, A-F grade, radar chart.",
       "tasks": [
-        { "id": "5.1", "title": "Implement 9-metric weighted scoring engine", "status": "PENDING", "notes": "Skill Completeness, Standard Coverage, Cross-Ref Integrity, Anti-Pattern Score, Version Consistency, Doc Freshness, Test Coverage, Registry Alignment, Conflict Resolution" },
-        { "id": "5.2", "title": "Add Grade A-F badge + Radar chart", "status": "PENDING", "depends": ["5.1"] },
-        { "id": "5.3", "title": "Implement 7 anti-pattern detectors (from wireframe Tab Issues)", "status": "PENDING" },
-        { "id": "5.4", "title": "Skill Classification (5 axes) + Standard Classification (4 types)", "status": "PENDING" }
+        {
+          "id": "5.1",
+          "title": "Implement 9-metric weighted scoring engine",
+          "status": "PENDING",
+          "notes": "Skill Completeness, Standard Coverage, Cross-Ref Integrity, Anti-Pattern Score, Version Consistency, Doc Freshness, Test Coverage, Registry Alignment, Conflict Resolution"
+        },
+        {
+          "id": "5.2",
+          "title": "Add Grade A-F badge + Radar chart",
+          "status": "PENDING",
+          "depends": [
+            "5.1"
+          ]
+        },
+        {
+          "id": "5.3",
+          "title": "Implement 7 anti-pattern detectors (from wireframe Tab Issues)",
+          "status": "PENDING"
+        },
+        {
+          "id": "5.4",
+          "title": "Skill Classification (5 axes) + Standard Classification (4 types)",
+          "status": "PENDING"
+        }
       ]
     }
   ],
-
   "currentFocus": "epic-4",
   "nextTask": "4.3",
   "blockers": [],
-
   "keyDecisions": [
-    { "id": "KD-1", "date": "2026-06-03", "title": "No separate wireframe build", "decision": "P-MAS-architector wireframe = target spec for AAA-studio QA, NOT a separate project. Build in phases inside AAA-studio." },
-    { "id": "KD-2", "date": "2026-06-03", "title": "QA becomes agent with tools", "decision": "Instead of hardcoding parsers per format, QA evolves into an agent that uses tools (read_file, grep, compare). Format-agnostic." },
-    { "id": "KD-3", "date": "2026-06-03", "title": "Real data first, roadmap second", "decision": "Test on zai-agent-toolkit (110+ skills) BEFORE building Epic 5. Data drives what metrics/detectors to implement." }
+    {
+      "id": "KD-1",
+      "date": "2026-06-03",
+      "title": "No separate wireframe build",
+      "decision": "P-MAS-architector wireframe = target spec for AAA-studio QA, NOT a separate project. Build in phases inside AAA-studio."
+    },
+    {
+      "id": "KD-2",
+      "date": "2026-06-03",
+      "title": "No Flow Editor rewrite",
+      "decision": "Current Scanner works. Just make it useful: drill-down not rebuild."
+    },
+    {
+      "id": "KD-3",
+      "date": "2026-06-03",
+      "title": "Real data first, roadmap second",
+      "decision": "Test on zai-agent-toolkit (110+ skills) BEFORE building Epic 5. Data drives what metrics/detectors to implement."
+    },
+    {
+      "id": "KD-4",
+      "date": "2026-06-03",
+      "title": "UI-only changes first",
+      "decision": "Steps 1-2 pure UI. API already returns ParsedSkill[], ReferenceCheck[]."
+    }
   ],
-
   "qaTestResults": {
     "date": "2026-06-02",
     "environment": "Vercel Production",
     "results": [
-      { "input": "GitHub URL", "score": 9.2, "status": "PASS", "details": "Specificity 9, Structure 9, Constraints 9, Examples 10" },
-      { "input": "ZIP Archive #1", "score": 9.2, "status": "PASS", "details": "Specificity 9, Structure 9, Constraints 9, Examples 10" },
-      { "input": "ZIP Archive #2", "score": 8.4, "status": "PASS", "details": "Specificity 9, Structure 9, Constraints 9, Examples 4" },
-      { "input": "Project Folder", "score": 8.4, "status": "PASS", "details": "Specificity 9, Structure 9, Constraints 9, Examples 6" }
+      {
+        "input": "GitHub URL",
+        "score": 9.2,
+        "status": "PASS",
+        "details": "Specificity 9, Structure 9, Constraints 9, Examples 10"
+      },
+      {
+        "input": "ZIP Archive #1",
+        "score": 9.2,
+        "status": "PASS",
+        "details": "Specificity 9, Structure 9, Constraints 9, Examples 10"
+      },
+      {
+        "input": "ZIP Archive #2",
+        "score": 8.4,
+        "status": "PASS",
+        "details": "Specificity 9, Structure 9, Constraints 9, Examples 4"
+      },
+      {
+        "input": "Project Folder",
+        "score": 8.4,
+        "status": "PASS",
+        "details": "Specificity 9, Structure 9, Constraints 9, Examples 6"
+      }
     ],
     "pattern": "Examples consistently lowest (4-6/10). All other dimensions 9+. Static text analysis works but limited to format-dependent parsing.",
     "conclusion": "Next step: agent-scanner approach (Epic 4) to decouple from format. Test on real toolkit (110+ skills) before building more metrics."
   },
-
   "gates": {
     "prePush": "verify-docs (consistency check) + eslint",
     "epicGate": "npx tsc --noEmit && bun run build && bunx verify-docs --ci",
     "lastPassed": "epic-3"
   },
-
   "environment": {
-    "sandbox": { "node": "v22.x", "bun": "1.3.14", "next": "15.5.18", "ram": "8GB", "cpu": "4 cores", "llm": "Z.ai SDK (internal-api.z.ai)" },
-    "vercel": { "llm": "ZAI_API_KEY configured", "build": "Passing" }
+    "sandbox": {
+      "node": "v22.x",
+      "bun": "1.3.14",
+      "next": "15.5.18",
+      "ram": "8GB",
+      "cpu": "4 cores",
+      "llm": "Z.ai SDK (internal-api.z.ai)"
+    },
+    "vercel": {
+      "llm": "ZAI_API_KEY configured",
+      "build": "Passing"
+    }
   }
 }

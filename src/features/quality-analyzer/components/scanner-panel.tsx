@@ -1,7 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { Loader2, Scan } from "lucide-react";
 import { useQualityStore } from "../hooks/use-quality-store";
+import { ScannerSkillTable } from "./scanner-skill-table";
+import { ScannerRefList } from "./scanner-ref-list";
 
 const GRADE_COLORS: Record<string, string> = {
   A: "text-green-500", B: "text-cyan-500", C: "text-amber-500",
@@ -13,9 +16,16 @@ const DIM_LABELS: Record<string, string> = {
   consistency: "Consistency", examples: "Examples", constraints: "Constraints",
 };
 
+type Section = "summary" | "skills" | "references" | "recommendations";
+
+const SECTION_LABELS: Record<Section, string> = {
+  summary: "Summary", skills: "Skills", references: "References", recommendations: "Recommendations",
+};
+
 export function ScannerPanel() {
   const report = useQualityStore((s) => s.scannerReport);
   const isScanning = useQualityStore((s) => s.isScanning);
+  const [activeSection, setActiveSection] = useState<Section>("summary");
 
   if (isScanning) {
     return (
@@ -32,9 +42,7 @@ export function ScannerPanel() {
       <div className="flex h-full min-h-[200px] flex-col items-center justify-center gap-2 text-sm text-muted-foreground">
         <Scan className="h-8 w-8 opacity-30" />
         <span>Click &quot;Scanner&quot; to run toolkit analysis</span>
-        <span className="text-xs">
-          Parses structure, checks cross-references, evaluates quality
-        </span>
+        <span className="text-xs">Parses structure, checks cross-references, evaluates quality</span>
       </div>
     );
   }
@@ -43,69 +51,82 @@ export function ScannerPanel() {
   const gradeColor = ev ? (GRADE_COLORS[ev.grade] ?? "text-muted-foreground") : "";
   const refBroken = report.references.filter((r) => !r.resolved);
 
+  const sections: Section[] = ["summary", "skills", "references"];
+  if (ev?.recommendations && ev.recommendations.length > 0) sections.push("recommendations");
+
   return (
     <div className="flex flex-col gap-3">
-      <div className="rounded-lg border bg-muted/20 px-4 py-3">
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-          Scanner Report
-        </h3>
-        <div className="flex items-center gap-4 text-sm">
-          <span>{report.structure.totalFiles} files</span>
-          <span>{report.structure.skillsCount} skills</span>
-          <span>{report.structure.standardsCount} standards</span>
-          <span>{(report.structure.totalSize / 1024).toFixed(1)} KB</span>
-        </div>
+      {/* Section tabs */}
+      <div className="flex gap-1 border-b pb-1">
+        {sections.map((s) => (
+          <button
+            key={s}
+            onClick={() => setActiveSection(s)}
+            className={`px-2 py-1 rounded-t text-xs transition-colors ${
+              activeSection === s
+                ? "bg-muted text-foreground font-medium"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {SECTION_LABELS[s]}
+            {s === "skills" && <span className="ml-1 text-muted-foreground">({report.skills.length})</span>}
+            {s === "references" && refBroken.length > 0 && (
+              <span className="ml-1 text-red-400">({refBroken.length})</span>
+            )}
+          </button>
+        ))}
       </div>
 
-      {ev && (
-        <div className="rounded-lg border bg-background px-4 py-3">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Quality Score
-            </span>
-            <span className={`text-2xl font-bold ${gradeColor}`}>{ev.grade}</span>
+      {/* Summary */}
+      {activeSection === "summary" && (
+        <>
+          <div className="rounded-lg border bg-muted/20 px-4 py-3">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+              Scanner Report
+            </h3>
+            <div className="flex items-center gap-4 text-sm">
+              <span>{report.structure.totalFiles} files</span>
+              <span>{report.structure.skillsCount} skills</span>
+              <span>{report.structure.standardsCount} standards</span>
+              <span>{(report.structure.totalSize / 1024).toFixed(1)} KB</span>
+            </div>
           </div>
-          <div className="space-y-2">
-            {Object.entries(DIM_LABELS).map(([key, label]) => {
-              const val = ev.dimensions[key as keyof typeof ev.dimensions] ?? 0;
-              const color = val >= 80 ? "bg-green-500" : val >= 60 ? "bg-amber-500" : "bg-red-500";
-              return (
-                <div key={key} className="flex items-center gap-3">
-                  <span className="w-24 text-xs text-muted-foreground">{label}</span>
-                  <div className="flex-1 h-2 rounded-full bg-muted">
-                    <div className={`h-full rounded-full ${color}`} style={{ width: `${val}%` }} />
-                  </div>
-                  <span className="w-8 text-right text-xs font-medium">{val}</span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
+          {ev && (
+            <div className="rounded-lg border bg-background px-4 py-3">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Quality Score</span>
+                <span className={`text-2xl font-bold ${gradeColor}`}>{ev.grade}</span>
+              </div>
+              <div className="space-y-2">
+                {Object.entries(DIM_LABELS).map(([key, label]) => {
+                  const val = ev.dimensions[key as keyof typeof ev.dimensions] ?? 0;
+                  const color = val >= 80 ? "bg-green-500" : val >= 60 ? "bg-amber-500" : "bg-red-500";
+                  return (
+                    <div key={key} className="flex items-center gap-3">
+                      <span className="w-24 text-xs text-muted-foreground">{label}</span>
+                      <div className="flex-1 h-2 rounded-full bg-muted">
+                        <div className={`h-full rounded-full ${color}`} style={{ width: `${val}%` }} />
+                      </div>
+                      <span className="w-8 text-right text-xs font-medium">{val}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </>
       )}
 
-      {refBroken.length > 0 && (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 dark:border-red-800 dark:bg-red-950/20">
-          <p className="text-xs font-semibold text-red-600 dark:text-red-400 mb-1">
-            Broken References ({refBroken.length})
-          </p>
-          <div className="space-y-1 max-h-[120px] overflow-y-auto">
-            {refBroken.slice(0, 10).map((r) => (
-              <p key={`${r.id}-${r.source}`} className="text-xs text-red-500 dark:text-red-400">
-                {r.id} (in {r.source.split("/").pop()})
-              </p>
-            ))}
-            {refBroken.length > 10 && (
-              <p className="text-xs text-muted-foreground">...and {refBroken.length - 10} more</p>
-            )}
-          </div>
-        </div>
-      )}
+      {/* Skills table */}
+      {activeSection === "skills" && <ScannerSkillTable skills={report.skills} />}
 
-      {ev?.recommendations && ev.recommendations.length > 0 && (
+      {/* References */}
+      {activeSection === "references" && <ScannerRefList references={report.references} />}
+
+      {/* Recommendations */}
+      {activeSection === "recommendations" && ev?.recommendations && (
         <div className="rounded-lg border bg-background px-4 py-3">
-          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-            Recommendations
-          </p>
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Recommendations</p>
           <ul className="space-y-1">
             {ev.recommendations.map((r, i) => (
               <li key={i} className="text-xs text-muted-foreground">• {r}</li>
