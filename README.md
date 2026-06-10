@@ -51,7 +51,7 @@ Changed a standard -- reflected everywhere. Created a skill -- assign to agent -
 | Hierarchy | /hierarchy | Visual parent/child agent graph, 7 edge types (command/sync/twin/delegate/feedback/supervise/broadcast) |
 | Pipelines | /pipelines | Real flow execution, node-level drill-down |
 | Workflows | /workflows | Workflow management and monitoring |
-| Prompt Studio | /prompt-studio | 6 modules: Write (live scoring) + Formulas (10) + Frameworks (11) + Techniques (14) + Compare + Intent |
+| Prompt Studio | /prompt-studio | 6 modules: Write (live scoring) + Formulas (10) + Frameworks (11) + Techniques (17) + Compare + Intent |
 | Knowledge Base | /knowledge | Upload, TF-IDF semantic search |
 | Skill Forge | /skills-page | CRUD, code/tests, StandardsPicker, SKILL.md export |
 | Standards Manager | /standards | CRUD, rules editor, cross-ref validation |
@@ -72,7 +72,7 @@ Additional: Landing page (/), Auth (login/signup/verify/reset/forgot), i18n (EN/
 | Package | Purpose |
 |---------|---------|
 | `@stsgs/ui` | Design tokens (Midnight palette), ThemeProvider, cn utility |
-| `@stsgs/prompting` | 6-criteria scoring, 10 formulas, 11 frameworks, 14 techniques, intent detection, comparison |
+| `@stsgs/prompting` | 6-criteria scoring, 10 formulas, 11 frameworks, 17 techniques, intent detection, comparison |
 | `@stsgs/shared` | Core types: Agent, Skill, Standard, Flow, Knowledge, Prompt, Audit |
 | `eslint-plugin-3a` | 4 rules: max-lines (150), max-use-state (3), no-cross-layer, no-unicode-escapes |
 | `verify-docs` | Data-driven README consistency checker with cross-repo validation and plugin system |

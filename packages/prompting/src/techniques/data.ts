@@ -127,6 +127,34 @@ const TECHNIQUES_DATA: PromptTechnique[] = [
     difficulty: "intermediate",
     example: "First list the steps needed, then execute each step one at a time with full reasoning.",
   },
+  // ---- Architecture patterns (from Hermes Agent analysis) ----
+  {
+    id: "three-layer-memory",
+    name: "3-Layer Memory Architecture",
+    description: "Design agent prompts with three distinct memory layers: short-term (current session context), long-term (persistent storage with retrieval), and procedural (skills/knowledge as executable instructions). Each layer serves a different temporal scope and access pattern.",
+    category: "architecture",
+    applicableTo: ["markdown", "plain-text", "code", "conversation"],
+    difficulty: "advanced",
+    example: "You have three memory types: (1) This conversation is your short-term memory. (2) Query MEMORY.md for long-term facts. (3) Load relevant skills from /skills/ for procedural knowledge. Always check all three before answering.",
+  },
+  {
+    id: "skill-nudges",
+    name: "Skill Self-Improvement Nudges",
+    description: "Prompt the agent to proactively save new knowledge as reusable skills after complex tasks. Prevents knowledge loss between sessions and builds a growing procedural memory. Inspired by Hermes Agent's nudge system.",
+    category: "architecture",
+    applicableTo: ["markdown", "plain-text", "code", "conversation"],
+    difficulty: "intermediate",
+    example: "After completing a complex task, check if the approach could be reusable. If yes, save it as a skill in /skills/ with trigger words, steps, and examples. This builds your procedural memory for future sessions.",
+  },
+  {
+    id: "mcp-tool-reference",
+    name: "MCP Tool Reference Pattern",
+    description: "Reference external tools via Model Context Protocol (MCP) in prompts. MCP provides a standardized way to discover, describe, and invoke tools across providers. Use this pattern when designing agents that need extensible tool integration.",
+    category: "architecture",
+    applicableTo: ["json", "markdown", "code", "yaml"],
+    difficulty: "advanced",
+    example: "Available tools are served via MCP. Use tool_name and parameters as defined in the MCP schema. Before calling any tool, verify its description matches your intent. Report tool failures with the exact error from the MCP response.",
+  },
 ];
 
 export { TECHNIQUES_DATA };

@@ -54,7 +54,8 @@ export interface PromptTechnique {
 
 export type TechniqueCategory =
   | "clarity" | "reasoning" | "constraint"
-  | "role-play" | "formatting" | "meta" | "chain-of-thought";
+  | "role-play" | "formatting" | "meta" | "chain-of-thought"
+  | "architecture";
 
 // -- Frameworks -----------------------
 export interface PromptFramework {
