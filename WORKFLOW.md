@@ -68,7 +68,7 @@ Zai-agent-toolkit (скомпилированные скиллы для Z.ai san
 
 | Package | Статус | Содержимое |
 |---------|--------|------------|
-| @stsgs/prompting | ✅ Рабочий | 9 modules: scoring, formulas (10→14 techniques), frameworks (4→11), system-prompts (5), builders (4), agent-templates (12 roles), intent, comparison |
+| @stsgs/prompting | ✅ Рабочий | 9 modules: scoring, formulas (10→17 techniques), frameworks (4→11), system-prompts (5), builders (4), agent-templates (12 roles), intent, comparison |
 | @stsgs/shared | ✅ Рабочий | Полные типы для Agent, Skill, Standard, Flow, Knowledge, Prompt |
 | @stsgs/ui | ✅ Рабочий | Design tokens (HSL), ThemeProvider, cn utility |
 | eslint-plugin-3a | ✅ Рабочий | max-lines(150), max-use-state(3), no-cross-layer |
@@ -193,7 +193,7 @@ Discarded: "Правила генерации каталога" (project-specifi
 - [x] Collaboration context builder (team roster для Orchestrator+Workers)
 - [x] Миграция типов из prompting-v0.0 в @stsgs/shared
 - [x] Расширение frameworks: 4 -> 11
-- [x] Добавление 14 техник (из 20, остальные на Phase 5)
+- [x] Добавление 17 техник (из 20, остальные на Phase 5)
 
 #### Phase 3B — Standards Seed (item 1)
 

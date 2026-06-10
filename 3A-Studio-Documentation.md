@@ -1018,7 +1018,7 @@ PromptTemplate → (используется в Prompt Studio)
 | Phase 0 (P0) | ✅ DONE | Typed Connections, Version History, Data Contract |
 | Phase 1 (P1) | ✅ DONE | Cost Dashboard, Testing System, HITL Approvals, Feedback Arrows, Seed Data |
 | Phase 2 (P2) | ✅ DONE | Animated Particles, WebSocket |
-| Phase 3A | ✅ DONE | Prompting Module (9 modules, 14 techniques, 11 frameworks, 5 system prompts, 4 builders, 12 agent roles) |
+| Phase 3A | ✅ DONE | Prompting Module (9 modules, 17 techniques, 11 frameworks, 5 system prompts, 4 builders, 12 agent roles) |
 | Phase 3B | ⚠️ Infrastructure done, DB empty | Standards need quality review before seeding |
 | Phase 3C | ⚠️ Partial | 5 type templates + 12 role templates done, 7 type-based templates deferred |
 | Phase 3D | ⚠️ Partial | SKILL.md export done, ESLint/Wiki/Prompt export partially done |
