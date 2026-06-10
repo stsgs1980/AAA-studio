@@ -4,15 +4,11 @@ import { useCallback, useRef, useState } from "react";
 import JSZip from "jszip";
 import { Upload, FolderOpen, Archive } from "lucide-react";
 import { useQualityStore } from "../hooks/use-quality-store";
+import { shouldSkipFile, MAX_FILE_SIZE } from "@/lib/scanner/file-filter";
 
 const ACCEPTED = new Set([
   "txt", "md", "json", "yaml", "yml", "ts", "js", "py", "toml", "cfg",
 ]);
-const SKIP_DIRS = new Set(["node_modules", "__pycache__", "vendor"]);
-
-function shouldSkip(path: string) {
-  return path.split("/").some((p) => p.startsWith(".") || SKIP_DIRS.has(p));
-}
 
 export function FileUploader() {
   const input = useQualityStore((s) => s.input);
@@ -35,12 +31,13 @@ export function FileUploader() {
 
   const handleFolder = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
-      const files = Array.from(e.target.files ?? []).filter(
-        (f) => ACCEPTED.has(f.name.split(".").pop()?.toLowerCase() ?? ""),
-      );
+      const files = Array.from(e.target.files ?? []).filter((f) => {
+        if (shouldSkipFile(f.webkitRelativePath ?? f.name, f.size)) return false;
+        return ACCEPTED.has(f.name.split(".").pop()?.toLowerCase() ?? "");
+      });
       if (!files.length) return;
       const parts = await Promise.all(
-        files.map((f) => f.text().then((t) => `=== ${f.name} ===\n${t}`)),
+        files.map((f) => f.text().then((t) => `=== ${f.webkitRelativePath || f.name} ===\n${t}`)),
       );
       loadFile(parts.join("\n\n"), `${files.length} files`);
     },
@@ -59,10 +56,13 @@ export function FileUploader() {
         const entries: { name: string; content: string }[] = [];
         const tasks: Promise<void>[] = [];
         zip.forEach((relPath, entry) => {
-          if (entry.dir || shouldSkip(relPath)) return;
+          if (entry.dir || shouldSkipFile(relPath)) return;
           const ext = relPath.split(".").pop()?.toLowerCase() ?? "";
           if (!ACCEPTED.has(ext)) return;
-          tasks.push(entry.async("string").then((t) => { entries.push({ name: relPath, content: t }); }));
+          tasks.push(entry.async("string").then((t) => {
+            if (t.length > MAX_FILE_SIZE) return;
+            entries.push({ name: relPath, content: t });
+          }));
         });
         await Promise.all(tasks);
         if (!entries.length) { setZipProgress("No supported files found in archive."); setTimeout(() => setZipProgress(null), 3000); return; }

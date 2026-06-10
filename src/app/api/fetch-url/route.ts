@@ -1,4 +1,5 @@
 import { handleError, success, BadRequest } from '@/lib/api-error';
+import { shouldSkipFile } from '@/lib/scanner/file-filter';
 
 interface TreeEntry {
   path: string;
@@ -26,20 +27,10 @@ async function githubTreeRecursive(
 }
 
 function isNoise(path: string, size?: number): boolean {
-  const skip = [
-    'node_modules/', '.next/', '.git/', '__pycache__/', '.venv/', 'venv/',
-    'dist/', 'build/', '.cache/', '.output/', '.nuxt/', '.turbo/',
-    'coverage/', '.DS_Store', 'package-lock.json', 'yarn.lock',
-    'pnpm-lock.yaml', '.env', '.env.local', 'next-env.d.ts',
-    'tsconfig.tsbuildinfo', '.tsbuildinfo',
-    // non-agent content
-    'dashboard-integration/', '.github/', 'hooks/',
-    'dev.log', 'opencode.json', 'templates/e2e/',
-  ];
+  if (shouldSkipFile(path, size)) return true;
+  // Repo-specific exclusions (not in generic filter)
   const lower = path.toLowerCase();
-  if (skip.some((s) => lower.includes(s))) return true;
-  if (/\.(png|jpg|jpeg|gif|svg|ico|bmp|webp|woff|woff2|ttf|eot|mp3|mp4|wav|zip|tar|gz|exe|dll|so|dylib)$/i.test(path)) return true;
-  if (size !== undefined && size > 500_000) return true;
+  if (['.venv/', 'venv/', 'dashboard-integration/', 'hooks/', 'templates/e2e/'].some((s) => lower.includes(s))) return true;
   return false;
 }
 

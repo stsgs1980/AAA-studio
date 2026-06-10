@@ -1,7 +1,8 @@
 import { z } from 'zod';
 import { handleError, success, BadRequest } from '@/lib/api-error';
 import type { ScannerFile, ReferenceCheck } from '@/lib/scanner/types';
-import { classifyFile, extractReferences, checkReferences } from '@/lib/scanner/parser';
+import { classifyFile } from '@/lib/scanner/parser';
+import { extractReferences, checkReferences } from '@/lib/scanner/references';
 
 const schema = z.object({
   files: z.array(z.object({

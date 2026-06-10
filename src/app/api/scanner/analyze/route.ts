@@ -6,7 +6,8 @@ import type {
   ScannerFile, ScannerReport, ScannerEvaluation,
   StructureSummary, ParsedSkill, ParsedStandard, ReferenceCheck,
 } from '@/lib/scanner/types';
-import { classifyFile, parseSkillMarkdown, parseStandardMarkdown, extractReferences, checkReferences } from '@/lib/scanner/parser';
+import { classifyFile, parseSkillMarkdown, parseStandardMarkdown } from '@/lib/scanner/parser';
+import { extractReferences, checkReferences } from '@/lib/scanner/references';
 import { heuristicEvaluation } from '@/lib/scanner/heuristic';
 import { detectAntiPatterns } from '@/lib/scanner/anti-patterns';
 

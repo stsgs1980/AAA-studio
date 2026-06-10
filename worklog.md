@@ -1444,3 +1444,28 @@ Stage Summary:
 - 149 lines (under 150 limit)
 - Build clean, dev server running
 - Key insight: path `skills/X/references/Y.md` contains 'skill' → must check support dirs first
+---
+Task ID: 1
+Agent: main
+Task: Unify file upload filters + extract references module
+
+Work Log:
+- Created src/lib/scanner/file-filter.ts — single source of truth for file exclusion
+  - SKIP_DIRS: node_modules, __pycache__, vendor, dist, build, coverage, .cache, .output, .nuxt, .turbo
+  - SKIP_FILES: all lock files (package-lock, yarn.lock, pnpm-lock, bun.lock), .env variants, next-env.d.ts, .tsbuildinfo
+  - Binary extension filter: images, fonts, audio, archives, binaries
+  - MAX_FILE_SIZE: 500KB per file
+- Updated file-uploader.tsx: replaced 3-line shouldSkip with shared shouldSkipFile
+  - ZIP path: applies shouldSkipFile + MAX_FILE_SIZE content check
+  - Folder path: applies shouldSkipFile (was missing entirely before!)
+- Updated fetch-url/route.ts: replaced inline isNoise() with shouldSkipFile import, kept repo-specific exclusions
+- Extracted extractReferences + checkReferences from parser.ts -> references.ts (anti-monolith: parser was 156>150 lines)
+- Updated analyze/route.ts and references/route.ts imports
+
+Stage Summary:
+- ZIP/folder/GitHub uploads now use identical exclusion rules
+- Lock files, dist/build/coverage dirs, binary files, env files — all filtered consistently
+- Folder upload no longer leaks dist/, build/, coverage/ contents
+- 500KB per-file limit applied to ZIP entries (was missing)
+- Files: file-filter.ts (new, 65 lines), references.ts (new, 48 lines), parser.ts (150 lines), file-uploader.tsx (114 lines), fetch-url/route.ts (95 lines)
+- Build: clean, verify-docs: all pass
