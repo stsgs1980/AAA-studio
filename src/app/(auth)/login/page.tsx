@@ -18,7 +18,7 @@ import { Logo } from "@/features/auth/components/logo";
 import { useLanguage } from "@/lib/i18n/language-context";
 
 async function apiLogin(username: string, password: string) {
-  const res = await fetch('/api/auth/login', {
+  const res = await fetch('/api/auth/login/', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ username, password }),
@@ -44,7 +44,7 @@ export default function LoginPage() {
     try {
       await apiLogin(data.email, data.password);
       toast.success(t.auth['Signed in successfully']);
-      router.push('/dashboard');
+      router.push('/dashboard/');
     } catch (err) {
       toast.error(err instanceof Error ? err.message : t.auth['Invalid credentials']);
     }
@@ -54,7 +54,7 @@ export default function LoginPage() {
     try {
       await apiLogin('admin', 'admin');
       toast.success(t.auth['Signed in as admin']);
-      router.push('/dashboard');
+      router.push('/dashboard/');
     } catch (err) {
       toast.error(err instanceof Error ? err.message : t.auth['Login failed']);
     }
