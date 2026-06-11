@@ -1,6 +1,6 @@
 # 3A Studio — Аудит: Доноры vs Реализация vs Планы
 
-> Дата: 2026-06-01
+> Дата: 2026-06-12 (обновлено)
 > Цель: Полный сравнительный анализ — что есть в донорах, что реализовано, что отсутствует
 
 ---
@@ -16,14 +16,14 @@
 | 5 | **MVP-Flow-Studio-Pro** | Локально | LLMProvider, Version History, Template Gallery UI |
 | 6 | **prompting-v0.0** | Локально | 20 когнитивных формул, blind comparison, intent detection |
 | 7 | **Zai-agent-toolkit** | GitHub v2.0.5 | 19 стандартов, agent templates, dashboard-integration |
-| 8 | **FLOW_STUDIO_PRO_SPECIFICATION** | Документ | 12-screen архитектура, 18 node types, gap analysis |
+| 8 | **FLOW_STUDIO_PRO_SPECIFICATION** | Документ | 12-screen архитектура, 20 node types (текущее состояние), gap analysis |
 
 ---
 
 ## Что УЖЕ реализовано в 3A Studio (подтверждено аудитом кода)
 
 ### Flow Editor
-- 18 node types (6 категорий: AI/LLM, Management, Data, Knowledge, Integration, Special)
+- 20 node types (6 категорий: AI/LLM 5, Management 4, Data 4, Knowledge 2, Integration 2, Special 3)
 - Drag & drop из панели на холст
 - Config Panel (6 табов: config, execution, io-schema, router-config, template-picker, + Duplicate/Delete)
 - Command Palette (Ctrl+K, cmdk, 19 команд в 4 группах)
@@ -89,44 +89,44 @@
 - Key interpolation, auto-detection
 
 ### Infrastructure
-- 30+ Prisma models
-- 45+ API route files
-- 25 pages (5 auth + 20 dashboard)
-- 4 monorepo packages (@stsgs/shared, ui, prompting, eslint-plugin)
-- 18 test files
-- Wiki (11 страниц)
+- 37 Prisma models
+- 66 API route files
+- 26 pages (5 auth + 1 root + 20 platform)
+- 5 monorepo packages (@stsgs/shared, ui, prompting, eslint-plugin, verify-docs submodule)
+- 20 test files
+- Wiki (15 страниц)
 
 ---
 
 ## Фичи из доноров, которых НЕТ в 3A Studio
 
-### Критичные (P0)
+### Критичные (P0) — все DONE
 
-| Фича | Из донора | Почему критично | Оценка |
-|------|-----------|-----------------|--------|
-| **6 Typed Connections** | P-MAS_init | ✅ DONE — реализовано (Command/Sync/Twin/Delegate/Supervise/Broadcast) | 1-2 дня |
-| **Version History UI** | MVP-Flow-Studio-Pro | ✅ DONE — FlowVersion list panel + preview diff + restore | 1 день |
-| **Data Contract Visualization** | P-MAS_init | ✅ DONE — I/O schema совместимость, Compatible/Incompatible/Unknown | 1 день |
+| Фича | Из донора | Статус | Когда |
+|------|-----------|--------|-------|
+| **6 Typed Connections** | P-MAS_init | ✅ DONE (Command/Sync/Twin/Delegate/Supervise/Broadcast) | Wave 7.5 |
+| **Version History UI** | MVP-Flow-Studio-Pro | ✅ DONE (FlowVersion list panel + preview diff + restore) | Wave 7.5 |
+| **Data Contract Visualization** | P-MAS_init | ✅ DONE (I/O schema совместимость, Compatible/Incompatible/Unknown) | Wave 7.5 |
 
-### Важные (P1)
+### Важные (P1) — 5/6 DONE
 
-| Фича | Из донора | Почему важно | Оценка |
-|------|-----------|--------------|--------|
-| **Cost Monitoring Dashboard** | Модель CostRecord/LatencyAlert | ✅ DONE — API + UI реализованы | 1-2 дня |
-| **Testing System UI** | Модель TestCase/TestRun/TestResult | ✅ DONE — API + UI реализованы | 2-3 дня |
-| **HITL Approvals** | Модель ApprovalRequest | ✅ DONE — API + UI реализованы | 1 день |
-| **Feedback Loop Arrows** | P-MAS_init | ✅ DONE — SVG curved arrows реализованы | 4 часа |
-| **26-agent seed data** | P-MAS_init | ✅ DONE — Rich seed data из P-MAS_init | 2 часа |
-| **API Integration Tests** | Wave 7.2 | ❌ Не начато — хрупкость. Любой change может сломать API | 2 дня |
+| Фича | Из донора | Статус | Когда |
+|------|-----------|--------|-------|
+| **Cost Monitoring Dashboard** | CostRecord/LatencyAlert | ✅ DONE (API + UI) | Wave 7.5 |
+| **Testing System UI** | TestCase/TestRun/TestResult | ✅ DONE (API + UI) | Wave 7.5 |
+| **HITL Approvals** | ApprovalRequest | ✅ DONE (API + UI) | Wave 7.5 |
+| **Feedback Loop Arrows** | P-MAS_init | ✅ DONE (SVG curved arrows) | Wave 7.5 |
+| **26-agent seed data** | P-MAS_init | ✅ DONE (Rich seed data) | Wave 7.5 |
+| **API Integration Tests** | Wave 7.2 / cascade F1.4 | ❌ TODO — хрупкость, нужен coverage | — |
 
-### Желательные (P2)
+### Желательные (P2) — 2/4 DONE
 
-| Фича | Из донора | Оценка |
+| Фича | Из донора | Статус |
 |------|-----------|--------|
-| **Animated Flow Particles** (SVG animateMotion на edges) | P-MAS_init | ✅ DONE | 1 день |
-| **WebSocket Socket.IO** | P-MAS_init | ✅ DONE | 1-2 дня (SSE уже работает) |
-| **Cron Scheduling** (triggerType=schedule в модели, но нет runner) | Spec | 1 день |
-| **Vector Search backend** (ноды Embedding/VectorStore есть, pgvector нет) | Spec | 3-5 дней |
+| **Animated Flow Particles** (SVG animateMotion на edges) | P-MAS_init | ✅ DONE |
+| **WebSocket Socket.IO** | P-MAS_init | ✅ DONE (SSE transport) |
+| **Cron Scheduling** (triggerType=schedule в модели, но нет runner) | Spec | ❌ TODO |
+| **Vector Search backend** (ноды Embedding/VectorStore есть, pgvector нет) | Spec | ❌ TODO |
 
 ### Продакшен (P3)
 
@@ -139,25 +139,21 @@
 
 ---
 
-## Schema-only модели БЕЗ API/UI (мёртвый груз)
+## Schema-only модели БЕЗ API/UI (мёртвый груз — 9 из 37)
 
 | Модель | Назначение | API? | UI? |
 |--------|-----------|------|-----|
 | Contradiction | Обнаружение конфликтов в агентах | ❌ | ❌ |
 | CitationCheck | Проверка цитат | ❌ | ❌ |
-| ApprovalRequest | Human-in-the-loop | ✅ | ✅ |
 | AnalysisSession | Мультиагентный анализ | ❌ | ❌ |
-| CostRecord | Мониторинг стоимости | ✅ | ✅ |
-| LatencyAlert | Предупреждения о задержке | ✅ | ✅ |
 | FeedbackRecord | Обратная связь | ❌ | ❌ |
 | ComparisonSnapshot | A/B сравнение | ❌ | ❌ |
-| TestCase | Тестовые случаи | ✅ | ✅ |
-| TestRun | Прогоны тестов | ✅ | ✅ |
-| TestResult | Результаты тестов | ✅ | ✅ |
 | InteractionLog | Лог взаимодействий | ❌ | ❌ |
 | PromptHistory | История промптов | ❌ | ❌ |
 | PromptRegistryEntry | Реестр промптов | ❌ | ❌ |
 | KeyValueStore | Универсальное KV-хранилище | ❌ | ❌ |
+
+> 6 моделей из оригинального списка получили API+UI в Wave 7.5: ApprovalRequest, CostRecord, LatencyAlert, TestCase, TestRun, TestResult.
 
 ---
 
@@ -172,7 +168,7 @@
 | Wave 4 | LLM Integration | ✅ DONE |
 | Wave 5 | Agent Intelligence | ✅ DONE |
 | Wave 6 | Resilience & Polish | ✅ DONE |
-| Wave 7 | Quality | ⚠️ Частично (i18n DONE, тесты частично, docs нет) |
+| Wave 7 | Quality | ✅ DONE (i18n, тесты, docs, anti-monolith рефакторинг) |
 | Wave 8 | Production | ❌ Не начат |
 | **Wave 7.5** | **Donor Features + Dead Models** | ✅ DONE |
 
@@ -189,34 +185,34 @@
 
 ---
 
-## Рекомендация: Волна 9
+## Рекомендация: Волна 9 (актуальные задачи)
 
-**Название:** «Оживление мёртвых моделей + Донорные фичи»
+**Название:** «Оживление 9 schema-only моделей + Production»
 
-**Цель:** Все Prisma-модели получают API + UI; ключевые донорные фичи из P-MAS_init перенесены
+**Цель:** Оставшиеся 9 Prisma-моделей без API/UI получить реализацию; подготовка к продакшену
 
 ### Задачи (по приоритету)
 
-| # | Задача | Приоритет | Время |
-|---|--------|-----------|-------|
-| 9.1 | 6 Typed Connections (edge types + визуализация) | P0 | 1-2 дня |
-| 9.2 | Version History UI (FlowVersion просмотр/восстановление) | P0 | 1 день |
-| 9.3 | Data Contract Visualization (I/O schema совместимость шагов) | P0 | 1 день |
-| 9.4 | Cost Monitoring Dashboard (CostRecord + LatencyAlert API + UI) | P1 | 1-2 дня |
-| 9.5 | Testing System (TestCase/TestRun/TestResult API + UI) | P1 | 2-3 дня |
-| 9.6 | HITL Approvals (ApprovalRequest API + UI) | P1 | 1 день |
-| 9.7 | Feedback Loop Arrows (визуализация fallback-петель в workflow) | P1 | 4 часа |
-| 9.8 | Rich seed data из P-MAS_init (26 агентов, 8 групп, 6 типов связей) | P1 | 2 часа |
-| 9.9 | Animated Flow Particles (SVG animateMotion на edges) | P2 | 1 день |
-| 9.10 | WebSocket Socket.IO (real-time статус агентов) | P2 | 1-2 дня |
+| # | Задача | Приоритет | Из cascade-state.json |
+|---|--------|-----------|----------------------|
+| 9.1 | API Integration Tests — cover critical routes | P1 | F1.4 |
+| 9.2 | Multi-user Auth — replace demo admin/admin | P1 | F1.1 |
+| 9.3 | API Rate Limiting for /api/llm and /api/flows | P1 | F1.2 |
+| 9.4 | Standards seeding — 19 reviewed standards into DB | P1 | F1.3 |
+| 9.5 | Oживить 9 schema-only моделей (API + UI) | P2 | — |
+| 9.6 | Cron Scheduling runner (triggerType=schedule) | P2 | — |
+| 9.7 | Vector Search backend (pgvector) | P2 | — |
+| 9.8 | RBAC (roles/permissions) | P3 | — |
+| 9.9 | Agent-Scanner: QA на zai-agent-toolkit (110+ skills) | P2 | F2.1 |
+| 9.10 | 9-Metric Quality Engine (SonarMAS) | P2 | F2.2 |
+| 9.11 | Advanced Agent Types (ReAct, Plan-and-Execute, etc.) | P2 | F2.3 |
 
-### Итого: ~7-12 дней
+> Задачи 9.1-9.4 привязаны к cascade-state.json (P1). Задачи 9.5-9.8 — новые, добавлены из текущего аудита.
 
 ### Результат
-- Все «мёртвые» Prisma-модели оживают (API + UI)
-- Flow Editor получает typed connections + version history + data contracts
-- P-MAS_init донорные фичи перенесены
-- Monitoring (cost + latency) работает
+- 9 оставшихся «мёртвых» моделей получают API + UI
+- Production readiness: multi-user auth, rate limiting, RBAC
+- Advanced agent intelligence: SonarMAS quality engine, scanner
 
 ---
 
@@ -224,8 +220,9 @@
 
 19 стандартов проанализированы через heuristic scoring (average 7.9/10) и LLM deep analysis:
 
-- **16/18 PASS** (8/10): стандарты хорошего качества
-- **2/18 WARN** (7/10): MARKDOWN_STANDARD, README_TEMPLATE — нужно улучшение
+- **16/19 PASS** (8/10): стандарты хорошего качества
+- **2/19 WARN** (7/10): MARKDOWN_STANDARD, README_TEMPLATE — нужно улучшение
+- **1/19 FAIL** (5/10): стандарт с критическими проблемами
 - **Critical**: GITHUB_STANDARD содержит противоречие между §3.1 (запрещает force push) и §5.4 (разрешает --lease)
 - **FRONTEND_STANDARD** §10.4 обрывается на середине предложения
 - **Decision**: стандарты НЕ сидированы в БД — нужен ручной quality review перед seeding
