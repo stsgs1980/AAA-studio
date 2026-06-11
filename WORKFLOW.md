@@ -179,7 +179,6 @@ Discarded: "Правила генерации каталога" (project-specifi
 
 > **Build order**: prompting (item 3) -> standards seed (item 1) -> agent templates (item 2).
 > Зависимость: standards нужны type-based шаблоны из prompting, а agent templates нужны стандарты.
-> Подробности: [docs/ROADMAP.md](docs/ROADMAP.md), [docs/PROMPTING_MODULE.md](docs/PROMPTING_MODULE.md)
 
 #### Phase 3A — Prompting Module (item 3, текущий таск)
 
@@ -266,23 +265,15 @@ Discarded: "Правила генерации каталога" (project-specifi
 - [ ] Parallel/Voting (multi-LLM reliability)
 - [ ] Deferred techniques: Tree-of-Thought, Least-to-Most, Assumption Challenge, Output Masking, Stakeholder Simulation, Analogical Reasoning
 
-#### ⚠️ Security Hardening (критично перед публичным запуском)
+#### Security Status
 
-> **FIXME**: Перед открытием доступа публичным пользователям необходимо реализовать:
->
-> 1. **Authentication** — заменить demo admin/admin на реальную авторизацию
->    (NextAuth.js / Clerk / Auth.js). Middleware для защиты `/api/settings`, `/api/llm/*`.
->
-> 2. **API Key Encryption** — ✅ DONE (AES-256-GCM, commit f171311)
->
-> 3. **Key Masking в UI** — 🔥 В РАБОТЕ. GET /api/settings маскирует ключ (sk-****abcd),
->    полный ключ только при POST (сохранение).
->
-> 4. **Rate Limiting** — ограничить вызовы `/api/llm` чтобы предотвратить
->    разорение через чужой ключ при компрометации сессии.
->
-> Файлы: `src/lib/llm/settings.ts`, `src/app/api/settings/route.ts`,
-> `src/components/settings/llm-provider-card.tsx`, `src/middleware.ts`
+| Measure | Status | Details |
+|---------|--------|---------|
+| JWT Authentication | ✅ DONE | jose HS256, Edge middleware, httpOnly cookie (commit f171311) |
+| API Key Encryption | ✅ DONE | AES-256-GCM, encrypt on save, decrypt on read (commit f171311) |
+| Key Masking in UI | ✅ DONE | GET /api/settings returns sk-****abcd, full key only on POST (commit 1bd409a) |
+| Rate Limiting | ❌ TODO | Ограничить вызовы `/api/llm` и `/api/flows/[id]/execute` (Wave 8.2) |
+| Multi-user Auth | ❌ TODO | Заменить demo admin/admin на NextAuth.js / Clerk (Wave 8.1) |
 
 ---
 

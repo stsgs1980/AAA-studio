@@ -1626,3 +1626,23 @@ Stage Summary:
 - The initial inner-def counts in the task (19, 13, 15, ?, 11) were over-counts that included local variable bindings, state hooks, and computed values which are not extractable components or functions.
 - tsc: clean (0 errors)
 
+
+---
+Task ID: 5
+Agent: main
+Task: Fix 25 documentation gaps (docs audit remediation)
+
+Work Log:
+- Filled cascade-state.json with 15 real 3A Studio tasks (P0: 8 completed, P1: 4 pending, P2: 3 pending)
+- Updated 3A-Studio-Documentation.md: 66 endpoints, 37 models, 20 nodes, 15 wiki, 11 frameworks, 17 techniques, 8 i18n namespaces, 17 feature modules
+- Fixed README.md: i18n 7→8 namespaces, removed dead docs/ Note block
+- Rewrote WORKFLOW.md Security section: JWT DONE, Key Masking DONE, Rate Limiting TODO, Multi-user TODO; removed broken docs/ links
+- Synced .env.example: added DIRECT_URL, ZAI_API_KEY, ZAI_BASE_URL
+- Synced UNIFIED_TASK_LIST.md: npm→bun, updated counts (37 models, 66 routes, 15 wiki)
+- Created scripts/install-hooks.ts for postinstall hook
+- Submodule verify-docs pointer updated
+
+Stage Summary:
+- 8 of 9 documentation gap priorities resolved and staged
+- Remaining: AUDIT-DONORS-vs-IMPLEMENTATION.md update (low priority)
+- All changes staged, ready for commit and push

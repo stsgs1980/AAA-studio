@@ -1,18 +1,18 @@
 # 3A Studio -- Unified numbered task list
 
 > Principle: **check donors first** (3a-studio-mas, p-mas), take only working parts,
-> after each stage project must be **runnable** (`npm run dev`, `npm run lint`)
+> after each stage project must be **runnable** (`bun run dev`, `bun run lint`)
 
 ## Current state (inventory)
 
 ### Clean repo `/home/z/my-project/3a-studio/`
 - [+] Next.js 15 + TypeScript + Tailwind 4 + shadcn/ui
 - [+] ESLint with custom plugin (4 rules)
-- [+] Prisma schema: 30 models
-- [+] `npm run build` -- passes
-- [+] `npm run lint` -- 0 errors
-- [+] API routes: 45+ route files across 15 feature areas
-- [+] 17 feature modules + Quality Analyzer, 4 packages
+- [+] Prisma schema: 37 models
+- [+] `bun run build` -- passes
+- [+] `bun run lint` -- 0 errors
+- [+] API routes: 66 route files across 17 feature areas
+- [+] 17 feature modules + Quality Analyzer, 4 packages + verify-docs submodule
 - [+] Auth middleware + API key encryption
 - [+] Multi-provider LLM (Z.ai, OpenAI, Anthropic, OpenRouter, custom)
 - [+] MCP Server (JSON-RPC + SSE transport, 6 methods)
@@ -23,7 +23,7 @@
 - [+] Resilience: Retry, Circuit Breaker, Fallback, Health Check
 - [+] Self-Correction: Generate → Judge → Revise loop
 - [+] Prompt Templates: 8 built-in + CRUD API
-- [+] Wiki: 11 pages + GitHub export
+- [+] Wiki: 15 pages + GitHub export
 - [+] 15 schema-only models without API/UI (see Wave 7.5)
 - [+] Quality Analyzer: heuristic scoring, LLM deep analysis (8 criteria), standards check, rubric evaluation, GitHub repo integration
 - [+] LLM env-key injection: ZAI_API_KEY, OPENAI_API_KEY, etc. auto-injected from env vars

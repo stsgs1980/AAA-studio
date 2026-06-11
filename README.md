@@ -63,7 +63,7 @@ Changed a standard -- reflected everywhere. Created a skill -- assign to agent -
 | Self-Correction | /self-correction | Auto-revision loop |
 | Wiki | /wiki | 15 articles, Ctrl+K drawer |
 
-Additional: Landing page (/), Auth (login/signup/verify/reset/forgot), i18n (EN/RU, 7 namespaces).
+Additional: Landing page (/), Auth (login/signup/verify/reset/forgot), i18n (EN/RU, 8 namespaces).
 
 > **Note:** Approvals, Cost Monitor, Analysis, and Comparison screens are planned but not yet implemented (API routes exist for some).
 
@@ -164,8 +164,6 @@ All cross-entity references validated on delete (409 Conflict if referenced).
 | Doc | Description |
 |-----|-------------|
 | [WORKFLOW.md](WORKFLOW.md) | Full workflow, architecture diagram, roadmap phases |
-
-> **Note:** docs/AGENT_TYPES.md, docs/ROADMAP.md, docs/PROMPTING_MODULE.md, and docs/research/agent-typology-full.md are referenced but not yet created.
 
 ## Deployment
 
