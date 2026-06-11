@@ -1682,3 +1682,20 @@ Stage Summary:
 - AGENT_RULES.md cleaned from 416 lines to 67 lines
 - anti-hallucination-guard updated to e2e0cfe
 - cascade-state.json preserved as standalone file
+
+---
+Task ID: 8
+Agent: main
+Task: Clean AHG dead weight from project root
+
+Work Log:
+- Removed tools/verify-docs/ (duplicate of packages/verify-docs, -1182 lines)
+- Replaced scripts/audit.sh, check-agent.sh, validate.sh with stubs (prevents AHG setup.sh re-deployment)
+- Rewrote .git/hooks/pre-push: removed cascade-guard references, fixed path to AHG validate.sh
+- packages/verify-docs remains as the canonical verify-docs (separate submodule, up to date)
+
+Stage Summary:
+- Project root cleaned from AHG-deployed dead scripts
+- pre-push hook works (references AHG submodule directly)
+- Trade-off: AHG update.sh will skip scripts (stubs exist) and tools/verify-docs (needs mkdir)
+- Next AHG update may need manual cleanup of tools/verify-docs
