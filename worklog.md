@@ -1662,3 +1662,23 @@ Stage Summary:
 - All 25 documentation gaps now resolved
 - SubAgent/Variable node types removed from docs (phantom entries from previous update)
 - AUDIT-DONORS fully synchronized with cascade-state.json task IDs
+
+---
+Task ID: 7
+Agent: main
+Task: Remove cascade-guard submodule and cleanup
+
+Work Log:
+- Updated both submodules (AHG 0759547->e2e0cfe, cascade 1c99480->9d72b04)
+- Analyzed updated code: AHG gained check-sandbox.sh + modular setup (useful), cascade gained modular CLI (still useless in sandbox)
+- Removed cascade-guard submodule (git submodule deinit + git rm + cleanup .git/modules)
+- Removed cascade-cli.sh and cascade-init.sh from project root
+- Removed cascade-guard entry from .gitmodules
+- Rewrote AGENT_RULES.md: removed 2x duplicated cascade blocks (338 lines -> 67 lines), kept only AHG Rules 1-7
+- Pre-commit hook: kept cascade-state.json validation (useful, no dependency on cascade-guard)
+
+Stage Summary:
+- cascade-guard fully removed from project
+- AGENT_RULES.md cleaned from 416 lines to 67 lines
+- anti-hallucination-guard updated to e2e0cfe
+- cascade-state.json preserved as standalone file

@@ -44,6 +44,18 @@
 5. Git commit
 6. Go to step 2
 
+## Rule 7: Sandbox verification (no fake setup)
+
+Agents MUST verify sandbox infrastructure is real before proceeding. Known anti-hallucination patterns in Z.ai Sandbox:
+
+1. **Clone to subfolder, not root**: Code cloned into `/tmp/` or `/home/z/my-project/subdir/` is NOT served by the dev server. The sandbox server only serves code in `/home/z/my-project/` root. Verify: `ls /home/z/my-project/src/app/page.tsx`.
+
+2. **Dev server is managed by sandbox**: Do NOT manually start `next dev`. The sandbox starts it via `.zscripts/dev.sh`. Verify: `pgrep -f ".zscripts/dev.sh"`. If absent, re-init: `curl https://z-cdn.chatglm.cn/fullstack/init-fullstack_1775040338514.sh | bash`.
+
+3. **HMR 500 is NOT "it works":** A 500 response in `dev.log` means broken code, not a working server. Verify: `curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:3000/` must return `200`.
+
+4. **Editing wrong location is silent failure**: Writing to `/tmp/my-repo/src/app/page.tsx` changes NOTHING visible in the browser. Always confirm you are editing files under `/home/z/my-project/`.
+
 
 ## worklog.md format
 
@@ -64,171 +76,3 @@ Stage Summary:
 
 
 <!-- AHG:END -->
-
-# AGENT RULES - Cascade-guard
-
-> **Mandatory reading before ANY work on the project.**
-> If you are an AI agent and have not read this file - stop and read it now.
-
----
-
-## 1. SINGLE SOURCE OF TRUTH
-
-The only source of truth for task states is the **`cascade-state.json`** file.
-
-- All task statuses are stored ONLY there
-- If your context has stale information - re-read the file
-- NEVER rely on your memory of "what has already been done"
-
----
-
-## 2. WORK START PROTOCOL
-
-Before starting ANY work, the agent MUST:
-
-1. Read `cascade-state.json`
-2. Run `./cascade-cli.sh next-task` to find out which task is next
-3. Verify the task is in `ready` status (all depends_on = completed)
-4. If a task is `blocked` - do NOT touch it. Work only on `ready` tasks
-
-**Forbidden:**
-- Starting a task with unmet dependencies
-- Choosing a task based on "I think this is more important"
-- Working on P2 tasks when there are unfinished P0/P1 tasks
-
----
-
-## 3. TASK EXECUTION PROTOCOL
-
-### 3.1 Start
-
-```
-1. Read cascade-state.json -> find the task by ID
-2. Study: title, acceptance criteria, anti_hallucination checks
-3. Determine: which files to create/edit
-4. Write to worklog.md: "STARTED: {task_id} - {title}"
-5. Update cascade-state.json: status = "in_progress"
-```
-
-### 3.2 Work
-
-```
-1. Implement code according to acceptance criteria
-2. Verify all anti_hallucination rules
-3. Verify anti-monolith rule (max 250 lines per file)
-4. Verify Unicode policy (no emoji, no decorative Unicode)
-5. Each logical block - separate commit
-```
-
-### 3.3 Completion
-
-```
-1. Verify ALL acceptance criteria - each item
-2. If even one criterion is NOT met - the task is NOT complete
-3. Update cascade-state.json: status = "completed"
-4. Write to worklog.md: "COMPLETED: {task_id} - {title}" + results
-5. Make a git commit with description "feat(task_id): description"
-6. Push to GitHub
-```
-
----
-
-## 4. FORBIDDEN ACTIONS
-
-| # | Prohibition | Reason |
-|---|-------------|--------|
-| 1 | Changing task status to completed without checking ALL acceptance criteria | Quality hallucination |
-| 2 | Skipping anti_hallucination checks | Unreliable code |
-| 3 | Creating files larger than 250 lines (exceptions require explicit approval) | Anti-monolith |
-| 4 | Using emoji or decorative Unicode in DOM-injected files | Unicode Policy |
-| 5 | Starting a task with depends_on where at least one is not completed | Dependency violation |
-| 6 | Modifying cascade-state.json without actually doing the work | False status |
-| 7 | Working on tasks out of order (skipping P0 for P2) | Priority violation |
-| 8 | Making commits with descriptions like "update", "fix", "wip" | No traceability |
-
----
-
-## 5. ALLOWED PARALLELISM
-
-Tasks can be executed in parallel ONLY if:
-
-1. They are in the same phase
-2. They have no mutual dependencies (depends_on)
-3. They work with different files (no write conflict)
-
-**Examples of parallel tasks:**
-- Tasks that all depend only on F0.1 and do not depend on each other
-
-**Forbidden to parallelize:**
-- Tasks where one depends on the other
-
----
-
-## 6. BLOCKING HANDLING
-
-If a task is blocked (depends_on not completed):
-
-1. Do NOT attempt to bypass the block
-2. Report to the user: "Task F1.3 is blocked: waiting for F0.7, F1.4"
-3. Suggest an alternative: "Available tasks: F1.5, F1.6 (no dependencies except F0.1)"
-4. Work on available tasks
-
----
-
-## 7. WORKING WITH CASCADE-CLI.SH
-
-The `cascade-cli.sh` script is your primary tool for navigating the cascade.
-
-```bash
-# Which task is next?
-./cascade-cli.sh next-task
-
-# Show all ready tasks
-./cascade-cli.sh ready-tasks
-
-# Complete a task (checks all depends_on)
-./cascade-cli.sh complete-task F0.2
-
-# Show cascade status
-./cascade-cli.sh status
-
-# Show task dependencies
-./cascade-cli.sh deps F3.4
-
-# Show which functions a task implements
-./cascade-cli.sh implements F2.1
-```
-
----
-
-## 8. PRIORITY CRITERIA
-
-| Priority | Meaning | When it can be deferred |
-|----------|---------|------------------------|
-| P0 | Critical. The project does not work without it | NEVER |
-| P1 | Important. Significant functionality | Only if all P0 tasks in the current phase are completed |
-| P2 | Nice to have. UX improvements | Only if all P0 and P1 are completed |
-
----
-
-## 9. REPOSITORY WORKFLOW
-
-- Commit format: `feat(F0.2): extract selectors module` or `fix(F0.3): handle null in safeGetText`
-- Each commit MUST update worklog.md
-- Each commit MUST follow the task-based format
-
----
-
-## 10. CHECKLIST BEFORE EVERY RESPONSE TO USER
-
-Before reporting "task completed", verify:
-
-- [ ] All acceptance criteria met?
-- [ ] All anti_hallucination checks passed?
-- [ ] Files do not exceed 250 lines?
-- [ ] No emoji/decorative Unicode?
-- [ ] cascade-state.json updated?
-- [ ] worklog.md updated?
-- [ ] Git commit made?
-
-If even one item is NOT met - the task is NOT complete.
