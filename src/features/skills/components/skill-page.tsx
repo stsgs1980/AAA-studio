@@ -8,6 +8,7 @@ import { SkillList } from "./skill-list";
 import { SkillDetail } from "./skill-detail";
 import { SkillCreateForm } from "./skill-create-form";
 import { useLanguage } from "@/lib/i18n/language-context";
+import { useSkillExport } from "../hooks/use-skill-export";
 
 export default function SkillForgePage() {
   const { loading, showNew, setShowNew, fetchSkills } = useSkillStore();
@@ -76,44 +77,12 @@ export default function SkillForgePage() {
 
 /** Dropdown button to export all skills in OpenAI / MCP / A2A format */
 function ExportFormatsButton() {
-  const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  // Close on outside click
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, []);
-
-  const download = async (format: string) => {
-    setLoading(true);
-    setOpen(false);
-    try {
-      const res = await fetch(`/api/skills/export-formats?format=${format}`);
-      if (!res.ok) throw new Error('Export failed');
-      const data = await res.json();
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `skills-${format}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
-    } catch {
-      alert('Export failed');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { open, loading, ref, download, toggleOpen } = useSkillExport();
 
   return (
     <div className="relative" ref={ref}>
       <button
-        onClick={() => setOpen(!open)}
+        onClick={toggleOpen}
         disabled={loading}
         className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-muted-foreground text-sm font-medium hover:bg-muted transition-colors"
       >

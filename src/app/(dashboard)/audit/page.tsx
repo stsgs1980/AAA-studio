@@ -1,16 +1,11 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
 import { ScrollText, RefreshCw } from 'lucide-react';
 import { cn } from '@stsgs/ui';
 import { PageSkeleton } from '@/components/ui';
 import { CodeBlock } from '@/components/code-block';
 import { useLanguage } from '@/lib/i18n/language-context';
-
-interface AuditEntry {
-  id: string; action: string; entityType: string; entityId: string;
-  userId: string | null; details: string | null; timestamp: string;
-}
+import { useAuditLog } from './hooks/use-audit-log';
 
 const ENTITY_COLORS: Record<string, string> = {
   agent: 'bg-blue-500/10 text-blue-500',
@@ -22,10 +17,8 @@ const ENTITY_COLORS: Record<string, string> = {
 };
 
 export default function AuditLogPage() {
-  const [logs, setLogs] = useState<AuditEntry[]>([]);
-  const [filter, setFilter] = useState('');
-  const [loading, setLoading] = useState(true);
   const { t } = useLanguage();
+  const { logs, filter, setFilter, loading, fetchLogs } = useAuditLog();
 
   const entityOptions = [
     { value: '', label: t.pages['All entities'] },
@@ -36,18 +29,6 @@ export default function AuditLogPage() {
     { value: 'standard', label: t.pages['Standard'] },
     { value: 'skill', label: t.pages['Skill'] },
   ];
-
-  const fetchLogs = useCallback(async () => {
-    try {
-      setLoading(true);
-      const params = filter ? `?entityType=${filter}` : '';
-      const res = await fetch(`/api/audit${params}`);
-      if (!res.ok) throw new Error();
-      setLogs(await res.json());
-    } catch { setLogs([]); } finally { setLoading(false); }
-  }, [filter]);
-
-  useEffect(() => { fetchLogs(); }, [fetchLogs]);
 
   const filtered = filter ? logs.filter((l) => l.entityType === filter) : logs;
 

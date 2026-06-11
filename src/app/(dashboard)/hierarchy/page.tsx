@@ -1,57 +1,15 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
 import { Network, Bot, User } from 'lucide-react';
 import { cn } from '@stsgs/ui';
 import { PageSkeleton } from '@/components/ui';
-import { TreeItem, type TreeNode } from '@/features/hierarchy/components/tree-item';
+import { TreeItem } from '@/features/hierarchy/components/tree-item';
 import { useLanguage } from '@/lib/i18n/language-context';
+import { useHierarchy } from './hooks/use-hierarchy';
 
 export default function AgentHierarchyPage() {
-  const [tree, setTree] = useState<TreeNode[]>([]);
-  const [stats, setStats] = useState({ total: 0, roots: 0, maxDepth: 0 });
-  const [loading, setLoading] = useState(true);
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const { t } = useLanguage();
-
-  const buildTree = useCallback((list: { id: string; name: string; role: string; status: string; group: string; parentId: string | null }[]) => {
-    const map = new Map<string, TreeNode>();
-    list.forEach((a) => map.set(a.id, { ...a, children: [] }));
-    const roots: TreeNode[] = [];
-    list.forEach((a) => {
-      const node = map.get(a.id)!;
-      if (a.parentId && map.has(a.parentId)) map.get(a.parentId)!.children.push(node);
-      else roots.push(node);
-    });
-    const maxDepth = (nodes: TreeNode[], d: number): number =>
-      nodes.reduce((max, n) => Math.max(max, n.children.length > 0 ? maxDepth(n.children, d + 1) : d), d);
-    setTree(roots);
-    setStats({ total: list.length, roots: roots.length, maxDepth: maxDepth(roots, 1) });
-  }, []);
-
-  const fetchAgents = useCallback(() => {
-    fetch('/api/agents')
-      .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
-      .then((data) => buildTree(data.data?.agents || data.agents || data))
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, [buildTree]);
-
-  useEffect(() => { fetchAgents(); }, [fetchAgents]);
-
-  const handleDrop = async (dragId: string, targetId: string) => {
-    if (dragId === targetId) return;
-    try {
-      const res = await fetch(`/api/agents/${dragId}`, {
-        method: 'PUT', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ parentId: targetId }),
-      });
-      if (!res.ok) { const d = await res.json(); setMessage({ type: 'error', text: d.error || t.common['Failed'] }); return; }
-      setMessage({ type: 'success', text: t.pages['Agent reparented'] });
-      fetchAgents();
-      setTimeout(() => setMessage(null), 3000);
-    } catch { setMessage({ type: 'error', text: t.common['Network error'] }); }
-  };
+  const { tree, stats, loading, message, handleDrop } = useHierarchy(t);
 
   return (
     <div className="p-6 space-y-4">

@@ -1491,3 +1491,138 @@ Stage Summary:
 - Fix: global fetch patch in src/lib/fetch-patch.tsx + FetchPatch in layout
 - Affects ALL /api/ calls in sandbox (login, settings, seed, etc.) -- all fixed by this single patch
 - Files: src/lib/fetch-patch.tsx (new, 20 lines), src/app/layout.tsx (modified)
+---
+Task ID: 2
+Agent: forms-refactor
+Task: Extract useState from workflow-create-form and task-create-form into hooks
+
+Work Log:
+- Read both form files (78 lines each, 4 useState each)
+- Created hooks/use-workflow-create-form.ts
+- Created hooks/use-task-create-form.ts
+- Rewrote both components to pure JSX
+- Verified tsc --noEmit passes
+
+Stage Summary:
+- workflow-create-form.tsx: 78 lines → ~50 lines (pure JSX)
+- task-create-form.tsx: 78 lines → ~50 lines (pure JSX)
+- New: hooks/use-workflow-create-form.ts, hooks/use-task-create-form.ts
+- Both components now have 0 useState
+---
+Task ID: 3
+Agent: settings-refactor
+Task: Extract 7 useState + fetch logic from settings page into useSettings hook
+
+Work Log:
+- Read settings/page.tsx (149 lines, 7 useState, 5 callbacks)
+- Created hooks/use-settings.ts with useSettings() hook
+- Rewrote page.tsx to pure JSX with hook
+- Verified tsc --noEmit passes
+
+Stage Summary:
+- settings/page.tsx: 149 lines → ~68 lines (pure JSX + helpers)
+- New: hooks/use-settings.ts (~62 lines, all state + data logic)
+- Page now has 0 useState, all state in hook
+
+---
+Task ID: 1
+Agent: flow-assistant-refactor
+Task: Extract 7 useState from flow-assistant.tsx into useFlowAssistant hook
+
+Work Log:
+- Read flow-assistant.tsx (96 lines, 7 useState)
+- Created hooks/use-flow-assistant.ts with useFlowAssistant() hook
+- Rewrote flow-assistant.tsx to pure JSX component using the hook
+- Verified tsc --noEmit passes
+
+Stage Summary:
+- flow-assistant.tsx: 96 lines → 53 lines (pure JSX, 0 useState)
+- New: hooks/use-flow-assistant.ts (105 lines, all state + logic)
+- Component now has 0 useState, all state in hook
+---
+Task ID: 3c
+Agent: mixed-concerns-batch3
+Task: Extract data-fetching from approval-panel, version-history, skill-page ExportFormatsButton into hooks
+
+Work Log:
+- Created dashboard/hooks/use-approvals.ts
+- Created flow-editor/hooks/use-version-history.ts
+- Created skills/hooks/use-skill-export.ts
+- Rewrote 3 components to use hooks
+- tsc passes
+
+Stage Summary:
+- approval-panel.tsx: 120 → 62 lines
+- version-history.tsx: 98 → 52 lines
+- skill-page.tsx: 133 → 102 lines
+---
+Task ID: 3b
+Agent: mixed-concerns-batch2
+Task: Extract data-fetching from hierarchy, audit, agent-executions into hooks
+
+Work Log:
+- Created hierarchy/hooks/use-hierarchy.ts
+- Created audit/hooks/use-audit-log.ts
+- Created agents/hooks/use-agent-executions.ts
+- Rewrote 3 components to pure JSX
+- tsc passes
+
+Stage Summary:
+- hierarchy/page.tsx: 120 → ~50 lines
+- audit/page.tsx: 110 → ~70 lines
+- agent-executions.tsx: 129 → ~80 lines (still has formatDuration, timeAgo, statusConfig)
+---
+Task ID: 3a
+Agent: mixed-concerns-batch1
+Task: Extract data-fetching from team-tab, self-correction-panel, knowledge page into hooks
+
+Work Log:
+- Created agents/hooks/use-team-data.ts
+- Created self-correction/hooks/use-self-correction.ts
+- Created knowledge/hooks/use-knowledge-data.ts
+- Rewrote 3 components to pure JSX
+- tsc passes
+
+Stage Summary:
+- team-tab.tsx: 138 → ~70 lines
+- self-correction-panel.tsx: 137 → ~70 lines
+- knowledge/page.tsx: 127 → ~60 lines
+---
+Task ID: 4
+Agent: api-services-extract
+Task: Extract business logic from 5 API routes into service modules
+
+Work Log:
+- Created src/lib/services/self-correction-service.ts
+- Created src/lib/services/scanner-service.ts
+- Created src/lib/services/flow-execution-service.ts
+- Created src/lib/services/test-run-service.ts
+- Created src/lib/services/skill-import-service.ts
+- Rewrote 5 route.ts files to thin orchestrators
+- tsc passes
+
+Stage Summary:
+- 5 new service files in src/lib/services/
+- 5 route files reduced to thin orchestrators (~20-30 lines each)
+- All business logic testable outside of request context
+---
+Task ID: 5
+Agent: inner-components-extract
+Task: Extract inner components from files with 10+ definitions
+
+Work Log:
+- Read and analyzed 5 candidate files for inner definition counts
+- file-uploader.tsx: 2 module-level defs (ACCEPTED, FileUploader) + 3 useCallback handlers (tightly coupled to component state). Extractable: 0 components. Count: ~5 defs. SKIP.
+- typed-edge.tsx: 3 module-level defs (TypedEdgeData interface, TypedEdgeComponent, TypedEdge alias). No inner components/functions. Count: ~3 defs. SKIP.
+- edge-particles.tsx: 3 module-level defs (EDGE_DURATIONS, PARTICLES, EdgeParticles). No inner components/functions. Count: ~3 defs. SKIP.
+- flow-assistant-stages.tsx: 4 module-level defs (ICON_MAP, StageChoices, StageConfig, StageReview) + 2 inner helpers (isSelected, row). Extractable: 0. Count: ~6 defs. SKIP.
+- skill-info-editor.tsx: 5 module-level defs (S type, SkillInfoEditor, TagsField, AnnotationsField, SchemaField) + 4 inner helpers (toggle, add, start, save). Extractable: 0. Count: ~9 defs. SKIP.
+- All 5 files have fewer than 10 inner component/function definitions. No extractions performed.
+- tsc --noEmit passes with 0 errors
+
+Stage Summary:
+- No files modified. No files created.
+- All 5 candidate files have <10 inner definitions after manual verification.
+- The initial inner-def counts in the task (19, 13, 15, ?, 11) were over-counts that included local variable bindings, state hooks, and computed values which are not extractable components or functions.
+- tsc: clean (0 errors)
+

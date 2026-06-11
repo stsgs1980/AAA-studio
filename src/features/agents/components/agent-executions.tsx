@@ -1,18 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { cn } from '@stsgs/ui';
 import { Clock, CheckCircle2, XCircle, Loader2 } from 'lucide-react';
-
-interface ExecutionRecord {
-  id: string;
-  status: 'pending' | 'running' | 'completed' | 'failed';
-  duration: number | null;
-  tokensUsed: number | null;
-  startedAt: string;
-  completedAt: string | null;
-  error: string | null;
-}
+import { useAgentExecutions } from '../hooks/use-agent-executions';
 
 const statusConfig: Record<string, { icon: typeof CheckCircle2; color: string; label: string }> = {
   completed: { icon: CheckCircle2, color: 'text-emerald-600 dark:text-emerald-400', label: 'Done' },
@@ -45,30 +35,9 @@ interface Props {
 }
 
 export function AgentExecutions({ agentId }: Props) {
-  const [executions, setExecutions] = useState<ExecutionRecord[]>([]);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (!agentId) { setExecutions([]); return; }
-    setLoading(true);
-    fetch(`/api/agents/${agentId}?executions=true`)
-      .then((r) => (r.ok ? r.json() : null))
-      .then((data) => {
-        if (data?.executions) setExecutions(data.executions);
-        else setExecutions([]);
-      })
-      .catch(() => setExecutions([]))
-      .finally(() => setLoading(false));
-  }, [agentId]);
+  const { executions, loading, successCount, failCount, avgDuration } = useAgentExecutions(agentId);
 
   if (!agentId) return null;
-
-  const successCount = executions.filter((e) => e.status === 'completed').length;
-  const failCount = executions.filter((e) => e.status === 'failed').length;
-  const avgDur = executions.filter((e) => e.duration !== null);
-  const avgDuration = avgDur.length > 0
-    ? Math.round(avgDur.reduce((s, e) => s + (e.duration ?? 0), 0) / avgDur.length)
-    : null;
 
   return (
     <div className="space-y-3">

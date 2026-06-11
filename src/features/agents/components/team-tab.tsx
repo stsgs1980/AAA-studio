@@ -1,72 +1,10 @@
 'use client';
-import { useState, useEffect } from 'react';
 import { Users, Plus, X, GripVertical } from 'lucide-react';
-interface Agent {
-  id: string;
-  name: string;
-  role: string;
-  roleGroup: string;
-  status: string;
-}
+import { useTeamData, type Agent } from '../hooks/use-team-data';
+
 export function TeamTab({ agentId, roleGroup }: { agentId: string; roleGroup: string }) {
-  const [children, setChildren] = useState<Agent[]>([]);
-  const [available, setAvailable] = useState<Agent[]>([]);
-  const [loading, setLoading] = useState(true);
-  useEffect(() => {
-    fetchChildren();
-    fetchAvailable();
-  }, [agentId]);
-  const fetchChildren = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch(`/api/agents?parentId=${agentId}&limit=50`);
-      if (res.ok) {
-        const data = await res.json();
-        setChildren(data.data?.agents || []);
-      }
-    } catch { /* ignore */ } finally { setLoading(false); }
-  };
-  const fetchAvailable = async () => {
-    try {
-      const res = await fetch(`/api/agents?limit=100`);
-      if (res.ok) {
-        const data = await res.json();
-        const all: Agent[] = data.data?.agents || [];
-        const childIds = new Set(children.map(c => c.id));
-        setAvailable(all.filter(a => a.id !== agentId && !childIds.has(a.id)));
-      }
-    } catch { /* ignore */ }
-  };
-  const addChild = async (childId: string) => {
-    try {
-      const res = await fetch(`/api/agents/${childId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ parentId: agentId }),
-      });
-      if (res.ok) {
-        const agent = available.find(a => a.id === childId);
-        if (agent) {
-          setChildren(prev => [...prev, agent]);
-          setAvailable(prev => prev.filter(a => a.id !== childId));
-        }
-      }
-    } catch { /* ignore */ }
-  };
-  const removeChild = async (childId: string) => {
-    try {
-      const res = await fetch(`/api/agents/${childId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ parentId: null }),
-      });
-      if (res.ok) {
-        const agent = children.find(a => a.id === childId);
-        setChildren(prev => prev.filter(a => a.id !== childId));
-        if (agent) setAvailable(prev => [...prev, agent]);
-      }
-    } catch { /* ignore */ }
-  };
+  const { children, available, loading, addChild, removeChild } = useTeamData(agentId);
+
   if (roleGroup !== 'orchestrator') {
     return (
       <div className="flex items-center justify-center h-48">

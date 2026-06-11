@@ -1,84 +1,22 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
 import { BookOpen } from 'lucide-react';
 import { PageSkeleton } from '@/components/ui';
 import { CollectionForm, CollectionList, DocumentList, SearchBar } from '@/features/knowledge/components';
-import type { KnowledgeCollection, KnowledgeDocument } from '@/features/knowledge/types';
 import { useLanguage } from '@/lib/i18n/language-context';
+import { useKnowledgeData } from './hooks/use-knowledge-data';
 
 export default function KnowledgeBasePage() {
-  const [collections, setCollections] = useState<KnowledgeCollection[]>([]);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [documents, setDocuments] = useState<KnowledgeDocument[]>([]);
-  const [collectionName, setCollectionName] = useState('');
-  const [loading, setLoading] = useState(true);
+  const {
+    collections, selectedId, documents, collectionName, loading,
+    setSelectedId, createCollection, deleteCollection, deleteDocument, uploadDocument,
+  } = useKnowledgeData();
   const { t } = useLanguage();
 
-  const fetchCollections = useCallback(async () => {
-    try {
-      setLoading(true);
-      const res = await fetch('/api/knowledge');
-      if (!res.ok) throw new Error();
-      const data = await res.json();
-      setCollections(data.map((c: KnowledgeCollection & { tags: string }) => ({ ...c, tags: JSON.parse(c.tags) })));
-    } catch { /* silent */ } finally { setLoading(false); }
-  }, []);
-
-  useEffect(() => { fetchCollections(); }, [fetchCollections]);
-
-  const fetchDocuments = useCallback(async (id: string) => {
-    try {
-      const res = await fetch(`/api/knowledge/${id}`);
-      if (!res.ok) throw new Error();
-      const data = await res.json();
-      setDocuments(data.documents ?? []);
-      setCollectionName(data.name);
-    } catch { setDocuments([]); }
-  }, []);
-
-  useEffect(() => {
-    if (selectedId) fetchDocuments(selectedId);
-    else { setDocuments([]); setCollectionName(''); }
-  }, [selectedId, fetchDocuments]);
-
-  const handleCreate = useCallback(async (data: { name: string; description: string }) => {
-    try {
-      const res = await fetch('/api/knowledge', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
-      if (!res.ok) throw new Error();
-      fetchCollections();
-    } catch { /* silent */ }
-  }, [fetchCollections]);
-
-  const handleDeleteCollection = useCallback(async (id: string) => {
+  const handleDeleteCollection = (id: string) => {
     if (!confirm(t.pages['Delete this collection and all its documents?'])) return;
-    try {
-      const res = await fetch(`/api/knowledge/${id}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error();
-      if (selectedId === id) setSelectedId(null);
-      fetchCollections();
-    } catch { /* silent */ }
-  }, [selectedId, fetchCollections, t]);
-
-  const handleDeleteDoc = useCallback(async (docId: string) => {
-    if (!selectedId) return;
-    try {
-      const res = await fetch(`/api/knowledge/${selectedId}/documents/${docId}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error();
-      fetchDocuments(selectedId);
-    } catch { /* silent */ }
-  }, [selectedId, fetchDocuments]);
-
-  const handleUpload = useCallback(async (collectionId: string, file: File) => {
-    try {
-      const fd = new FormData();
-      fd.append('file', file);
-      fd.append('title', file.name);
-      const res = await fetch(`/api/knowledge/${collectionId}/documents`, { method: 'POST', body: fd });
-      if (!res.ok) throw new Error();
-      if (collectionId === selectedId) fetchDocuments(selectedId);
-    } catch { /* silent */ }
-  }, [selectedId, fetchDocuments]);
+    deleteCollection(id);
+  };
 
   return (
     <div className="p-6 space-y-4">
@@ -87,7 +25,7 @@ export default function KnowledgeBasePage() {
           <BookOpen className="h-6 w-6 text-muted-foreground" />
           <h1 className="text-2xl font-bold tracking-tight">{t.pages['Knowledge Base']}</h1>
         </div>
-        <CollectionForm onCreate={handleCreate} />
+        <CollectionForm onCreate={createCollection} />
       </div>
 
       <SearchBar collectionId={selectedId} />
@@ -114,7 +52,7 @@ export default function KnowledgeBasePage() {
             </div>
             <div className="p-4 overflow-y-auto max-h-[55vh]">
               {selectedId ? (
-                <DocumentList documents={documents} collectionId={selectedId} onDelete={handleDeleteDoc} onUpload={handleUpload} />
+                <DocumentList documents={documents} collectionId={selectedId} onDelete={deleteDocument} onUpload={uploadDocument} />
               ) : (
                 <div className="flex items-center justify-center h-40 text-muted-foreground text-sm">{t.pages['Select a collection to view documents']}</div>
               )}

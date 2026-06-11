@@ -1,56 +1,13 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
 import { Send } from 'lucide-react';
-import { SessionList, type Session } from './session-list';
+import { SessionList } from './session-list';
 import { useLanguage } from '@/lib/i18n/language-context';
+import { useSelfCorrection } from '../hooks/use-self-correction';
 
 export function SelfCorrectionPanel() {
-  const [sessions, setSessions] = useState<Session[]>([]);
-  const [selected, setSelected] = useState<Session | null>(null);
-  const [input, setInput] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [running, setRunning] = useState(false);
+  const { sessions, selected, input, loading, running, run, selectSession, setInput } = useSelfCorrection();
   const { t } = useLanguage();
-
-  const fetchSessions = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await fetch('/api/self-correction?limit=20');
-      if (res.ok) {
-        const data = await res.json();
-        setSessions(data.data?.sessions || []);
-      }
-    } catch { /* ignore */ } finally { setLoading(false); }
-  }, []);
-
-  useEffect(() => { fetchSessions(); }, [fetchSessions]);
-
-  const handleRun = async () => {
-    if (!input.trim() || running) return;
-    setRunning(true);
-    try {
-      const res = await fetch('/api/self-correction', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ input: input.trim() }),
-      });
-      if (res.ok) {
-        const result = await res.json();
-        const session = result.data as Session;
-        setSessions(prev => [session, ...prev]);
-        setSelected(session);
-        setInput('');
-      }
-    } catch { /* ignore */ } finally { setRunning(false); }
-  };
-
-  const handleSelect = async (id: string) => {
-    try {
-      const res = await fetch(`/api/self-correction/${id}`);
-      if (res.ok) { const data = await res.json(); setSelected(data.data as Session); }
-    } catch { /* keep selected as-is */ }
-  };
 
   const scoreColor = (s: number) => {
     if (s >= 8) return 'text-emerald-600 dark:text-emerald-400';
@@ -74,13 +31,13 @@ export function SelfCorrectionPanel() {
             <textarea value={input} onChange={(e) => setInput(e.target.value)}
               placeholder={t.pages['Enter input for self-correction test...']}
               className="w-full h-24 rounded border border-input bg-input text-foreground px-3 py-2 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary placeholder:text-muted-foreground" />
-            <button onClick={handleRun} disabled={running || !input.trim()}
+            <button onClick={run} disabled={running || !input.trim()}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-brand-purple/15 text-brand-purple border border-brand-purple/30 hover:bg-brand-purple/25 disabled:opacity-40 disabled:pointer-events-none transition-colors">
               <Send className="w-3 h-3" />
               {running ? t.pages['Running...'] : t.pages['Run Self-Correction']}
             </button>
           </div>
-          <SessionList sessions={sessions} loading={loading} selectedId={selected?.id} onSelect={handleSelect} />
+          <SessionList sessions={sessions} loading={loading} selectedId={selected?.id} onSelect={selectSession} />
         </div>
 
         {/* Right: detail */}
