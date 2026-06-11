@@ -1,0 +1,30 @@
+{
+  "_meta": {
+    "version": "0.1.0",
+    "project": "NEW PROJECT",
+    "repo": "",
+    "lastUpdated": "2026-06-11T15:07:15Z",
+    "description": "Single source of truth for cascade task execution. AI agents MUST read this file before starting any work."
+  },
+  "phases": [
+    {
+      "id": "P0",
+      "name": "Foundation",
+      "gate": "All tasks must be completed before next phase",
+      "tasks": [
+        {
+          "id": "F0.1",
+          "title": "First task — replace with your project tasks",
+          "priority": "P0",
+          "size": "S",
+          "status": "pending",
+          "depends_on": [],
+          "implements": [],
+          "acceptance": "Define what done looks like",
+          "anti_hallucination": "Define how to verify this is really done"
+        }
+      ]
+    }
+  ],
+  "functionInventory": []
+}

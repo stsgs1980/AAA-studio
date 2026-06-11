@@ -1,3 +1,9 @@
 [submodule "packages/verify-docs"]
         path = packages/verify-docs
         url = https://github.com/stsgs1980/verify.git
+[submodule "anti-hallucination-guard"]
+	path = anti-hallucination-guard
+	url = https://github.com/stsgs1980/Anti-hallucination-guard.git
+[submodule "cascade-guard"]
+	path = cascade-guard
+	url = https://github.com/stsgs1980/cascade-guard.git

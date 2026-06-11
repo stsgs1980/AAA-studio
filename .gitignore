@@ -50,3 +50,6 @@ Zai-agent-toolkit/standards/
 .zscripts/dev.pid
 
 # Task state (volatile)
+
+# Cascade guard backups
+cascade-state.json.bak

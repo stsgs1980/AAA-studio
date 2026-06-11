@@ -1,0 +1,67 @@
+{
+  "readme": "README.md",
+  "checks": [
+    {
+      "name": "Workspace packages",
+      "source": "custom:packages",
+      "readmePattern": "Packages \\((\\d+)\\)"
+    },
+    {
+      "name": "Screens",
+      "source": "custom:screens",
+      "readmePattern": "Screens \\((\\d+)\\)"
+    },
+    {
+      "name": "Prisma models",
+      "source": "file:prisma/schema.prisma",
+      "countPattern": "^model \\w+",
+      "readmePattern": "Prisma Schema \\((\\d+) models\\)"
+    },
+    {
+      "name": "i18n locales",
+      "source": "file:src/lib/i18n/translations/index.ts",
+      "countPattern": "\\w+: \\{",
+      "readmePattern": "(\\d+) locales"
+    },
+    {
+      "name": "ESLint rules",
+      "source": "file:packages/eslint-plugin/src/index.ts",
+      "countPattern": "createRule",
+      "readmePattern": "(\\d+) custom rules"
+    },
+    {
+      "name": "Wiki pages",
+      "source": "glob:src/features/wiki/pages/*.tsx",
+      "readmePattern": "(\\d+) wiki articles"
+    },
+    {
+      "name": "Donor models (info)",
+      "source": "file:prisma/schema.prisma",
+      "countPattern": "^model \\w+",
+      "readmePattern": null,
+      "infoOnly": true
+    },
+    {
+      "name": "Commits",
+      "source": "git:HEAD",
+      "readmePattern": "\\((\\d+) commits\\)",
+      "tolerance": 5
+    }
+  ],
+  "crossRepo": [
+    {
+      "name": "Wiki repo formulas",
+      "repo": "../project-wiki",
+      "source": "file:docs/api.md",
+      "filePattern": "extract:Formulas \\((\\d+)\\)",
+      "matchAgainst": "Formulas"
+    },
+    {
+      "name": "Donor repo models",
+      "repo": "../project-donor",
+      "source": "file:prisma/schema.prisma",
+      "filePattern": "^model \\w+",
+      "matchAgainst": "Prisma models"
+    }
+  ]
+}
