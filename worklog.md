@@ -1797,3 +1797,17 @@ Stage Summary:
 - Root cause: file ending with \n makes ESLint count 151 lines
 - Fix: strip trailing newline
 - Build: OK, deploying to Vercel
+
+---
+Task ID: version-badge
+Agent: main
+Task: Add version badge 1.5.15 to sidebar navbar
+
+Work Log:
+- Added version badge next to "Studio" in app-sidebar.tsx header
+- Styled: muted background, monospace 10px, pill shape
+- Build: passes
+
+Stage Summary:
+- File: src/components/layout/app-sidebar.tsx (1 line added)
+- Version 1.5.15 visible in sidebar for deployment verification
