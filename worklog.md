@@ -1811,3 +1811,23 @@ Work Log:
 Stage Summary:
 - File: src/components/layout/app-sidebar.tsx (1 line added)
 - Version 1.5.15 visible in sidebar for deployment verification
+
+---
+Task ID: filter-log-fix
+Agent: main
+Task: Fix Filter Log button not appearing in sandbox
+
+Work Log:
+- Investigated: all code correct (filter-log-btn.tsx, file-uploader.tsx, page.tsx, use-quality-store.ts)
+- TypeScript: 0 errors
+- Dev server: was not running (new session), started and confirmed page 200
+- Root cause: filter-log-btn.tsx line 30 returned null when entries.length===0
+  - If folder upload had no filtered files, button was hidden entirely
+  - User couldn't tell if filter was running at all
+- Fix: removed entries.length===0 guard — button now shows after any folder/zip upload
+- Bumped version to 1.5.16 for deploy verification
+
+Stage Summary:
+- Filter Log button now always visible after folder/ZIP upload (shows "0 filtered" if none)
+- Version badge: 1.5.15 -> 1.5.16
+- Files changed: filter-log-btn.tsx, app-sidebar.tsx

@@ -27,7 +27,7 @@ export function FilterLogBtn() {
   const filterLog = useQualityStore((s) => s.filterLog);
   const [open, setOpen] = useState(false);
 
-  if (!filterLog || filterLog.entries.length === 0) return null;
+  if (!filterLog) return null;
 
   const grouped = new Map<FilterReason, string[]>();
   for (const e of filterLog.entries) {
