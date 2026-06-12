@@ -95,7 +95,7 @@ Zai-agent-toolkit (скомпилированные скиллы для Z.ai san
 | Audit Log | ✅ Работает | JSON подсветка деталей, фильтры по entity |
 | Quality Analyzer | ✅ Работает | Heuristic scoring (6 dims), LLM Deep Analysis (4 rubric criteria), Standards check, GitHub/ZIP/Folder/Text input, Clear Results, 4/4 PASS on Vercel |
 | Settings | ✅ Работает | Multi-provider LLM, theme/language, key masking |
-| i18n | ✅ Работает | en/ru, 17 неймспейсов, интерполяция, sidebar + settings |
+| i18n | ✅ Работает | en/ru, 7 неймспейсов, интерполяция, sidebar + settings |
 | Tests | ✅ 125 тестов | Unit: 90 (lib, validations, resilience), Integration: 35 (auth chain, agent CRUD, cross-ref, crypto) |
 
 ---
@@ -215,9 +215,21 @@ Discarded: "Правила генерации каталога" (project-specifi
 
 - [x] Skill Forge -> экспорт SKILL.md для Z.ai sandbox
 - [x] Skill Forge -> ZIP экспорт (SkillFile + SKILL.md + package.json)
-- [ ] Standards Manager -> генерация ESLint правил из DB
+- [x] Standards Manager -> генерация ESLint правил из DB (`/api/standards/eslint`)
+- [x] Standards -> validate endpoint (`/api/standards/validate`, regex pattern check)
+- [x] MCP Server (`/api/mcp`, JSON-RPC + SSE, 6 methods: initialize, tools/list, tools/call, resources/list, resources/read, prompts/list)
 - [ ] Wiki -> синхронизация с GitHub Wiki
 - [ ] Prompt Studio -> экспорт промптов в разные форматы
+
+### Phase 3E — Skill Manifest + Unified Export
+
+> Из бывшего 3A-IMPLEMENTATION-PLAN. Единственное что не реализовано из того плана.
+
+- [ ] 3E.1 Добавить поля в Prisma Skill: slug (unique), version, skillId (ZAI-XXX-NNN), longDescription, triggers[], compatibility, dependencies[], annotations{}, author, license
+- [ ] 3E.2 Обновить SkillFile enum: добавить roles (script, reference, eval)
+- [ ] 3E.3 Единая функция `generateSkillManifest()` — заменяет дублирующие helpers.ts + buildManifest()
+- [ ] 3E.4 Единая функция `generateSkillZip()` — файлы по role → папки
+- [ ] 3E.5 Format adapters: toOpenAITools(), toMCPTools(), toA2ACard()
 
 ### Phase 4 — Agent-Scanner (Epic 4) 🔥 CURRENT
 
@@ -281,7 +293,9 @@ Discarded: "Правила генерации каталога" (project-specifi
 
 | Проблема | Где | Решение |
 |----------|-----|---------|
-| Skill Forge → Z.ai bridge | Skill Forge + /home/z/my-project/skills/ | Экспорт: DB → SKILL.md + scripts/ |
+| Skill Forge → Z.ai bridge | Skill Forge + /home/z/my-project/skills/ | ✅ DONE — SKILL.md + ZIP + OpenAI/MCP/A2A export |
+| Skill Manifest ( slug, version, triggers, annotations ) | Prisma Skill model | Phase 3E — расширенная модель |
+| Unified Skill Export (single generate function) | skill-export/ | Phase 3E — заменить два дублирующих генератора |
 | Standards → ESLint bridge | Standards Manager + eslint-plugin-3a | ✅ DONE — генерация rules из DB → JSON config (Wave 6.6) |
 | Flow Editor → Pipeline | executeNode() placeholder | Интеграция с z-ai-web-dev-sdk |
 | Knowledge → RAG | KnowledgeDocument в DB | VectorStore node → реальные embeddings |

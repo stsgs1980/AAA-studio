@@ -1716,3 +1716,23 @@ Stage Summary:
 - Submodule updated to 49c612b
 - Pre-commit hook now requires worklog updates within 10 min
 - verify-docs sections 3/4/5 added
+
+---
+Task ID: doc-cleanup
+Agent: main
+Task: Delete stale 3A-IMPLEMENTATION-PLAN.md and UNIFIED_TASK_LIST.md, merge useful items into WORKFLOW.md
+
+Work Log:
+- Read both files, cross-checked claims against actual codebase
+- 3A-PLAN Phase 3 (MCP): already exists at /api/mcp/route.ts
+- 3A-PLAN Phase 4.1 (Condition/Filter bug): already fixed in node-exec.ts (safeEvalCondition)
+- 3A-PLAN Phase 4.2 (standards/validate): already exists at /api/standards/validate/route.ts
+- UNIFIED_TASK_LIST: i18n claimed 8 namespaces (actual: 7), MCP listed as TODO (actual: DONE)
+- Remaining actionable items from 3A-PLAN: Phase 1 (Skill model fields), Phase 2 (unified export)
+- Deleted 3A-IMPLEMENTATION-PLAN.md and UNIFIED_TASK_LIST.md
+- Updated WORKFLOW.md: added Phase 3E (Skill Manifest + Unified Export), marked standards/validate as DONE, fixed i18n namespace count
+
+Stage Summary:
+- 2 stale files deleted, 0 lost tasks
+- WORKFLOW.md is now the single source of truth
+- verify-docs and pre-push hooks will prevent doc drift going forward
