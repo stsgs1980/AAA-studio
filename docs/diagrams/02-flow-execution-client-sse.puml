@@ -1,0 +1,145 @@
+@startuml 02-flow-execution-client-sse
+' === METADATA ===
+' id:           02-flow-execution-client-sse
+' title:        3A Studio: Flow Execution - Client + SSE Paths
+' version:      1.1
+' status:       current
+' created:      2026-06-12
+' lastModified: 2026-06-12
+' author:       AI Agent
+' diagramType:  sequence
+' scope:        Dual execution path: client-side EventBus (unsaved flows) and server SSE stream (saved flows)
+' dependencies: [01-flow-execution-server, 04-websocket-architecture]
+' tags:         [flow, execution, client, SSE, event-bus, topological-sort, branch-routing]
+' === END METADATA ===
+!theme plain
+skinparam maxMessageSize 150
+skinparam ParticipantPadding 10
+skinparam BoxPadding 6
+skinparam sequenceMessageAlign center
+
+title 3A Studio: Flow Execution - Client + SSE Paths
+
+actor User
+
+box "Path A: Client-Side (unsaved flow)" #F0F8FF
+  participant "useFlowActions\nrunFlow()" as ActionsA
+  participant "node-executor.ts\nexecuteFlow()" as Executor
+  participant "EventBus\nflowEventBus" as EventBus
+  participant "node-handlers.ts\nexecuteLLM/Agent/..." as Handlers
+end box
+
+box "Path B: Server SSE (saved flow)" #FFF8F0
+  participant "useFlowActions\nrunFlow()" as ActionsB
+  participant "execute-sse/route.ts\nGET endpoint" as SSE
+  participant "node-exec.ts\n(backend)" as NodeExecSSE
+  participant "lib/llm/client.ts\n(backend)" as LLMSSE
+end box
+
+participant "flow-store.ts\nsetExecutionResults()" as Store
+participant "FlowCanvas\nUI updates" as UI
+
+== Path A: Client-Side Execution (unsaved flow) ==
+
+User -> ActionsA : Click "Run" (no flowId)
+ActionsA -> ActionsA : isRunning = true
+
+ActionsA -> Executor : executeFlow(nodes, edges)
+
+Executor -> Executor : topologicalSort(nodes, edges)
+
+Executor -> EventBus : emit(FLOW_EXECUTION_START)
+EventBus --> UI : [subscribe] Update node statuses
+
+loop For each sorted nodeId
+  Executor -> Executor : gatherInputs(nodeId, edges, ctx)
+
+  Executor -> EventBus : emit(NODE_EXECUTION_START)
+  EventBus --> UI : [subscribe] Highlight active node
+
+  Executor -> Handlers : executeNode(node, inputs)
+  alt type == "llm"
+    Handlers -> Handlers : fetch("/api/llm", { messages })
+    Handlers --> Executor : { output, model, usage, cost }
+  else type == "agent"
+    Handlers -> Handlers : fetch("/api/llm", { messages })
+    Handlers --> Executor : { output, model, usage, cost }
+  else type == "condition"
+    Handlers -> Handlers : safeEvalCondition(expr, inputs)
+    Handlers --> Executor : { output, selectedHandle }
+  else type == "prompt" / "transform"
+    Handlers -> Handlers : Local string processing
+    Handlers --> Executor : output
+  end
+
+  Executor -> Executor : Branch routing\n(activeEdges + reachable)
+
+  Executor -> EventBus : emit(NODE_EXECUTION_COMPLETE)
+  EventBus --> UI : [subscribe] Show node result
+end
+
+Executor -> EventBus : emit(FLOW_EXECUTION_COMPLETE)
+Executor --> ActionsA : { results[], success }
+
+ActionsA -> Store : setExecutionResults(results)
+Store --> UI : Re-render nodes with results
+ActionsA --> User : "Done (N nodes)"
+
+note right of Executor
+  No WebSocket, no server execution.
+  All LLM calls go through /api/llm proxy.
+  Event bus provides real-time UI feedback.
+  Router node is SKIPPED on client path.
+end note
+
+== Path B: SSE Execution (saved flow) ==
+
+User -> ActionsB : Click "Run" (has flowId)
+ActionsB -> ActionsB : PUT /api/flows/[id] (sync save)
+ActionsB -> ActionsB : isRunning = true
+
+ActionsB -> SSE : GET /api/flows/[id]/execute-sse\n(Accept: text/event-stream)
+
+SSE -> SSE : db.flow.findUnique(id)
+SSE --> ActionsB : HTTP 200 + ReadableStream
+
+SSE -> ActionsB : SSE event: "start" { nodeCount }
+
+loop For each sorted nodeId
+  SSE -> ActionsB : SSE event: "node_start" { nodeId, type }
+
+  alt LLM node
+    SSE -> SSE : withRetry(() => execNode(...))
+    SSE -> NodeExecSSE : execNode()
+    NodeExecSSE -> LLMSSE : callLLM()
+    LLMSSE --> NodeExecSSE : response
+    NodeExecSSE --> SSE : { data, usage, cost, selectedHandle? }
+  else Non-LLM node
+    SSE -> NodeExecSSE : execNode()
+    NodeExecSSE --> SSE : { data, selectedHandle? }
+  end
+
+  SSE -> ActionsB : SSE event: "node_done" { nodeId, status, duration, usage }
+  SSE -> SSE : Branch routing
+end
+
+SSE --> ActionsB : SSE event: "done" { success, executionId }
+
+ActionsB -> Store : setExecutionResults(results)
+Store --> UI : Re-render nodes with results
+ActionsB --> User : "Done (N nodes | M tokens | $C)"
+
+legend right
+  **Key differences**
+  * Path A: client-side, event bus, no persistence
+  * Path B: server-side, SSE stream, DB execution record
+  * Path B supports: router, HITL, per-node retry, cost tracking
+  * Path A skips: router node, HITL, cost persistence
+  * SSE events: start, node_start, node_done, node_error, done
+  * Event bus events: 7 types (see events.ts)
+  ---
+  **v1.1 (2026-06-12)** Added metadata header + changelog
+  **v1.0 (2026-06-12)** Initial version
+end legend
+
+@enduml

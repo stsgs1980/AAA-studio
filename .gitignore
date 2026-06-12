@@ -35,6 +35,7 @@ prompting-v0.0/
 StsDev-Wiki/
 agent-ctx/
 docs/
+!docs/diagrams/
 _3a-studio-bare/
 _3a-studio-mas-bare/
 

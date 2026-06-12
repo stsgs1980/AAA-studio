@@ -1,0 +1,150 @@
+@startuml 04-websocket-architecture
+' === METADATA ===
+' id:           04-websocket-architecture
+' title:        3A Studio: WebSocket + SSE Real-Time Architecture
+' version:      1.1
+' status:       current
+' created:      2026-06-12
+' lastModified: 2026-06-12
+' author:       AI Agent
+' diagramType:  sequence
+' scope:        WS/SSE real-time architecture audit: active vs dead channels, transport alternatives
+' dependencies: [01-flow-execution-server, 02-flow-execution-client-sse]
+' tags:         [websocket, SSE, dead-code, polling, socket-io, real-time, Vercel]
+' === END METADATA ===
+!theme plain
+skinparam maxMessageSize 150
+skinparam ParticipantPadding 10
+skinparam BoxPadding 6
+skinparam sequenceMessageAlign center
+
+title 3A Studio: WebSocket + SSE Real-Time Architecture
+Actual vs Intended Data Flow
+
+box "Server-Side Publishers" #FFF0F0
+  participant "api/flows/[id]/execute\nroute.ts" as FlowExec
+  participant "api/approvals\nroute.ts" as ApprovalAPI
+  participant "lib/ws/hooks.ts\nemit functions" as Hooks
+  participant "lib/ws/server.ts\nSocket.IO broadcast()" as WSServer
+end box
+
+box "Client-Side Subscribers" #F0FFF0
+  participant "approval-panel.tsx\nuseRealtimeEvent" as ApprovalUI
+  participant "use-dashboard-data.ts\nuseRealtimeEvent" as DashboardUI
+  participant "Flow Canvas / Nodes\n(no WS subscription)" as FlowUI
+end box
+
+box "SSE Alternative Path" #F8F0FF
+  participant "execute-sse/route.ts\nGET endpoint" as SSE
+  participant "useFlowActions.ts\nfetch SSE stream" as SSEClient
+end box
+
+participant "Dashboard Store\npolling fallback" as Polling
+
+== Channel: approvals (ACTIVE - published AND consumed) ==
+
+ApprovalAPI -> Hooks : emitApprovalNew(id, action, risk)
+Hooks -> WSServer : broadcast("approvals", "new", data)
+WSServer --> ApprovalUI : Socket.IO event: "new"
+note right of ApprovalUI
+  useRealtimeEvent(["approvals"], "new", handler)
+  Falls back to polling if WS unavailable
+end note
+
+ApprovalAPI -> Hooks : emitApprovalDecided(id, status)
+Hooks -> WSServer : broadcast("approvals", "decided", data)
+WSServer --> ApprovalUI : Socket.IO event: "decided"
+
+== Channel: dashboard (ACTIVE - published AND consumed) ==
+
+FlowExec -> Hooks : emitDashboardRefresh("flow-execution")
+Hooks -> WSServer : broadcast("dashboard", "refresh", { reason })
+WSServer --> DashboardUI : Socket.IO event: "refresh"
+DashboardUI -> DashboardUI : Refetch KPI data
+
+note right of DashboardUI
+  useRealtimeEvent(["dashboard"], "refresh", handler)
+  Falls back to setInterval(30s) polling
+  when WS unavailable (Vercel)
+end note
+
+== Channel: flow-execution (DEAD - published but NOT consumed via WS) ==
+
+FlowExec -> Hooks : emitFlowStarted(flowId, execId)
+Hooks -> WSServer : broadcast("flow-execution", "started", data)
+WSServer --> FlowUI : **NEVER RECEIVED**
+note right of FlowUI
+  No client subscribes to
+  "flow-execution" channel via WS.
+  SSE is used instead.
+end note
+
+FlowExec -> Hooks : emitNodeComplete(flowId, nodeId, status, duration)
+Hooks -> WSServer : broadcast("flow-execution", "nodeComplete", data)
+WSServer --> FlowUI : **NEVER RECEIVED**
+
+FlowExec -> Hooks : emitFlowFinished(flowId, execId, status)
+Hooks -> WSServer : broadcast("flow-execution", "finished", data)
+WSServer --> FlowUI : **NEVER RECEIVED**
+
+== Channel: agent-status (DEAD - defined but NEVER published) ==
+
+note over WSServer, FlowUI
+  "agent-status" channel is defined in
+  events.ts WsChannel type.
+  emitAgentStatusChanged() exists in hooks.ts
+  but NO API route calls it.
+  NO client subscribes to it.
+end note
+
+== Channel: cost-update (DEAD - defined but NEVER published) ==
+
+note over WSServer
+  "cost-update" channel is defined in
+  events.ts WsChannel type.
+  emitCostRecorded() exists in hooks.ts
+  but NO API route calls it.
+  NO client subscribes to it.
+end note
+
+== Actual Flow Execution Real-Time: SSE Path ==
+
+SSEClient -> SSE : GET /api/flows/[id]/execute-sse\n(Accept: text/event-stream)
+SSE --> SSEClient : SSE: event "start" { nodeCount }
+loop Per node
+  SSE --> SSEClient : SSE: event "node_start" { nodeId, type }
+  SSE --> SSEClient : SSE: event "node_done" { nodeId, status, duration }
+end
+SSE --> SSEClient : SSE: event "done" { success, executionId }
+
+note right of SSEClient
+  SSE replaces WS for flow execution.
+  No Socket.IO needed.
+  Works on Vercel (serverless).
+  Client parses events from ReadableStream.
+end note
+
+== Polling Fallback (Vercel / WS unavailable) ==
+
+WSServer ..> Polling : WS disconnected
+Polling -> Polling : setInterval(30s)\nfetch("/api/dashboard")
+Polling --> DashboardUI : Refreshed data
+
+legend right
+  **Summary: 5 channels defined**
+  * approvals: ACTIVE (2 publishers, 1 subscriber)
+  * dashboard: ACTIVE (1 publisher, 1 subscriber)
+  * flow-execution: DEAD CODE (published, not consumed)
+  * agent-status: DEAD CODE (never published, never consumed)
+  * cost-update: DEAD CODE (never published, never consumed)
+
+  **Transport options**
+  1. Socket.IO WS (dev / self-hosted)
+  2. SSE stream (flow execution only)
+  3. Polling fallback (30s, Vercel)
+  ---
+  **v1.1 (2026-06-12)** Added metadata header + changelog
+  **v1.0 (2026-06-12)** Initial version
+end legend
+
+@enduml

@@ -1,0 +1,122 @@
+@startuml 03-self-correction-loop
+' === METADATA ===
+' id:           03-self-correction-loop
+' title:        3A Studio: Self-Correction Loop
+' version:      1.1
+' status:       current
+' created:      2026-06-12
+' lastModified: 2026-06-12
+' author:       AI Agent
+' diagramType:  sequence
+' scope:        Self-correction API: generate -> judge -> revise loop with DB persistence
+' dependencies: []
+' tags:         [self-correction, LLM, judge, retry, scoring, revision, DB-persistence]
+' === END METADATA ===
+!theme plain
+skinparam maxMessageSize 150
+skinparam ParticipantPadding 10
+skinparam BoxPadding 6
+skinparam sequenceMessageAlign center
+
+title 3A Studio: Self-Correction Loop
+POST /api/self-correction
+
+actor User
+participant "route.ts\nPOST handler" as Route
+participant "correction-loop.ts\nselfCorrect()" as Loop
+participant "lib/resilience\nwithRetry()" as Retry
+participant "lib/llm/client.ts\ncallLLM()" as LLM
+participant "Prisma DB" as DB
+
+User -> Route : POST { input, agentId?, maxRetries: 2 }
+
+Route -> Route : getActiveProvider()
+
+== Phase 1: Initial Generation ==
+
+Route -> Retry : withRetry(() => callLLM(generate))
+Retry -> LLM : callLLM({ system: "helpful assistant",
+  user: input })
+LLM --> Retry : genResp.content
+Retry --> Route : genResp
+
+== Phase 2: Judge ==
+
+Route -> Retry : withRetry(() => callLLM(judge))
+Retry -> LLM : callLLM({ system: "Score 0-10, verdict...",
+  user: "Input + Response" })
+LLM --> Retry : judgeResp.content
+Retry --> Route : judgeResp
+
+Route -> Route : parseJudgeResponse(judgeResp.content)
+note right of Route
+  Regex extraction:
+  SCORE: <number>
+  VERDICT: approved | needs_revision | rejected
+  REASONING: <text>
+end note
+
+== Phase 3: Persist Session ==
+
+Route -> DB : selfCorrectionSession.create({
+  input, initialOutput, judgeScore,
+  judgeVerdict, judgeReasoning, maxRetries,
+  status: verdict == "approved" ? "completed" : "reviewing"
+})
+
+alt verdict == "approved"
+  Route --> User : 201 { session: completed }
+else verdict == "rejected"
+  Route --> User : 201 { session: completed, verdict: rejected }
+else verdict == "needs_revision" AND maxRetries > 0
+  Route -> Loop : selfCorrect(sessionId, output, input, feedback, active, maxRetries)
+
+  loop attempt = 0 .. maxRetries-1
+    Loop -> LLM : callLLM({ system: "Improve based on feedback",
+      user: "input + previousOutput + feedback" })
+    LLM --> Loop : revResp.content
+
+    Loop -> LLM : callLLM({ system: "Score 0-10, verdict...",
+      user: "input + newResponse" })
+    LLM --> Loop : judgeResp.content
+
+    Loop -> Loop : parseJudgeResponse()
+    Loop -> Loop : lastFeedback = reasoning
+
+    Loop -> DB : selfCorrectionSession.update({
+      revisedOutput, revisionScore,
+      judgeVerdict, judgeReasoning, retryCount,
+      status: verdict == "approved" ? "completed"
+        : retryCount >= maxRetries ? "failed" : "revising"
+    })
+
+    alt verdict == "approved"
+      Loop --> Route : updated session
+      Route --> User : 201 { session: completed }
+    else retryCount >= maxRetries
+      Loop -> DB : update status = "failed"
+      Loop --> Route : failed session
+      Route --> User : 201 { session: failed }
+    end
+  end
+end
+
+legend right
+  **LLM call budget (maxRetries=2)**
+  * Phase 1: 1 generate call
+  * Phase 2: 1 judge call
+  * Per retry: 1 revise + 1 judge = 2 calls
+  * Max total: 2 + (2 x 2) = 6 calls
+
+  **With maxRetries=5: up to 12 calls**
+
+  **Retry wrapper (withRetry)**
+  * Only on Phase 1 and Phase 2
+  * NOT on the revision loop calls
+  * maxRetries: 2, delay: 1000ms
+  ---
+  **v1.1 (2026-06-12)** Added metadata header + changelog
+  **v1.0 (2026-06-12)** Initial version
+end legend
+
+@enduml

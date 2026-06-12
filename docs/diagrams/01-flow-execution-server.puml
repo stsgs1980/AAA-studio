@@ -1,0 +1,149 @@
+@startuml 01-flow-execution-server
+' === METADATA ===
+' id:           01-flow-execution-server
+' title:        3A Studio: Flow Execution - Server-Side Path
+' version:      1.1
+' status:       current
+' created:      2026-06-12
+' lastModified: 2026-06-12
+' author:       AI Agent
+' diagramType:  sequence
+' scope:        Server-side flow execution pipeline (POST /api/flows/[id]/execute)
+' dependencies: [02-flow-execution-client-sse, 04-websocket-architecture]
+' tags:         [flow, execution, server, retry, branching, cost, topo-sort, HITL]
+' === END METADATA ===
+!theme plain
+skinparam maxMessageSize 150
+skinparam ParticipantPadding 10
+skinparam BoxPadding 6
+skinparam sequenceMessageAlign center
+
+title 3A Studio: Flow Execution - Server-Side Path
+POST /api/flows/[id]/execute
+
+actor User
+participant "useFlowActions" as Client
+participant "route.ts\nPOST handler" as Route
+participant "flow-utils.ts\ntopoSort + gatherInputs" as Utils
+participant "node-exec.ts\nexecNode()" as NodeExec
+participant "node-router.ts\nexecRouter()" as Router
+participant "node-helpers.ts\nexecHITL()" as HITL
+participant "lib/llm/client.ts\ncallLLM()" as LLM
+participant "lib/resilience\nwithRetry()" as Retry
+participant "lib/ws/hooks.ts" as WSHooks
+participant "lib/ws/server.ts\nSocket.IO broadcast" as WS
+participant "Prisma DB" as DB
+
+User -> Client : Click "Run"
+Client -> Route : PUT /api/flows/[id] (save first)
+Client -> Route : POST /api/flows/[id]/execute
+
+Route -> DB : flow.findUnique(id)
+DB --> Route : flow { nodes, edges }
+
+Route -> Route : getActiveProvider()
+
+Route -> DB : pipelineExecution.create(status: "running")
+Route -> WSHooks : emitFlowStarted(id, execId)
+WSHooks -> WS : broadcast("flow-execution", "started")
+WS --> Client : [NOT CONSUMED via WS]\n(SSE used instead)
+
+Route -> Utils : topoSort(nodes, edges)
+Utils --> Route : sorted nodeIds[]
+
+loop For each nodeId in sorted[]
+  Route -> Route : Skip if !reachable.has(nodeId)
+
+  Route -> Utils : gatherInputs(nodeId, edges, ctx)
+  Utils --> Route : inputs {}
+
+  alt Node type in [llm, agent, router]
+    Route -> Retry : withRetry(() => execNode(...), maxRetries: 2)
+    Retry -> NodeExec : execNode(node, inputs, active)
+  else Other node types
+    Route -> NodeExec : execNode(node, inputs, active)
+  end
+
+  NodeExec -> NodeExec : resolveProvider(node, active)
+  note right of NodeExec
+    Per-node provider override
+    or fallback to active provider
+  end note
+
+  alt type == "llm"
+    NodeExec -> LLM : callLLM({ provider, model, messages })
+    LLM --> NodeExec : LLMResponse { content, usage }
+    NodeExec -> NodeExec : estimateCost() + persistCost()
+    NodeExec -> DB : costRecord.create() [fire-and-forget]
+  else type == "agent"
+    NodeExec -> LLM : callLLM({ role: agent role })
+    LLM --> NodeExec : agentResponse
+    NodeExec -> DB : costRecord.create() [fire-and-forget]
+  else type == "router"
+    NodeExec -> Router : execRouter(node, inputs, resolved)
+    alt strategy == "keyword"
+      Router -> Router : text.includes(keyword) match
+    else strategy == "llm"
+      Router -> LLM : callLLM(classification prompt)
+      LLM --> Router : category name
+      Router -> Router : match category to route
+    end
+    Router --> NodeExec : selectedHandle = routeId
+  else type == "condition"
+    NodeExec -> NodeExec : safeEvalCondition(expr, inputs)
+    NodeExec --> Route : selectedHandle: "true"/"false"
+  else type == "human-in-the-loop"
+    NodeExec -> HITL : execHITL(data, inputs, flowId)
+    HITL -> DB : approvalRequest.create({ status: "pending" })
+    loop POLL every 5s until decision
+      HITL -> DB : approvalRequest.findUnique(id)
+      DB --> HITL : current status
+      alt status == "approved"
+        HITL --> NodeExec : selectedHandle: "approved"
+      else status == rejected/cancelled/expired/timeout
+        HITL --> NodeExec : selectedHandle: "rejected"
+      end
+    end
+  else type == prompt/transform/start/end
+    NodeExec -> NodeExec : Local processing
+    NodeExec --> Route : output
+  end
+
+  NodeExec --> Route : { data, model?, usage?, cost?, selectedHandle? }
+
+  Route -> WSHooks : emitNodeComplete(flowId, nodeId, status)
+  WSHooks -> WS : broadcast("flow-execution", "nodeComplete")
+  WS --> Client : [NOT CONSUMED via WS]
+
+  alt selectedHandle !== undefined
+    Route -> Route : Deactivate non-selected edges\nMark only reachable downstream
+  else No routing decision
+    Route -> Route : All downstream edges active\nMark all targets reachable
+  end
+
+  Route -> Route : ctx.set(nodeId, output)
+end
+
+Route -> DB : pipelineExecution.update(status, result)
+Route -> WSHooks : emitFlowFinished(id, execId, status)
+WSHooks -> WS : broadcast("flow-execution", "finished")
+Route -> WSHooks : emitDashboardRefresh("flow-execution")
+WSHooks -> WS : broadcast("dashboard", "refresh")
+
+Route --> Client : JSON { executionId, results[], usage }
+Client --> User : "Done (N nodes | M tokens | $C)"
+
+legend right
+  **Key patterns**
+  * LLM nodes: exponential retry (withRetry, max 2)
+  * Router: keyword OR LLM classification
+  * HITL: server-side polling loop (5s interval)
+  * Cost: fire-and-forget DB write per LLM call
+  * Branching: edge deactivation + reachable tracking
+  **Dead code**: WS flow-execution events\nare published but never consumed by client
+  ---
+  **v1.1 (2026-06-12)** Added metadata header + changelog
+  **v1.0 (2026-06-12)** Initial version
+end legend
+
+@enduml
