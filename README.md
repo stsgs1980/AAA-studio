@@ -63,7 +63,7 @@ Changed a standard -- reflected everywhere. Created a skill -- assign to agent -
 | Self-Correction | /self-correction | Auto-revision loop |
 | Wiki | /wiki | 15 articles, Ctrl+K drawer |
 
-Additional: Landing page (/), Auth (login/signup/verify/reset/forgot), i18n (EN/RU, 8 namespaces).
+Additional: Landing page (/), Auth (login/signup/verify/reset/forgot), i18n (EN/RU, 7 namespaces).
 
 > **Note:** Approvals, Cost Monitor, Analysis, and Comparison screens are planned but not yet implemented (API routes exist for some).
 
