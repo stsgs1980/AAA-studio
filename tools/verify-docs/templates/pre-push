@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo ""
+echo "Verifying doc consistency before push..."
+echo ""
+
+cd "$(git rev-parse --show-toplevel)"
+
+if command -v bun &>/dev/null; then
+  bunx verify-docs
+elif command -v npx &>/dev/null; then
+  npx verify-docs
+else
+  echo "ERROR: bun or npx required"
+  exit 1
+fi
+
+RESULT=$?
+
+if [ $RESULT -ne 0 ]; then
+  echo ""
+  echo "PUSH BLOCKED: Document numbers don't match the code."
+  echo "   Fix the numbers above, then push again."
+  echo "   Or bypass with: git push --no-verify"
+  echo ""
+  exit 1
+fi
+
+echo ""
+echo "Docs consistent - push allowed."
+echo ""
+exit 0

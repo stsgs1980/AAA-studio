@@ -1699,3 +1699,20 @@ Stage Summary:
 - pre-push hook works (references AHG submodule directly)
 - Trade-off: AHG update.sh will skip scripts (stubs exist) and tools/verify-docs (needs mkdir)
 - Next AHG update may need manual cleanup of tools/verify-docs
+
+---
+Task ID: ahg-update
+Agent: main
+Task: Update anti-hallucination-guard submodule to latest
+
+Work Log:
+- Initialized submodule (was empty directory)
+- Ran update.sh: pulled e2e0cfe -> 49c612b (v1.4)
+- New features: documentation drift prevention, integrity protection, sync-task-state script
+- setup.sh re-run: hooks, scripts, verify-docs updated
+- 20 files changed in submodule (+1666/-219)
+
+Stage Summary:
+- Submodule updated to 49c612b
+- Pre-commit hook now requires worklog updates within 10 min
+- verify-docs sections 3/4/5 added

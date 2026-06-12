@@ -1,0 +1,39 @@
+{
+  "name": "verify-docs",
+  "version": "1.0.0",
+  "description": "Data-driven doc consistency checker. Verifies numbers in your README match the actual codebase. Works with any project.",
+  "bin": {
+    "verify-docs": "./src/cli.ts",
+    "verify-docs-init": "./src/init.ts"
+  },
+  "main": "./src/engine.ts",
+  "types": "./src/engine.ts",
+  "scripts": {
+    "verify": "bun run src/cli.ts",
+    "test": "bun test"
+  },
+  "keywords": [
+    "docs",
+    "verify",
+    "consistency",
+    "readme",
+    "ci",
+    "documentation",
+    "lint",
+    "audit",
+    "numbers",
+    "accuracy"
+  ],
+  "author": "STSGS",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/stsgs1980/verify.git"
+  },
+  "bugs": {
+    "url": "https://github.com/stsgs1980/verify/issues"
+  },
+  "engines": {
+    "bun": ">=1.0.0"
+  }
+}
