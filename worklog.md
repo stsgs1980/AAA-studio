@@ -1762,3 +1762,23 @@ Stage Summary:
 - ACCEPTED: added .tsx, .jsx, .mdx
 - Server-side defense-in-depth: scanner-service.ts + parse/route.ts now filter via shouldSkipFile()
 - Not yet pushed (awaiting user re-test in sandbox)
+
+---
+Task ID: filter-log-btn
+Agent: main
+Task: Add Filter Log diagnostic button to Quality Analyzer
+
+Work Log:
+- Added FilterLog, FilterLogEntry, FilterReason types to types.ts
+- Added filterLog state + setFilterLog to use-quality-store.ts
+- Rewrote file-uploader.tsx: handleZip and handleFolder now collect filter stats (path + reason) for every filtered entry
+- Created filter-log-btn.tsx: popover with grouped entries by reason, color-coded, scrollable file lists
+- Added FilterLogBtn to barrel export and wired into page.tsx next to Scanner button
+- Added .tsx, .jsx, .mdx to ACCEPTED extensions for React/component analysis
+- TypeScript: 0 errors, all files <=150 lines
+
+Stage Summary:
+- New component: filter-log-btn.tsx (75 lines)
+- Modified: file-uploader.tsx, use-quality-store.ts, types.ts, index.ts, page.tsx
+- Filter Log shows: total → accepted/filtered with grouped reasons (skip_file, skip_dir, dot_dir, wrong_ext, too_large, directory)
+- Not yet pushed (pending commit)

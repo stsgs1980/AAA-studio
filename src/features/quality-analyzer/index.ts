@@ -1,5 +1,6 @@
 export { InputPanel } from "./components/input-panel";
 export { FileUploader } from "./components/file-uploader";
+export { FilterLogBtn } from "./components/filter-log-btn";
 export { ScorePanel } from "./components/score-panel";
 export { StandardsPanel } from "./components/standards-panel";
 export { RubricPanel } from "./components/rubric-panel";

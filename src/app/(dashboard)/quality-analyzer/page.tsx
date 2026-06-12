@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Zap, RotateCcw, Loader2, FileCode, FolderGit2, Brain, Trash2, Scan } from "lucide-react";
 import {
   InputPanel, ScorePanel, StandardsPanel, RubricPanel, DeepAnalysisPanel,
-  ScannerPanel, useQualityStore,
+  ScannerPanel, FilterLogBtn, useQualityStore,
 } from "@/features/quality-analyzer";
 import { useAgentLoader } from "@/features/quality-analyzer/hooks/use-agent-loader";
 import { useLanguage } from "@/lib/i18n/language-context";
@@ -114,6 +114,7 @@ export default function QualityAnalyzerPage() {
               {isScanning ? <Loader2 className="h-4 w-4 animate-spin" /> : <Scan className="h-4 w-4" />}
               Scanner
             </button>
+            <FilterLogBtn />
           </div>
         </div>
         <div className="flex w-1/2 flex-col gap-3 min-h-0">

@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { scorePrompt } from '@stsgs/prompting';
 import {
   EvaluationInput, EvaluationResult, StandardsCheckResult,
-  StandardsCheckItem, RubricScenario,
+  StandardsCheckItem, RubricScenario, FilterLog,
   EVAL_DEFAULTS,
 } from '../types';
 import { generateSuggestions, checkStandards, evaluateRubric } from '../lib/eval-helpers';
@@ -20,6 +20,7 @@ interface QualityState {
   isDeepAnalyzing: boolean;
   isScanning: boolean;
   scannerReport: ScannerReport | null;
+  filterLog: FilterLog | null;
   rubricScenario: RubricScenario;
   rubricThreshold: number;
   setInputMode: (mode: EvaluationInput['mode']) => void;
@@ -34,6 +35,7 @@ interface QualityState {
   analyze: () => void;
   deepAnalyze: () => void;
   scannerAnalyze: () => void;
+  setFilterLog: (log: FilterLog | null) => void;
   reset: () => void;
   clearResults: () => void;
 }
@@ -45,6 +47,7 @@ export const useQualityStore = create<QualityState>((set, get) => ({
   isDeepAnalyzing: false,
   isScanning: false,
   scannerReport: null,
+  filterLog: null,
   rubricScenario: 'prompt',
   rubricThreshold: 6,
 
@@ -141,7 +144,7 @@ export const useQualityStore = create<QualityState>((set, get) => ({
         isScanning: false,
       })));
   },
-
-  reset: () => set({ input: { ...EVAL_DEFAULTS }, result: null, scannerReport: null }),
+  setFilterLog: (filterLog) => set({ filterLog }),
+  reset: () => set({ input: { ...EVAL_DEFAULTS }, result: null, scannerReport: null, filterLog: null }),
   clearResults: () => set({ result: null, scannerReport: null }),
 }));

@@ -66,3 +66,16 @@ export const DIMENSION_LABELS: Record<keyof Omit<PromptScore, 'overall'>, string
   creativity: 'Creativity',
   actionability: 'Actionability',
 };
+
+export type FilterReason = 'skip_file' | 'skip_dir' | 'dot_dir' | 'wrong_ext' | 'too_large' | 'directory';
+
+export interface FilterLogEntry {
+  path: string;
+  reason: FilterReason;
+}
+
+export interface FilterLog {
+  total: number;
+  accepted: number;
+  entries: FilterLogEntry[];
+}
