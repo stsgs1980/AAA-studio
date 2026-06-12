@@ -8,6 +8,7 @@ import { classifyFile, parseSkillMarkdown, parseStandardMarkdown } from '@/lib/s
 import { extractReferences, checkReferences } from '@/lib/scanner/references';
 import { heuristicEvaluation } from '@/lib/scanner/heuristic';
 import { detectAntiPatterns } from '@/lib/scanner/anti-patterns';
+import { shouldSkipFile } from '@/lib/scanner/file-filter';
 
 export function buildStructure(files: ScannerFile[]): StructureSummary {
   const fileTypes: Record<string, number> = {};
@@ -114,7 +115,9 @@ export async function analyzeFiles(
   rawFiles: { path: string; content: string; size: number }[],
   evaluate: boolean,
 ): Promise<ScannerReport> {
-  const typedFiles: ScannerFile[] = rawFiles.map(f => ({
+  // Defense-in-depth: filter out config/installation files even if client missed them
+  const filtered = rawFiles.filter(f => !shouldSkipFile(f.path, f.size));
+  const typedFiles: ScannerFile[] = filtered.map(f => ({
     ...f, type: classifyFile(f.path, f.content),
   }));
 

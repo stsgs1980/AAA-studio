@@ -21,14 +21,33 @@ export const SKIP_FILES = new Set([
   "next-env.d.ts", "tsconfig.tsbuildinfo",
   ".tsbuildinfo", ".DS_Store",
   "dev.log", "opencode.json",
-  // Setup / config files — not analysis targets
+  // Package managers
   "package.json", "package-manager.json", ".npmrc", ".yarnrc",
+  // TypeScript / JavaScript configs
   "tsconfig.json", "tsconfig.*.json", "jsconfig.json",
+  // Next.js
   "next.config.js", "next.config.mjs", "next.config.ts",
+  // Styling / linting / formatting
   "tailwind.config.js", "tailwind.config.ts", "postcss.config.js", "postcss.config.mjs",
-  "eslint.config.js", "eslint.config.mjs", "eslint.config.cjs", ".eslintrc.json", ".eslintrc.js", ".eslintrc.yml",
-  ".prettierrc", ".prettierrc.json", ".prettierrc.js", ".prettierrc.yml",
+  "eslint.config.js", "eslint.config.mjs", "eslint.config.cjs", ".eslintrc.json", ".eslintrc.js", ".eslintrc.yml", ".eslintrc",
+  ".prettierrc", ".prettierrc.json", ".prettierrc.js", ".prettierrc.yml", ".prettierrc",
+  ".editorconfig",
+  // Testing
   "jest.config.js", "jest.config.ts", "vitest.config.ts", "playwright.config.ts",
+  // Build tools (vite, webpack, rollup, babel, swc, esbuild)
+  "vite.config.ts", "vite.config.js", "vite.config.mts", "vite.config.mjs",
+  "webpack.config.js", "webpack.config.ts",
+  "rollup.config.js", "rollup.config.ts",
+  "babel.config.js", "babel.config.json", ".babelrc", ".babelrc.json", ".babelrc.js",
+  ".swcrc",
+  // Framework configs (Angular, Vue, Nuxt, Svelte, Astro, Remix)
+  "angular.json", "vue.config.js", "nuxt.config.ts", "svelte.config.js", "astro.config.mjs", "remix.config.js",
+  // Python packaging / dependency files
+  "pyproject.toml", "requirements.txt", "setup.py", "setup.cfg", "Pipfile", "Pipfile.lock",
+  // Ruby / PHP / Go package files
+  "composer.json", "composer.lock", "Gemfile", "Gemfile.lock",
+  // Rust / Go / Java build files
+  "Cargo.toml", "Cargo.lock", "go.mod", "go.sum",
   // Infra / deploy files
   "Dockerfile", "docker-compose.yml", "docker-compose.yaml", ".dockerignore",
   "vercel.json", "netlify.toml", "railway.json", "fly.toml",
@@ -39,7 +58,7 @@ export const SKIP_FILES = new Set([
   "LICENSE", "LICENSE.md", "LICENSE.txt", "LICENCE",
   "CONTRIBUTING.md", "AUTHORS.md", "CODE_OF_CONDUCT.md",
   "SECURITY.md", ".npmignore",
-  // Prisma schema (not a skill/standard)
+  // Prisma / ORM schemas (not skill/standard analysis targets)
   "schema.prisma",
 ]);
 

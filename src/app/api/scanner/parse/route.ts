@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { handleError, success, BadRequest } from '@/lib/api-error';
 import type { ScannerFile, ParsedSkill, ParsedStandard } from '@/lib/scanner/types';
 import { classifyFile, parseSkillMarkdown, parseStandardMarkdown } from '@/lib/scanner/parser';
+import { shouldSkipFile } from '@/lib/scanner/file-filter';
 
 const schema = z.object({
   files: z.array(z.object({
@@ -17,7 +18,9 @@ export async function POST(request: Request) {
     const parsed = schema.safeParse(body);
     if (!parsed.success) throw BadRequest('Invalid input', parsed.error.flatten());
 
-    const typedFiles: ScannerFile[] = parsed.data.files.map(f => ({
+    // Defense-in-depth: filter config/installation files
+    const filtered = parsed.data.files.filter(f => !shouldSkipFile(f.path, f.size));
+    const typedFiles: ScannerFile[] = filtered.map(f => ({
       ...f,
       type: classifyFile(f.path, f.content),
     }));

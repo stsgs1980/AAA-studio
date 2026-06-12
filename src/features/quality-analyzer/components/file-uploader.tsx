@@ -7,7 +7,8 @@ import { useQualityStore } from "../hooks/use-quality-store";
 import { shouldSkipFile, MAX_FILE_SIZE } from "@/lib/scanner/file-filter";
 
 const ACCEPTED = new Set([
-  "txt", "md", "json", "yaml", "yml", "ts", "js", "py", "toml", "cfg",
+  "txt", "md", "mdx", "json", "yaml", "yml",
+  "ts", "tsx", "js", "jsx", "py", "toml", "cfg",
 ]);
 
 export function FileUploader() {
@@ -81,14 +82,14 @@ export function FileUploader() {
 
   return (
     <div className="flex flex-col gap-2">
-      <input ref={fileRef} type="file" accept=".txt,.md,.json,.yaml,.yml,.ts,.js,.py,.toml,.cfg" className="hidden" onChange={handleFile} />
+      <input ref={fileRef} type="file" accept=".txt,.md,.mdx,.json,.yaml,.yml,.ts,.tsx,.js,.jsx,.py,.toml,.cfg" className="hidden" onChange={handleFile} />
       <input ref={folderRef} type="file" {...{ webkitdirectory: "", directory: "" }} className="hidden" onChange={handleFolder} />
       <input ref={zipRef} type="file" accept=".zip" className="hidden" onChange={handleZip} />
       <button onClick={() => fileRef.current?.click()}
         className="flex min-h-[180px] w-full flex-col items-center justify-center gap-3 rounded-lg border border-dashed text-muted-foreground transition-colors hover:border-primary hover:text-primary">
         <Upload className="h-8 w-8" />
         <span className="text-sm">{showPreview ? `Loaded: ${input.fileName}` : "Click to upload a file"}</span>
-        <span className="text-xs text-muted-foreground/60">.txt, .md, .json, .yaml, .ts, .js, .py, .toml</span>
+        <span className="text-xs text-muted-foreground/60">.txt, .md, .json, .yaml, .ts, .tsx, .js, .jsx, .py, .toml</span>
       </button>
       <div className="flex gap-2">
         <button onClick={() => folderRef.current?.click()}

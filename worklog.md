@@ -1736,3 +1736,29 @@ Stage Summary:
 - 2 stale files deleted, 0 lost tasks
 - WORKFLOW.md is now the single source of truth
 - verify-docs and pre-push hooks will prevent doc drift going forward
+
+---
+Task ID: file-filter-fix
+Agent: main
+Task: Debug and fix file-filter not filtering config files during ZIP upload (1M+ chars loaded)
+
+Work Log:
+- Investigated full ZIP upload code path: file-uploader.tsx → JSZip → shouldSkipFile() → loadFile()
+- Found shouldSkipFile IS called at client side (line 59) — filter was working for files in SKIP_FILES
+- Found 3 real issues:
+  1. SKIP_FILES missing 20+ build tool configs (vite, webpack, rollup, babel, angular, nuxt, vue, svelte, astro, remix, pyproject, requirements, setup.py, composer, Gemfile, Cargo, go.mod, .editorconfig, .eslintrc, .prettierrc)
+  2. No server-side defense — /api/scanner/analyze and /api/scanner/parse had no shouldSkipFile filter
+  3. ACCEPTED set missing .tsx/.jsx — React components excluded from upload
+- Expanded SKIP_FILES from 35 to 55+ entries covering all major build tools and package managers
+- Added .tsx, .jsx, .mdx to ACCEPTED set in file-uploader.tsx
+- Added server-side shouldSkipFile filter in scanner-service.ts analyzeFiles()
+- Added server-side shouldSkipFile filter in parse/route.ts
+- Updated file input accept attribute and UI hint text
+- TypeScript compilation: 0 errors
+
+Stage Summary:
+- Files modified: file-filter.ts, file-uploader.tsx, scanner-service.ts, parse/route.ts
+- SKIP_FILES: 35 → 55+ entries (added vite, webpack, rollup, babel, swc, angular, vue, nuxt, svelte, astro, remix, pyproject, requirements, pipfile, composer, gemfile, cargo, go.mod, editorconfig)
+- ACCEPTED: added .tsx, .jsx, .mdx
+- Server-side defense-in-depth: scanner-service.ts + parse/route.ts now filter via shouldSkipFile()
+- Not yet pushed (awaiting user re-test in sandbox)
