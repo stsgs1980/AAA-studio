@@ -57,6 +57,10 @@ Agents MUST verify sandbox infrastructure is real before proceeding. Known anti-
 
 4. **Editing wrong location is silent failure**: Writing to `/tmp/my-repo/src/app/page.tsx` changes NOTHING visible in the browser. Always confirm you are editing files under `/home/z/my-project/`.
 
+5. **Sandbox idle timeout kills dev server**: The sandbox kills background process groups after ~2-5 minutes of idle. This is NOT an OOM or crash — process vanishes silently from logs. `nohup` does NOT protect. If "sandbox is inactive": restart dev server via `.zscripts/dev.sh` or `npx next dev --port 3000 --hostname 0.0.0.0`.
+
+6. **Sandbox networking**: `FC_CUSTOM_LISTEN_PORT=81` — sandbox reverse proxy on port 81 forwards to localhost:3000. Always verify: `curl -s -o /dev/null -w "%{http_code}" http://localhost:81/` returns 200.
+
 ## Rule 8: Session Start Protocol (drift prevention)
 
 Before ANY work in a new session, the agent MUST:

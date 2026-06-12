@@ -1831,3 +1831,34 @@ Stage Summary:
 - Filter Log button now always visible after folder/ZIP upload (shows "0 filtered" if none)
 - Version badge: 1.5.15 -> 1.5.16
 - Files changed: filter-log-btn.tsx, app-sidebar.tsx
+
+---
+Task ID: sandbox-investigation
+Agent: main
+Task: Investigate why Filter Log button and version don't appear in sandbox
+
+Work Log:
+- Analyzed screenshots via VLM: Vercel shows Filter Log (132) correctly, sandbox did not
+- Confirmed code is correct: filter-log-btn.tsx, file-uploader.tsx, page.tsx, use-quality-store.ts all verified
+- TypeScript: 0 errors across entire codebase
+- Discovered sandbox networking architecture:
+  - FC_CUSTOM_LISTEN_PORT=81 — sandbox reverse proxy listens on port 81
+  - Proxy forwards to localhost:3000 where Next.js dev server runs
+  - When Next.js process dies → port 3000 unavailable → proxy returns error → "sandbox is inactive"
+- Discovered Next.js dev server dies silently after ~2-3 minutes of idle:
+  - No crash log, no OOM kill message, no dmesg evidence
+  - Process simply vanishes — sandbox idle timeout kills background process groups
+  - nohup does NOT protect against this (kills entire process group)
+  - Memory is sufficient: 8081MB total, ~635MB used — not an OOM issue
+- Fix applied: removed entries.length===0 guard in filter-log-btn.tsx (v1.5.16)
+  - Button now shows after any folder/ZIP upload, even with 0 filtered files
+- Vercel: Filter Log confirmed working (258 total → 126 accepted, 132 filtered, 1185.3 KB)
+
+Stage Summary:
+- ROOT CAUSE: Sandbox kills idle Next.js dev server after ~2-3 minutes
+  - This is a sandbox infrastructure limitation, not a code bug
+  - Vercel (production build) is unaffected — works correctly
+  - To use sandbox: restart dev server, load folder immediately, check results
+- Sandbox networking: port 81 (proxy) → port 3000 (Next.js)
+- Filter Log button: working on Vercel v1.5.16
+- Files changed this session: filter-log-btn.tsx (removed guard), app-sidebar.tsx (1.5.16)
