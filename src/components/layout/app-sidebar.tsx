@@ -61,7 +61,7 @@ export function AppSidebar() {
               3A
             </div>
             <span className="font-semibold tracking-tight">Studio</span>
-            <span className="ml-1 rounded bg-muted px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground">1.5.21</span>
+            <span className="ml-1 rounded bg-muted px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground">1.5.22</span>
           </Link>
         )}
         <button

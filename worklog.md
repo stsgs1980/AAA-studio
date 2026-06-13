@@ -2024,3 +2024,18 @@ Work Log:
 Stage Summary:
 - One-click GitHub repo analysis: paste URL → Fetch → auto-loads → ready
 - GITHUB_TOKEN in .env.local for authenticated GitHub requests
+
+---
+Task ID: 3
+Agent: main
+Task: Fix scanner file names from URL loading
+
+Work Log:
+- Server fetch-url now accepts paths[] alongside urls[]
+- Client sends file paths with batch requests
+- Response uses file paths as labels: "=== AGENT_RULES.md ===" instead of raw URLs
+- parseFilesFromText now correctly extracts file paths for scanner
+
+Stage Summary:
+- End-to-end flow works: URL → tree → batch load → scanner parses files correctly
+- Fixed request.json() double-read bug (body can only be read once)

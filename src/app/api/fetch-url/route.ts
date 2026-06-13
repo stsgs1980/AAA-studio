@@ -53,11 +53,11 @@ async function githubFile(url: string): Promise<string> {
 
 export async function POST(request: Request) {
   try {
-    const { url, urls } = await request.json();
+    const body = await request.json();
+    const { url, urls, paths } = body as { url?: string; urls?: string[]; paths?: string[] };
     if (!url?.trim()) {
       throw BadRequest('URL is required');
     }
-    const bodyUrls = urls as string[] | undefined;
 
     const trimmed = url.trim().replace(/\/+$/, '');
 
@@ -68,12 +68,13 @@ export async function POST(request: Request) {
     if (repoMatch) {
       const [, owner, repo] = repoMatch;
 
-      if (bodyUrls && bodyUrls.length > 0) {
+      if (urls && urls.length > 0) {
         const parts: string[] = [];
-        for (const fileUrl of bodyUrls) {
+        for (let i = 0; i < urls.length; i++) {
           try {
-            const c = await githubFile(fileUrl);
-            if (c) parts.push(`\n=== ${fileUrl} ===\n${c}`);
+            const c = await githubFile(urls[i]);
+            const label = paths?.[i] ?? urls[i];
+            if (c) parts.push(`\n=== ${label} ===\n${c}`);
           } catch { /* skip failed */ }
         }
         return success({ type: 'content', content: parts.join('\n') });

@@ -29,20 +29,23 @@ export function useAgentLoader() {
 
   const loadAllFiles = useCallback(async (files: RepoFile[], sourceUrl: string) => {
     if (files.length === 0) return;
-    const urls = files.map((f) => f.url).filter((u): u is string => !!u);
-    const total = urls.length;
-    // Fetch in batches of 5 to show progress
+    const validFiles = files.filter((f): f is RepoFile & { url: string } => !!f.url);
+    const total = validFiles.length;
     const BATCH = 5;
     const parts: string[] = [];
 
-    for (let i = 0; i < urls.length; i += BATCH) {
-      const batch = urls.slice(i, i + BATCH);
+    for (let i = 0; i < validFiles.length; i += BATCH) {
+      const batch = validFiles.slice(i, i + BATCH);
       setLoadingProgress(`Loading ${Math.min(i + BATCH, total)}/${total}...`);
       try {
         const res = await fetch("/api/fetch-url", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url: sourceUrl, urls: batch }),
+          body: JSON.stringify({
+            url: sourceUrl,
+            urls: batch.map((f) => f.url),
+            paths: batch.map((f) => f.path),
+          }),
         });
         const data = await res.json();
         if (data.type === "content" && data.content) {
