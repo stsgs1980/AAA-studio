@@ -16,6 +16,7 @@ const pages: Record<string, ComponentType> = {
   "export-formats": lazy(() => import("../pages/export-formats").then((m) => ({ default: m.ExportFormatsPage }))),
   "rest-api": lazy(() => import("../pages/rest-api").then((m) => ({ default: m.RestApiPage }))),
   "quality-analyzer": lazy(() => import("../pages/quality-analyzer").then((m) => ({ default: m.QualityAnalyzerPage }))),
+  "stsdev-vision": lazy(() => import("../pages/stsdev-vision").then((m) => ({ default: m.StsdevVisionPage }))),
 };
 
 export function getWikiPage(id: string): ComponentType | null {

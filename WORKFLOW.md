@@ -4,7 +4,7 @@
 
 3A Studio = IDE для визуального управления AI-агентами. Не просто UI, а единый организм, где всё крутится вокруг одной базы данных (Neon PostgreSQL).
 
-## Архитектура (12 экранов, 4 пакета)
+## Архитектура (19 экранных групп, 5 пакетов)
 
 ```
 3A Studio = IDE для multi-agent systems
@@ -12,7 +12,7 @@
   ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌───────────────┐
   │ Dashboard│  │ Flow     │  │ Prompt   │  │ Knowledge     │
   │ метрики  │  │ Editor   │  │ Studio   │  │ Base          │
-  │ + API    │  │ 18 nodes │  │ 6-мерн.  │  │ collections   │
+  │ + API    │  │ 20 nodes │  │ 6-мерн.  │  │ collections   │
   │          │  │ ReactFlow│  │ scoring  │  │ + documents   │
   └──────────┘  └──────────┘  └──────────┘  └───────────────┘
   ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌───────────────┐
@@ -27,12 +27,12 @@
   │ code+test│  │ rules    │  │          │  │               │
   └──────────┘  └──────────┘  └──────────┘  └───────────────┘
   ┌──────────────────────────────────────────────────────────┐
-  │ Wiki — встроенная документация (14 страниц)              │
+  │ Wiki — встроенная документация (16 статей)                │
   └──────────────────────────────────────────────────────────┘
 
   Packages:
   @stsgs/ui (токены+тема)     @stsgs/prompting (scoring+формулы)
-  @stsgs/shared (типы)        eslint-plugin-3a (3 правила)
+  @stsgs/shared (типы)        eslint-plugin-3a (4 правила: max-lines, max-use-state, no-cross-layer, no-unicode-escapes)
 
   DB: Prisma + PostgreSQL (Neon)
   LLM: Multi-provider LLM (Z.ai SDK + API key, OpenAI, Anthropic, OpenRouter)
@@ -68,10 +68,10 @@ Zai-agent-toolkit (скомпилированные скиллы для Z.ai san
 
 | Package | Статус | Содержимое |
 |---------|--------|------------|
-| @stsgs/prompting | ✅ Рабочий | 9 modules: scoring, formulas (10→17 techniques), frameworks (4→11), system-prompts (5), builders (4), agent-templates (12 roles), intent, comparison |
+| @stsgs/prompting | ✅ Рабочий | 9 modules: scoring (6 criteria), formulas (10), frameworks (11), techniques (17), system-prompts (5), builders (4), agent-templates (12 roles), intent, comparison |
 | @stsgs/shared | ✅ Рабочий | Полные типы для Agent, Skill, Standard, Flow, Knowledge, Prompt |
 | @stsgs/ui | ✅ Рабочий | Design tokens (HSL), ThemeProvider, cn utility |
-| eslint-plugin-3a | ✅ Рабочий | max-lines(150), max-use-state(3), no-cross-layer |
+| eslint-plugin-3a | ✅ Рабочий | max-lines(150), max-use-state(3), no-cross-layer, no-unicode-escapes |
 
 ### Экраны
 
@@ -80,23 +80,23 @@ Zai-agent-toolkit (скомпилированные скиллы для Z.ai san
 | Dashboard | ✅ Живые данные | KPI, sparklines, heatmap, timeline — всё из DB, auto-refresh 30s |
 | Landing | ✅ Полный | Hero, Features, Architecture, Stats, CTA, Footer, Framer Motion |
 | Auth | ✅ Полный | Login/Signup/Verify/Forgot/Reset + Quick Admin button |
-| Wiki | ✅ Полный | 15 статей с реальным контентом, drawer (Ctrl+K), shiki подсветка |
-| Prompt Studio | ✅ Полный | 5 модулей: Write (live scoring) + Formulas (10) + Frameworks (4) + Compare (A/B) + Intent |
+| Wiki | ✅ Полный | 16 статей с реальным контентом, drawer (Ctrl+K), shiki подсветка |
+| Prompt Studio | ✅ Полный | 5 модулей: Write (live scoring) + Formulas (10) + Frameworks (11) + Techniques (17) + Compare (A/B) + Intent |
 | Prompt Library | ✅ Полный | 15 шаблонов, 6 категорий, favorites (localStorage), Copy/Clear/Use in Studio |
 | Syntax Highlighting | ✅ Полный | Общий CodeBlock (shiki github-dark), 9 языков, compact/full режимы |
 | Agents | ✅ Работает | CRUD, executions, systemPrompt, **Skills/Standards picker (EntityPicker)** |
-| Flow Editor | ✅ Работает | 18 nodes, ReactFlow, live execution, per-node model, usage tracking |
+| Flow Editor | ✅ Работает | 20 узлов (5 AI + 4 Mgmt + 4 Data + 2 Knowledge + 2 Integration + 3 Special), ReactFlow, live execution, per-node model, usage tracking |
 | Skill Forge | ✅ Rebuild | CRUD, **SkillFile (multi-file)**, file tree + editor, StandardsPicker, **ZIP export**, SKILL.md, midnight palette |
 | Standards | ✅ Rebuild | CRUD, rules editor, **cross-ref validation**, unified types (@stsgs/shared), store-driven, 0 useState in detail |
 | Knowledge | ✅ Работает | Upload, **TF-IDF semantic search** |
 | Pipelines | ✅ Работает | **Real flow execution**, node-level drill-down |
 | Hierarchy | ✅ Работает | Визуальный граф parent/child |
-| Templates | ✅ Работает | 6 flow templates + prompt library, clone to editor |
+| Templates | ✅ Работает | 6 flow templates + prompt library (15 шаблонов), clone to editor |
 | Audit Log | ✅ Работает | JSON подсветка деталей, фильтры по entity |
 | Quality Analyzer | ✅ Работает | Heuristic scoring (6 dims), LLM Deep Analysis (4 rubric criteria), Standards check, GitHub/ZIP/Folder/Text input, Clear Results, 4/4 PASS on Vercel |
 | Settings | ✅ Работает | Multi-provider LLM, theme/language, key masking |
 | i18n | ✅ Работает | en/ru, 7 неймспейсов, интерполяция, sidebar + settings |
-| Tests | ✅ 125 тестов | Unit: 90 (lib, validations, resilience), Integration: 35 (auth chain, agent CRUD, cross-ref, crypto) |
+| Tests | ✅ 95 тестов, 20 файлов | Unit: lib, validations, resilience, knowledge (tf-idf), Integration: auth chain, agent CRUD, cross-ref, crypto |
 
 ---
 
@@ -142,11 +142,11 @@ Discarded: "Правила генерации каталога" (project-specifi
 
 - [x] Dashboard с живыми данными
 - [x] Landing + Auth
-- [x] Wiki (14 статей, drawer)
-- [x] Prompt Studio v2 (scoring, формулы, фреймворки, compare)
+- [x] Wiki (16 статей, drawer)
+- [x] Prompt Studio v2 (Write, Formulas (10), Frameworks (11), Techniques (17), Compare, Intent)
 - [x] Prompt Library (15 шаблонов, favorites, studio integration)
 - [x] Syntax Highlighting (CodeBlock везде)
-- [x] **Flow Editor → live execution** (executeNode через z-ai-web-dev-sdk)
+- [x] **Flow Editor → live execution** (executeNode через z-ai-web-dev-sdk, 20 узлов)
 - [x] **Standards Manager → реальные правила** (CRUD + rules editor)
 
 ### Phase 2 — Интеграции ✅ COMPLETE

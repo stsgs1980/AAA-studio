@@ -65,7 +65,7 @@ Changed a standard -- reflected everywhere. Created a skill -- assign to agent -
 
 Additional: Landing page (/), Auth (login/signup/verify/reset/forgot), i18n (EN/RU, 7 namespaces).
 
-> **Note:** Approvals, Cost Monitor, Analysis, and Comparison screens are planned but not yet implemented (API routes exist for some).
+> **Note:** Analysis and Comparison screens have API routes. Approvals (HITL), Cost Monitor, and Testing screens are implemented (Wave 7.5).
 
 ## Monorepo Packages (5)
 
@@ -102,7 +102,7 @@ The strategic resource inventory that feeds 3A Studio.
 
 | # | Donor | LOC | Status | What to borrow |
 |---|-------|-----|--------|---------------|
-| 1 | [3a-studio-mas](https://github.com/stsgs1980/3a-studio-mas) | ~45K | SOURCE | Flow Editor (20 nodes), Prisma Schema (36 models), Prompting System, LLM Client, Diagnostics, Pipeline Middleware, Dashboard, Auth, Monorepo packages |
+| 1 | [3a-studio-mas](https://github.com/stsgs1980/3a-studio-mas) | ~45K | SOURCE | Flow Editor (20 nodes), Prisma Schema (37 models), Prompting System, LLM Client, Diagnostics, Pipeline Middleware, Dashboard, Auth, Monorepo packages |
 | 2 | [P-MAS_init](https://github.com/stsgs1980/P-MAS_init) | 54,798 | ARCHIVED | Workflow execution engine, ReactFlow hierarchy v2, Workflow Pipeline UI, 7 edge types, Resilience layer, WebSocket service |
 | 3 | [MVP-Flow-Studio-Pro](https://github.com/stsgs1980/MVP-Flow-Studio-Pro) | 18,193 | ARCHIVED | 6 advanced nodes (Switch/Merge/Loop/Webhook/Variable/DataSource), 26 multi-agent templates, Template Gallery, i18n |
 | 4 | [P-MAS-architector](https://github.com/stsgs1980/P-MAS-architector) | ~81,000 | ACTIVE | Orchestrator, prompt versioning, citation system, executor pipeline, 67 skills |

@@ -1,0 +1,7 @@
+{
+  "line_check_dir": ".",
+  "line_check_skip": ["node_modules", ".git", "vendor", "dist", "build", ".next", "coverage", "__pycache__", "anti-hallucination-guard"],
+  "line_check_limit": 250,
+  "line_check_hard_cap": 400,
+  "line_check_glob": ["*.js", "*.ts", "*.jsx", "*.tsx", "*.py", "*.go", "*.rs", "*.java", "*.rb", "*.sh", "*.bash", "*.c", "*.cpp", "*.h", "*.hpp", "*.cs", "*.php", "*.swift", "*.kt", "*.scala"]
+}

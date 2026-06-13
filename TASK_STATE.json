@@ -4,7 +4,7 @@
     "repo": "https://github.com/stsgs1980/AAA-studio",
     "branch": "main",
     "lastCommit": "ebfa036",
-    "lastUpdated": "2026-06-03T20:15:00Z",
+    "lastUpdated": "2026-06-14T12:00:00Z",
     "sessionCount": 8
   },
   "strategy": "Upgrade existing Scanner from aggregate scores to drill-down detail. No Flow Editor rewrite. Just make current Scanner useful: per-skill scores, broken references, anti-pattern detectors. Wireframe = end-state spec.",

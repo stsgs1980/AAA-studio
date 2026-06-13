@@ -11,19 +11,19 @@
 - [+] Prisma schema: 37 models
 - [+] `bun run build` -- passes
 - [+] `bun run lint` -- 0 errors
-- [+] API routes: 66 route files across 17 feature areas
-- [+] 17 feature modules + Quality Analyzer, 4 packages + verify-docs submodule
+- [+] API routes: 63 route files across 18 feature areas
+- [+] 18 feature modules (incl. Quality Analyzer), 5 packages + verify-docs
 - [+] Auth middleware + API key encryption
 - [+] Multi-provider LLM (Z.ai, OpenAI, Anthropic, OpenRouter, custom)
 - [+] MCP Server (JSON-RPC + SSE transport, 6 methods)
-- [+] i18n (en/ru, 8 namespaces)
+- [+] i18n (en/ru, 7 namespaces)
 - [+] Dark/light theme
-- [+] Flow Editor: 18 node types, command palette, flow assistant wizard, SSE execution
+- [+] Flow Editor: 20 node types, command palette, flow assistant wizard, SSE execution
 - [+] Skill Export: OpenAI, MCP, A2A, Markdown, ZIP formats
 - [+] Resilience: Retry, Circuit Breaker, Fallback, Health Check
 - [+] Self-Correction: Generate → Judge → Revise loop
 - [+] Prompt Templates: 8 built-in + CRUD API
-- [+] Wiki: 15 pages + GitHub export
+- [+] Wiki: 16 статей + GitHub export
 - [+] 15 schema-only models without API/UI (see Wave 7.5)
 - [+] Quality Analyzer: heuristic scoring, LLM deep analysis (8 criteria), standards check, rubric evaluation, GitHub repo integration
 - [+] LLM env-key injection: ZAI_API_KEY, OPENAI_API_KEY, etc. auto-injected from env vars
@@ -33,7 +33,7 @@
 ## Wave 0 -- Infrastructure [DONE]
 
 ### 0.1 [DONE] SQLite/PostgreSQL conflict check
-### 0.2 [DONE] Prisma Schema -- 30 models
+### 0.2 [DONE] Prisma Schema -- 37 models
 ### 0.3 [DONE] API Error Handling -- all 32 routes
 ### 0.4 [DONE] Zod Validation -- all routes
 ### 0.5 [DONE] Seed Data
@@ -65,11 +65,11 @@
 
 ### 3.1 [DONE] Dashboard -- live data, KPI, sparklines, heatmap, timeline
 ### 3.2 [DONE] Agents -- CRUD, EntityPicker, executions
-### 3.3 [DONE] Flow Editor -- ReactFlow, 18 nodes, live execution
+### 3.3 [DONE] Flow Editor -- ReactFlow, 20 nodes, live execution
 ### 3.4 [DONE] Prompt Studio -- 5 modules (Write, Formulas, Frameworks, Compare, Intent)
 ### 3.5 [DONE] Knowledge -- collections, documents, TF-IDF search
 ### 3.6 [DONE] Skills & Standards -- CRUD, rules editor, cross-ref
-### 3.7 [DONE] Wiki -- 14 pages, drawer, shiki
+### 3.7 [DONE] Wiki -- 16 pages, drawer, shiki
 ### 3.8 [DONE] Settings -- multi-provider LLM, theme, language
 ### 3.9 [DONE] Landing + Auth (login/signup/verify/forgot/reset)
 ### 3.10 [DONE] Pipelines -- real execution, node drill-down
@@ -153,7 +153,7 @@
 ## Wave 7 -- Quality
 
 ### 7.1 i18n -- full translations [DONE]
-- [+] Split translations.ts into 8 namespace files (nav, common, settings, auth, dashboard, pages, landing, index)
+- [+] Split translations.ts into 7 namespace files (nav, common, settings, auth, dashboard, pages, landing)
 - [+] Expand TranslationDict from 3 to 7 namespaces
 - [+] Add tKey() interpolation support + dynamic html lang attribute
 - [+] Add missing nav keys: Tasks, Workflows, Self-Correction
@@ -170,7 +170,7 @@
 - [+] Unit tests for validations/common (6 tests)
 - [+] Unit tests for knowledge/lib/tf-idf (11 tests)
 - [+] Existing tests: auth, crypto, db, llm/types, middleware (38 tests)
-- [+] Total: 12 files, 90 tests -- ALL PASSING
+- [+] Total: 20 files, 95 tests -- ALL PASSING
 - [ ] Integration tests for API routes
 - [ ] E2E for key flows (agent CRUD, flow execution)
 

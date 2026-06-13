@@ -6,17 +6,49 @@
 # Called from pre-commit hook (Phase 4).
 # Can also be run manually: bash scripts/line-count-check.sh
 #
-# Configuration via environment variables:
+# Configuration (priority: env vars > .ahgrc > defaults):
 #   LINE_LIMIT      -- max lines per file (default: 250)
 #   LINE_CHECK_DIR  -- directory to scan (default: . = project root)
 #   LINE_CHECK_GLOB -- file patterns to check (default: common source files)
 #   LINE_CHECK_SKIP -- file patterns to skip (default: node_modules, .git, etc.)
+#   .ahgrc          -- JSON config file in project root (auto-loaded)
 # ============================================================
 
 set -euo pipefail
 
-# -- Configuration (overridable via env) --
+# -- Load .ahgrc if available (priority: env vars > .ahgrc > defaults) --
+_AHGRC_FILE=""
+_PROJECT_ROOT_PREVIEW="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+for _ahgrc_try in "$_PROJECT_ROOT_PREVIEW/.ahgrc" "$(pwd)/.ahgrc"; do
+    if [ -f "$_ahgrc_try" ]; then
+        _AHGRC_FILE="$_ahgrc_try"
+        break
+    fi
+done
+
+if [ -n "$_AHGRC_FILE" ] && command -v python3 &>/dev/null; then
+    # Read values from .ahgrc JSON (env vars override .ahgrc)
+    _ahgrc_limit=$(python3 -c "import json; print(json.load(open('$_AHGRC_FILE')).get('line_check_limit', 250))" 2>/dev/null || echo "")
+    _ahgrc_cap=$(python3 -c "import json; print(json.load(open('$_AHGRC_FILE')).get('line_check_hard_cap', 400))" 2>/dev/null || echo "")
+    _ahgrc_dir=$(python3 -c "import json; print(json.load(open('$_AHGRC_FILE')).get('line_check_dir', '.'))" 2>/dev/null || echo "")
+    _ahgrc_skip=$(python3 -c "import json; d=json.load(open('$_AHGRC_FILE')); print(' '.join(d.get('line_check_skip', [])))" 2>/dev/null || echo "")
+    _ahgrc_glob=$(python3 -c "import json; d=json.load(open('$_AHGRC_FILE')); print(' '.join(d.get('line_check_glob', [])))" 2>/dev/null || echo "")
+
+    # Apply .ahgrc values as defaults (env vars still override)
+    LINE_LIMIT="${LINE_LIMIT:-${_ahgrc_limit:-250}}"
+    LINE_CHECK_DIR="${LINE_CHECK_DIR:-${_ahgrc_dir:-.}}"
+    LINE_HARD_CAP="${LINE_HARD_CAP:-${_ahgrc_cap:-400}}"
+    if [ -z "${LINE_CHECK_GLOB:-}" ] && [ -n "$_ahgrc_glob" ]; then
+        LINE_CHECK_GLOB="$_ahgrc_glob"
+    fi
+    if [ -z "${LINE_CHECK_SKIP:-}" ] && [ -n "$_ahgrc_skip" ]; then
+        LINE_CHECK_SKIP="$_ahgrc_skip"
+    fi
+fi
+
+# -- Configuration (overridable via env, falls back to .ahgrc then defaults) --
 LINE_LIMIT="${LINE_LIMIT:-250}"
+LINE_HARD_CAP="${LINE_HARD_CAP:-400}"
 LINE_CHECK_DIR="${LINE_CHECK_DIR:-.}"
 # Guard: empty string is NOT the same as unset -- ${:-} only substitutes on unset/null.
 # When pre-commit passes LINE_CHECK_DIR="" for AHG standalone, find "" fails.
@@ -89,9 +121,9 @@ for GLOB in $LINE_CHECK_GLOB; do
 
         CHECKED=$((CHECKED + 1))
 
-        if [ "$LINES" -gt 400 ]; then
+        if [ "$LINES" -gt "$LINE_HARD_CAP" ]; then
             # Hard violation -- no exceptions
-            err "[ANTI-MONOLITH] $FILE is ${LINES} lines (limit: ${LINE_LIMIT}, hard cap: 400)"
+            err "[ANTI-MONOLITH] $FILE is ${LINES} lines (limit: ${LINE_LIMIT}, hard cap: ${LINE_HARD_CAP})"
             err "  DECOMPOSE IMMEDIATELY. No exceptions above 400 lines."
             VIOLATIONS=$((VIOLATIONS + 1))
         elif [ "$LINES" -gt "$LINE_LIMIT" ]; then

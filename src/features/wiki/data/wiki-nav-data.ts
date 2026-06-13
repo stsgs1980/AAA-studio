@@ -29,4 +29,5 @@ export const wikiNavItems: WikiNavItem[] = [
   { id: "export-formats", title: "Export Formats", category: "Export & Integration", keywords: ["json", "yaml", "markdown", "download", "export"] },
   { id: "rest-api", title: "REST API", category: "Export & Integration", keywords: ["endpoints", "http", "requests", "authentication", "integration"] },
   { id: "quality-analyzer", title: "Quality Analyzer", category: "Workflow Design", keywords: ["qa", "testing", "analysis", "scoring", "deep analysis", "rubric", "evaluation"] },
+  { id: "stsdev-vision", title: "STSDev Vision", category: "Getting Started", keywords: ["vision", "strategy", "competitive", "roadmap", "milestones"] },
 ];

@@ -64,7 +64,7 @@ fi
 # -- Verify prerequisites -----------------------------------------------------
 if [ "${1:-}" = "--help" ] || [ "${1:-}" = "-h" ]; then
     echo ""
-    echo "ahg -- Anti-Hallucination Guard CLI v2.1"
+    echo "ahg -- Anti-Hallucination Guard CLI v2.5"
     echo ""
     echo "USAGE"
     echo "  bash scripts/ahg.sh <command> [args]"
