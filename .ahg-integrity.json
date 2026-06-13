@@ -1,0 +1,15 @@
+{
+  "version": "2.1.0",
+  "timestamp": "2026-06-13T11:22:07Z",
+  "hooks": {
+    "pre-commit": "c2eb486751e6214ee9f8aba888df4e777dd4f62f7a40ca141407385cbfee431d",
+    "pre-push": "bcf706b89dd6460da92055f9bd93034a39fc7eced9946c2dbe8a21dbc1e34e44"
+  },
+  "config": {
+    "AGENT_RULES.md": "37fcd698341412a8514b6ae4d66eeb6fd3cf2c69b8938b6666ed90155472709d",
+    "verify-docs.json": "5e3c50531655f6e54d912cfd5c5cdaa255772da90783027a8ed8071e147581fe"
+  },
+  "gitConfig": {
+    "core.hooksPath": "unset"
+  }
+}
