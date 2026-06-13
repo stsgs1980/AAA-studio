@@ -2008,3 +2008,19 @@ Stage Summary:
 - Filter Log now works for all 3 upload modes: folder, ZIP, URL/GitHub
 - Single source of truth for filter logic in file-filter.ts
 - ESLint 0/0, TypeScript 0, build clean
+
+---
+Task ID: 2
+Agent: main
+Task: UX fix - auto-load repo files, GitHub token for API
+
+Work Log:
+- Removed file list + Load All button from QA page
+- Auto-load all repo files after tree fetch with batch progress (5 per batch)
+- Show progress "Loading 5/28..." on Fetch Content button
+- Added GITHUB_TOKEN support to fetch-url API (avoids rate limit)
+- Better error messages from GitHub API
+
+Stage Summary:
+- One-click GitHub repo analysis: paste URL → Fetch → auto-loads → ready
+- GITHUB_TOKEN in .env.local for authenticated GitHub requests

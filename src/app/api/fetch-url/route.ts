@@ -8,17 +8,29 @@ interface TreeEntry {
   size?: number;
 }
 
+function ghHeaders(): Record<string, string> {
+  const h: Record<string, string> = { 'Accept': 'application/vnd.github.v3+json' };
+  const token = process.env.GITHUB_TOKEN;
+  if (token) h['Authorization'] = `Bearer ${token}`;
+  return h;
+}
+
 async function githubTreeRecursive(
   owner: string, repo: string,
 ): Promise<TreeEntry[]> {
-  const url = `https://api.github.com/repos/${owner}/${repo}/git/trees/main?recursive=1`;
-  const res = await fetch(url, { headers: { 'Accept': 'application/vnd.github.v3+json' } });
+  const res = await fetch(
+    `https://api.github.com/repos/${owner}/${repo}/git/trees/main?recursive=1`,
+    { headers: ghHeaders() },
+  );
   if (!res.ok) {
     const res2 = await fetch(
       `https://api.github.com/repos/${owner}/${repo}/git/trees/master?recursive=1`,
-      { headers: { 'Accept': 'application/vnd.github.v3+json' } },
+      { headers: ghHeaders() },
     );
-    if (!res2.ok) throw new Error('GitHub Trees API failed');
+    if (!res2.ok) {
+      const body = await res2.json().catch(() => ({}));
+      throw new Error(body.message || 'GitHub Trees API failed');
+    }
     const data = await res2.json();
     return (data.tree ?? []).filter((t: TreeEntry) => t.type === 'blob');
   }
@@ -31,7 +43,10 @@ function toRawUrl(owner: string, repo: string, path: string): string {
 }
 
 async function githubFile(url: string): Promise<string> {
-  const res = await fetch(url);
+  const h: Record<string, string> = {};
+  const token = process.env.GITHUB_TOKEN;
+  if (token) h['Authorization'] = `Bearer ${token}`;
+  const res = await fetch(url, { headers: h });
   if (!res.ok) throw new Error(`Fetch ${res.status}`);
   return res.text();
 }

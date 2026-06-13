@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Zap, RotateCcw, Loader2, FileCode, FolderGit2, Brain, Trash2, Scan } from "lucide-react";
+import { Zap, RotateCcw, Loader2, Brain, Trash2, Scan } from "lucide-react";
 import {
   InputPanel, ScorePanel, StandardsPanel, RubricPanel, DeepAnalysisPanel,
   ScannerPanel, FilterLogBtn, useQualityStore,
@@ -24,7 +24,7 @@ export default function QualityAnalyzerPage() {
   const reset = useQualityStore((s) => s.reset);
   const clearResults = useQualityStore((s) => s.clearResults);
   const hasResult = useQualityStore((s) => s.result !== null || s.scannerReport !== null);
-  const { agents, repoFiles, fetching, handleFetchUrl, handleRepoFileSelect, handleLoadAll, handleAgentSelect } = useAgentLoader();
+  const { agents, fetching, loadingProgress, handleFetchUrl, handleAgentSelect } = useAgentLoader();
   const { t } = useLanguage();
   const hasText = input.text.trim().length > 0;
   const tabLabels: Record<Tab, string> = {
@@ -63,29 +63,11 @@ export default function QualityAnalyzerPage() {
           {input.mode === "url" && (
             <button onClick={handleFetchUrl} disabled={!input.sourceUrl.trim() || fetching}
               className="flex items-center justify-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm text-primary-foreground disabled:opacity-50">
-              {fetching ? <Loader2 className="h-4 w-4 animate-spin" /> : <FolderGit2 className="h-4 w-4" />}
-              {fetching ? t.pages['Fetching...'] : t.pages['Fetch Content']}
+              {fetching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Scan className="h-4 w-4" />}
+              {fetching ? (loadingProgress ?? t.pages['Fetching...']) : t.pages['Fetch Content']}
             </button>
           )}
-          {input.mode === "url" && repoFiles.length > 0 && (
-            <div className="max-h-[200px] overflow-y-auto rounded-lg border bg-muted/20 p-2">
-              <div className="mb-1 flex items-center justify-between">
-                <p className="text-xs font-medium text-muted-foreground">{repoFiles.length} {t.pages['files found -- click to load:']}</p>
-                <button onClick={handleLoadAll} disabled={fetching}
-                  className="flex items-center gap-1 rounded-md bg-accent px-2 py-0.5 text-xs font-medium hover:bg-accent/80 disabled:opacity-50">
-                  {fetching ? <Loader2 className="h-3 w-3 animate-spin" /> : <FolderGit2 className="h-3 w-3" />}
-                  {t.pages['Load All']}
-                </button>
-              </div>
-              {repoFiles.map((f) => (
-                <button key={f.path} onClick={() => handleRepoFileSelect(f)}
-                  className="flex w-full items-center gap-2 rounded-md px-2 py-1 text-xs hover:bg-accent text-left">
-                  <FileCode className="h-3 w-3 shrink-0 text-muted-foreground" />{f.path}
-                </button>
-              ))}
-            </div>
-          )}
-          {fetching && (
+          {fetching && !loadingProgress && (
             <div className="flex items-center gap-2 rounded-lg border border-primary/30 bg-primary/5 px-3 py-2">
               <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" />
               <span className="text-xs text-primary">{t.pages['Loading files...']}</span>
@@ -94,7 +76,7 @@ export default function QualityAnalyzerPage() {
           {!fetching && hasText && (
             <div className="flex items-center justify-between rounded-md bg-muted/30 px-3 py-1.5">
               <span className="text-xs text-muted-foreground">{t.pages['Loaded:']} {input.text.length.toLocaleString()} {t.pages['chars']}</span>
-              <span className="text-xs text-primary">{t.pages['Ready to Analyze']} / Deep / Scanner</span>
+              <span className="text-xs text-green-600 dark:text-green-400">Ready to Analyze</span>
             </div>
           )}
           <div className="flex-1 min-h-0 overflow-hidden"><InputPanel /></div>

@@ -13,6 +13,7 @@ export function useAgentLoader() {
   const [agents, setAgents] = useState<{ id: string; name: string }[]>([]);
   const [repoFiles, setRepoFiles] = useState<RepoFile[]>([]);
   const [fetching, setFetching] = useState(false);
+  const [loadingProgress, setLoadingProgress] = useState<string | null>(null);
   const setAgentId = useQualityStore((s) => s.setAgentId);
   const loadAgent = useQualityStore((s) => s.loadAgent);
   const setText = useQualityStore((s) => s.setText);
@@ -26,10 +27,42 @@ export function useAgentLoader() {
       .catch(() => {});
   }, []);
 
+  const loadAllFiles = useCallback(async (files: RepoFile[], sourceUrl: string) => {
+    if (files.length === 0) return;
+    const urls = files.map((f) => f.url).filter((u): u is string => !!u);
+    const total = urls.length;
+    // Fetch in batches of 5 to show progress
+    const BATCH = 5;
+    const parts: string[] = [];
+
+    for (let i = 0; i < urls.length; i += BATCH) {
+      const batch = urls.slice(i, i + BATCH);
+      setLoadingProgress(`Loading ${Math.min(i + BATCH, total)}/${total}...`);
+      try {
+        const res = await fetch("/api/fetch-url", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: sourceUrl, urls: batch }),
+        });
+        const data = await res.json();
+        if (data.type === "content" && data.content) {
+          parts.push(data.content);
+        }
+      } catch {
+        // skip failed batch
+      }
+    }
+    if (parts.length > 0) {
+      setText(parts.join("\n\n"));
+    }
+    setLoadingProgress(null);
+  }, [setText]);
+
   const handleFetchUrl = useCallback(async () => {
     if (!input.sourceUrl.trim()) return;
     setFetching(true);
     setRepoFiles([]);
+    setLoadingProgress(null);
     try {
       const res = await fetch("/api/fetch-url", {
         method: "POST",
@@ -38,8 +71,12 @@ export function useAgentLoader() {
       });
       const data = await res.json();
       if (data.type === "repo") {
-        setRepoFiles(data.files ?? []);
+        const files = data.files ?? [];
+        setRepoFiles(files);
         if (data.filterLog) setFilterLog(data.filterLog);
+        if (files.length > 0) {
+          await loadAllFiles(files, input.sourceUrl.trim());
+        }
       } else if (data.type === "content") {
         setText(data.content);
       } else if (data.error) {
@@ -50,30 +87,7 @@ export function useAgentLoader() {
     } finally {
       setFetching(false);
     }
-  }, [input.sourceUrl, setText, setFilterLog]);
-
-  const handleRepoFileSelect = useCallback(
-    async (file: RepoFile) => {
-      if (!file.url) return;
-      setFetching(true);
-      try {
-        const res = await fetch("/api/fetch-url", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url: file.url }),
-        });
-        const data = await res.json();
-        if (data.type === "content") {
-          setText(data.content);
-        }
-      } catch {
-        console.error("Failed to fetch file");
-      } finally {
-        setFetching(false);
-      }
-    },
-    [setText],
-  );
+  }, [input.sourceUrl, setText, setFilterLog, loadAllFiles]);
 
   const handleAgentSelect = useCallback(
     async (agentId: string) => {
@@ -90,24 +104,5 @@ export function useAgentLoader() {
     [setAgentId, loadAgent],
   );
 
-  const handleLoadAll = useCallback(async () => {
-    if (repoFiles.length === 0) return;
-    setFetching(true);
-    try {
-      const urls = repoFiles.map((f) => f.url).filter((u): u is string => !!u);
-      const res = await fetch("/api/fetch-url", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: input.sourceUrl, urls }),
-      });
-      const data = await res.json();
-      if (data.type === "content") setText(data.content);
-    } catch {
-      console.error("Failed to load all files");
-    } finally {
-      setFetching(false);
-    }
-  }, [repoFiles, input.sourceUrl, setText]);
-
-  return { agents, repoFiles, fetching, handleFetchUrl, handleRepoFileSelect, handleLoadAll, handleAgentSelect };
+  return { agents, repoFiles, fetching, loadingProgress, handleFetchUrl, handleAgentSelect };
 }
