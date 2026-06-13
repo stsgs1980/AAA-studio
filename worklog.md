@@ -2039,3 +2039,18 @@ Work Log:
 Stage Summary:
 - End-to-end flow works: URL → tree → batch load → scanner parses files correctly
 - Fixed request.json() double-read bug (body can only be read once)
+
+---
+Task ID: 4
+Agent: main
+Task: Update anti-hallucination-guard submodule to latest
+
+Work Log:
+- git submodule update --remote anti-hallucination-guard (8df5f41 → d27c3f4)
+- 24 new commits pulled (hooks, scripts, verify-docs improvements)
+- Ran setup.sh — hooks updated, new scripts installed (line-count-check, co-change-check)
+- Committed and pushed
+
+Stage Summary:
+- AHG updated to d27c3f4 (fix: 12 bugs found in deep audit)
+- New scripts: check-hooks-lib.sh, check-hooks-snapshot.sh, check-hooks-verify.sh, line-count-check.sh, co-change-check.sh

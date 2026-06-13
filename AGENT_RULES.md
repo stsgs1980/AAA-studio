@@ -2,48 +2,95 @@
 
 
 
+
 <!-- AHG:START -->
 <!-- Do NOT edit between START and END markers. This block is managed by anti-hallucination-guard/setup.sh -->
-<!-- ID: RULE-001 | ver:1.0 | Level: C | Related: RULE-003, RULE-006 -->
-## Rule 1: worklog -- BEFORE and AFTER every action
+<!-- ANTI-MONOLITH exception: single-source rules reference for AI agents.
+     Splitting would force agents to search multiple files. Per Rule 12. -->
+# AGENT_RULES.md
+
+> **QUICK REFERENCE -- 5 Critical Rules**
+>
+> 1. **[C] Rule 1**: ANSWER BEFORE ACT -- question -> answer, task -> execute
+> 2. **[C] Rule 3**: Read before write -- never write without reading first
+> 3. **[C] Rule 6**: Honest reporting -- every claim must be verifiable
+> 4. **[C] Rule 11**: Integrity protection -- never bypass anti-hallucination mechanisms
+> 5. **[C] Rule 12**: Anti-monolith -- no file over 250 lines
+
+## Table of Contents
+- [Rule 1 [C]: Answer Before Act](#rule-1-c-answer-before-act-no-unsolicited-action)
+- [Rule 2 [C]: worklog](#rule-2-c-worklog--before-and-after-every-action)
+- [Rule 3 [C]: Read before write](#rule-3-c-read-before-write-read-before-write)
+- [Rule 4 [C]: One logical block -- one commit](#rule-4-c-one-logical-block----one-commit)
+- [Rule 5 [C]: No loops](#rule-5-c-no-loops)
+- [Rule 6 [C]: Honest reporting](#rule-6-c-honest-reporting)
+- [Rule 7 [W]: Work structure](#rule-7-w-work-structure)
+- [Rule 8 [C]: Sandbox verification](#rule-8-c-sandbox-verification-no-fake-setup)
+- [Rule 9 [C]: Session Start Protocol](#rule-9-c-session-start-protocol-drift-prevention)
+- [Rule 10 [C]: Documentation sync](#rule-10-c-documentation-sync-no-code-without-docs)
+- [Rule 11 [C]: Integrity protection](#rule-11-c-integrity-protection-no-self-sabotage)
+- [Rule 12 [C]: Anti-monolith](#rule-12-c-anti-monolith-no-file-over-250-lines)
+- [Rule 13 [C]: ahg bump](#rule-13-c-use-ahg-bump-for-version-updates)
+- [Rule 14 [C]: Pre-commit checklist](#rule-14-c-pre-commit-mandatory-checklist)
+- [Rule 15 [W]: UNICODE_POLICY](#rule-15-w-no-unicode-graphics-unicode_policy-compliance)
+- [Rule 16 [C]: AHG submodule is immutable](#rule-16-c-ahg-submodule-is-immutable-architecture-no-removal-no-inlining)
+- [Rule 17 [C]: Upstream write protection](#rule-17-c-upstream-write-protection-no-consumer-agent-may-push-to-ahg)
+- [worklog.md format](#worklogmd-format)
+
+<!-- ID: RULE-001 | ver:1.0 | Level: C | Related: RULE-006, RULE-007 -->
+## Rule 1 [C]: ANSWER BEFORE ACT (NO UNSOLICITED ACTION)
+IF ASKED A QUESTION -- ANSWER THE QUESTION. DO NOT START IMPLEMENTING.
+DO NOT CREATE FILES. DO NOT MODIFY CODE. DO NOT COMMIT.
+ONLY ACT WHEN GIVEN AN EXPLICIT TASK.
+
+1. Question -> ANSWER, nothing else
+2. Task -> EXECUTE
+3. Unsure -> ASK, do NOT guess
+4. "Do it" / "Go ahead" / "Make it so" -> that is a task, execute
+
+This rule is the FIRST rule for a reason. Every session, every agent,
+every time. Read it. Follow it.
+
+<!-- ID: RULE-002 | ver:1.0 | Level: C | Related: RULE-004, RULE-007 -->
+## Rule 2 [C]: worklog -- BEFORE and AFTER every action
 
 - Before ANY action: read /worklog.md
 - After ANY action: update /worklog.md
 - Format: only blocks with --- separator
 - Content: specific facts (files, commands, results)
 
-<!-- ID: RULE-002 | ver:1.0 | Level: C | Related: RULE-009 -->
-## Rule 2: Read before write (READ BEFORE WRITE)
+<!-- ID: RULE-003 | ver:1.0 | Level: C | Related: RULE-010 -->
+## Rule 3 [C]: Read before write (READ BEFORE WRITE)
 
 - NEVER write a file without reading it first (Read tool)
 - Exception: if file does not exist (verify via LS/Glob)
 - Reason: without reading, agent risks destroying existing code
 
-<!-- ID: RULE-003 | ver:1.0 | Level: C | Related: RULE-001 -->
-## Rule 3: One logical block -- one commit
+<!-- ID: RULE-004 | ver:1.0 | Level: C | Related: RULE-002 -->
+## Rule 4 [C]: One logical block -- one commit
 
 - Finished a meaningful chunk of work -> git add -A && git commit
 - Commit message: specific description (not "update", not "fix")
 - Commit without updated worklog -> ERROR (pre-commit hook will block)
 
-<!-- ID: RULE-004 | ver:1.0 | Level: C | Related: RULE-005 -->
-## Rule 4: No loops
+<!-- ID: RULE-005 | ver:1.0 | Level: C | Related: RULE-006 -->
+## Rule 5 [C]: No loops
 
 - If you are doing the same thing for the 3rd time with the same result -> STOP
 - Do not try "once more, but differently"
 - Write in chat: "Stuck on [specific step], need help"
 - This is NOT a failure -- this saves user time
 
-<!-- ID: RULE-005 | ver:1.0 | Level: C | Related: RULE-010 -->
-## Rule 5: Honest reporting
+<!-- ID: RULE-006 | ver:1.0 | Level: C | Related: RULE-011 -->
+## Rule 6 [C]: Honest reporting
 
 - Do NOT write "work completed" if tests are not passed
 - Do NOT write "file created" if it does not exist
 - Do NOT write "error fixed" if you did not verify
 - Every claim -> must be verifiable
 
-<!-- ID: RULE-006 | ver:1.0 | Level: W | Related: RULE-001, RULE-003 -->
-## Rule 6: Work structure
+<!-- ID: RULE-007 | ver:1.0 | Level: W | Related: RULE-002, RULE-004 -->
+## Rule 7 [W]: Work structure
 
 1. Read AGENT_RULES.md and worklog.md
 2. Determine the specific next step
@@ -52,8 +99,8 @@
 5. Git commit
 6. Go to step 2
 
-<!-- ID: RULE-007 | ver:1.0 | Level: C | Related: STD-ENV-001, STD-ENV-002 -->
-## Rule 7: Sandbox verification (no fake setup)
+<!-- ID: RULE-008 | ver:1.0 | Level: C | Related: STD-ENV-001, STD-ENV-002 -->
+## Rule 8 [C]: Sandbox verification (no fake setup)
 
 Agents MUST verify sandbox infrastructure is real before proceeding. Known anti-hallucination patterns in Z.ai Sandbox:
 
@@ -65,8 +112,8 @@ Agents MUST verify sandbox infrastructure is real before proceeding. Known anti-
 
 4. **Editing wrong location is silent failure**: Writing to `/tmp/my-repo/src/app/page.tsx` changes NOTHING visible in the browser. Always confirm you are editing files under `/home/z/my-project/`.
 
-<!-- ID: RULE-008 | ver:1.0 | Level: C | Related: RULE-009, TOOL-VERIFY -->
-## Rule 8: Session Start Protocol (drift prevention)
+<!-- ID: RULE-009 | ver:1.0 | Level: C | Related: RULE-010, TOOL-VERIFY -->
+## Rule 9 [C]: Session Start Protocol (drift prevention)
 
 Before ANY work in a new session, the agent MUST:
 
@@ -86,8 +133,8 @@ This rule prevents the most common documentation decay pattern:
 an agent writes code but does not update docs, causing documentation
 to gradually become misleading and unreliable.
 
-<!-- ID: RULE-009 | ver:1.0 | Level: C | Related: RULE-008, TOOL-VERIFY -->
-## Rule 9: Documentation sync (no code without docs)
+<!-- ID: RULE-010 | ver:1.0 | Level: C | Related: RULE-009, TOOL-VERIFY -->
+## Rule 10 [C]: Documentation sync (no code without docs)
 
 When changing the codebase, documentation MUST be kept in sync:
 
@@ -104,8 +151,8 @@ Pre-commit checklist:
 - [ ] task state file statuses are current?
 - [ ] verify-docs passes without errors?
 
-<!-- ID: RULE-010 | ver:1.0 | Level: C | Related: RULE-005, PROC-SETUP -->
-## Rule 10: Integrity protection (no self-sabotage)
+<!-- ID: RULE-011 | ver:1.0 | Level: C | Related: RULE-006, PROC-SETUP -->
+## Rule 11 [C]: Integrity protection (no self-sabotage)
 
 Agents MUST NOT disable, bypass, or weaken the anti-hallucination mechanisms.
 This rule is non-negotiable and applies regardless of task urgency.
@@ -131,11 +178,14 @@ This rule is non-negotiable and applies regardless of task urgency.
 - audit.sh scores integrity as part of session quality
 - CI pipeline runs verify-docs independently (cannot be bypassed locally)
 
-<!-- ID: RULE-011 | ver:1.0 | Level: C | Related: RULE-003 -->
-## Rule 11: Anti-monolith (no file over 250 lines)
+<!-- ID: RULE-012 | ver:1.1 | Level: C | Related: RULE-004, PROC-LINECOUNT -->
+## Rule 12 [C]: Anti-monolith (no file over 250 lines)
 
 Every file MUST stay under 250 lines. When a file crosses this threshold,
 the agent MUST stop writing, split the file, and continue with smaller modules.
+
+**This rule is enforced by the pre-commit hook (Phase 4).**
+Violations are BLOCKED automatically -- the commit will not succeed.
 
 **Thresholds:**
 - File: 250 lines hard limit (150 recommended)
@@ -165,8 +215,8 @@ the agent MUST stop writing, split the file, and continue with smaller modules.
 - "I'll refactor later" (later never comes)
 - "It's easier to read in one file" (that's what imports are for)
 
-<!-- ID: RULE-012 | ver:1.1 | Level: C | Related: TOOL-BUMP -->
-## Rule 12: Use ahg bump for version updates
+<!-- ID: RULE-013 | ver:1.1 | Level: C | Related: TOOL-BUMP -->
+## Rule 13 [C]: Use ahg bump for version updates
 
 When changing the project version, use the atomic bump command:
   bash scripts/ahg.sh bump X.Y.Z
@@ -181,8 +231,8 @@ Do NOT update versions manually in individual files.
 Manual updates cause version drift -- one file gets updated,
 another is forgotten. ahg bump eliminates this class of errors.
 
-<!-- ID: RULE-013 | ver:1.1 | Level: C | Related: RULE-001, RULE-003, TOOL-VERIFY -->
-## Rule 13: Pre-commit mandatory checklist
+<!-- ID: RULE-014 | ver:1.1 | Level: C | Related: RULE-002, RULE-004, TOOL-VERIFY -->
+## Rule 14 [C]: Pre-commit mandatory checklist
 
 Before EVERY commit, verify ALL of these items:
 - [ ] Code written and tested
@@ -196,8 +246,8 @@ Before EVERY commit, verify ALL of these items:
 If ANY item is unclear: run "bash scripts/ahg.sh discover" first.
 Do NOT commit with known documentation drift.
 
-<!-- ID: RULE-014 | ver:1.0 | Level: W | Related: -->
-## Rule 14: No Unicode graphics (UNICODE_POLICY compliance)
+<!-- ID: RULE-015 | ver:1.0 | Level: W | Related: -->
+## Rule 15 [W]: No Unicode graphics (UNICODE_POLICY compliance)
 
 All AHG output must comply with No-Unicode Policy v2.1.
 No emoji, no Unicode pictograms, no decorative symbols.
@@ -221,8 +271,8 @@ No emoji, no Unicode pictograms, no decorative symbols.
 - AI-agent chat responses: [W] Warning
 - Documentation (.md): regulated by MARKDOWN_STANDARD v2.1
 
-<!-- ID: RULE-015 | ver:1.0 | Level: C | Related: RULE-010, ARCH-SUBMODULE -->
-## Rule 15: AHG submodule is immutable architecture (no removal, no inlining)
+<!-- ID: RULE-016 | ver:1.0 | Level: C | Related: RULE-011, ARCH-SUBMODULE -->
+## Rule 16 [C]: AHG submodule is immutable architecture (no removal, no inlining)
 
 The anti-hallucination-guard git submodule is a structural component of this
 project, not an optional dependency. Agents MUST NOT propose or execute any
@@ -252,7 +302,7 @@ action that removes, inlines, or restructures the AHG submodule relationship.
 5. **Cross-project consistency**: every consumer project runs the SAME version
    of the same hooks. No "HH-Copilot has v2.1 hooks, ProjectB has v1.8 hooks".
 
-**Forbidden actions (this rule extends Rule 10):**
+**Forbidden actions (this rule extends Rule 11):**
 1. Proposing to remove the git submodule and inline AHG files
 2. Moving AHG scripts to `scripts/ahg/`, `.ahg/`, or any local path
 3. Copying hook files into the project and deleting the submodule reference
@@ -271,8 +321,8 @@ action that removes, inlines, or restructures the AHG submodule relationship.
 **The submodule is not causing problems -- bugs in context detection were.
 Those bugs are fixed in the AHG repo. Update the submodule to get fixes.**
 
-<!-- ID: RULE-016 | ver:1.0 | Level: C | Related: RULE-010, RULE-015, ARCH-UPSTREAM -->
-## Rule 16: Upstream write protection (no consumer agent may push to AHG)
+<!-- ID: RULE-017 | ver:1.0 | Level: C | Related: RULE-011, RULE-016, ARCH-UPSTREAM -->
+## Rule 17 [C]: Upstream write protection (no consumer agent may push to AHG)
 
 No agent running in a consumer project context may push, merge, create PRs,
 or modify the AHG upstream repository in any way. The AHG repository is
@@ -293,7 +343,7 @@ AHG main, bypassing review. The fix was incorrect (used `git rev-parse
 --show-toplevel` which returns wrong path in submodules) and had to be
 superseded by a proper fix in PR #9.
 
-**Forbidden actions for consumer project agents (this extends Rule 15):**
+**Forbidden actions for consumer project agents (this extends Rule 16):**
 1. `git push` from inside the AHG submodule directory
 2. Creating branches in the AHG upstream repository
 3. Creating pull requests against the AHG repository
@@ -311,11 +361,11 @@ superseded by a proper fix in PR #9.
   the owner publishes a release
 
 **Enforcement layers (defense in depth):**
-1. **Rule 15 + Rule 16**: Agent-level prohibition in AGENT_RULES.md
+1. **Rule 16 + Rule 17**: Agent-level prohibition in AGENT_RULES.md
 2. **CODEOWNERS**: Only @stsgs1980 can approve changes (requires GitHub
    branch protection with "Require review from Code Owners")
 3. **pr-guard.yml workflow**: CI-level check that blocks PRs from forks,
-   non-collaborators, and tampering attempts (removing Rule 15/16 or CODEOWNERS)
+   non-collaborators, and tampering attempts (removing Rule 16/16 or CODEOWNERS)
 4. **validate.sh**: Blocks push from inside submodule unless AHG_MODULE_PUSH=1
 5. **GitHub branch protection**: Must be configured by owner (see below)
 
