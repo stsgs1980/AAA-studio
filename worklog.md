@@ -1905,3 +1905,24 @@ Stage Summary:
 - Structure: CLEAN — no real issues found
 - 2 dead files removed
 - False positives in audit: feature modules without types.ts/index.ts use shared types
+
+---
+Task ID: 1
+Agent: main
+Task: Fix scanner 502 error on large ZIP uploads
+
+Work Log:
+- Investigated 502 on /api/scanner/analyze with 190 files (1.2MB payload)
+- Root cause: full file content sent as JSON body + LLM evaluation = Vercel serverless timeout
+- Created /api/scanner/structure endpoint: accepts {path, size} only, returns structure + heuristic evaluation
+- Added maxDuration=60 to /api/scanner/analyze route
+- Refactored use-quality-store.ts: payload guard (2MB limit), auto-switches to structure-only scan
+- Added files[] array to EvaluationInput type for direct scanner access
+- Added amber notice in ScannerPanel for structure-only mode
+- Refactored store from 153 to 146 lines (ESLint max-lines compliant)
+- TypeScript: 0 errors
+
+Stage Summary:
+- 5 files changed: types.ts, use-quality-store.ts, scanner/analyze/route.ts, scanner/structure/route.ts (new), scanner-panel.tsx
+- Large uploads (>2MB payload) now get structure-only scan instead of 502
+- Small uploads still get full parse + LLM evaluation

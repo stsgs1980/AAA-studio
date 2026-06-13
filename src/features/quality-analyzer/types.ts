@@ -8,6 +8,8 @@ export interface EvaluationInput {
   fileName: string;
   sourceUrl: string;
   agentId: string;
+  /** Structured file list (set by folder/zip uploads for scanner) */
+  files: { name: string; content: string; size: number }[];
 }
 
 export const EVAL_DEFAULTS: EvaluationInput = {
@@ -16,6 +18,7 @@ export const EVAL_DEFAULTS: EvaluationInput = {
   fileName: '',
   sourceUrl: '',
   agentId: '',
+  files: [],
 };
 
 export interface EvaluationResult {

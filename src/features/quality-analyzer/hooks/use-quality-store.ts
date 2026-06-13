@@ -2,15 +2,35 @@ import { create } from 'zustand';
 import { scorePrompt } from '@stsgs/prompting';
 import {
   EvaluationInput, EvaluationResult, StandardsCheckResult,
-  StandardsCheckItem, RubricScenario, FilterLog,
-  EVAL_DEFAULTS,
+  StandardsCheckItem, RubricScenario, FilterLog, EVAL_DEFAULTS,
 } from '../types';
 import { generateSuggestions, checkStandards, evaluateRubric } from '../lib/eval-helpers';
 import type { ScannerReport } from '@/lib/scanner/types';
 
+const PAYLOAD_LIMIT = 2 * 1024 * 1024; // 2 MB
+
 function fallbackResult(text: string): EvaluationResult {
   const s = scorePrompt(text);
   return { score: s, suggestions: generateSuggestions(s), standardsCheck: { checked: 0, passed: 0, failed: 0, details: [] }, rubricResult: null, llmAnalysis: null };
+}
+
+function emptyReport(err: string, ts: string): ScannerReport {
+  return { structure: { totalFiles: 0, totalSize: 0, skillsCount: 0, standardsCount: 0, fileTypes: {}, largestFiles: [] }, skills: [], standards: [], references: [], antiPatterns: [], evaluation: { overall: 0, grade: 'F', dimensions: { completeness: 0, references: 0, consistency: 0, examples: 0, constraints: 0 }, criticalIssues: [err], recommendations: [] }, timestamp: ts };
+}
+
+function parseFilesFromText(text: string) {
+  const parts = text.split(/^=== (.+) ===$/m).filter((_, i) => i % 2 === 1);
+  return parts.map((name) => {
+    const idx = text.indexOf(`=== ${name} ===`);
+    const nextIdx = text.indexOf('\n=== ', idx + 1);
+    const content = text.slice(idx + name.length + 6, nextIdx === -1 ? undefined : nextIdx).trim();
+    return { path: name, content, size: new TextEncoder().encode(content).length };
+  });
+}
+
+function setScanError(err: string) {
+  const ts = new Date().toISOString();
+  return { scannerReport: emptyReport(`Scanner error: ${err}`, ts), isScanning: false };
 }
 
 interface QualityState {
@@ -41,15 +61,10 @@ interface QualityState {
 }
 
 export const useQualityStore = create<QualityState>((set, get) => ({
-  input: { ...EVAL_DEFAULTS },
-  result: null,
-  isAnalyzing: false,
-  isDeepAnalyzing: false,
-  isScanning: false,
-  scannerReport: null,
-  filterLog: null,
-  rubricScenario: 'prompt',
-  rubricThreshold: 6,
+  input: { ...EVAL_DEFAULTS }, result: null,
+  isAnalyzing: false, isDeepAnalyzing: false, isScanning: false,
+  scannerReport: null, filterLog: null,
+  rubricScenario: 'prompt', rubricThreshold: 6,
 
   setInputMode: (mode) => set((s) => ({ input: { ...s.input, mode } })),
   setText: (text) => set((s) => ({ input: { ...s.input, text } })),
@@ -63,9 +78,7 @@ export const useQualityStore = create<QualityState>((set, get) => ({
 
   loadFiles: (files) => {
     const text = files.map((f) => `=== ${f.name} ===\n${f.content}`).join('\n\n');
-    set((s) => ({
-      input: { ...s.input, mode: 'file', text, fileName: `${files.length} files` },
-    }));
+    set((s) => ({ input: { ...s.input, mode: 'file', text, fileName: `${files.length} files`, files } }));
   },
 
   loadAgent: (systemPrompt) =>
@@ -98,52 +111,36 @@ export const useQualityStore = create<QualityState>((set, get) => ({
     const ctx = input.mode === 'url' ? `Source: ${input.sourceUrl}`
       : input.mode === 'agent' ? `Agent ID: ${input.agentId}`
       : input.mode === 'file' ? `File: ${input.fileName}` : undefined;
-    const setDeepResult = (llmAnalysis: string) => set((s) => ({
-      result: { ...(s.result ?? fallbackResult(text)), llmAnalysis },
-      isDeepAnalyzing: false,
+    const done = (llmAnalysis: string) => set((s) => ({
+      result: { ...(s.result ?? fallbackResult(text)), llmAnalysis }, isDeepAnalyzing: false,
     }));
     fetch('/api/evaluate-deep', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text, context: ctx, scenario: rubricScenario }),
-    })
-      .then(async (r) => { if (!r.ok) throw new Error(`Server ${r.status}`); return r.json(); })
-      .then((data) => setDeepResult(data.analysis ?? 'No analysis returned'))
-      .catch((err) => setDeepResult(`Error: ${err.message}`));
+    }).then(async (r) => { if (!r.ok) throw new Error(`Server ${r.status}`); return r.json(); })
+      .then((d) => done(d.analysis ?? 'No analysis returned'))
+      .catch((e) => done(`Error: ${e.message}`));
   },
 
   scannerAnalyze: () => {
     const { input } = get();
-    const text = input.text.trim();
-    if (!text) return;
+    const files = input.files.length > 0
+      ? input.files.map((f) => ({ path: f.name, content: f.content, size: f.size }))
+      : (input.text.trim() ? parseFilesFromText(input.text.trim()) : []);
+    if (!files.length) return;
     set({ isScanning: true, scannerReport: null });
-    const parts = text.split(/^=== (.+) ===$/m).filter((_, i) => i % 2 === 1);
-    const scannerFiles = parts.map((name) => {
-      const idx = text.indexOf(`=== ${name} ===`);
-      const nextIdx = text.indexOf('\n=== ', idx + 1);
-      const content = text.slice(idx + name.length + 6, nextIdx === -1 ? undefined : nextIdx).trim();
-      return { path: name, content, size: new TextEncoder().encode(content).length };
-    });
-    fetch('/api/scanner/analyze', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ files: scannerFiles, evaluate: true }),
-    })
-      .then(async (r) => { if (!r.ok) throw new Error(`Scanner ${r.status}`); return r.json(); })
+    const payloadSize = new TextEncoder().encode(JSON.stringify({ files, evaluate: true })).length;
+    const useLight = payloadSize > PAYLOAD_LIMIT;
+    const url = useLight ? '/api/scanner/structure' : '/api/scanner/analyze';
+    const body = useLight
+      ? JSON.stringify({ files: files.map((f) => ({ path: f.path, size: f.size })) })
+      : JSON.stringify({ files, evaluate: true });
+    fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body })
+      .then(async (r) => { if (!r.ok) throw new Error(`Server ${r.status}`); return r.json(); })
       .then((report) => set({ scannerReport: report, isScanning: false }))
-      .catch((err) => set((s) => ({
-        scannerReport: {
-          structure: s.scannerReport?.structure ?? { totalFiles: 0, totalSize: 0, skillsCount: 0, standardsCount: 0, fileTypes: {}, largestFiles: [] },
-          skills: [], standards: [], references: [], antiPatterns: [],
-          evaluation: {
-            overall: 0, grade: 'F',
-            dimensions: { completeness: 0, references: 0, consistency: 0, examples: 0, constraints: 0 },
-            criticalIssues: [`Scanner error: ${err.message}`],
-            recommendations: [],
-          },
-          timestamp: new Date().toISOString(),
-        },
-        isScanning: false,
-      })));
+      .catch((err) => set(setScanError(err.message)));
   },
+
   setFilterLog: (filterLog) => set({ filterLog }),
   reset: () => set({ input: { ...EVAL_DEFAULTS }, result: null, scannerReport: null, filterLog: null }),
   clearResults: () => set({ result: null, scannerReport: null }),

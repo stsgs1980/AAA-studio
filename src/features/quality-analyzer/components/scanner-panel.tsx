@@ -84,6 +84,11 @@ export function ScannerPanel() {
 
       {/* Summary */}
       {activeSection === "summary" && (<>
+          {report.skills.length === 0 && report.references.length === 0 && (
+            <div className="rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-700 dark:border-amber-600 dark:bg-amber-950/30 dark:text-amber-400">
+              Structure-only scan (payload too large for full analysis). Skills, references, and anti-patterns are not parsed.
+            </div>
+          )}
           <div className="rounded-lg border bg-muted/20 px-4 py-3">
             <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
               Scanner Report
