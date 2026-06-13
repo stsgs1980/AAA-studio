@@ -4,24 +4,8 @@ import { useCallback, useRef, useState } from "react";
 import JSZip from "jszip";
 import { Upload, FolderOpen, Archive } from "lucide-react";
 import { useQualityStore } from "../hooks/use-quality-store";
-import { shouldSkipFile, MAX_FILE_SIZE, SKIP_DIRS } from "@/lib/scanner/file-filter";
-import type { FilterLogEntry, FilterReason } from "../types";
-
-const ACCEPTED = new Set([
-  "txt", "md", "mdx", "json", "yaml", "yml",
-  "ts", "tsx", "js", "jsx", "py", "toml", "cfg",
-]);
-
-function classifyReason(path: string): FilterReason | null {
-  const segments = path.split("/");
-  if (segments.some((s) => s.startsWith("."))) return "dot_dir";
-  if (segments.some((s) => SKIP_DIRS.has(s))) return "skip_dir";
-  const fileName = segments.pop() ?? path;
-  if (shouldSkipFile(path)) return "skip_file";
-  const ext = fileName.split(".").pop()?.toLowerCase() ?? "";
-  if (!ACCEPTED.has(ext)) return "wrong_ext";
-  return null;
-}
+import { MAX_FILE_SIZE, classifyReason } from "@/lib/scanner/file-filter";
+import type { FilterLogEntry } from "@/lib/scanner/file-filter";
 
 export function FileUploader() {
   const input = useQualityStore((s) => s.input);
@@ -54,9 +38,8 @@ export function FileUploader() {
       const log: FilterLogEntry[] = [];
       for (const f of allFiles) {
         const p = f.webkitRelativePath ?? f.name;
-        const reason = classifyReason(p);
+        const reason = classifyReason(p, f.size);
         if (reason) { log.push({ path: p, reason }); continue; }
-        if (f.size > MAX_FILE_SIZE) { log.push({ path: p, reason: "too_large" }); continue; }
         filtered.push(f);
       }
       setFilterLog({ total: allFiles.length, accepted: filtered.length, entries: log });
@@ -83,12 +66,10 @@ export function FileUploader() {
         let total = 0;
         const tasks: Promise<void>[] = [];
         zip.forEach((relPath, entry) => {
-          if (entry.dir) { log.push({ path: relPath, reason: "directory" }); total++; return; }
+          if (entry.dir) { log.push({ path: relPath, reason: "skip_dir" }); total++; return; }
           total++;
           const reason = classifyReason(relPath);
           if (reason) { log.push({ path: relPath, reason }); return; }
-          const ext = relPath.split(".").pop()?.toLowerCase() ?? "";
-          if (!ACCEPTED.has(ext)) { log.push({ path: relPath, reason: "wrong_ext" }); return; }
           tasks.push(entry.async("string").then((t) => {
             if (t.length > MAX_FILE_SIZE) { log.push({ path: relPath, reason: "too_large" }); return; }
             entries.push({ name: relPath, content: t });

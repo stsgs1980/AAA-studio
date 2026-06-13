@@ -6,6 +6,19 @@
 //   - fetch-url/route.ts (GitHub URL)
 // ============================================================================
 
+export type FilterReason = 'skip_file' | 'skip_dir' | 'dot_dir' | 'wrong_ext' | 'too_large';
+
+export interface FilterLogEntry {
+  path: string;
+  reason: FilterReason;
+}
+
+export interface FilterLog {
+  total: number;
+  accepted: number;
+  entries: FilterLogEntry[];
+}
+
 /** Directory segments to skip entirely */
 export const SKIP_DIRS = new Set([
   "node_modules", "__pycache__", "vendor",
@@ -78,6 +91,28 @@ export const MAX_FILE_SIZE = 500_000;
  * - File has a binary extension
  * - File exceeds MAX_FILE_SIZE (only when size is provided)
  */
+/** Accepted file extensions for analysis */
+export const ACCEPTED_EXT = new Set([
+  'txt', 'md', 'mdx', 'json', 'yaml', 'yml',
+  'ts', 'tsx', 'js', 'jsx', 'py', 'toml', 'cfg',
+]);
+
+/**
+ * Classify WHY a file was filtered out.
+ * Returns null if the file is accepted (not filtered).
+ */
+export function classifyReason(path: string, size?: number): FilterReason | null {
+  const segments = path.split('/');
+  if (segments.some((s) => s.startsWith('.'))) return 'dot_dir';
+  if (segments.some((s) => SKIP_DIRS.has(s))) return 'skip_dir';
+  const fileName = segments.pop() ?? path;
+  if (shouldSkipFile(path, size)) return 'skip_file';
+  const ext = fileName.split('.').pop()?.toLowerCase() ?? '';
+  if (!ACCEPTED_EXT.has(ext)) return 'wrong_ext';
+  if (size !== undefined && size > MAX_FILE_SIZE) return 'too_large';
+  return null;
+}
+
 export function shouldSkipFile(
   path: string,
   size?: number,

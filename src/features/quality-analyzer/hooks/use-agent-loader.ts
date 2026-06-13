@@ -16,6 +16,7 @@ export function useAgentLoader() {
   const setAgentId = useQualityStore((s) => s.setAgentId);
   const loadAgent = useQualityStore((s) => s.loadAgent);
   const setText = useQualityStore((s) => s.setText);
+  const setFilterLog = useQualityStore((s) => s.setFilterLog);
   const input = useQualityStore((s) => s.input);
 
   useEffect(() => {
@@ -38,17 +39,18 @@ export function useAgentLoader() {
       const data = await res.json();
       if (data.type === "repo") {
         setRepoFiles(data.files ?? []);
+        if (data.filterLog) setFilterLog(data.filterLog);
       } else if (data.type === "content") {
         setText(data.content);
       } else if (data.error) {
         console.error("Fetch error:", data.error);
       }
-    } catch (err) {
-      console.error("Failed to fetch URL:", err);
+    } catch {
+      console.error("Failed to fetch URL");
     } finally {
       setFetching(false);
     }
-  }, [input.sourceUrl, setText]);
+  }, [input.sourceUrl, setText, setFilterLog]);
 
   const handleRepoFileSelect = useCallback(
     async (file: RepoFile) => {
@@ -64,8 +66,8 @@ export function useAgentLoader() {
         if (data.type === "content") {
           setText(data.content);
         }
-      } catch (err) {
-        console.error("Failed to fetch file:", err);
+      } catch {
+        console.error("Failed to fetch file");
       } finally {
         setFetching(false);
       }
@@ -81,8 +83,8 @@ export function useAgentLoader() {
         const res = await fetch(`/api/agents/${agentId}`);
         const agent = await res.json();
         if (agent.systemPrompt) loadAgent(agent.systemPrompt);
-      } catch (err) {
-        console.error("Failed to load agent:", err);
+      } catch {
+        console.error("Failed to load agent");
       }
     },
     [setAgentId, loadAgent],
@@ -100,8 +102,8 @@ export function useAgentLoader() {
       });
       const data = await res.json();
       if (data.type === "content") setText(data.content);
-    } catch (err) {
-      console.error("Failed to load all files:", err);
+    } catch {
+      console.error("Failed to load all files");
     } finally {
       setFetching(false);
     }

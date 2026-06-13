@@ -1,5 +1,6 @@
 import { handleError, success, BadRequest } from '@/lib/api-error';
-import { shouldSkipFile } from '@/lib/scanner/file-filter';
+import { classifyReason } from '@/lib/scanner/file-filter';
+import type { FilterLog } from '@/lib/scanner/file-filter';
 
 interface TreeEntry {
   path: string;
@@ -13,25 +14,16 @@ async function githubTreeRecursive(
   const url = `https://api.github.com/repos/${owner}/${repo}/git/trees/main?recursive=1`;
   const res = await fetch(url, { headers: { 'Accept': 'application/vnd.github.v3+json' } });
   if (!res.ok) {
-    // fallback to master branch
     const res2 = await fetch(
       `https://api.github.com/repos/${owner}/${repo}/git/trees/master?recursive=1`,
       { headers: { 'Accept': 'application/vnd.github.v3+json' } },
     );
-    if (!res2.ok) throw new Error(`GitHub Trees API failed`);
+    if (!res2.ok) throw new Error('GitHub Trees API failed');
     const data = await res2.json();
     return (data.tree ?? []).filter((t: TreeEntry) => t.type === 'blob');
   }
   const data = await res.json();
   return (data.tree ?? []).filter((t: TreeEntry) => t.type === 'blob');
-}
-
-function isNoise(path: string, size?: number): boolean {
-  if (shouldSkipFile(path, size)) return true;
-  // Repo-specific exclusions (not in generic filter)
-  const lower = path.toLowerCase();
-  if (['.venv/', 'venv/', 'dashboard-integration/', 'hooks/', 'templates/e2e/'].some((s) => lower.includes(s))) return true;
-  return false;
 }
 
 function toRawUrl(owner: string, repo: string, path: string): string {
@@ -54,7 +46,7 @@ export async function POST(request: Request) {
 
     const trimmed = url.trim().replace(/\/+$/, '');
 
-    // 1. GitHub repo URL -- if urls[] provided, fetch all files
+    // 1. GitHub repo URL
     const repoMatch = trimmed.match(
       /github\.com\/([a-zA-Z0-9_.-]+)\/([a-zA-Z0-9_.-]+?)(\.git)?$/,
     );
@@ -72,19 +64,28 @@ export async function POST(request: Request) {
         return success({ type: 'content', content: parts.join('\n') });
       }
 
-      // Recursive tree -- gets ALL files, then filter noise
+      // Recursive tree with filter log
       const tree = await githubTreeRecursive(owner, repo);
-      return success({
-        type: 'repo',
-        owner,
-        repo,
-        files: tree
-          .filter((t) => !isNoise(t.path, t.size as number | undefined))
-          .map((t) => {
-            const name = t.path.split('/').pop() ?? t.path;
-            return { name, path: t.path, url: toRawUrl(owner, repo, t.path) };
-          }),
-      });
+      const accepted: { name: string; path: string; url: string }[] = [];
+      const entries: FilterLog['entries'] = [];
+
+      for (const t of tree) {
+        const reason = classifyReason(t.path, t.size as number | undefined);
+        if (reason) {
+          entries.push({ path: t.path, reason });
+          continue;
+        }
+        const name = t.path.split('/').pop() ?? t.path;
+        accepted.push({ name, path: t.path, url: toRawUrl(owner, repo, t.path) });
+      }
+
+      const filterLog: FilterLog = {
+        total: tree.length,
+        accepted: accepted.length,
+        entries,
+      };
+
+      return success({ type: 'repo', owner, repo, files: accepted, filterLog });
     }
 
     // 2. GitHub raw URL or any other direct file URL

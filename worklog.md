@@ -1989,3 +1989,22 @@ Stage Summary:
 - ESLint: 0 errors, 0 warnings. TypeScript: 0 errors. Build: clean
 - All scanner files <= 150 lines
 - Only /api/scanner/evaluate remains (lightweight, ~5KB payload)
+
+---
+Task ID: 1
+Agent: main
+Task: Add Filter Log support for URL/GitHub uploads
+
+Work Log:
+- Added classifyReason(), ACCEPTED_EXT, FilterReason, FilterLogEntry, FilterLog to file-filter.ts
+- Modified fetch-url/route.ts to return filterLog alongside repo files
+- Modified use-agent-loader.ts to save filterLog to store
+- Refactored file-uploader.tsx to use shared classifyReason from file-filter.ts
+- Changed types.ts to re-export FilterLog types from file-filter.ts
+- Removed duplicate 'directory' reason from filter-log-btn.tsx
+- Bumped version to 1.5.20
+
+Stage Summary:
+- Filter Log now works for all 3 upload modes: folder, ZIP, URL/GitHub
+- Single source of truth for filter logic in file-filter.ts
+- ESLint 0/0, TypeScript 0, build clean

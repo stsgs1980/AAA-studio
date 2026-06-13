@@ -11,7 +11,6 @@ const REASON_LABELS: Record<FilterReason, string> = {
   dot_dir: "hidden dir (dot-prefix)",
   wrong_ext: "unsupported extension",
   too_large: "exceeds 500KB",
-  directory: "directory entry",
 };
 
 const REASON_COLORS: Record<FilterReason, string> = {
@@ -20,7 +19,6 @@ const REASON_COLORS: Record<FilterReason, string> = {
   dot_dir: "text-zinc-500 dark:text-zinc-400",
   wrong_ext: "text-purple-600 dark:text-purple-400",
   too_large: "text-red-600 dark:text-red-400",
-  directory: "text-zinc-400 dark:text-zinc-500",
 };
 
 export function FilterLogBtn() {
