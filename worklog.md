@@ -1862,3 +1862,20 @@ Stage Summary:
 - Sandbox networking: port 81 (proxy) → port 3000 (Next.js)
 - Filter Log button: working on Vercel v1.5.16
 - Files changed this session: filter-log-btn.tsx (removed guard), app-sidebar.tsx (1.5.16)
+
+---
+Task ID: ahg-update
+Agent: main
+Task: Update anti-hallucination-guard submodule to latest
+
+Work Log:
+- Ran anti-hallucination-guard/update.sh
+- Local changes conflicted — stashed, pulled, popped
+- Updated: 49c612b -> 626d6e0 (v2.1.0 + ID system)
+- 57 files changed: +2890/-476 lines
+- New: registry.json, CHANGELOG.md, discover modules (7 files), ahg.sh, bump.ts, auto-config.ts
+- setup.sh timed out (30s) — skipped, submodule pointer commit is the essential step
+
+Stage Summary:
+- Submodule updated to 626d6e0 (v2.1.0)
+- Commit pending: submodule pointer update
