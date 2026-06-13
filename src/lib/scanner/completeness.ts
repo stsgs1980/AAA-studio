@@ -3,7 +3,7 @@
 // 6 criteria for scoring skill completeness. Each matched = ~17 points.
 // ============================================================================
 
-import type { ParsedSkill } from './types';
+
 
 interface CompletenessCriterion {
   label: string;

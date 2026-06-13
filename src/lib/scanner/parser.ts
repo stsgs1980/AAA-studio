@@ -1,10 +1,5 @@
-import type { ScannerFile, ParsedSkill, ParsedStandard, ReferenceCheck } from './types';
+import type { ScannerFile, ParsedSkill, ParsedStandard } from './types';
 import { scoreCompleteness } from './completeness';
-
-// ---- Path normalization ----
-function normPath(p: string): string {
-  return p.replace(/^\.\//g, '').replace(/\/+$/g, '').replace(/\\/g, '/');
-}
 
 // ---- YAML frontmatter ----
 function parseYamlFrontmatter(content: string): Record<string, string> {

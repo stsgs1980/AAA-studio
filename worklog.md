@@ -1970,3 +1970,22 @@ Stage Summary:
 - Submodule updated: 626d6e0 -> 8df5f41
 - New features: PR guard CI, CODEOWNERS, upstream write protection, update.sh stale hook detection
 - Committing submodule pointer to project
+
+---
+Task ID: qa-cleanup
+Agent: main
+Task: Quality Analyzer cleanup — dead code, ESLint fixes, robustness
+
+Work Log:
+- Removed dead code from scanner-service.ts (buildStructure, parseFiles, analyzeFiles + 5 unused imports) — 111->49 lines
+- Deleted 3 dead API endpoints: /api/scanner/analyze, /api/scanner/parse, /api/scanner/references
+- Fixed scanner-skill-table.tsx: 4 useState -> 3 (merged sortKey+sortDir into single sort object)
+- Added try/catch around scanFilesClient() in use-quality-store.ts
+- Removed unused normPath function and ReferenceCheck import from parser.ts
+- Removed unused ParsedSkill import from completeness.ts
+- Verified antiPatterns already included in buildEvalSummary for LLM
+
+Stage Summary:
+- ESLint: 0 errors, 0 warnings. TypeScript: 0 errors. Build: clean
+- All scanner files <= 150 lines
+- Only /api/scanner/evaluate remains (lightweight, ~5KB payload)

@@ -121,18 +121,22 @@ export const useQualityStore = create<QualityState>((set, get) => ({
     if (!files.length) return;
     set({ isScanning: true, scannerReport: null, isLlmEvaluating: false });
     // Phase 1: instant client-side scan (parse, classify, references, heuristic)
-    const report = scanFilesClient(files);
-    set({ scannerReport: report, isScanning: false });
-    // Phase 2: LLM evaluation (compact ~5KB payload, non-blocking)
-    set({ isLlmEvaluating: true });
-    fetch('/api/scanner/evaluate', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ summary: buildEvalSummary(report) }),
-    }).then(async (r) => { if (!r.ok) throw new Error(); return r.json(); })
-      .then((ev: ScannerEvaluation) => set((s) => ({
-        scannerReport: s.scannerReport ? { ...s.scannerReport, evaluation: ev } : null,
-        isLlmEvaluating: false,
-      }))).catch(() => set({ isLlmEvaluating: false }));
+    try {
+      const report = scanFilesClient(files);
+      set({ scannerReport: report, isScanning: false });
+      // Phase 2: LLM evaluation (compact ~5KB payload, non-blocking)
+      set({ isLlmEvaluating: true });
+      fetch('/api/scanner/evaluate', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ summary: buildEvalSummary(report) }),
+      }).then(async (r) => { if (!r.ok) throw new Error(); return r.json(); })
+        .then((ev: ScannerEvaluation) => set((s) => ({
+          scannerReport: s.scannerReport ? { ...s.scannerReport, evaluation: ev } : null,
+          isLlmEvaluating: false,
+        }))).catch(() => set({ isLlmEvaluating: false }));
+    } catch {
+      set({ isScanning: false, scannerReport: null });
+    }
   },
 
   setFilterLog: (filterLog) => set({ filterLog }),

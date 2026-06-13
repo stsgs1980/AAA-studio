@@ -30,21 +30,20 @@ function allSkillsText(skills: ParsedSkill[]): string {
 }
 
 export function ScannerSkillTable({ skills }: { skills: ParsedSkill[] }) {
-  const [sortKey, setSortKey] = useState<SortKey>("completeness");
-  const [sortDir, setSortDir] = useState<SortDir>("asc");
+  const [sort, setSort] = useState<{ key: SortKey; dir: SortDir }>({ key: "completeness", dir: "asc" });
   const [expanded, setExpanded] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
   const sorted = [...skills].sort((a, b) => {
-    const aVal = sortKey === "name" ? (a.name ?? a.path) : a[sortKey];
-    const bVal = sortKey === "name" ? (b.name ?? b.path) : b[sortKey];
+    const aVal = sort.key === "name" ? (a.name ?? a.path) : a[sort.key];
+    const bVal = sort.key === "name" ? (b.name ?? b.path) : b[sort.key];
     const cmp = String(aVal).localeCompare(String(bVal), undefined, { numeric: true });
-    return sortDir === "asc" ? cmp : -cmp;
+    return sort.dir === "asc" ? cmp : -cmp;
   });
 
   const toggle = (key: SortKey) => {
-    if (sortKey === key) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
-    else { setSortKey(key); setSortDir("asc"); }
+    if (sort.key === key) setSort((s) => ({ ...s, dir: s.dir === "asc" ? "desc" : "asc" }));
+    else setSort({ key, dir: "asc" });
   };
 
   const low = skills.filter((s) => s.completeness < 50).length;
@@ -56,7 +55,7 @@ export function ScannerSkillTable({ skills }: { skills: ParsedSkill[] }) {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const sortIcon = (key: SortKey) => sortKey === key ? (sortDir === "asc" ? "↑" : "↓") : "";
+  const sortIcon = (key: SortKey) => sort.key === key ? (sort.dir === "asc" ? "↑" : "↓") : "";
 
   return (
     <div className="rounded-lg border bg-background px-4 py-3">

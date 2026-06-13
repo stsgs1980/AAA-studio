@@ -6,7 +6,7 @@
 
 import type {
   ScannerFile, ScannerReport, StructureSummary,
-  ParsedSkill, ParsedStandard, ReferenceCheck,
+  ParsedSkill, ParsedStandard,
 } from '@/lib/scanner/types';
 import { classifyFile, parseSkillMarkdown, parseStandardMarkdown } from '@/lib/scanner/parser';
 import { extractReferences, checkReferences } from '@/lib/scanner/references';
@@ -74,5 +74,8 @@ export function buildEvalSummary(report: ScannerReport): string {
     })),
     references: report.references.map(r => ({ id: r.id, resolved: r.resolved })),
     unresolvedCount: report.references.filter(r => !r.resolved).length,
+    antiPatterns: report.antiPatterns.map(a => ({
+      type: a.type, severity: a.severity, message: a.message, sourceCount: a.sources.length,
+    })),
   }, null, 2);
 }

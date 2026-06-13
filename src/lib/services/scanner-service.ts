@@ -1,44 +1,6 @@
 import { callLLM } from '@/lib/llm/client';
 import { getActiveProvider } from '@/lib/llm';
-import type {
-  ScannerFile, ScannerReport, ScannerEvaluation,
-  StructureSummary, ParsedSkill, ParsedStandard, ReferenceCheck,
-} from '@/lib/scanner/types';
-import { classifyFile, parseSkillMarkdown, parseStandardMarkdown } from '@/lib/scanner/parser';
-import { extractReferences, checkReferences } from '@/lib/scanner/references';
-import { heuristicEvaluation } from '@/lib/scanner/heuristic';
-import { detectAntiPatterns } from '@/lib/scanner/anti-patterns';
-import { shouldSkipFile } from '@/lib/scanner/file-filter';
-
-export function buildStructure(files: ScannerFile[]): StructureSummary {
-  const fileTypes: Record<string, number> = {};
-  let totalSize = 0;
-  for (const f of files) {
-    fileTypes[f.type] = (fileTypes[f.type] ?? 0) + 1;
-    totalSize += f.size;
-  }
-  return {
-    totalFiles: files.length,
-    totalSize,
-    skillsCount: fileTypes['skill'] ?? 0,
-    standardsCount: fileTypes['standard'] ?? 0,
-    fileTypes,
-    largestFiles: [...files].sort((a, b) => b.size - a.size)
-      .slice(0, 10).map(f => ({ path: f.path, size: f.size })),
-  };
-}
-
-export function parseFiles(files: ScannerFile[]): {
-  skills: ParsedSkill[]; standards: ParsedStandard[];
-} {
-  const skills: ParsedSkill[] = [];
-  const standards: ParsedStandard[] = [];
-  for (const file of files) {
-    if (file.type === 'skill') skills.push(parseSkillMarkdown(file.path, file.content));
-    else if (file.type === 'standard') standards.push(parseStandardMarkdown(file.path, file.content));
-  }
-  return { skills, standards };
-}
+import type { ScannerEvaluation } from '@/lib/scanner/types';
 
 /** Strip markdown fences (```json ... ```) and extract JSON object */
 function extractJSON(raw: string): string {
@@ -85,26 +47,4 @@ export async function evaluateSummary(summaryJson: string): Promise<ScannerEvalu
     criticalIssues: Array.isArray(json.criticalIssues) ? json.criticalIssues : [],
     recommendations: Array.isArray(json.recommendations) ? json.recommendations : [],
   };
-}
-
-/** Main analyze function — classify files, parse, evaluate, return report */
-export async function analyzeFiles(
-  rawFiles: { path: string; content: string; size: number }[],
-  evaluate: boolean,
-): Promise<ScannerReport> {
-  const filtered = rawFiles.filter(f => !shouldSkipFile(f.path, f.size));
-  const typedFiles: ScannerFile[] = filtered.map(f => ({
-    ...f, type: classifyFile(f.path, f.content),
-  }));
-  const structure = buildStructure(typedFiles);
-  const { skills, standards } = parseFiles(typedFiles);
-  const rawRefs = extractReferences(typedFiles);
-  const references = checkReferences(rawRefs, typedFiles);
-  const antiPatterns = detectAntiPatterns(skills, standards, references);
-  let evaluation: ScannerEvaluation | null = null;
-  if (evaluate) {
-    try { evaluation = await evaluateSummary(JSON.stringify({ structure, skills: skills.map(s => ({ name: s.name, completeness: s.completeness, wordCount: s.wordCount })), standards: standards.map(s => ({ name: s.name, id: s.id, severity: s.severity, wordCount: s.wordCount })), references: references.map(r => ({ id: r.id, resolved: r.resolved })), unresolvedCount: references.filter(r => !r.resolved).length })); }
-    catch { evaluation = heuristicEvaluation(structure, skills, standards, references); }
-  }
-  return { structure, skills, standards, references, antiPatterns, evaluation, timestamp: new Date().toISOString() };
 }
