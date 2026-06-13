@@ -1,15 +1,16 @@
 {
-  "version": "2.1.0",
-  "timestamp": "2026-06-13T11:22:07Z",
+  "version": 1,
+  "created": "2026-06-13T14:41:01Z",
   "hooks": {
-    "pre-commit": "c2eb486751e6214ee9f8aba888df4e777dd4f62f7a40ca141407385cbfee431d",
+    "pre-commit": "ee335aa161156df992618f919f9c934898371519914bfca5c5ef20620e8281df",
     "pre-push": "bcf706b89dd6460da92055f9bd93034a39fc7eced9946c2dbe8a21dbc1e34e44"
   },
   "config": {
-    "AGENT_RULES.md": "37fcd698341412a8514b6ae4d66eeb6fd3cf2c69b8938b6666ed90155472709d",
+    "AGENT_RULES.md": "7dc6182ee8cbaf1d384f03c359b8cdacb983c3df4b96a98b770cf8c1be2bb890",
     "verify-docs.json": "5e3c50531655f6e54d912cfd5c5cdaa255772da90783027a8ed8071e147581fe"
   },
   "gitConfig": {
     "core.hooksPath": "unset"
-  }
+  },
+  "moduleSetup": "d0201bd162dde5e8e74684b1f092d2485ce8f25f25c921b32871435e998ed925"
 }

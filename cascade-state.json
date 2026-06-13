@@ -1,208 +1,34 @@
 {
-  "_meta": {
-    "version": "1.0.0",
-    "project": "3A Studio",
-    "repo": "https://github.com/stsgs1980/AAA-studio",
-    "lastUpdated": "2026-06-11T16:00:00Z",
-    "description": "Single source of truth for cascade task execution. AI agents MUST read this file before starting any work."
-  },
-  "phases": [
-    {
-      "id": "P0",
-      "name": "Documentation Integrity",
-      "gate": "All P0 tasks must be completed before P1 starts",
-      "tasks": [
-        {
-          "id": "F0.1",
-          "title": "Fix cascade-state.json — replace demo with real project tasks",
-          "priority": "P0",
-          "size": "S",
-          "status": "completed",
-          "depends_on": [],
-          "implements": ["DOC-INTEGRITY"],
-          "acceptance": "cascade-state.json contains real 3A Studio tasks, not demo placeholder",
-          "anti_hallucination": "Read the file and verify it has project: '3A Studio' and real task titles"
-        },
-        {
-          "id": "F0.2",
-          "title": "Create scripts/install-hooks.ts referenced by postinstall",
-          "priority": "P0",
-          "size": "S",
-          "status": "completed",
-          "depends_on": [],
-          "implements": ["BUILD-HEALTH"],
-          "acceptance": "scripts/install-hooks.ts exists and copies git hooks from anti-hallucination-guard/.git-hooks/ to .git/hooks/",
-          "anti_hallucination": "Run bun install and verify no error from postinstall script"
-        },
-        {
-          "id": "F0.3",
-          "title": "Remove dead docs/ links from README.md and WORKFLOW.md",
-          "priority": "P0",
-          "size": "S",
-          "status": "completed",
-          "depends_on": [],
-          "implements": ["DOC-INTEGRITY"],
-          "acceptance": "No links to docs/AGENT_TYPES.md, docs/ROADMAP.md, docs/PROMPTING_MODULE.md, docs/research/agent-typology-full.md remain in README.md or WORKFLOW.md. Either restore the files or remove the links.",
-          "anti_hallucination": "Grep for all 4 paths in README.md and WORKFLOW.md — zero matches"
-        },
-        {
-          "id": "F0.4",
-          "title": "Update 3A-Studio-Documentation.md — fix stale numbers",
-          "priority": "P0",
-          "size": "M",
-          "status": "completed",
-          "depends_on": [],
-          "implements": ["DOC-ACCURACY"],
-          "acceptance": "API endpoints: 66, Prisma models: 37, node types: 20, wiki pages: 15, formulas: 10, frameworks: 11, techniques: 17, i18n namespaces: 8, feature modules: 17",
-          "anti_hallucination": "Each number verified: find src/app/api -name route.ts | wc -l == 66, prisma schema model count == 37, etc."
-        },
-        {
-          "id": "F0.5",
-          "title": "Sync README.md with codebase reality",
-          "priority": "P0",
-          "size": "M",
-          "status": "completed",
-          "depends_on": [],
-          "implements": ["DOC-ACCURACY"],
-          "acceptance": "Monorepo Packages shows 5 (including verify-docs submodule), i18n shows 8 namespaces, Screens count is accurate, no contradictions with 3A-Studio-Documentation.md",
-          "anti_hallucination": "Cross-check every number in README against actual file counts"
-        },
-        {
-          "id": "F0.6",
-          "title": "Update WORKFLOW.md — fix Security section and dead links",
-          "priority": "P0",
-          "size": "M",
-          "status": "completed",
-          "depends_on": ["F0.3"],
-          "implements": ["DOC-ACCURACY"],
-          "acceptance": "Security section reflects JWT auth DONE, key masking DONE. No broken docs/ links remain. Roadmap Phase references are consistent.",
-          "anti_hallucination": "Grep for 'TODO' and 'FIXME' in Security section — zero results for completed items"
-        },
-        {
-          "id": "F0.7",
-          "title": "Fix UNIFIED_TASK_LIST.md Quick Start commands",
-          "priority": "P0",
-          "size": "S",
-          "status": "completed",
-          "depends_on": [],
-          "implements": ["DOC-ACCURACY"],
-          "acceptance": "Quick Start uses bun (not pnpm, not npm). All scripts match package.json scripts field.",
-          "anti_hallucination": "Every command in Quick Start exists in package.json scripts"
-        },
-        {
-          "id": "F0.8",
-          "title": "Update .env.example with all documented variables",
-          "priority": "P0",
-          "size": "S",
-          "status": "completed",
-          "depends_on": [],
-          "implements": ["DOC-ACCURACY"],
-          "acceptance": ".env.example contains: DATABASE_URL, DIRECT_URL, AUTH_SECRET, ENCRYPTION_KEY, ADMIN_USERNAME, ADMIN_PASSWORD, ZAI_API_KEY, ZAI_BASE_URL",
-          "anti_hallucination": "Every variable from README Environment Variables table exists in .env.example"
-        }
-      ]
-    },
-    {
-      "id": "P1",
-      "name": "Wave 8 — Production Readiness",
-      "gate": "All P0 must be completed. P1 tasks depend on documentation being accurate.",
-      "tasks": [
-        {
-          "id": "F1.1",
-          "title": "Multi-user auth — replace demo admin/admin with NextAuth.js or Clerk",
-          "priority": "P1",
-          "size": "L",
-          "status": "pending",
-          "depends_on": [],
-          "implements": ["AUTH-PROD"],
-          "acceptance": "User registration/login via OAuth provider. RBAC with at least 2 roles (admin, user). Demo credentials removed.",
-          "anti_hallucination": "POST /api/auth/login with demo credentials returns 401. Real OAuth flow completes end-to-end."
-        },
-        {
-          "id": "F1.2",
-          "title": "API Rate Limiting for /api/llm and /api/flows/[id]/execute",
-          "priority": "P1",
-          "size": "M",
-          "status": "pending",
-          "depends_on": [],
-          "implements": ["SECURITY"],
-          "acceptance": "Rate limit enforced on LLM endpoints. Returns 429 when exceeded. Configurable per-provider.",
-          "anti_hallucination": "Send 100 requests in 1 minute — 429 returned after limit"
-        },
-        {
-          "id": "F1.3",
-          "title": "Standards seeding — seed 19 reviewed standards into DB",
-          "priority": "P1",
-          "size": "M",
-          "status": "pending",
-          "depends_on": [],
-          "implements": ["STANDARDS"],
-          "acceptance": "All 19 standards from Zai-agent-toolkit/standards/ imported into DB. GITHUB_STANDARD contradiction (3.1 vs 5.4) resolved. Quality score >= 8/10 for all.",
-          "anti_hallucination": "GET /api/standards returns 19 records. Each has >= 1 enabled rule with valid pattern."
-        },
-        {
-          "id": "F1.4",
-          "title": "API integration tests — cover critical routes",
-          "priority": "P1",
-          "size": "L",
-          "status": "pending",
-          "depends_on": [],
-          "implements": ["TESTING"],
-          "acceptance": "Integration tests for: auth chain (login/protected/logout), agent CRUD, skill CRUD, flow execute, standards cross-ref delete. Minimum 35 tests passing.",
-          "anti_hallucination": "vitest run --reporter=verbose shows all new tests passing"
-        }
-      ]
-    },
-    {
-      "id": "P2",
-      "name": "Wave 9 — Quality Engine & Advanced Features",
-      "gate": "All P1 tasks completed",
-      "tasks": [
-        {
-          "id": "F2.1",
-          "title": "Phase 4 — Agent-Scanner: QA on zai-agent-toolkit (110+ skills)",
-          "priority": "P2",
-          "size": "L",
-          "status": "pending",
-          "depends_on": ["F1.4"],
-          "implements": ["QUALITY-ENGINE"],
-          "acceptance": "Agent-scanner with tools (read_file, grep, compare) replaces static QA parsing. Tested on 110+ real skills. Format-agnostic.",
-          "anti_hallucination": "Scanner produces results for 3 different skill formats (MD, TS, JSON) without format-specific code"
-        },
-        {
-          "id": "F2.2",
-          "title": "Phase 5 — 9-Metric Quality Engine (SonarMAS)",
-          "priority": "P2",
-          "size": "XL",
-          "status": "pending",
-          "depends_on": ["F2.1"],
-          "implements": ["QUALITY-ENGINE"],
-          "acceptance": "9 weighted metrics calculated. Grade A-F badge. Radar chart visualization. 7 anti-pattern detectors. Skill/Standard classification.",
-          "anti_hallucination": "POST /api/quality/deep returns all 9 metric scores + grade. Radar chart renders in UI."
-        },
-        {
-          "id": "F2.3",
-          "title": "Phase 6 — Advanced Agent Types (ReAct, Plan-and-Execute, Prompt Chaining, Autonomous, Parallel/Voting)",
-          "priority": "P2",
-          "size": "XL",
-          "status": "pending",
-          "depends_on": [],
-          "implements": ["AGENT-TYPES"],
-          "acceptance": "7 deferred agent type templates implemented. Each with system prompt, node config, and test flow.",
-          "anti_hallucination": "Each agent type executable in Flow Editor with real LLM call producing structured output"
-        }
-      ]
-    }
+  "ahgVersion": "2.2.0",
+  "previousVersion": "none",
+  "previousCommit": "626d6e02d2317413a55d1df60441822801f764df",
+  "currentCommit": "8df5f41551a3bea58be52e0e8fb21b705f1c0943",
+  "updatedAt": "2026-06-13T14:41:01Z",
+  "changedFiles": ".git-hooks/pre-commit .git-hooks/pre-push .github/CODEOWNERS .github/workflows/pr-guard.yml .gitignore AGENT_RULES.md CHANGELOG.md README.md registry.json scripts/ahg.sh scripts/audit.sh scripts/branch-protect-lib.sh scripts/branch-protect.sh scripts/check-agent.sh scripts/check-hooks-lib.sh scripts/setup-branch-protection.sh scripts/sync-task-state.sh scripts/validate.sh setup/04-install-pre-push-hook.sh setup/05-deploy-monitoring-scripts.sh tools/verify-docs/src/auto-config.ts tools/verify-docs/src/bump.ts tools/verify-docs/src/cli-helpers.ts tools/verify-docs/src/discover-baseline.ts tools/verify-docs/src/discover-changelog.ts tools/verify-docs/src/discover-coverage.ts tools/verify-docs/src/discover-project.ts tools/verify-docs/src/discover-versions.ts tools/verify-docs/src/discover.ts tools/verify-docs/templates/pre-push update.sh ",
+  "items": [
+    {"id": "RULE-001", "version": "1.0", "level": "critical", "status": "active"},
+    {"id": "RULE-002", "version": "1.0", "level": "critical", "status": "active"},
+    {"id": "RULE-003", "version": "1.0", "level": "critical", "status": "active"},
+    {"id": "RULE-004", "version": "1.0", "level": "critical", "status": "active"},
+    {"id": "RULE-005", "version": "1.0", "level": "critical", "status": "active"},
+    {"id": "RULE-006", "version": "1.0", "level": "warning", "status": "active"},
+    {"id": "RULE-007", "version": "1.0", "level": "critical", "status": "active"},
+    {"id": "RULE-008", "version": "1.0", "level": "critical", "status": "active"},
+    {"id": "RULE-009", "version": "1.0", "level": "critical", "status": "active"},
+    {"id": "RULE-010", "version": "1.0", "level": "critical", "status": "active"},
+    {"id": "RULE-011", "version": "1.0", "level": "critical", "status": "active"},
+    {"id": "RULE-012", "version": "1.1", "level": "critical", "status": "active"},
+    {"id": "RULE-013", "version": "1.1", "level": "critical", "status": "active"},
+    {"id": "RULE-014", "version": "1.0", "level": "warning", "status": "active"},
+    {"id": "STD-ENV-001", "version": "1.0", "level": "critical", "status": "active"},
+    {"id": "STD-ENV-002", "version": "1.0", "level": "critical", "status": "active"},
+    {"id": "TOOL-VERIFY", "version": "2.1", "level": "critical", "status": "active"},
+    {"id": "TOOL-BUMP", "version": "2.0", "level": "critical", "status": "active"},
+    {"id": "TOOL-DISCOVER", "version": "2.1", "level": "critical", "status": "active"},
+    {"id": "PROC-SETUP", "version": "2.0", "level": "critical", "status": "active"},
+    {"id": "PROC-UPDATE", "version": "2.1", "level": "critical", "status": "active"},
+    {"id": "PROC-VALIDATE", "version": "2.0", "level": "warning", "status": "active"}
   ],
-  "functionInventory": [
-    { "id": "DOC-INTEGRITY", "name": "Documentation Integrity", "tab": "Foundation", "status": "Completed", "priority": "P0", "depends_on": [], "implemented_by": ["F0.1", "F0.3"] },
-    { "id": "DOC-ACCURACY", "name": "Documentation Accuracy", "tab": "Foundation", "status": "Completed", "priority": "P0", "depends_on": [], "implemented_by": ["F0.4", "F0.5", "F0.6", "F0.7", "F0.8"] },
-    { "id": "BUILD-HEALTH", "name": "Build Health", "tab": "Foundation", "status": "Completed", "priority": "P0", "depends_on": [], "implemented_by": ["F0.2"] },
-    { "id": "AUTH-PROD", "name": "Production Auth", "tab": "Production", "status": "Stub", "priority": "P1", "depends_on": [], "implemented_by": ["F1.1"] },
-    { "id": "SECURITY", "name": "API Security", "tab": "Production", "status": "Stub", "priority": "P1", "depends_on": [], "implemented_by": ["F1.2"] },
-    { "id": "STANDARDS", "name": "Standards Seeding", "tab": "Production", "status": "Stub", "priority": "P1", "depends_on": [], "implemented_by": ["F1.3"] },
-    { "id": "TESTING", "name": "Integration Tests", "tab": "Production", "status": "Stub", "priority": "P1", "depends_on": [], "implemented_by": ["F1.4"] },
-    { "id": "QUALITY-ENGINE", "name": "Quality Engine", "tab": "Advanced", "status": "Stub", "priority": "P2", "depends_on": ["TESTING"], "implemented_by": ["F2.1", "F2.2"] },
-    { "id": "AGENT-TYPES", "name": "Advanced Agent Types", "tab": "Advanced", "status": "Stub", "priority": "P2", "depends_on": [], "implemented_by": ["F2.3"] }
+  "changedSinceLastUpdate": [
   ]
 }

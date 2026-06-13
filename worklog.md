@@ -1953,3 +1953,20 @@ Stage Summary:
 - Full parsing: skills, standards, references, anti-patterns — all client-side
 - LLM evaluation is optional upgrade (~5KB payload, non-blocking)
 - 6 files changed: +client-scanner.ts (new), +evaluate/route.ts (new), -structure/ (deleted), store rewritten, panel updated, service refactored
+
+---
+Task ID: ahg-update
+Agent: main
+Task: Update anti-hallucination-guard submodule to 8df5f41
+
+Work Log:
+- Ran anti-hallucination-guard/update.sh
+- Pulled 6 new commits: update.sh auto-detect, security/upstream-write-protection (Rule 16 + CODEOWNERS + PR guard CI), submodule context detection bugs + Rule 15, pre-commit bun path fix, id-system feature, PROJECT_ROOT resolution fix
+- 31 files changed in submodule: +749/-89
+- setup.sh re-ran: updated pre-commit hook, created check-hooks-verify.sh, updated AGENT_RULES.md, created integrity snapshot
+- Generated cascade-state.json
+
+Stage Summary:
+- Submodule updated: 626d6e0 -> 8df5f41
+- New features: PR guard CI, CODEOWNERS, upstream write protection, update.sh stale hook detection
+- Committing submodule pointer to project
