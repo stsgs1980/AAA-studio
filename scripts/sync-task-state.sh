@@ -24,9 +24,11 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+MODULE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+# Resolve PROJECT_ROOT: if AHG is a submodule, git toplevel = consumer root
+PROJECT_ROOT="$(git -C "$MODULE_ROOT" rev-parse --show-toplevel 2>/dev/null || echo "$MODULE_ROOT")"
 
-# ── Parse args ──────────────────────────────────────────────────────────────
+# -- Parse args ---------------------------------------------------------------
 DRY_RUN=false
 STATE_FILE="cascade-state.json"
 
@@ -39,7 +41,7 @@ done
 
 STATE_PATH="$PROJECT_ROOT/$STATE_FILE"
 
-# ── Colors ──────────────────────────────────────────────────────────────────
+# -- Colors -------------------------------------------------------------------
 if [ -t 1 ]; then
   RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; CYAN='\033[0;36m'; NC='\033[0m'
 else
@@ -50,7 +52,7 @@ warn() { echo -e "${YELLOW}[WARN]${NC} $*"; }
 info() { echo -e "${CYAN}[INFO]${NC} $*"; }
 changed() { echo -e "${GREEN}[CHANGED]${NC} $*"; }
 
-# ── Checks ──────────────────────────────────────────────────────────────────
+# -- Checks -------------------------------------------------------------------
 
 if ! command -v jq &>/dev/null; then
   echo "ERROR: jq is required. Install: apt-get install jq / brew install jq"
@@ -71,7 +73,7 @@ fi
 
 info "Scanning $STATE_FILE for tasks with implementationFiles..."
 
-# ── Process tasks ───────────────────────────────────────────────────────────
+# -- Process tasks ------------------------------------------------------------
 
 UPDATED=0
 PENDING_TASKS=0
@@ -149,7 +151,7 @@ for TASK_ID in $TASK_IDS; do
   fi
 done
 
-# ── Summary ─────────────────────────────────────────────────────────────────
+# -- Summary ------------------------------------------------------------------
 
 echo ""
 echo "=== sync-task-state summary ==="

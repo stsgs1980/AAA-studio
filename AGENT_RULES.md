@@ -1,8 +1,10 @@
 # AGENT RULES -- VIOLATION IS NOT ACCEPTABLE
 
 
+
 <!-- AHG:START -->
 <!-- Do NOT edit between START and END markers. This block is managed by anti-hallucination-guard/setup.sh -->
+<!-- ID: RULE-001 | ver:1.0 | Level: C | Related: RULE-003, RULE-006 -->
 ## Rule 1: worklog -- BEFORE and AFTER every action
 
 - Before ANY action: read /worklog.md
@@ -10,18 +12,21 @@
 - Format: only blocks with --- separator
 - Content: specific facts (files, commands, results)
 
+<!-- ID: RULE-002 | ver:1.0 | Level: C | Related: RULE-009 -->
 ## Rule 2: Read before write (READ BEFORE WRITE)
 
 - NEVER write a file without reading it first (Read tool)
 - Exception: if file does not exist (verify via LS/Glob)
 - Reason: without reading, agent risks destroying existing code
 
+<!-- ID: RULE-003 | ver:1.0 | Level: C | Related: RULE-001 -->
 ## Rule 3: One logical block -- one commit
 
 - Finished a meaningful chunk of work -> git add -A && git commit
 - Commit message: specific description (not "update", not "fix")
 - Commit without updated worklog -> ERROR (pre-commit hook will block)
 
+<!-- ID: RULE-004 | ver:1.0 | Level: C | Related: RULE-005 -->
 ## Rule 4: No loops
 
 - If you are doing the same thing for the 3rd time with the same result -> STOP
@@ -29,6 +34,7 @@
 - Write in chat: "Stuck on [specific step], need help"
 - This is NOT a failure -- this saves user time
 
+<!-- ID: RULE-005 | ver:1.0 | Level: C | Related: RULE-010 -->
 ## Rule 5: Honest reporting
 
 - Do NOT write "work completed" if tests are not passed
@@ -36,6 +42,7 @@
 - Do NOT write "error fixed" if you did not verify
 - Every claim -> must be verifiable
 
+<!-- ID: RULE-006 | ver:1.0 | Level: W | Related: RULE-001, RULE-003 -->
 ## Rule 6: Work structure
 
 1. Read AGENT_RULES.md and worklog.md
@@ -45,6 +52,7 @@
 5. Git commit
 6. Go to step 2
 
+<!-- ID: RULE-007 | ver:1.0 | Level: C | Related: STD-ENV-001, STD-ENV-002 -->
 ## Rule 7: Sandbox verification (no fake setup)
 
 Agents MUST verify sandbox infrastructure is real before proceeding. Known anti-hallucination patterns in Z.ai Sandbox:
@@ -57,10 +65,7 @@ Agents MUST verify sandbox infrastructure is real before proceeding. Known anti-
 
 4. **Editing wrong location is silent failure**: Writing to `/tmp/my-repo/src/app/page.tsx` changes NOTHING visible in the browser. Always confirm you are editing files under `/home/z/my-project/`.
 
-5. **Sandbox idle timeout kills dev server**: The sandbox kills background process groups after ~2-5 minutes of idle. This is NOT an OOM or crash — process vanishes silently from logs. `nohup` does NOT protect. If "sandbox is inactive": restart dev server via `.zscripts/dev.sh` or `npx next dev --port 3000 --hostname 0.0.0.0`.
-
-6. **Sandbox networking**: `FC_CUSTOM_LISTEN_PORT=81` — sandbox reverse proxy on port 81 forwards to localhost:3000. Always verify: `curl -s -o /dev/null -w "%{http_code}" http://localhost:81/` returns 200.
-
+<!-- ID: RULE-008 | ver:1.0 | Level: C | Related: RULE-009, TOOL-VERIFY -->
 ## Rule 8: Session Start Protocol (drift prevention)
 
 Before ANY work in a new session, the agent MUST:
@@ -81,6 +86,7 @@ This rule prevents the most common documentation decay pattern:
 an agent writes code but does not update docs, causing documentation
 to gradually become misleading and unreliable.
 
+<!-- ID: RULE-009 | ver:1.0 | Level: C | Related: RULE-008, TOOL-VERIFY -->
 ## Rule 9: Documentation sync (no code without docs)
 
 When changing the codebase, documentation MUST be kept in sync:
@@ -98,6 +104,7 @@ Pre-commit checklist:
 - [ ] task state file statuses are current?
 - [ ] verify-docs passes without errors?
 
+<!-- ID: RULE-010 | ver:1.0 | Level: C | Related: RULE-005, PROC-SETUP -->
 ## Rule 10: Integrity protection (no self-sabotage)
 
 Agents MUST NOT disable, bypass, or weaken the anti-hallucination mechanisms.
@@ -123,6 +130,204 @@ This rule is non-negotiable and applies regardless of task urgency.
 - verify-docs detects missing or weakened checks
 - audit.sh scores integrity as part of session quality
 - CI pipeline runs verify-docs independently (cannot be bypassed locally)
+
+<!-- ID: RULE-011 | ver:1.0 | Level: C | Related: RULE-003 -->
+## Rule 11: Anti-monolith (no file over 250 lines)
+
+Every file MUST stay under 250 lines. When a file crosses this threshold,
+the agent MUST stop writing, split the file, and continue with smaller modules.
+
+**Thresholds:**
+- File: 250 lines hard limit (150 recommended)
+- Function: 50 lines max (longer = extract helper)
+- One file = one responsibility
+
+**Auto-activation (MUST NOT wait to be asked):**
+1. Agent writes a file that approaches 250 lines -> STOP, split, continue
+2. Agent opens a file that already exceeds 250 lines -> split before editing
+3. Agent plans a new file that will clearly exceed limits -> plan decomposition upfront
+
+**When threshold is crossed:**
+1. STOP writing immediately
+2. Announce: `[ANTI-MONOLITH] Threshold exceeded: <file> is N lines (limit 250)`
+3. Identify sub-responsibilities within the file
+4. Extract each into a separate file with a clear single purpose
+5. Keep original as thin orchestrator that imports extracted modules
+6. Continue the task with decomposed structure
+
+**Valid exceptions (must be documented with comment in file):**
+- Auto-generated code (Prisma schema, OpenAPI types)
+- Configuration files that are naturally flat
+- Files between 250-300 lines AND well-organized with clear sections
+
+**Invalid exceptions:**
+- File exceeds 400 lines (no excuses, decompose)
+- "I'll refactor later" (later never comes)
+- "It's easier to read in one file" (that's what imports are for)
+
+<!-- ID: RULE-012 | ver:1.1 | Level: C | Related: TOOL-BUMP -->
+## Rule 12: Use ahg bump for version updates
+
+When changing the project version, use the atomic bump command:
+  bash scripts/ahg.sh bump X.Y.Z
+
+This command:
+- Auto-discovers ALL files containing version numbers
+- Updates them atomically (no file forgotten)
+- Adds CHANGELOG entry if CHANGELOG exists
+- Supports --dry-run for preview
+
+Do NOT update versions manually in individual files.
+Manual updates cause version drift -- one file gets updated,
+another is forgotten. ahg bump eliminates this class of errors.
+
+<!-- ID: RULE-013 | ver:1.1 | Level: C | Related: RULE-001, RULE-003, TOOL-VERIFY -->
+## Rule 13: Pre-commit mandatory checklist
+
+Before EVERY commit, verify ALL of these items:
+- [ ] Code written and tested
+- [ ] worklog.md updated (hook will verify freshness)
+- [ ] If version changed: ahg bump used (not manual edit)
+- [ ] If new files added: documented in README/ARCHITECTURE
+- [ ] If files deleted: no stale references remain
+- [ ] cascade-state.json: task statuses current (auto-sync in hook)
+- [ ] verify-docs passes (or discover shows no errors)
+
+If ANY item is unclear: run "bash scripts/ahg.sh discover" first.
+Do NOT commit with known documentation drift.
+
+<!-- ID: RULE-014 | ver:1.0 | Level: W | Related: -->
+## Rule 14: No Unicode graphics (UNICODE_POLICY compliance)
+
+All AHG output must comply with No-Unicode Policy v2.1.
+No emoji, no Unicode pictograms, no decorative symbols.
+
+**Allowed:**
+- ASCII: a-z, A-Z, 0-9, standard punctuation
+- Cyrillic: a-ya, A-Ya
+- Status markers: [OK], [ERR], [WARN], [INFO], [FAIL] -- plain text only
+- Diagrams: ASCII only: -> <- => <= | + - v ^ >
+- Section dividers in comments: // -- or # -- (not Unicode dashes)
+
+**Prohibited:**
+- Emoji (any pictograms: emotions, objects, UI-symbols)
+- Unicode box drawing (U+2500 and similar)
+- Em dash (U+2014), en dash (U+2013) -- use -- instead
+- Any Unicode decorative symbols
+
+**Application levels:**
+- Production code: [C] Critical (blocks)
+- CLI output, scripts: [W] Warning
+- AI-agent chat responses: [W] Warning
+- Documentation (.md): regulated by MARKDOWN_STANDARD v2.1
+
+<!-- ID: RULE-015 | ver:1.0 | Level: C | Related: RULE-010, ARCH-SUBMODULE -->
+## Rule 15: AHG submodule is immutable architecture (no removal, no inlining)
+
+The anti-hallucination-guard git submodule is a structural component of this
+project, not an optional dependency. Agents MUST NOT propose or execute any
+action that removes, inlines, or restructures the AHG submodule relationship.
+
+**What the submodule provides (single source of truth):**
+- Pre-commit hook: worklog freshness + verify-docs consistency
+- Pre-push hook: repository purity + doc consistency enforcement
+- setup.sh: idempotent deployment of hooks, scripts, and rules
+- update.sh: one-command update (git pull + re-deploy)
+- validate.sh: purity enforcement (only AHG files in AHG repo)
+- verify-docs: documentation drift detection engine
+- cascade-state.json: cross-project version tracking
+- AGENT_RULES.md: this rule set (deployed, not hand-written)
+
+**Why a submodule (not inline files):**
+1. **Version synchronization**: bugfixes in AHG reach ALL consumer projects
+   via `git submodule update`. Inlined copies diverge within days.
+2. **Purity validation**: validate.sh can only verify a module repo, not a
+   folder mixed with consumer project files. Inlining makes purity checks
+   impossible.
+3. **Atomic updates**: update.sh pulls + redeploys in one step. With inlined
+   files, each project manually copies scripts -- versions drift, fixes are
+   lost, hooks silently stop working.
+4. **Protected upstream**: the AHG repo has branch protection. Consumer
+   projects cannot accidentally push broken changes to the guard system.
+5. **Cross-project consistency**: every consumer project runs the SAME version
+   of the same hooks. No "HH-Copilot has v2.1 hooks, ProjectB has v1.8 hooks".
+
+**Forbidden actions (this rule extends Rule 10):**
+1. Proposing to remove the git submodule and inline AHG files
+2. Moving AHG scripts to `scripts/ahg/`, `.ahg/`, or any local path
+3. Copying hook files into the project and deleting the submodule reference
+4. Suggesting that AHG is "just scripts that could live in the project"
+5. Creating a parallel local copy of any AHG-managed file
+6. Removing `.gitmodules` entries for anti-hallucination-guard
+
+**What to do when something breaks:**
+- If hooks block a push: fix the underlying issue (update worklog, fix docs)
+- If validate.sh fails in wrong context: run `bash anti-hallucination-guard/update.sh`
+  to update hooks to the latest version with bugfixes
+- If a hook has a bug: report it, fix it IN the AHG submodule repo, then
+  update the submodule pointer. Do NOT patch hooks locally.
+- If the submodule seems unnecessary: re-read this rule. It IS necessary.
+
+**The submodule is not causing problems -- bugs in context detection were.
+Those bugs are fixed in the AHG repo. Update the submodule to get fixes.**
+
+<!-- ID: RULE-016 | ver:1.0 | Level: C | Related: RULE-010, RULE-015, ARCH-UPSTREAM -->
+## Rule 16: Upstream write protection (no consumer agent may push to AHG)
+
+No agent running in a consumer project context may push, merge, create PRs,
+or modify the AHG upstream repository in any way. The AHG repository is
+maintained exclusively by its owner. Consumer projects are READ-ONLY consumers
+of the AHG submodule.
+
+**The problem this rule solves:**
+Consumer project agents (e.g. HH-Copilot, ProjectB-agent) have access to the
+AHG submodule directory inside their project. Without this rule, an agent can:
+- Push branches to the AHG upstream repository
+- Create pull requests against AHG main
+- Claim "my fix is already merged via PR #N" and update the submodule pointer
+- Merge their own PRs if branch protection is not configured
+
+This is NOT a theoretical risk -- it has already happened. A consumer project
+agent pushed branch `fix/pre-commit-bun-path` and merged it as PR #8 into
+AHG main, bypassing review. The fix was incorrect (used `git rev-parse
+--show-toplevel` which returns wrong path in submodules) and had to be
+superseded by a proper fix in PR #9.
+
+**Forbidden actions for consumer project agents (this extends Rule 15):**
+1. `git push` from inside the AHG submodule directory
+2. Creating branches in the AHG upstream repository
+3. Creating pull requests against the AHG repository
+4. Merging or approving PRs in the AHG repository
+5. Claiming a fix has been merged into AHG upstream without owner confirmation
+6. Updating the submodule pointer to an unverified commit
+7. Running `AHG_MODULE_PUSH=1 git push` from a consumer project context
+8. Modifying AHG files and committing them directly (not via submodule update)
+
+**What consumer project agents MUST do instead:**
+- If AHG has a bug: report it to the owner, do NOT fix it yourself in the upstream
+- If AHG hooks block a push: fix the consumer project, do NOT patch AHG
+- If AHG seems to need an update: ask the owner, do NOT merge PRs yourself
+- If you need a newer version of AHG: `git submodule update --remote` after
+  the owner publishes a release
+
+**Enforcement layers (defense in depth):**
+1. **Rule 15 + Rule 16**: Agent-level prohibition in AGENT_RULES.md
+2. **CODEOWNERS**: Only @stsgs1980 can approve changes (requires GitHub
+   branch protection with "Require review from Code Owners")
+3. **pr-guard.yml workflow**: CI-level check that blocks PRs from forks,
+   non-collaborators, and tampering attempts (removing Rule 15/16 or CODEOWNERS)
+4. **validate.sh**: Blocks push from inside submodule unless AHG_MODULE_PUSH=1
+5. **GitHub branch protection**: Must be configured by owner (see below)
+
+**GitHub branch protection (MUST be configured by owner):**
+```
+Repository Settings > Branches > Branch protection rules > main
+  [x] Require a pull request before merging
+  [x] Require approvals (1)
+  [x] Require review from Code Owners
+  [x] Restrict who can push to matching branches (only @stsgs1980)
+  [x] Do not allow bypassing the above settings
+```
 
 
 ## worklog.md format
