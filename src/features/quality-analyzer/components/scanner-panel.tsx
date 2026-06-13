@@ -25,19 +25,9 @@ const SECTION_LABELS: Record<Section, string> = {
 
 export function ScannerPanel() {
   const report = useQualityStore((s) => s.scannerReport);
-  const isScanning = useQualityStore((s) => s.isScanning);
+  const isLlmEvaluating = useQualityStore((s) => s.isLlmEvaluating);
   const [activeSection, setActiveSection] = useState<Section>("summary");
   const [copiedRecs, setCopiedRecs] = useState(false);
-
-  if (isScanning) {
-    return (
-      <div className="flex h-full min-h-[200px] flex-col items-center justify-center gap-3 text-muted-foreground">
-        <Loader2 className="h-6 w-6 animate-spin" />
-        <span className="text-sm">Scanner is analyzing...</span>
-        <span className="text-xs">Parsing files, checking references, evaluating quality</span>
-      </div>
-    );
-  }
 
   if (!report) {
     return (
@@ -84,9 +74,9 @@ export function ScannerPanel() {
 
       {/* Summary */}
       {activeSection === "summary" && (<>
-          {report.skills.length === 0 && report.references.length === 0 && (
-            <div className="rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-700 dark:border-amber-600 dark:bg-amber-950/30 dark:text-amber-400">
-              Structure-only scan (payload too large for full analysis). Skills, references, and anti-patterns are not parsed.
+          {isLlmEvaluating && (
+            <div className="flex items-center gap-2 rounded-lg border border-primary/30 bg-primary/5 px-3 py-1.5 text-xs text-primary">
+              <Loader2 className="h-3 w-3 animate-spin" />LLM evaluation in progress...
             </div>
           )}
           <div className="rounded-lg border bg-muted/20 px-4 py-3">

@@ -50,18 +50,10 @@ function extractJSON(raw: string): string {
   return (first !== -1 && last > first) ? text.slice(first, last + 1) : text;
 }
 
-async function evaluateWithLLM(
-  structure: StructureSummary,
-  skills: ParsedSkill[],
-  standards: ParsedStandard[],
-  references: ReferenceCheck[],
-): Promise<ScannerEvaluation> {
-  // No LLM configured — use heuristic fallback
+/** Evaluate pre-built scanner summary with LLM. Accepts the compact JSON from client. */
+export async function evaluateSummary(summaryJson: string): Promise<ScannerEvaluation> {
   const active = await getActiveProvider();
-  if (!active) {
-    return heuristicEvaluation(structure, skills, standards, references);
-  }
-
+  if (!active) throw new Error('No LLM provider configured');
   const systemPrompt = [
     'You are a toolkit quality auditor. Analyze the scanner data and return ONLY valid JSON.',
     'Return this exact shape (no markdown fences, no extra text):',
@@ -70,44 +62,29 @@ async function evaluateWithLLM(
     '"examples":0-100,"constraints":0-100}',
     ',"criticalIssues":["..."],"recommendations":["..."]}',
   ].join('\n');
-  const summary = JSON.stringify({
-    structure, skillsCount: skills.length, standardsCount: standards.length,
-    skills: skills.map(s => ({ name: s.name, completeness: s.completeness, wordCount: s.wordCount })),
-    standards: standards.map(s => ({ name: s.name, id: s.id, severity: s.severity, wordCount: s.wordCount })),
-    references: references.map(r => ({ id: r.id, resolved: r.resolved })),
-    unresolvedCount: references.filter(r => !r.resolved).length,
-  }, null, 2);
-
-  try {
-    const response = await callLLM({
-      provider: active.provider, model: active.model,
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: `Scanner data:\n${summary.slice(0, 15000)}` },
-      ],
-      temperature: 0.1,
-      maxTokens: 2048,
-    });
-
-    const json = JSON.parse(extractJSON(response.content ?? '{}'));
-    const dims = json.dimensions ?? {};
-    return {
-      overall: Number(json.overall) || 0,
-      grade: (['A', 'B', 'C', 'D', 'F'] as const).includes(json.grade) ? json.grade : 'F',
-      dimensions: {
-        completeness: Number(dims.completeness) || 0,
-        references: Number(dims.references) || 0,
-        consistency: Number(dims.consistency) || 0,
-        examples: Number(dims.examples) || 0,
-        constraints: Number(dims.constraints) || 0,
-      },
-      criticalIssues: Array.isArray(json.criticalIssues) ? json.criticalIssues : [],
-      recommendations: Array.isArray(json.recommendations) ? json.recommendations : [],
-    };
-  } catch {
-    // LLM call failed or returned unparseable JSON — fall back to heuristic
-    return heuristicEvaluation(structure, skills, standards, references);
-  }
+  const response = await callLLM({
+    provider: active.provider, model: active.model,
+    messages: [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: `Scanner data:\n${summaryJson.slice(0, 15000)}` },
+    ],
+    temperature: 0.1, maxTokens: 2048,
+  });
+  const json = JSON.parse(extractJSON(response.content ?? '{}'));
+  const dims = json.dimensions ?? {};
+  return {
+    overall: Number(json.overall) || 0,
+    grade: (['A', 'B', 'C', 'D', 'F'] as const).includes(json.grade) ? json.grade : 'F',
+    dimensions: {
+      completeness: Number(dims.completeness) || 0,
+      references: Number(dims.references) || 0,
+      consistency: Number(dims.consistency) || 0,
+      examples: Number(dims.examples) || 0,
+      constraints: Number(dims.constraints) || 0,
+    },
+    criticalIssues: Array.isArray(json.criticalIssues) ? json.criticalIssues : [],
+    recommendations: Array.isArray(json.recommendations) ? json.recommendations : [],
+  };
 }
 
 /** Main analyze function — classify files, parse, evaluate, return report */
@@ -115,25 +92,19 @@ export async function analyzeFiles(
   rawFiles: { path: string; content: string; size: number }[],
   evaluate: boolean,
 ): Promise<ScannerReport> {
-  // Defense-in-depth: filter out config/installation files even if client missed them
   const filtered = rawFiles.filter(f => !shouldSkipFile(f.path, f.size));
   const typedFiles: ScannerFile[] = filtered.map(f => ({
     ...f, type: classifyFile(f.path, f.content),
   }));
-
   const structure = buildStructure(typedFiles);
   const { skills, standards } = parseFiles(typedFiles);
   const rawRefs = extractReferences(typedFiles);
   const references = checkReferences(rawRefs, typedFiles);
   const antiPatterns = detectAntiPatterns(skills, standards, references);
-
   let evaluation: ScannerEvaluation | null = null;
   if (evaluate) {
-    evaluation = await evaluateWithLLM(structure, skills, standards, references);
+    try { evaluation = await evaluateSummary(JSON.stringify({ structure, skills: skills.map(s => ({ name: s.name, completeness: s.completeness, wordCount: s.wordCount })), standards: standards.map(s => ({ name: s.name, id: s.id, severity: s.severity, wordCount: s.wordCount })), references: references.map(r => ({ id: r.id, resolved: r.resolved })), unresolvedCount: references.filter(r => !r.resolved).length })); }
+    catch { evaluation = heuristicEvaluation(structure, skills, standards, references); }
   }
-
-  return {
-    structure, skills, standards, references, antiPatterns, evaluation,
-    timestamp: new Date().toISOString(),
-  };
+  return { structure, skills, standards, references, antiPatterns, evaluation, timestamp: new Date().toISOString() };
 }

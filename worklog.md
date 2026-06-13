@@ -1926,3 +1926,30 @@ Stage Summary:
 - 5 files changed: types.ts, use-quality-store.ts, scanner/analyze/route.ts, scanner/structure/route.ts (new), scanner-panel.tsx
 - Large uploads (>2MB payload) now get structure-only scan instead of 502
 - Small uploads still get full parse + LLM evaluation
+
+---
+Task ID: 2
+Agent: main
+Task: Professional scanner rewrite — client-side parsing, server-side LLM only
+
+Work Log:
+- Audited all 6 scanner modules: zero Node.js dependencies, pure TS — client-safe
+- Created src/lib/scanner/client-scanner.ts: scanFilesClient() + buildEvalSummary()
+  - scanFilesClient: runs classifyFile, parseSkillMarkdown, parseStandardMarkdown, extractReferences, checkReferences, detectAntiPatterns, heuristicEvaluation — all in browser
+  - buildEvalSummary: produces ~5KB JSON summary for LLM (vs 1.2MB full content)
+- Refactored scanner-service.ts: extracted evaluateSummary() for reuse, removed duplicate evaluateWithLLM
+- Created /api/scanner/evaluate: accepts {summary: string} (~5KB), returns ScannerEvaluation
+- Rewrote scannerAnalyze in store:
+  - Phase 1 (instant): scanFilesClient() — synchronous, shows full report immediately
+  - Phase 2 (async): POST compact summary to /api/scanner/evaluate — non-blocking LLM upgrade
+  - Added isLlmEvaluating state for progressive UI
+- Removed /api/scanner/structure endpoint (hack from v1.5.17)
+- Removed PAYLOAD_LIMIT guard, emptyReport, setScanError (all hacks)
+- Updated ScannerPanel: removed scanning spinner (instant now), added LLM progress indicator
+- All files <=150 lines, 0 TypeScript errors
+
+Stage Summary:
+- Scanner is now instant regardless of file count (190 files = instant, not 502)
+- Full parsing: skills, standards, references, anti-patterns — all client-side
+- LLM evaluation is optional upgrade (~5KB payload, non-blocking)
+- 6 files changed: +client-scanner.ts (new), +evaluate/route.ts (new), -structure/ (deleted), store rewritten, panel updated, service refactored

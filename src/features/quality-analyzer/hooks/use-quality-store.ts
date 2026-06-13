@@ -5,17 +5,12 @@ import {
   StandardsCheckItem, RubricScenario, FilterLog, EVAL_DEFAULTS,
 } from '../types';
 import { generateSuggestions, checkStandards, evaluateRubric } from '../lib/eval-helpers';
-import type { ScannerReport } from '@/lib/scanner/types';
-
-const PAYLOAD_LIMIT = 2 * 1024 * 1024; // 2 MB
+import { scanFilesClient, buildEvalSummary } from '@/lib/scanner/client-scanner';
+import type { ScannerReport, ScannerEvaluation } from '@/lib/scanner/types';
 
 function fallbackResult(text: string): EvaluationResult {
   const s = scorePrompt(text);
   return { score: s, suggestions: generateSuggestions(s), standardsCheck: { checked: 0, passed: 0, failed: 0, details: [] }, rubricResult: null, llmAnalysis: null };
-}
-
-function emptyReport(err: string, ts: string): ScannerReport {
-  return { structure: { totalFiles: 0, totalSize: 0, skillsCount: 0, standardsCount: 0, fileTypes: {}, largestFiles: [] }, skills: [], standards: [], references: [], antiPatterns: [], evaluation: { overall: 0, grade: 'F', dimensions: { completeness: 0, references: 0, consistency: 0, examples: 0, constraints: 0 }, criticalIssues: [err], recommendations: [] }, timestamp: ts };
 }
 
 function parseFilesFromText(text: string) {
@@ -28,17 +23,13 @@ function parseFilesFromText(text: string) {
   });
 }
 
-function setScanError(err: string) {
-  const ts = new Date().toISOString();
-  return { scannerReport: emptyReport(`Scanner error: ${err}`, ts), isScanning: false };
-}
-
 interface QualityState {
   input: EvaluationInput;
   result: EvaluationResult | null;
   isAnalyzing: boolean;
   isDeepAnalyzing: boolean;
   isScanning: boolean;
+  isLlmEvaluating: boolean;
   scannerReport: ScannerReport | null;
   filterLog: FilterLog | null;
   rubricScenario: RubricScenario;
@@ -62,7 +53,7 @@ interface QualityState {
 
 export const useQualityStore = create<QualityState>((set, get) => ({
   input: { ...EVAL_DEFAULTS }, result: null,
-  isAnalyzing: false, isDeepAnalyzing: false, isScanning: false,
+  isAnalyzing: false, isDeepAnalyzing: false, isScanning: false, isLlmEvaluating: false,
   scannerReport: null, filterLog: null,
   rubricScenario: 'prompt', rubricThreshold: 6,
 
@@ -128,20 +119,23 @@ export const useQualityStore = create<QualityState>((set, get) => ({
       ? input.files.map((f) => ({ path: f.name, content: f.content, size: f.size }))
       : (input.text.trim() ? parseFilesFromText(input.text.trim()) : []);
     if (!files.length) return;
-    set({ isScanning: true, scannerReport: null });
-    const payloadSize = new TextEncoder().encode(JSON.stringify({ files, evaluate: true })).length;
-    const useLight = payloadSize > PAYLOAD_LIMIT;
-    const url = useLight ? '/api/scanner/structure' : '/api/scanner/analyze';
-    const body = useLight
-      ? JSON.stringify({ files: files.map((f) => ({ path: f.path, size: f.size })) })
-      : JSON.stringify({ files, evaluate: true });
-    fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body })
-      .then(async (r) => { if (!r.ok) throw new Error(`Server ${r.status}`); return r.json(); })
-      .then((report) => set({ scannerReport: report, isScanning: false }))
-      .catch((err) => set(setScanError(err.message)));
+    set({ isScanning: true, scannerReport: null, isLlmEvaluating: false });
+    // Phase 1: instant client-side scan (parse, classify, references, heuristic)
+    const report = scanFilesClient(files);
+    set({ scannerReport: report, isScanning: false });
+    // Phase 2: LLM evaluation (compact ~5KB payload, non-blocking)
+    set({ isLlmEvaluating: true });
+    fetch('/api/scanner/evaluate', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ summary: buildEvalSummary(report) }),
+    }).then(async (r) => { if (!r.ok) throw new Error(); return r.json(); })
+      .then((ev: ScannerEvaluation) => set((s) => ({
+        scannerReport: s.scannerReport ? { ...s.scannerReport, evaluation: ev } : null,
+        isLlmEvaluating: false,
+      }))).catch(() => set({ isLlmEvaluating: false }));
   },
 
   setFilterLog: (filterLog) => set({ filterLog }),
-  reset: () => set({ input: { ...EVAL_DEFAULTS }, result: null, scannerReport: null, filterLog: null }),
+  reset: () => set({ input: { ...EVAL_DEFAULTS }, result: null, scannerReport: null, filterLog: null, isLlmEvaluating: false }),
   clearResults: () => set({ result: null, scannerReport: null }),
 }));
