@@ -2054,3 +2054,22 @@ Work Log:
 Stage Summary:
 - AHG updated to d27c3f4 (fix: 12 bugs found in deep audit)
 - New scripts: check-hooks-lib.sh, check-hooks-snapshot.sh, check-hooks-verify.sh, line-count-check.sh, co-change-check.sh
+
+---
+Task ID: AHG-update
+Agent: main
+Task: Update AHG submodule to latest (4 commands from user)
+
+Work Log:
+- git submodule update --remote anti-hallucination-guard -- already at latest
+- cd anti-hallucination-guard && git checkout main && git pull origin main -- already up to date
+- bash anti-hallucination-guard/setup.sh -- reinstalled hooks, scripts, verify-docs
+- git add anti-hallucination-guard && git commit -- blocked by pre-commit (worklog stale), updated worklog, retrying
+
+Stage Summary:
+- AHG submodule was already at latest commit on main
+- setup.sh re-deployed all scripts, updated pre-commit hook, created integrity snapshot
+- 2 scripts (check-agent.sh, audit.sh) detected as "custom" and not overwritten
+- Skills directory already existed, not overwritten
+- verify-docs bun install completed
+- Commit pending after worklog update

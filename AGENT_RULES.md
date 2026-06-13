@@ -3,6 +3,7 @@
 
 
 
+
 <!-- AHG:START -->
 <!-- Do NOT edit between START and END markers. This block is managed by anti-hallucination-guard/setup.sh -->
 <!-- ANTI-MONOLITH exception: single-source rules reference for AI agents.
