@@ -8,6 +8,33 @@ IDE for visual multi-agent systems. Build, manage, and monitor AI agent flows wi
 > **Canonical source:** https://github.com/stsgs1980/3a-studio-mas (45K LOC, full project)
 > **Frozen repo:** https://github.com/stsgs1980/3a-studio (143 commits, stopped 30.05.2026)
 
+
+[![Next.js](https://img.shields.io/badge/Next.js-black?style=flat-square)](https://nextjs.org)
+[![React](https://img.shields.io/badge/React-61DAFB?style=flat-square)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square)](https://www.typescriptlang.org)
+[![Tailwind_CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat-square)](https://tailwindcss.com)
+[![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=flat-square)](https://www.prisma.io)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
+
+
+## Table of Contents
+
+- [Quick Start](#quick-start)
+- [Getting Started](#getting-started)
+- [Architecture](#architecture)
+- [Screens (19)](#screens-19)
+- [Monorepo Packages (5)](#monorepo-packages-5)
+- [Agent Typology (10 Patterns)](#agent-typology-10-patterns)
+- [Resource Map (6 Donors)](#resource-map-6-donors)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Entity Relationships](#entity-relationships)
+- [Environment Variables](#environment-variables)
+- [Development Rules](#development-rules)
+- [Documentation](#documentation)
+- [Deployment](#deployment)
+- [License](#license)
+
 ## Quick Start
 
 ```bash
@@ -19,11 +46,31 @@ bun run dev
 
 Default login: admin / admin.
 
+## Getting Started
+
+### Prerequisites
+
+- Node.js 20+ or Bun
+
+### Installation
+
+```bash
+git clone https://github.com/stsgs1980/AAA-studio.git
+cd AAA-studio
+bun install
+```
+
+### Run
+
+```bash
+bun run dev
+```
+
 ## Architecture
 
 3A Studio replaces 3 repos x 110 skills x manual sync with **one database**.
 
-```
+```bash
 StsDev-Wiki (solutions, ADR)
         |
 3A Studio (living system)
@@ -111,6 +158,11 @@ The strategic resource inventory that feeds 3A Studio.
 
 **Warning:** In 3a-studio-mas, `src/lib/prompting/` contains **stubs** (random scoring). Always use `packages/prompting/` which has real heuristic implementations.
 
+## Features
+
+- Feature 1 - description
+- Feature 2 - description
+
 ## Tech Stack
 
 - **Framework**: Next.js 15/16 (App Router), React 19
@@ -126,7 +178,7 @@ The strategic resource inventory that feeds 3A Studio.
 
 ## Entity Relationships
 
-```
+```bash
 Standard <--(standardIds)--> Skill <--(skills)--> Agent --> Flow --> PipelineExecution
 Standard <----(standards)--- Agent
 Agent --> AgentExecution
@@ -172,3 +224,6 @@ Deployed to Vercel via GitHub auto-deploy (push to `main`).
 ## License
 
 TBD
+
+---
+Built with: Next.js + React + TypeScript + Tailwind CSS
