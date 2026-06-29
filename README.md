@@ -8,7 +8,6 @@ IDE for visual multi-agent systems. Build, manage, and monitor AI agent flows wi
 > **Canonical source:** https://github.com/stsgs1980/3a-studio-mas (45K LOC, full project)
 > **Frozen repo:** https://github.com/stsgs1980/3a-studio (143 commits, stopped 30.05.2026)
 
-
 [![Next.js](https://img.shields.io/badge/Next.js-black?style=flat-square)](https://nextjs.org)
 [![React](https://img.shields.io/badge/React-61DAFB?style=flat-square)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square)](https://www.typescriptlang.org)
@@ -16,35 +15,49 @@ IDE for visual multi-agent systems. Build, manage, and monitor AI agent flows wi
 [![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=flat-square)](https://www.prisma.io)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
 
-
 ## Table of Contents
 
-- [Quick Start](#quick-start)
-- [Getting Started](#getting-started)
-- [Architecture](#architecture)
-- [Screens (19)](#screens-19)
-- [Monorepo Packages (5)](#monorepo-packages-5)
-- [Agent Typology (10 Patterns)](#agent-typology-10-patterns)
-- [Resource Map (6 Donors)](#resource-map-6-donors)
 - [Features](#features)
 - [Tech Stack](#tech-stack)
+- [Getting Started](#getting-started)
+- [Architecture](#architecture)
+- [Screens](#screens)
+- [Monorepo Packages](#monorepo-packages)
+- [Agent Typology](#agent-typology)
+- [Resource Map](#resource-map)
 - [Entity Relationships](#entity-relationships)
-- [Environment Variables](#environment-variables)
+- [Configuration](#configuration)
 - [Development Rules](#development-rules)
 - [Documentation](#documentation)
 - [Deployment](#deployment)
 - [License](#license)
 
-## Quick Start
+## Features
 
-```bash
-bun install
-cp .env.example .env
-bun run db:push
-bun run dev
-```
+- 19 screens: Dashboard, Flow Editor, Templates, Agents, Agent Creator, Hierarchy, Pipelines, Workflows, Prompt Studio, Knowledge Base, Skill Forge, Standards Manager, Audit Log, Settings, Tasks, Testing, Quality Analyzer, Self-Correction, Wiki
+- Flow Editor with 20 node types (5 AI + 4 Mgmt + 4 Data + 2 Knowledge + 2 Integration + 3 Special) and ReactFlow v12 live execution
+- Prompt Studio with 6 modules: Write (live scoring), Formulas (10), Frameworks (11), Techniques (17), Compare, Intent
+- Knowledge Base with TF-IDF semantic search and document upload
+- Skill Forge with CRUD, code/tests, StandardsPicker, and SKILL.md export
+- 10 agent typology patterns based on cross-framework research (LangChain, CrewAI, AutoGen, Anthropic, OpenAI Agents SDK, Google ADK, Amazon Bedrock)
+- Agent Creator with guided wizard for creating new agents
+- Agent Hierarchy with 7 edge types (command, sync, twin, delegate, feedback, supervise, broadcast)
+- Standards Manager with rules editor and cross-reference validation
+- Monorepo with 5 packages: @stsgs/ui, @stsgs/prompting, @stsgs/shared, eslint-plugin-3a, verify-docs
+- i18n support (EN/RU, 7 namespaces) with Landing page, Auth (login/signup/verify/reset/forgot)
 
-Default login: admin / admin.
+## Tech Stack
+
+- **Framework** - Next.js 15/16 (App Router), React 19
+- **Language** - TypeScript 5
+- **Styling** - Tailwind CSS 4 + midnight theme (#0D1117 base, #58A6FF accent)
+- **Database** - Prisma ORM + SQLite (local dev) / PostgreSQL Neon (Vercel deploy)
+- **State** - Zustand
+- **Flow Editor** - @xyflow/react (React Flow v12)
+- **Auth** - jose JWT + Edge middleware + httpOnly cookies
+- **LLM** - z-ai-web-dev-sdk (multi-provider with mock fallback)
+- **Code Highlighting** - shiki (github-dark)
+- **Animations** - Framer Motion
 
 ## Getting Started
 
@@ -57,7 +70,9 @@ Default login: admin / admin.
 ```bash
 git clone https://github.com/stsgs1980/AAA-studio.git
 cd AAA-studio
+cp .env.example .env
 bun install
+bun run db:push
 ```
 
 ### Run
@@ -66,11 +81,13 @@ bun install
 bun run dev
 ```
 
+Default login: admin / admin.
+
 ## Architecture
 
 3A Studio replaces 3 repos x 110 skills x manual sync with **one database**.
 
-```bash
+```text
 StsDev-Wiki (solutions, ADR)
         |
 3A Studio (living system)
@@ -86,7 +103,7 @@ Zai-agent-toolkit (compiled skills export for Z.ai sandbox)
 
 Changed a standard -- reflected everywhere. Created a skill -- assign to agent -- wire into flow -- run pipeline.
 
-## Screens (19)
+## Screens
 
 | Screen | Route | Description |
 |--------|-------|-------------|
@@ -114,7 +131,7 @@ Additional: Landing page (/), Auth (login/signup/verify/reset/forgot), i18n (EN/
 
 > **Note:** Analysis and Comparison screens have API routes. Approvals (HITL), Cost Monitor, and Testing screens are implemented (Wave 7.5).
 
-## Monorepo Packages (5)
+## Monorepo Packages
 
 | Package | Purpose |
 |---------|---------|
@@ -124,7 +141,7 @@ Additional: Landing page (/), Auth (login/signup/verify/reset/forgot), i18n (EN/
 | `eslint-plugin-3a` | 4 rules: max-lines (150), max-use-state (3), no-cross-layer, no-unicode-escapes |
 | `verify-docs` | Data-driven README consistency checker with cross-repo validation and plugin system |
 
-## Agent Typology (10 Patterns)
+## Agent Typology
 
 Based on cross-framework research (LangChain, CrewAI, AutoGen, Anthropic, OpenAI Agents SDK, Google ADK, Amazon Bedrock).
 
@@ -143,7 +160,7 @@ Based on cross-framework research (LangChain, CrewAI, AutoGen, Anthropic, OpenAI
 
 Phase 3 focuses on types 1-5. These cover the majority of real-world multi-agent scenarios.
 
-## Resource Map (6 Donors)
+## Resource Map
 
 The strategic resource inventory that feeds 3A Studio.
 
@@ -158,27 +175,9 @@ The strategic resource inventory that feeds 3A Studio.
 
 **Warning:** In 3a-studio-mas, `src/lib/prompting/` contains **stubs** (random scoring). Always use `packages/prompting/` which has real heuristic implementations.
 
-## Features
-
-- Feature 1 - description
-- Feature 2 - description
-
-## Tech Stack
-
-- **Framework**: Next.js 15/16 (App Router), React 19
-- **Language**: TypeScript 5
-- **Styling**: Tailwind CSS 4 + midnight theme (#0D1117 base, #58A6FF accent)
-- **Database**: Prisma ORM + SQLite (local dev) / PostgreSQL Neon (Vercel deploy)
-- **State**: Zustand
-- **Flow Editor**: @xyflow/react (React Flow v12)
-- **Auth**: jose JWT + Edge middleware + httpOnly cookies
-- **LLM**: z-ai-web-dev-sdk (multi-provider with mock fallback)
-- **Code Highlighting**: shiki (github-dark)
-- **Animations**: Framer Motion
-
 ## Entity Relationships
 
-```bash
+```text
 Standard <--(standardIds)--> Skill <--(skills)--> Agent --> Flow --> PipelineExecution
 Standard <----(standards)--- Agent
 Agent --> AgentExecution
@@ -189,7 +188,7 @@ KnowledgeCollection --> KnowledgeDocument
 
 All cross-entity references validated on delete (409 Conflict if referenced).
 
-## Environment Variables
+## Configuration
 
 | Variable | Required | Description |
 |----------|----------|-------------|
