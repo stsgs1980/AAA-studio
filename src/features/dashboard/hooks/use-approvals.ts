@@ -68,4 +68,3 @@ export function useApprovals() {
 
   return { approvals, loading, handleAction };
 }
-

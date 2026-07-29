@@ -123,4 +123,3 @@ export function ScannerSkillTable({ skills }: { skills: ParsedSkill[] }) {
     </div>
   );
 }
-

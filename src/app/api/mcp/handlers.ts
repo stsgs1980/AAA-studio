@@ -94,4 +94,3 @@ export async function handlePromptsGet(id: unknown, params: Record<string, unkno
   for (const [k, v] of Object.entries((params.arguments ?? {}) as Record<string, string>)) content = content.replaceAll(`{{${k}}}`, v);
   return ok(id, { description: `${t.category}: ${t.name}`, messages: [{ role: "user", content: { type: "text", text: content } }] });
 }
-

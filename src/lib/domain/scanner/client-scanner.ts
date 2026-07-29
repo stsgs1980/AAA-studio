@@ -7,11 +7,11 @@
 import type {
   ScannerFile, ScannerReport, StructureSummary,
   ParsedSkill, ParsedStandard,
-} from '@/lib/domain/scanner/types';
-import { classifyFile, parseSkillMarkdown, parseStandardMarkdown } from '@/lib/domain/scanner/parser';
-import { extractReferences, checkReferences } from '@/lib/domain/scanner/references';
-import { heuristicEvaluation } from '@/lib/domain/scanner/heuristic';
-import { detectAntiPatterns } from '@/lib/domain/scanner/anti-patterns';
+} from './types';
+import { classifyFile, parseSkillMarkdown, parseStandardMarkdown } from './parser';
+import { extractReferences, checkReferences } from './references';
+import { heuristicEvaluation } from './heuristic';
+import { detectAntiPatterns } from './anti-patterns';
 
 function buildStructure(files: ScannerFile[]): StructureSummary {
   const fileTypes: Record<string, number> = {};

@@ -32,4 +32,3 @@ export async function POST(request: Request) {
     return success(approval, 201);
   } catch (error) { return handleError(error); }
 }
-

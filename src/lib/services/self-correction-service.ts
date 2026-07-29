@@ -76,4 +76,3 @@ export async function startSession(input: string, agentId: string | undefined, m
 
   return session;
 }
-

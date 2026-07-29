@@ -71,4 +71,3 @@ export const DIMENSION_LABELS: Record<keyof Omit<PromptScore, 'overall'>, string
 };
 
 export type { FilterReason, FilterLogEntry, FilterLog } from '@/lib/domain/scanner/file-filter';
-

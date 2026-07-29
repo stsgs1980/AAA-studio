@@ -95,4 +95,3 @@ export function ScannerRefList({ references }: { references: ReferenceCheck[] })
     </div>
   );
 }
-
