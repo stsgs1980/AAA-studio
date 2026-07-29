@@ -4,7 +4,7 @@
 
 import { db } from "@/lib/db";
 import { handleError, success, BadRequest } from "@/lib/api-error";
-import { parseStandardFile } from "@/lib/standards/parse-md";
+import { parseStandardFile } from "@/lib/domain/standards/parse-md";
 
 // TODO: Add authentication check before processing upload (demo mode = no auth)
 
@@ -54,3 +54,4 @@ export async function POST(request: Request) {
     return handleError(error);
   }
 }
+
