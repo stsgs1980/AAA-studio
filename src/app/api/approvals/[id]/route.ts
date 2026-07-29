@@ -1,6 +1,6 @@
 import { db } from '@/lib/db';
 import { handleError, success, NotFound, BadRequest } from '@/lib/api-error';
-import { emitApprovalDecided } from '@/lib/ws/hooks';
+import { emitApprovalDecided } from '@/lib/domain/ws/hooks';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -24,3 +24,4 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     return success(updated);
   } catch (error) { return handleError(error); }
 }
+

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { useRealtimeEvent } from '@/lib/ws/use-realtime';
+import { useRealtimeEvent } from '@/lib/domain/ws/use-realtime';
 
 export interface Approval {
   id: string;
@@ -68,3 +68,4 @@ export function useApprovals() {
 
   return { approvals, loading, handleAction };
 }
+

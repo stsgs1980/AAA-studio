@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import type { DashboardData } from '../types'
-import { useRealtimeEvent } from '@/lib/ws/use-realtime'
+import { useRealtimeEvent } from '@/lib/domain/ws/use-realtime'
 
 const EMPTY: DashboardData = {
   agents: { total: 0, active: 0, idle: 0, draft: 0 },
@@ -68,3 +68,4 @@ export function useDashboardData() {
 
   return { data, loading, refetch }
 }
+

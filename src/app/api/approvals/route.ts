@@ -1,6 +1,6 @@
 import { db } from '@/lib/db';
 import { handleError, success, BadRequest } from '@/lib/api-error';
-import { emitApprovalNew } from '@/lib/ws/hooks';
+import { emitApprovalNew } from '@/lib/domain/ws/hooks';
 
 /** GET /api/approvals — list approvals (default: pending) */
 export async function GET(request: Request) {
@@ -32,3 +32,4 @@ export async function POST(request: Request) {
     return success(approval, 201);
   } catch (error) { return handleError(error); }
 }
+
