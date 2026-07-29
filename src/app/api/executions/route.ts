@@ -1,6 +1,6 @@
 import { db } from '@/lib/db';
 import { handleError, success } from '@/lib/api-error';
-import { paginationSchema } from '@/lib/validations';
+import { paginationSchema } from '@/lib/domain/validations';
 
 /** GET /api/executions -- unified list of all execution types */
 export async function GET(request: Request) {

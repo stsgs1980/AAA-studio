@@ -1,6 +1,6 @@
 import { db } from '@/lib/db';
 import { handleError, created, paginate } from '@/lib/api-error';
-import { agentCreateSchema, agentQuerySchema, paginationSchema } from '@/lib/validations';
+import { agentCreateSchema, agentQuerySchema, paginationSchema } from '@/lib/domain/validations';
 
 export async function GET(request: Request) {
   try {

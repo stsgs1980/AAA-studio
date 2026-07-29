@@ -6,7 +6,7 @@
 
 import { handleError, created, BadRequest } from '@/lib/api-error';
 import { db } from '@/lib/db';
-import { agentCreateSchema } from '@/lib/validations';
+import { agentCreateSchema } from '@/lib/domain/validations';
 import JSZip from 'jszip';
 
 export async function POST(request: Request) {

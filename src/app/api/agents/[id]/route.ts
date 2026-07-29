@@ -1,6 +1,6 @@
 import { db } from '@/lib/db';
 import { handleError, success, NotFound } from '@/lib/api-error';
-import { agentUpdateSchema } from '@/lib/validations';
+import { agentUpdateSchema } from '@/lib/domain/validations';
 
 export async function GET(
   _request: Request,
@@ -82,3 +82,4 @@ export async function DELETE(
     return handleError(error);
   }
 }
+

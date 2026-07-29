@@ -1,6 +1,6 @@
 import { db } from '@/lib/db';
 import { handleError, success, NotFound } from '@/lib/api-error';
-import { flowUpdateSchema } from '@/lib/validations';
+import { flowUpdateSchema } from '@/lib/domain/validations';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -50,3 +50,4 @@ export async function DELETE(_request: Request, { params }: RouteParams) {
     return handleError(error);
   }
 }
+

@@ -1,6 +1,6 @@
 import { db } from '@/lib/db';
 import { handleError, success, Conflict } from '@/lib/api-error';
-import { standardUpdateSchema } from '@/lib/validations';
+import { standardUpdateSchema } from '@/lib/domain/validations';
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -43,3 +43,4 @@ export async function DELETE(_request: Request, { params }: Params) {
     return handleError(error);
   }
 }
+

@@ -1,6 +1,6 @@
 import { db } from '@/lib/db';
 import { handleError, success, NotFound } from '@/lib/api-error';
-import { knowledgeCreateSchema } from '@/lib/validations';
+import { knowledgeCreateSchema } from '@/lib/domain/validations';
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -46,3 +46,4 @@ export async function DELETE(_request: Request, { params }: Params) {
     return handleError(error);
   }
 }
+

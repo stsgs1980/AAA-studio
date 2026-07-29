@@ -1,6 +1,6 @@
 import { db } from '@/lib/db';
 import { handleError, success, created } from '@/lib/api-error';
-import { knowledgeCreateSchema } from '@/lib/validations';
+import { knowledgeCreateSchema } from '@/lib/domain/validations';
 
 export async function GET() {
   try {

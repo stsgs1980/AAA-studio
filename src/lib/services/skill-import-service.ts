@@ -1,5 +1,5 @@
 import { db } from '@/lib/db';
-import { skillCreateSchema } from '@/lib/validations';
+import { skillCreateSchema } from '@/lib/domain/validations';
 import JSZip from 'jszip';
 
 /** Parse SKILL.md — extract YAML frontmatter + name from first heading */

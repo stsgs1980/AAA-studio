@@ -1,6 +1,6 @@
 import { db } from '@/lib/db';
 import { handleError, success, NotFound } from '@/lib/api-error';
-import { taskUpdateSchema } from '@/lib/validations';
+import { taskUpdateSchema } from '@/lib/domain/validations';
 
 /** GET /api/tasks/[id] -- get single task */
 export async function GET(
@@ -68,3 +68,4 @@ export async function DELETE(
     return handleError(error);
   }
 }
+

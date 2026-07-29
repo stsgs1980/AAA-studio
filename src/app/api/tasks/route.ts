@@ -1,6 +1,6 @@
 import { db } from '@/lib/db';
 import { handleError, success, created } from '@/lib/api-error';
-import { taskCreateSchema, paginationSchema } from '@/lib/validations';
+import { taskCreateSchema, paginationSchema } from '@/lib/domain/validations';
 
 /** GET /api/tasks -- list tasks with filters and status counts */
 export async function GET(request: Request) {

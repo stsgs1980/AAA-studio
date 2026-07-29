@@ -1,6 +1,6 @@
 import { db } from '@/lib/db';
 import { handleError, success, NotFound } from '@/lib/api-error';
-import { workflowUpdateSchema } from '@/lib/validations';
+import { workflowUpdateSchema } from '@/lib/domain/validations';
 
 /** GET /api/workflows/[id] -- get workflow with steps */
 export async function GET(
@@ -72,3 +72,4 @@ export async function DELETE(
     return handleError(error);
   }
 }
+

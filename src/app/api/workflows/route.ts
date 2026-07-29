@@ -1,6 +1,6 @@
 import { db } from '@/lib/db';
 import { handleError, created, paginate } from '@/lib/api-error';
-import { workflowCreateSchema, paginationSchema } from '@/lib/validations';
+import { workflowCreateSchema, paginationSchema } from '@/lib/domain/validations';
 
 /** GET /api/workflows -- list workflows */
 export async function GET(request: Request) {

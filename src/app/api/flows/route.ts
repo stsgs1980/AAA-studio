@@ -1,6 +1,6 @@
 import { db } from '@/lib/db';
 import { handleError, created, paginate } from '@/lib/api-error';
-import { flowCreateSchema, paginationSchema } from '@/lib/validations';
+import { flowCreateSchema, paginationSchema } from '@/lib/domain/validations';
 
 /** GET /api/flows -- list all flows (latest first). */
 export async function GET(request: Request) {

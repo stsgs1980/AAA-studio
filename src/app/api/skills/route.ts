@@ -1,6 +1,6 @@
 import { db } from '@/lib/db';
 import { handleError, created, paginate } from '@/lib/api-error';
-import { skillCreateSchema, paginationSchema } from '@/lib/validations';
+import { skillCreateSchema, paginationSchema } from '@/lib/domain/validations';
 import { parseSkillFields } from '@/lib/skill-export/parse-skill';
 
 /** Generate URL-safe slug from name with uniqueness check */
