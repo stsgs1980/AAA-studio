@@ -55,7 +55,7 @@
     },
     {
       "name": "Edge/connection types",
-      "source": "file:src/lib/validations/flow.ts",
+      "source": "file:src/lib/domain/validations/flow.ts",
       "countPattern": "'command'|'sync'|'twin'|'delegate'|'feedback'|'supervise'|'broadcast'",
       "readmePattern": "(\\d+) edge types"
     },
