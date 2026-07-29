@@ -35,7 +35,7 @@ export function useSettings(locale: Locale, setLocale: (l: Locale) => void, t: {
       else { setProviders(defaults()); }
       setActiveId(d.llm_active_provider ?? DEFAULT_LLM_SETTINGS.activeProviderId);
       setActiveModel(d.llm_active_model ?? DEFAULT_LLM_SETTINGS.activeModel);
-      if (d.language && d.language in ['en', 'ru']) setLocale(d.language as Locale);
+      if (d.language && ['en', 'ru'].includes(d.language)) setLocale(d.language as Locale);
     } catch { /* */ } finally { setLoading(false); }
   }, [setLocale]);
 

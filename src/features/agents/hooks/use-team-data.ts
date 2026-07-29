@@ -19,7 +19,7 @@ export function useTeamData(agentId: string) {
       const res = await fetch(`/api/agents?parentId=${agentId}&limit=50`);
       if (res.ok) {
         const data = await res.json();
-        setChildren(data.data?.agents || []);
+        setChildren(Array.isArray(data.items) ? data.items : data.data?.agents || []);
       }
     } catch { /* ignore */ } finally { setLoading(false); }
   }, [agentId]);
@@ -29,7 +29,7 @@ export function useTeamData(agentId: string) {
       const res = await fetch(`/api/agents?limit=100`);
       if (res.ok) {
         const data = await res.json();
-        const all: Agent[] = data.data?.agents || [];
+        const all: Agent[] = Array.isArray(data.items) ? data.items : data.data?.agents || [];
         const childIds = new Set(children.map(c => c.id));
         setAvailable(all.filter(a => a.id !== agentId && !childIds.has(a.id)));
       }

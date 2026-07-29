@@ -53,7 +53,10 @@ export function useHierarchy(t: Translations) {
         return r.json();
       })
       .then((data) => {
-        const agents = data.data?.agents || data.agents || data;
+        const agents = Array.isArray(data.items) ? data.items
+          : Array.isArray(data.data?.agents) ? data.data.agents
+          : Array.isArray(data.agents) ? data.agents
+          : Array.isArray(data) ? data : [];
         const roots = buildTree(agents);
         setTree(roots);
         setStats({ total: agents.length, roots: roots.length, maxDepth: computeMaxDepth(roots, 1) });

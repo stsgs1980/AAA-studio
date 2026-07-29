@@ -21,11 +21,11 @@ export default function TestingPage() {
   const [running, setRunning] = useState(false);
 
   const fetchCases = useCallback(async () => {
-    try { const r = await fetch('/api/test-cases'); if (r.ok) setCases(await r.json()); } catch { /* ignore */ }
+    try { const r = await fetch('/api/test-cases'); if (r.ok) { const d = await r.json(); setCases(Array.isArray(d) ? d : []); } } catch { /* ignore */ }
   }, []);
 
   const fetchRuns = useCallback(async () => {
-    try { const r = await fetch('/api/test-runs'); if (r.ok) setRuns(await r.json()); } catch { /* ignore */ }
+    try { const r = await fetch('/api/test-runs'); if (r.ok) { const d = await r.json(); setRuns(Array.isArray(d) ? d : []); } } catch { /* ignore */ }
   }, []);
 
   useEffect(() => { fetchCases(); fetchRuns(); }, [fetchCases, fetchRuns]);

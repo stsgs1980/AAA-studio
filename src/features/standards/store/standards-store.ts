@@ -74,7 +74,8 @@ export const useStandardsStore = create<StandardsStore>((set, get) => ({
       set({ loading: true });
       const res = await fetch("/api/standards");
       if (!res.ok) throw new Error();
-      set({ standards: await res.json(), loading: false });
+      const json = await res.json();
+      set({ standards: Array.isArray(json.items) ? json.items : Array.isArray(json) ? json : [], loading: false });
     } catch { set({ loading: false }); }
   },
 
@@ -109,7 +110,7 @@ export const useStandardsStore = create<StandardsStore>((set, get) => ({
       const res = await fetch(`/api/standards/${id}`, { method: "DELETE" });
       if (res.status === 409) {
         const d = await res.json();
-        alert(d.error + "\n" + d.referencedBy.map((r: { name: string }) => "  - " + r.name).join("\n"));
+        alert(d.error + "\n" + (d.referencedBy ?? []).map((r: { name: string }) => "  - " + r.name).join("\n"));
         return;
       }
       if (!res.ok) throw new Error();

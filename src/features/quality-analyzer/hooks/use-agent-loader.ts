@@ -23,7 +23,7 @@ export function useAgentLoader() {
   useEffect(() => {
     fetch("/api/agents")
       .then((r) => r.json())
-      .then((data) => setAgents(data.agents ?? []))
+      .then((data) => setAgents(Array.isArray(data.items) ? data.items : Array.isArray(data.agents) ? data.agents : []))
       .catch(() => {});
   }, []);
 

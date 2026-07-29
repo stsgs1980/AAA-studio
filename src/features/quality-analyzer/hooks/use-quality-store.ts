@@ -83,9 +83,10 @@ export const useQualityStore = create<QualityState>((set, get) => ({
     const score = scorePrompt(text);
     const suggestions = generateSuggestions(score);
     let stdCheck: StandardsCheckResult = { checked: 0, passed: 0, failed: 0, details: [] };
-    fetch('/api/standards').then((r) => r.json()).then((standards) => {
+    fetch('/api/standards').then((r) => r.json()).then((res) => {
+      const list = Array.isArray(res.items) ? res.items : Array.isArray(res) ? res : [];
       const items: StandardsCheckItem[] = [];
-      for (const std of standards) checkStandards(text, std.rules ?? []).forEach((i) => items.push({ ...i, standardId: std.id, standardName: std.name }));
+      for (const std of list) checkStandards(text, std.rules ?? []).forEach((i) => items.push({ ...i, standardId: std.id, standardName: std.name }));
       const passed = items.filter((i) => i.passed).length;
       stdCheck = { checked: items.length, passed, failed: items.length - passed, details: items };
     }).catch(() => {}).finally(() => {

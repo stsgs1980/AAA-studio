@@ -14,7 +14,8 @@ export function useKnowledgeData() {
       const res = await fetch('/api/knowledge');
       if (!res.ok) throw new Error();
       const data = await res.json();
-      setCollections(data.map((c: KnowledgeCollection & { tags: string }) => ({ ...c, tags: JSON.parse(c.tags) })));
+      const list = Array.isArray(data) ? data : Array.isArray(data.items) ? data.items : [];
+      setCollections(list.map((c: KnowledgeCollection & { tags: string }) => ({ ...c, tags: JSON.parse(c.tags) })));
     } catch { /* silent */ } finally { setLoading(false); }
   }, []);
 
