@@ -27,8 +27,25 @@ export function useDashboardData() {
     try {
       const res = await fetch('/api/dashboard')
       if (!res.ok) return
-      const json: DashboardData = await res.json()
-      setData(json)
+      const json: Partial<DashboardData> = await res.json()
+      setData({
+        ...EMPTY,
+        ...json,
+        statusGroups: json.statusGroups ?? EMPTY.statusGroups,
+        topPerformers: json.topPerformers ?? EMPTY.topPerformers,
+        healthMetrics: json.healthMetrics ?? EMPTY.healthMetrics,
+        timeline: json.timeline ?? EMPTY.timeline,
+        networkChart: { ...EMPTY.networkChart, ...json.networkChart },
+        heatmap: { ...EMPTY.heatmap, ...json.heatmap },
+        formulaRows: json.formulaRows ?? EMPTY.formulaRows,
+        cost: {
+          ...EMPTY.cost,
+          ...json.cost,
+          totals: { ...EMPTY.cost.totals, ...(json.cost?.totals ?? {}) },
+          byModel: json.cost?.byModel ?? EMPTY.cost.byModel,
+          dailyTrend: json.cost?.dailyTrend ?? EMPTY.cost.dailyTrend,
+        },
+      })
     } catch {
       /* keep empty */
     } finally {

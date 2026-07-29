@@ -26,7 +26,7 @@ export const useWorkflowStore = create<WorkflowState>((set, get) => ({
       const res = await fetch('/api/workflows');
       if (!res.ok) throw new Error('Failed to fetch workflows');
       const data = await res.json();
-      set({ workflows: data.data ?? data.workflows ?? [], loading: false });
+      set({ workflows: data.items ?? data.data ?? data.workflows ?? [], loading: false });
     } catch (e) {
       set({ error: (e as Error).message, loading: false });
     }

@@ -36,6 +36,11 @@ export function useRealtime({
   useEffect(() => {
     if (!enabled) return;
 
+    // Skip WebSocket on Vercel/serverless — no long-lived connections supported
+    if (typeof window !== 'undefined' && !window.location.hostname.includes('localhost')) {
+      return;
+    }
+
     const socket = socketIo({
       path: '/api/ws',
       transports: ['websocket', 'polling'],
@@ -88,6 +93,11 @@ export function useRealtimeEvent<T>(
 
   useEffect(() => {
     if (!enabled) return;
+
+    // Skip WebSocket on Vercel/serverless — no long-lived connections supported
+    if (typeof window !== 'undefined' && !window.location.hostname.includes('localhost')) {
+      return;
+    }
 
     const socket = socketIo({
       path: '/api/ws',

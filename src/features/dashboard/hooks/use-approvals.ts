@@ -21,7 +21,10 @@ export function useApprovals() {
   const fetchApprovals = useCallback(async () => {
     try {
       const res = await fetch('/api/approvals?status=pending');
-      if (res.ok) setApprovals(await res.json());
+      if (res.ok) {
+        const json = await res.json();
+        setApprovals(Array.isArray(json) ? json : json.items ?? []);
+      }
     } catch { /* ignore */ } finally { setLoading(false); }
   }, []);
 

@@ -21,7 +21,8 @@ export function usePipelines() {
       setState((s) => ({ ...s, loading: true }));
       const res = await fetch("/api/flows");
       if (!res.ok) throw new Error();
-      const flows: Flow[] = await res.json();
+      const json: any = await res.json();
+      const flows: Flow[] = Array.isArray(json) ? json : json.items ?? json.flows ?? [];
       setState((s) => ({ ...s, flows, loading: false }));
     } catch {
       setState((s) => ({ ...s, loading: false }));
@@ -33,7 +34,8 @@ export function usePipelines() {
     try {
       const res = await fetch(`/api/flows/${flowId}/executions`);
       if (!res.ok) throw new Error();
-      const executions: Execution[] = await res.json();
+      const json: any = await res.json();
+      const executions: Execution[] = Array.isArray(json) ? json : json.items ?? [];
       setState((s) => ({ ...s, executions }));
     } catch {
       setState((s) => ({ ...s, executions: [] }));

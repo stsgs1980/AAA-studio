@@ -66,7 +66,7 @@ export const useAgentStore = create<AgentState & AgentActions>((set, get) => ({
       if (filterGroup) params.set('group', filterGroup);
       if (filterStatus) params.set('status', filterStatus);
       const data: AgentListResponse = await (await apiFetch(`/api/agents?${params}`)).json();
-      set({ agents: data.agents });
+      set({ agents: data.agents ?? data.items ?? [] });
     } catch {
       set({ error: 'Failed to load agents' });
     } finally {

@@ -24,7 +24,8 @@ export interface AgentRecord {
 }
 
 export interface AgentListResponse {
-  agents: AgentRecord[];
+  items: AgentRecord[];
+  agents?: AgentRecord[];
   count: number;
 }
 

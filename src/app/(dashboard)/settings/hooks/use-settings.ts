@@ -31,7 +31,7 @@ export function useSettings(locale: Locale, setLocale: (l: Locale) => void, t: {
       if (!res.ok) throw new Error();
       const d = await res.json();
       setSettings(d);
-      if (d.llm_providers) { try { setProviders(JSON.parse(d.llm_providers)); } catch { /* */ } }
+      if (d.llm_providers) { try { const parsed = JSON.parse(d.llm_providers); setProviders(Array.isArray(parsed) ? parsed : defaults()); } catch { setProviders(defaults()); } }
       else { setProviders(defaults()); }
       setActiveId(d.llm_active_provider ?? DEFAULT_LLM_SETTINGS.activeProviderId);
       setActiveModel(d.llm_active_model ?? DEFAULT_LLM_SETTINGS.activeModel);
