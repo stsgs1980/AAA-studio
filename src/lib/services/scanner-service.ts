@@ -1,5 +1,5 @@
-import { callLLM } from '@/lib/llm/client';
-import { getActiveProvider } from '@/lib/llm';
+import { callLLM } from '@/lib/domain/llm/client';
+import { getActiveProvider } from '@/lib/domain/llm';
 import type { ScannerEvaluation } from '@/lib/scanner/types';
 
 /** Strip markdown fences (```json ... ```) and extract JSON object */

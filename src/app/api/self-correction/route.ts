@@ -1,6 +1,6 @@
 import { handleError, success, created, BadRequest } from '@/lib/api-error';
 import { z } from 'zod';
-import { getActiveProvider } from '@/lib/llm';
+import { getActiveProvider } from '@/lib/domain/llm';
 import { listSessions, startSession } from '@/lib/services/self-correction-service';
 
 const startSchema = z.object({

@@ -1,7 +1,7 @@
 // Router node execution logic -- extracted from node-exec.ts for anti-monolith compliance
 
-import { callLLM, type ProviderConfig } from "@/lib/llm/client";
-import type { LLMSettings } from "@/lib/llm";
+import { callLLM, type ProviderConfig } from "@/lib/domain/llm/client";
+import type { LLMSettings } from "@/lib/domain/llm";
 import { extractText, type FlowNode } from "./flow-utils";
 import type { ExecOutput } from "./node-exec";
 

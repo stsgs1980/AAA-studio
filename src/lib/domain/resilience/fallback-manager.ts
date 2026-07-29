@@ -10,8 +10,8 @@
  */
 
 import { CircuitBreaker } from "./circuit-breaker";
-import type { ProviderConfig, LLMSettings, LLMMessage } from "@/lib/llm/types";
-import { callLLM, type CallParams } from "@/lib/llm/client";
+import type { ProviderConfig, LLMSettings, LLMMessage } from "@/lib/domain/llm/types";
+import { callLLM, type CallParams } from "@/lib/domain/llm/client";
 
 export interface FallbackResult {
   content: string;

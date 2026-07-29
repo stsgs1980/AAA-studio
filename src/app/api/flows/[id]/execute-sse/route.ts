@@ -3,7 +3,7 @@
  * GET /api/flows/[id]/execute-sse — streams node-by-node results.
  */
 import { db } from '@/lib/db';
-import { getActiveProvider } from '@/lib/llm';
+import { getActiveProvider } from '@/lib/domain/llm';
 import { topoSort, gatherInputs, type FlowNode, type FlowEdge } from '../execute/flow-utils';
 import { execNode } from '../execute/node-exec';
 import { withRetry } from '@/lib/resilience/api-retry';

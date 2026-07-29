@@ -1,8 +1,8 @@
 'use client';
 import { Plus } from 'lucide-react';
-import type { ProviderConfig } from '@/lib/llm';
-import { LLM_PROVIDERS } from '@/lib/llm';
-import type { LLMProviderId } from '@/lib/llm';
+import type { ProviderConfig } from '@/lib/domain/llm';
+import { LLM_PROVIDERS } from '@/lib/domain/llm';
+import type { LLMProviderId } from '@/lib/domain/llm';
 import { useLanguage } from '@/lib/i18n/language-context';
 
 export function AddMenu({ providers, open, setOpen, addBuiltin, addCustom }: {

@@ -1,5 +1,5 @@
 import { db } from '@/lib/db';
-import { callLLM } from '@/lib/llm/client';
+import { callLLM } from '@/lib/domain/llm/client';
 import { withRetry } from '@/lib/resilience/api-retry';
 import { parseJudgeResponse, selfCorrect } from '@/app/api/self-correction/correction-loop';
 
@@ -36,7 +36,7 @@ export async function listSessions(params: {
 }
 
 /** Start a self-correction session: generate → judge → create session → self-correct */
-export async function startSession(input: string, agentId: string | undefined, maxRetries: number, active: NonNullable<Awaited<ReturnType<typeof import('@/lib/llm/settings')['getActiveProvider']>>>) {
+export async function startSession(input: string, agentId: string | undefined, maxRetries: number, active: NonNullable<Awaited<ReturnType<typeof import('@/lib/domain/llm/settings')['getActiveProvider']>>>) {
   // Step 1: Generate initial output (with retry on transient failures)
   const genResp = await withRetry(() => callLLM({
     provider: active.provider, model: active.model,

@@ -1,10 +1,10 @@
 import { db } from '@/lib/db';
-import { callLLM } from '@/lib/llm/client';
+import { callLLM } from '@/lib/domain/llm/client';
 
 type ActiveProvider = {
-  provider: import('@/lib/llm').ProviderConfig;
+  provider: import('@/lib/domain/llm').ProviderConfig;
   model: string;
-  settings: import('@/lib/llm').LLMSettings;
+  settings: import('@/lib/domain/llm').LLMSettings;
 };
 
 /** Parse judge LLM response into structured fields */

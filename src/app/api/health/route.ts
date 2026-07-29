@@ -4,7 +4,7 @@
 // ============================================================================
 
 import { handleError, success } from '@/lib/api-error';
-import { getProviders, getActiveProvider } from '@/lib/llm';
+import { getProviders, getActiveProvider } from '@/lib/domain/llm';
 import { checkApiHealth } from '@/lib/resilience/health-check';
 import { db } from '@/lib/db';
 

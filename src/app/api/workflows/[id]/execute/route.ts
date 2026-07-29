@@ -1,6 +1,6 @@
 import { db } from '@/lib/db';
 import { handleError, success, BadRequest, NotFound } from '@/lib/api-error';
-import { getActiveProvider } from '@/lib/llm';
+import { getActiveProvider } from '@/lib/domain/llm';
 import { executeSteps } from './step-runner';
 
 /** POST /api/workflows/[id]/execute -- run workflow steps sequentially */

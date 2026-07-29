@@ -4,8 +4,8 @@ import {
   CheckCircle, XCircle, Loader2, Eye, EyeOff,
   Plus, Trash2, ChevronDown, ChevronUp, GripVertical, ExternalLink,
 } from 'lucide-react';
-import type { ProviderConfig, LLMProviderFormat } from '@/lib/llm';
-import { LLM_PROVIDERS } from '@/lib/llm';
+import type { ProviderConfig, LLMProviderFormat } from '@/lib/domain/llm';
+import { LLM_PROVIDERS } from '@/lib/domain/llm';
 import { useLanguage } from '@/lib/i18n/language-context';
 
 const IC = 'h-8 px-2 rounded-md border bg-background text-sm';

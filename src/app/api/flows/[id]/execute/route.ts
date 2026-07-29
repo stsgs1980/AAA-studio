@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { handleError, success, NotFound, BadRequest } from "@/lib/api-error";
-import { getActiveProvider } from "@/lib/llm";
+import { getActiveProvider } from "@/lib/domain/llm";
 import { executeFlow } from "@/lib/services/flow-execution-service";
 import { emitFlowStarted, emitFlowFinished, emitDashboardRefresh } from "@/lib/ws/hooks";
 

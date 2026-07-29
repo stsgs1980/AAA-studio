@@ -1,9 +1,9 @@
 'use client';
 import { useState } from 'react';
 import { Zap } from 'lucide-react';
-import type { ProviderConfig } from '@/lib/llm';
-import { LLM_PROVIDERS, builtinToConfig, blankCustomProvider } from '@/lib/llm';
-import type { LLMProviderId } from '@/lib/llm';
+import type { ProviderConfig } from '@/lib/domain/llm';
+import { LLM_PROVIDERS, builtinToConfig, blankCustomProvider } from '@/lib/domain/llm';
+import type { LLMProviderId } from '@/lib/domain/llm';
 import { AddMenu } from './add-provider-menu';
 import { ProviderRow } from './provider-row';
 import { useLanguage } from '@/lib/i18n/language-context';

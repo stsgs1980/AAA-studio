@@ -5,7 +5,7 @@ import { useFlowEditorStore } from '../../store/flow-store';
 import { getNodeDefinition } from '../../nodes/node-registry';
 import { RouterConfig } from './router-config';
 import { TemplatePicker } from './template-picker';
-import type { LLMModel, ProviderConfig } from '@/lib/llm';
+import type { LLMModel, ProviderConfig } from '@/lib/domain/llm';
 
 const AI_TYPES = new Set(['llm', 'rag', 'agent', 'orchestrator', 'router']);
 

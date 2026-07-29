@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState, useCallback } from 'react';
-import { DEFAULT_LLM_SETTINGS, builtinToConfig } from '@/lib/llm';
-import type { ProviderConfig } from '@/lib/llm';
+import { DEFAULT_LLM_SETTINGS, builtinToConfig } from '@/lib/domain/llm';
+import type { ProviderConfig } from '@/lib/domain/llm';
 import type { Locale } from '@/lib/i18n/translations';
 
 function defaults() {

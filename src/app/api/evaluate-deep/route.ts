@@ -1,6 +1,6 @@
 import { handleError, success, BadRequest } from '@/lib/api-error';
-import { callLLM } from '@/lib/llm/client';
-import { getActiveProvider } from '@/lib/llm';
+import { callLLM } from '@/lib/domain/llm/client';
+import { getActiveProvider } from '@/lib/domain/llm';
 import {
   buildEvaluationRubric,
   getDefaultRubric,

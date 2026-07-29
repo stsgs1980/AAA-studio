@@ -5,9 +5,9 @@
 // ============================================================================
 
 import { handleError, BadRequest } from '@/lib/api-error';
-import { callLLM } from '@/lib/llm/client';
-import { getActiveProvider, getProviders } from '@/lib/llm';
-import type { LLMMessage } from '@/lib/llm';
+import { callLLM } from '@/lib/domain/llm/client';
+import { getActiveProvider, getProviders } from '@/lib/domain/llm';
+import type { LLMMessage } from '@/lib/domain/llm';
 import { withRetry } from '@/lib/resilience/api-retry';
 import { FallbackManager } from '@/lib/resilience/fallback-manager';
 

@@ -3,8 +3,8 @@
 // ============================================================================
 
 import { handleError, success, BadRequest } from '@/lib/api-error';
-import { getProviders, getActiveProvider } from '@/lib/llm';
-import { testConnection } from '@/lib/llm/test-connection';
+import { getProviders, getActiveProvider } from '@/lib/domain/llm';
+import { testConnection } from '@/lib/domain/llm/test-connection';
 
 export async function POST(request: Request) {
   try {

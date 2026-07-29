@@ -6,8 +6,8 @@
 import { db } from "@/lib/db";
 import { toMCPTools, parseSkillToData } from "@/lib/skill-export/format-adapters";
 import { extractText } from "@/lib/skill-export/text-utils";
-import { callLLM, type ProviderConfig } from "@/lib/llm/client";
-import { getActiveProvider } from "@/lib/llm";
+import { callLLM, type ProviderConfig } from "@/lib/domain/llm/client";
+import { getActiveProvider } from "@/lib/domain/llm";
 
 export function ok(id: unknown, result: unknown) { return { jsonrpc: "2.0", id, result }; }
 export function err(id: unknown, code: number, message: string) { return { jsonrpc: "2.0", id, error: { code, message } }; }

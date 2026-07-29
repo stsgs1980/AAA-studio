@@ -1,5 +1,5 @@
 import { handleError, success, BadRequest } from '@/lib/api-error';
-import { getActiveProvider } from '@/lib/llm';
+import { getActiveProvider } from '@/lib/domain/llm';
 import { executeTestRun, listTestRuns } from '@/lib/services/test-run-service';
 
 /** POST /api/test-runs — execute a test suite and compare results */

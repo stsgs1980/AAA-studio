@@ -1,10 +1,10 @@
 import { db } from '@/lib/db';
-import { callLLM } from '@/lib/llm/client';
+import { callLLM } from '@/lib/domain/llm/client';
 
 /** Use LLM to judge if actual output matches expected */
 async function judgeOutput(
   input: string, expected: Record<string, unknown>, actual: string,
-  active: { provider: import('@/lib/llm').ProviderConfig; model: string; settings: import('@/lib/llm').LLMSettings },
+  active: { provider: import('@/lib/domain/llm').ProviderConfig; model: string; settings: import('@/lib/domain/llm').LLMSettings },
 ) {
   try {
     const judgePrompt = `You are a test evaluator. Given:
@@ -40,7 +40,7 @@ Score 0-100 how well the actual output matches the expected. Reply ONLY with JSO
 export async function executeTestRun(
   agentId: string | undefined,
   caseIds: string[] | undefined,
-  active: { provider: import('@/lib/llm').ProviderConfig; model: string; settings: import('@/lib/llm').LLMSettings },
+  active: { provider: import('@/lib/domain/llm').ProviderConfig; model: string; settings: import('@/lib/domain/llm').LLMSettings },
 ) {
   // Resolve test cases
   const where = caseIds?.length ? { id: { in: caseIds } } : { agentId };
