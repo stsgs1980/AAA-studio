@@ -47,7 +47,7 @@ export function FilterLogBtn() {
         <div className="absolute bottom-full left-0 z-50 mb-2 w-[460px] max-h-[400px] overflow-y-auto rounded-lg border bg-background p-3 shadow-lg">
           <div className="mb-2 flex items-center justify-between">
             <span className="text-xs font-semibold">
-              {filterLog.total} total &rarr; {filterLog.accepted} accepted, {filterLog.entries.length} filtered
+              {filterLog.total} total -&gt; {filterLog.accepted} accepted, {filterLog.entries.length} filtered
             </span>
             <button onClick={() => setOpen(false)} className="text-xs text-muted-foreground hover:text-foreground">Close</button>
           </div>

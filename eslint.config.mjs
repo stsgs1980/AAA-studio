@@ -22,6 +22,7 @@ const eslintConfig = [
       "3a/max-use-state": ["error", { max: 3 }],
       "3a/no-cross-layer": "error",
       "3a/no-unicode-escapes": "error",
+      "3a/unicode-policy": "error",
     },
   },
   {
@@ -30,6 +31,7 @@ const eslintConfig = [
       "3a/max-lines": "off",
       "no-console": "off",
       "@typescript-eslint/no-explicit-any": "off",
+      "3a/unicode-policy": "off",
     },
   },
 ];
