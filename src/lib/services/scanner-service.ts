@@ -1,6 +1,6 @@
 import { callLLM } from '@/lib/domain/llm/client';
 import { getActiveProvider } from '@/lib/domain/llm';
-import type { ScannerEvaluation } from '@/lib/scanner/types';
+import type { ScannerEvaluation } from '@/lib/domain/scanner/types';
 
 /** Strip markdown fences (```json ... ```) and extract JSON object */
 function extractJSON(raw: string): string {

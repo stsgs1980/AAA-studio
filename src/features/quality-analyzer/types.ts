@@ -70,4 +70,5 @@ export const DIMENSION_LABELS: Record<keyof Omit<PromptScore, 'overall'>, string
   actionability: 'Actionability',
 };
 
-export type { FilterReason, FilterLogEntry, FilterLog } from '@/lib/scanner/file-filter';
+export type { FilterReason, FilterLogEntry, FilterLog } from '@/lib/domain/scanner/file-filter';
+

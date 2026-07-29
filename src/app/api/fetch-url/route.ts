@@ -1,6 +1,6 @@
 import { handleError, success, BadRequest } from '@/lib/api-error';
-import { classifyReason } from '@/lib/scanner/file-filter';
-import type { FilterLog } from '@/lib/scanner/file-filter';
+import { classifyReason } from '@/lib/domain/scanner/file-filter';
+import type { FilterLog } from '@/lib/domain/scanner/file-filter';
 
 // --- SSRF protection: only allow fetching from known-safe domains ---
 const ALLOWED_HOSTS = [

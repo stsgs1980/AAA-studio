@@ -5,8 +5,8 @@ import {
   StandardsCheckItem, RubricScenario, FilterLog, EVAL_DEFAULTS,
 } from '../types';
 import { generateSuggestions, checkStandards, evaluateRubric } from '../lib/eval-helpers';
-import { scanFilesClient, buildEvalSummary } from '@/lib/scanner/client-scanner';
-import type { ScannerReport, ScannerEvaluation } from '@/lib/scanner/types';
+import { scanFilesClient, buildEvalSummary } from '@/lib/domain/scanner/client-scanner';
+import type { ScannerReport, ScannerEvaluation } from '@/lib/domain/scanner/types';
 
 function fallbackResult(text: string): EvaluationResult {
   const s = scorePrompt(text);
