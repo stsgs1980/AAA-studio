@@ -8,8 +8,8 @@ import { handleError, BadRequest } from '@/lib/api-error';
 import { callLLM } from '@/lib/domain/llm/client';
 import { getActiveProvider, getProviders } from '@/lib/domain/llm';
 import type { LLMMessage } from '@/lib/domain/llm';
-import { withRetry } from '@/lib/resilience/api-retry';
-import { FallbackManager } from '@/lib/resilience/fallback-manager';
+import { withRetry } from '@/lib/domain/resilience/api-retry';
+import { FallbackManager } from '@/lib/domain/resilience/fallback-manager';
 
 export async function POST(request: Request) {
   try {
@@ -70,3 +70,4 @@ export async function POST(request: Request) {
     return handleError(error);
   }
 }
+

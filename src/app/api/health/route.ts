@@ -5,7 +5,7 @@
 
 import { handleError, success } from '@/lib/api-error';
 import { getProviders, getActiveProvider } from '@/lib/domain/llm';
-import { checkApiHealth } from '@/lib/resilience/health-check';
+import { checkApiHealth } from '@/lib/domain/resilience/health-check';
 import { db } from '@/lib/db';
 
 export async function GET() {
@@ -57,3 +57,4 @@ export async function GET() {
     return handleError(error);
   }
 }
+

@@ -6,7 +6,7 @@ import { db } from '@/lib/db';
 import { getActiveProvider } from '@/lib/domain/llm';
 import { topoSort, gatherInputs, type FlowNode, type FlowEdge } from '../execute/flow-utils';
 import { execNode } from '../execute/node-exec';
-import { withRetry } from '@/lib/resilience/api-retry';
+import { withRetry } from '@/lib/domain/resilience/api-retry';
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -91,3 +91,4 @@ export async function GET(_req: Request, { params }: Params) {
     headers: { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', 'Connection': 'keep-alive' },
   });
 }
+

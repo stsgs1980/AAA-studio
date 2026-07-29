@@ -5,7 +5,7 @@
  * Provides retry logic, circuit breaker, health checking, and fallback management.
  *
  * Usage:
- *   import { fetchWithRetry, withRetry, CircuitBreaker, checkApiHealth, FallbackManager } from '@/lib/resilience';
+ *   import { fetchWithRetry, withRetry, CircuitBreaker, checkApiHealth, FallbackManager } from '@/lib/domain/resilience';
  */
 
 export { fetchWithRetry, withRetry, defaultRetryConfig } from "./api-retry";
@@ -25,3 +25,4 @@ export type { HealthCheckResult, HealthMonitorConfig } from "./health-check";
 
 export { FallbackManager } from "./fallback-manager";
 export type { FallbackResult } from "./fallback-manager";
+

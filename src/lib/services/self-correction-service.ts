@@ -1,6 +1,6 @@
 import { db } from '@/lib/db';
 import { callLLM } from '@/lib/domain/llm/client';
-import { withRetry } from '@/lib/resilience/api-retry';
+import { withRetry } from '@/lib/domain/resilience/api-retry';
 import { parseJudgeResponse, selfCorrect } from '@/app/api/self-correction/correction-loop';
 
 /** List self-correction sessions with filters and status counts */
@@ -76,3 +76,4 @@ export async function startSession(input: string, agentId: string | undefined, m
 
   return session;
 }
+

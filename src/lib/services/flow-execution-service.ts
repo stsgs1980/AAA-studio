@@ -1,6 +1,6 @@
 import { topoSort, gatherInputs, type FlowNode, type FlowEdge } from '@/app/api/flows/[id]/execute/flow-utils';
 import { execNode } from '@/app/api/flows/[id]/execute/node-exec';
-import { withRetry } from '@/lib/resilience/api-retry';
+import { withRetry } from '@/lib/domain/resilience/api-retry';
 import { emitNodeComplete } from '@/lib/domain/ws/hooks';
 
 export interface NodeResult {
@@ -105,4 +105,5 @@ export async function executeFlow(
   }
   return { success: true, results, usage };
 }
+
 
