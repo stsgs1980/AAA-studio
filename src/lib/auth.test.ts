@@ -8,11 +8,11 @@ describe('auth module', () => {
     vi.resetModules();
   });
 
-  it('should use dev secret as fallback when AUTH_SECRET is not set', async () => {
+  it('should throw when AUTH_SECRET is not set', async () => {
     const originalSecret = process.env.AUTH_SECRET;
     delete process.env.AUTH_SECRET;
     const { getAuthSecret } = await import('@/lib/auth');
-    expect(getAuthSecret()).toBe('dev-secret-change-in-production');
+    expect(() => getAuthSecret()).toThrow('AUTH_SECRET not configured');
     process.env.AUTH_SECRET = originalSecret;
   });
 

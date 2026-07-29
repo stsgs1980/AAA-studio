@@ -2,6 +2,23 @@ import { handleError, success, BadRequest } from '@/lib/api-error';
 import { classifyReason } from '@/lib/scanner/file-filter';
 import type { FilterLog } from '@/lib/scanner/file-filter';
 
+// --- SSRF protection: only allow fetching from known-safe domains ---
+const ALLOWED_HOSTS = [
+  'github.com',
+  'raw.githubusercontent.com',
+  'api.github.com',
+];
+
+function isAllowedUrl(urlStr: string): boolean {
+  try {
+    const u = new URL(urlStr);
+    if (u.protocol !== 'https:') return false;
+    return ALLOWED_HOSTS.some((h) => u.hostname === h || u.hostname.endsWith('.' + h));
+  } catch {
+    return false;
+  }
+}
+
 interface TreeEntry {
   path: string;
   type: string;
@@ -43,6 +60,7 @@ function toRawUrl(owner: string, repo: string, path: string): string {
 }
 
 async function githubFile(url: string): Promise<string> {
+  if (!isAllowedUrl(url)) throw BadRequest('URL not in allowlist');
   const h: Record<string, string> = {};
   const token = process.env.GITHUB_TOKEN;
   if (token) h['Authorization'] = `Bearer ${token}`;
@@ -67,6 +85,10 @@ export async function POST(request: Request) {
     );
     if (repoMatch) {
       const [, owner, repo] = repoMatch;
+      // SSRF: validate repo owner/repo are safe (no path traversal)
+      if (owner.includes('..') || repo.includes('..') || owner.includes('/') || repo.includes('/')) {
+        throw BadRequest('Invalid owner or repo name');
+      }
 
       if (urls && urls.length > 0) {
         const parts: string[] = [];
