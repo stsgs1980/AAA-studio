@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { ChevronDown, ChevronRight, Copy } from "lucide-react";
-import type { AntiPattern } from '@/lib/domain/scanner/types";
+import type { AntiPattern } from '@/lib/domain/scanner/types';
 
 const TYPE_CFG: Record<string, { color: string; label: string }> = {
   inline_dup: { color: "text-amber-400", label: "Inline Dup" },

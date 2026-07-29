@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { ChevronDown, ChevronRight, AlertTriangle, Copy } from "lucide-react";
-import type { ParsedSkill } from '@/lib/domain/scanner/types";
+import type { ParsedSkill } from '@/lib/domain/scanner/types';
 
 type SortKey = "completeness" | "wordCount" | "name";
 type SortDir = "asc" | "desc";

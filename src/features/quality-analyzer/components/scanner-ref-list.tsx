@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { ChevronDown, ChevronRight, Link2, Unlink, Copy } from "lucide-react";
-import type { ReferenceCheck } from '@/lib/domain/scanner/types";
+import type { ReferenceCheck } from '@/lib/domain/scanner/types';
 
 export function ScannerRefList({ references }: { references: ReferenceCheck[] }) {
   const [filter, setFilter] = useState<"all" | "broken">("all");

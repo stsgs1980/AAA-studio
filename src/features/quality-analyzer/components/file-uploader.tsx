@@ -4,8 +4,8 @@ import { useCallback, useRef, useState } from "react";
 import JSZip from "jszip";
 import { Upload, FolderOpen, Archive } from "lucide-react";
 import { useQualityStore } from "../hooks/use-quality-store";
-import { MAX_FILE_SIZE, classifyReason } from '@/lib/domain/scanner/file-filter";
-import type { FilterLogEntry } from '@/lib/domain/scanner/file-filter";
+import { MAX_FILE_SIZE, classifyReason } from '@/lib/domain/scanner/file-filter';
+import type { FilterLogEntry } from '@/lib/domain/scanner/file-filter';
 
 export function FileUploader() {
   const input = useQualityStore((s) => s.input);
