@@ -8,7 +8,7 @@ echo ""
 cd "$(git rev-parse --show-toplevel)"
 
 if command -v bun &>/dev/null; then
-  bun run tools/verify-docs/src/cli.ts
+  bun run tools/verify-docs/src/cli.ts --ci
 elif command -v npx &>/dev/null; then
   npx tools/verify-docs/src/cli.ts
 else
