@@ -1,7 +1,7 @@
 import { db } from '@/lib/db';
 import { handleError, success, Conflict } from '@/lib/api-error';
 import { skillUpdateSchema } from '@/lib/domain/validations';
-import { parseSkillFields } from '@/lib/skill-export/parse-skill';
+import { parseSkillFields } from '@/lib/domain/skill-export/parse-skill';
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -45,4 +45,5 @@ export async function DELETE(_request: Request, { params }: Params) {
     return handleError(error);
   }
 }
+
 

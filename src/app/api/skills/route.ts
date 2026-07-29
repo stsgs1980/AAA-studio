@@ -1,7 +1,7 @@
 import { db } from '@/lib/db';
 import { handleError, created, paginate } from '@/lib/api-error';
 import { skillCreateSchema, paginationSchema } from '@/lib/domain/validations';
-import { parseSkillFields } from '@/lib/skill-export/parse-skill';
+import { parseSkillFields } from '@/lib/domain/skill-export/parse-skill';
 
 /** Generate URL-safe slug from name with uniqueness check */
 async function generateSlug(name: string): Promise<string> {
@@ -62,3 +62,4 @@ export async function POST(request: Request) {
     return handleError(error);
   }
 }
+

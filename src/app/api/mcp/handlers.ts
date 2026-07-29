@@ -4,8 +4,8 @@
  */
 
 import { db } from "@/lib/db";
-import { toMCPTools, parseSkillToData } from "@/lib/skill-export/format-adapters";
-import { extractText } from "@/lib/skill-export/text-utils";
+import { toMCPTools, parseSkillToData } from "@/lib/domain/skill-export/format-adapters";
+import { extractText } from "@/lib/domain/skill-export/text-utils";
 import { callLLM, type ProviderConfig } from "@/lib/domain/llm/client";
 import { getActiveProvider } from "@/lib/domain/llm";
 
@@ -94,3 +94,4 @@ export async function handlePromptsGet(id: unknown, params: Record<string, unkno
   for (const [k, v] of Object.entries((params.arguments ?? {}) as Record<string, string>)) content = content.replaceAll(`{{${k}}}`, v);
   return ok(id, { description: `${t.category}: ${t.name}`, messages: [{ role: "user", content: { type: "text", text: content } }] });
 }
+

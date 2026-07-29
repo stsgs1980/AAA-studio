@@ -34,6 +34,7 @@ export function gatherInputs(
   return inputs;
 }
 
-export { extractText } from "@/lib/skill-export/text-utils";
+export { extractText } from "@/lib/domain/skill-export/text-utils";
 
 export type { FlowNode, FlowEdge };
+

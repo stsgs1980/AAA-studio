@@ -6,7 +6,7 @@
 
 import { db } from "@/lib/db";
 import { handleError, BadRequest } from "@/lib/api-error";
-import { toOpenAIToolsArray, toMCPToolsArray, parseSkillToData, toA2ACard } from "@/lib/skill-export/format-adapters";
+import { toOpenAIToolsArray, toMCPToolsArray, parseSkillToData, toA2ACard } from "@/lib/domain/skill-export/format-adapters";
 
 export async function GET(request: Request) {
   try {
@@ -40,3 +40,4 @@ export async function GET(request: Request) {
     return handleError(error);
   }
 }
+
