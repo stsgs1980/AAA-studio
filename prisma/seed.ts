@@ -39,10 +39,10 @@ const FLOWS = [
 ];
 
 const SKILLS = [
-  { name: 'Web Search', category: 'integration', description: 'Search the web for real-time information', tags: JSON.stringify(['search', 'web', 'realtime']) },
-  { name: 'Code Analysis', category: 'analysis', description: 'Static analysis of source code', tags: JSON.stringify(['code', 'review', 'static']) },
-  { name: 'SQL Query', category: 'data', description: 'Execute and analyze SQL queries', tags: JSON.stringify(['sql', 'database', 'query']) },
-  { name: 'Prompt Scoring', category: 'evaluation', description: 'Score prompts on 6 quality dimensions', tags: JSON.stringify(['prompt', 'quality', 'scoring']) },
+  { name: 'Web Search', slug: 'web-search', category: 'integration', description: 'Search the web for real-time information', tags: JSON.stringify(['search', 'web', 'realtime']) },
+  { name: 'Code Analysis', slug: 'code-analysis', category: 'analysis', description: 'Static analysis of source code', tags: JSON.stringify(['code', 'review', 'static']) },
+  { name: 'SQL Query', slug: 'sql-query', category: 'data', description: 'Execute and analyze SQL queries', tags: JSON.stringify(['sql', 'database', 'query']) },
+  { name: 'Prompt Scoring', slug: 'prompt-scoring', category: 'evaluation', description: 'Score prompts on 6 quality dimensions', tags: JSON.stringify(['prompt', 'quality', 'scoring']) },
 ];
 
 async function main() {
