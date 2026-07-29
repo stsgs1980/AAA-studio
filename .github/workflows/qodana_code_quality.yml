@@ -14,6 +14,9 @@ on:
 jobs:
   qodana:
     runs-on: ubuntu-latest
+    env:
+      QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
+    if: ${{ env.QODANA_TOKEN != '' }}
     permissions:
       contents: write
       pull-requests: write
