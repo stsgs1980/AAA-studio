@@ -4,14 +4,18 @@ import { useCreatorStore } from "../hooks/use-creator-store";
 import { getSystemPromptTemplates, getAgentRoles } from "@stsgs/prompting";
 import { cn } from "@stsgs/ui";
 import type { AgentType } from "@stsgs/shared";
+import { Wrench, GitBranch, Target, Network, CheckCircle, Bot } from "lucide-react";
 
 const templates = getSystemPromptTemplates();
 const roles = getAgentRoles();
 
 /** Icon mapping for agent types */
-const TYPE_ICONS: Record<string, string> = {
-  "tool-calling": "🔧", router: "🔀", specialist: "🎯",
-  orchestrator: "🎼", evaluator: "✅",
+const TYPE_ICONS: Record<string, React.ReactNode> = {
+  "tool-calling": <Wrench className="h-5 w-5" />,
+  router: <GitBranch className="h-5 w-5" />,
+  specialist: <Target className="h-5 w-5" />,
+  orchestrator: <Network className="h-5 w-5" />,
+  evaluator: <CheckCircle className="h-5 w-5" />,
 };
 
 export function StepAgentType() {
@@ -38,7 +42,7 @@ export function StepAgentType() {
               )}
             >
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-lg">{TYPE_ICONS[t.id] ?? "🤖"}</span>
+                <span className="text-lg text-muted-foreground">{TYPE_ICONS[t.id] ?? <Bot className="h-5 w-5" />}</span>
                 <p className="font-medium text-sm">{t.name}</p>
               </div>
               <p className="text-xs text-muted-foreground mt-1">
@@ -100,7 +104,7 @@ function TemplateVarsForm({ template }: { template: AgentType }) {
   return (
     <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 space-y-3">
       <h4 className="text-sm font-medium flex items-center gap-2">
-        <span>{TYPE_ICONS[template.id] ?? "🤖"}</span>
+        <span className="text-muted-foreground">{TYPE_ICONS[template.id] ?? <Bot className="h-4 w-4" />}</span>
         {template.name} — Configure Variables
       </h4>
       <p className="text-xs text-muted-foreground">

@@ -102,7 +102,7 @@ export async function callLLM(params: CallParams): Promise<LLMResponse> {
       const msg = sdkError instanceof Error ? sdkError.message : String(sdkError);
       throw new Error(
         `Z.ai SDK unavailable (${msg}). ` +
-        'Go to Settings → LLM Provider to add a Z.ai API key for production use.',
+        'Go to Settings -> LLM Provider to add a Z.ai API key for production use.',
         { cause: sdkError },
       );
     }

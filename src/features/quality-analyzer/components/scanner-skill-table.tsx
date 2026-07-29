@@ -55,7 +55,7 @@ export function ScannerSkillTable({ skills }: { skills: ParsedSkill[] }) {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const sortIcon = (key: SortKey) => sort.key === key ? (sort.dir === "asc" ? "↑" : "↓") : "";
+  const sortIcon = (key: SortKey) => sort.key === key ? (sort.dir === "asc" ? "^" : "v") : "";
 
   return (
     <div className="rounded-lg border bg-background px-4 py-3">

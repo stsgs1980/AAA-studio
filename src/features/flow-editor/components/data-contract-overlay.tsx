@@ -3,6 +3,7 @@
 import { useFlowEditorStore } from '../store/flow-store';
 import { getNodeDefinition } from '../nodes/node-registry';
 import type { DataType } from '@stsgs/shared';
+import { X, ArrowRight } from 'lucide-react';
 
 interface DataContractOverlayProps {
   selectedEdgeId: string;
@@ -36,15 +37,17 @@ export function DataContractOverlay({ selectedEdgeId, onClose }: DataContractOve
     <div className="absolute bottom-4 left-4 z-20 bg-card border border-border rounded-lg shadow-lg p-3 max-w-xs">
       <div className="flex items-center justify-between mb-2">
         <h4 className="text-xs font-semibold text-foreground">Data Contract</h4>
-        <button onClick={onClose} className="text-muted-foreground hover:text-foreground text-xs">✕</button>
+        <button onClick={onClose} className="text-muted-foreground hover:text-foreground text-xs">
+          <X className="h-3 w-3" />
+        </button>
       </div>
       <div className="flex items-center gap-2 text-xs">
         <span className="px-2 py-0.5 rounded bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-mono">{srcType}</span>
-        <span className="text-muted-foreground">→</span>
+        <ArrowRight className="h-3 w-3 text-muted-foreground" />
         <span className={`px-2 py-0.5 rounded font-mono ${compatible ? 'bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-300' : 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300'}`}>{tgtType}</span>
       </div>
       <p className={`text-[10px] mt-1.5 ${compatible ? 'text-emerald-600' : 'text-red-500'}`}>
-        {compatible ? '✓ Types compatible' : '✗ Types incompatible — may fail at runtime'}
+        {compatible ? '[OK] Types compatible' : '[FAIL] Types incompatible -- may fail at runtime'}
       </p>
       {connType && <p className="text-[10px] text-muted-foreground mt-1">Connection: <span className="font-medium text-foreground">{connType}</span></p>}
     </div>

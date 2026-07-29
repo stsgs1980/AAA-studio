@@ -28,12 +28,12 @@ export type SkillFileRole =
 
 /** SkillFile role display metadata */
 export const SKILL_FILE_ROLES: { value: SkillFileRole; label: string; icon: string }[] = [
-  { value: "entry",  label: "Entry point", icon: "🚀" },
-  { value: "code",   label: "Code",        icon: "📄" },
-  { value: "test",   label: "Test",        icon: "🧪" },
-  { value: "config", label: "Config",      icon: "⚙️" },
-  { value: "doc",    label: "Documentation",icon: "📖" },
-  { value: "schema", label: "Schema",      icon: "📋" },
+  { value: "entry",  label: "Entry point", icon: "play" },
+  { value: "code",   label: "Code",        icon: "code" },
+  { value: "test",   label: "Test",        icon: "test" },
+  { value: "config", label: "Config",      icon: "settings" },
+  { value: "doc",    label: "Documentation",icon: "doc" },
+  { value: "schema", label: "Schema",      icon: "schema" },
 ];
 
 /** SkillFile language display metadata */

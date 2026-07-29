@@ -7,7 +7,7 @@ describe('Crypto integration', () => {
     process.env.ENCRYPTION_KEY = '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef';
   });
 
-  it('encrypt → decrypt round-trip preserves original text', async () => {
+  it('encrypt -> decrypt round-trip preserves original text', async () => {
     const { encrypt, decrypt } = await import('@/lib/crypto');
     const original = 'sk-test-api-key-12345';
     const encrypted = encrypt(original);

@@ -111,7 +111,7 @@ export function getConnectionError(
   const tgtType = getTargetDataType(targetNode, connection.targetHandle);
 
   if (!isDataTypeCompatible(srcType, tgtType)) {
-    return `Incompatible types: ${srcType} → ${tgtType}`;
+    return `Incompatible types: ${srcType} -> ${tgtType}`;
   }
   return null;
 }

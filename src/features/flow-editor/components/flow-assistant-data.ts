@@ -23,7 +23,7 @@ export const STAGES: Stage[] = [
     id: 'architecture', title: 'Architecture',
     question: 'How should your flow be structured?',
     choices: [
-      { id: 'linear', label: 'Linear Pipeline', desc: 'Straight path: Input → Process → Output', icon: 'ArrowRight' },
+      { id: 'linear', label: 'Linear Pipeline', desc: 'Straight path: Input -> Process -> Output', icon: 'ArrowRight' },
       { id: 'branching', label: 'Branching', desc: 'Condition-based routing with multiple paths', icon: 'GitBranch' },
       { id: 'parallel', label: 'Parallel', desc: 'Multiple agents working simultaneously', icon: 'Columns' },
       { id: 'router', label: 'Router-Based', desc: 'Smart routing to specialized handlers', icon: 'Route' },

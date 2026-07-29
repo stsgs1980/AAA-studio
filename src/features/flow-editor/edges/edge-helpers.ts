@@ -31,7 +31,7 @@ export function labelBorderColor(health: string, isExec: boolean, color: string)
 /** Build label text based on state */
 export function labelText(isExec: boolean, health: string, edgeLabel: string): string {
   if (isExec) return 'EXECUTING';
-  if (health === 'conflict') return '⚠ CONFLICT';
-  if (health === 'warning') return '⚠ WARNING';
+  if (health === 'conflict') return '[CONFLICT]';
+  if (health === 'warning') return '[WARNING]';
   return edgeLabel;
 }

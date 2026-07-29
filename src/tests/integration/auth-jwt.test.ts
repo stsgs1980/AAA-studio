@@ -10,7 +10,7 @@ describe('JWT sign/verify integration', () => {
   beforeEach(() => { vi.resetModules(); });
   afterEach(() => { process.env.AUTH_SECRET = ORIGINAL_SECRET; });
 
-  it('signSession → verifySession round-trip', async () => {
+  it('signSession -> verifySession round-trip', async () => {
     process.env.AUTH_SECRET = 'test-integration-secret-key';
     const { signSession, verifySession } = await import('@/lib/auth');
 
