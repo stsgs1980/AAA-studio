@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useState } from "react";
 
 export function useMounted(): boolean {
   const [mounted, setMounted] = useState(false);

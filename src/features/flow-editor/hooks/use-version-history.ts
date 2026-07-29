@@ -10,7 +10,7 @@ export interface VersionEntry {
   createdAt: string;
 }
 
-export function useVersionHistory(open: boolean, onClose: () => void) {
+export function useVersionHistory(open: boolean, _onClose: () => void) {
   const flowId = useFlowEditorStore((s) => s.flowId);
   const loadFlow = useFlowEditorStore((s) => s.loadFlow);
   const nodes = useFlowEditorStore((s) => s.nodes);

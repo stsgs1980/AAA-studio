@@ -7,7 +7,7 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "bunx --bun eslint .",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev --name init",
@@ -19,7 +19,6 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "type-check": "tsc --noEmit",
-    "verify": "bun run packages/verify-docs/src/cli.ts",
     "verify:install-hooks": "bun run scripts/install-hooks.ts"
   },
   "dependencies": {

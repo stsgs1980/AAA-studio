@@ -223,6 +223,14 @@ Deployed to Vercel via GitHub auto-deploy (push to `main`).
 ## License
 
 TBD
+## Agent Rules
+
+Any AI agent working on this project MUST read and follow `AGENT_RULES.md` before performing any operations.
+
+## Configuration
+
+See [AGENT_RULES.md](AGENT_RULES.md) for project-specific agent configuration, commands, and architecture.
 
 ---
-Built with: Next.js + React + TypeScript + Tailwind CSS
+
+Built with: Next.js 15.3 + React 19 + TypeScript 5.8 + Prisma 6.8.2 + Neon PostgreSQL + Socket.IO + Zustand + Radix UI

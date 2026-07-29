@@ -1,6 +1,6 @@
 'use client';
 import { Users, Plus, X, GripVertical } from 'lucide-react';
-import { useTeamData, type Agent } from '../hooks/use-team-data';
+import { useTeamData } from '../hooks/use-team-data';
 
 export function TeamTab({ agentId, roleGroup }: { agentId: string; roleGroup: string }) {
   const { children, available, loading, addChild, removeChild } = useTeamData(agentId);

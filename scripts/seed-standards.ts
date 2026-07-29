@@ -88,7 +88,7 @@ function parse(content: string, filename: string): StandardDef | null {
     const tags = sevMatch[1].match(/\[([A-Z])\]/g);
     if (tags) {
       for (const t of tags) {
-        const c = t.replace(/[\[\]]/g, "");
+        const c = t.replace(/[[\]]/g, "");
         if (c in SEV_MAP) { severity = SEV_MAP[c]; break; }
       }
     }

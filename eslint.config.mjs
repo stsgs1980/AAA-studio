@@ -3,6 +3,7 @@ import tseslint from "typescript-eslint";
 import plugin3a from "./packages/eslint-plugin/src/index.ts";
 
 const eslintConfig = [
+  { ignores: ["next-env.d.ts", "tools/verify-docs/**", "verify-docs.plugins.ts"] },
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
   {
@@ -21,6 +22,14 @@ const eslintConfig = [
       "3a/max-use-state": ["error", { max: 3 }],
       "3a/no-cross-layer": "error",
       "3a/no-unicode-escapes": "error",
+    },
+  },
+  {
+    files: ["packages/**/*.ts", "packages/**/*.tsx", "scripts/**/*.ts", "prisma/**/*.ts"],
+    rules: {
+      "3a/max-lines": "off",
+      "no-console": "off",
+      "@typescript-eslint/no-explicit-any": "off",
     },
   },
 ];

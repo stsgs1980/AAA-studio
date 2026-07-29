@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Wrench, Plus, Upload, Download, ChevronDown } from "lucide-react";
 import { PageSkeleton } from "@/components/ui";
 import { useSkillStore } from "../store/skills-store";
