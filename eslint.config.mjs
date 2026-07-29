@@ -1,6 +1,6 @@
 import eslint from "@eslint/js";
 import tseslint from "typescript-eslint";
-import plugin3a from "./packages/eslint-plugin/src/index.ts";
+import plugin3a from "./packages/eslint-plugin/dist/index.js";
 
 const eslintConfig = [
   { ignores: ["next-env.d.ts", "tools/verify-docs/**", "verify-docs.plugins.ts"] },
