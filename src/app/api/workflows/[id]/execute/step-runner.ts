@@ -6,9 +6,9 @@ export async function executeSteps(
   executionId: string,
   steps: PipelineStep[],
   input: unknown,
-  provider: { provider: Parameters<typeof import('@/lib/llm/client')['callLLM']>[0]['provider']; model: string },
+  provider: { provider: Parameters<typeof import('@/lib/domain/llm/client')['callLLM']>[0]['provider']; model: string },
 ) {
-  const { callLLM } = await import('@/lib/llm/client');
+  const { callLLM } = await import('@/lib/domain/llm/client');
 
   let currentInput = input ?? {};
   const results: { step: string; status: string; duration: number }[] = [];

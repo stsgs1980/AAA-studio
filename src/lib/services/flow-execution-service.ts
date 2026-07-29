@@ -33,7 +33,7 @@ export async function executeFlow(
   flowId: string,
   nodes: FlowNode[],
   edges: FlowEdge[],
-  active: { provider: import('@/lib/llm').ProviderConfig; model: string; settings: import('@/lib/llm').LLMSettings },
+  active: { provider: import('@/lib/domain/llm').ProviderConfig; model: string; settings: import('@/lib/domain/llm').LLMSettings },
 ): Promise<ExecutionResult> {
   const sorted = topoSort(nodes, edges);
   const ctx = new Map<string, Record<string, unknown>>();
